@@ -1,4 +1,3 @@
-import BaseSelect from "./components/shared/BaseSelect";
 import Login from "./pages/Login/Login";
 
 function App() {
