@@ -1,4 +1,5 @@
 const Login = () => {
+    console.log("small change")
     return (
         <section className="max-w-[1320px] max-h-[767px] bg-brand">
             <div className="flex items-center justify-center">
