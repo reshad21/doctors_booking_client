@@ -8,9 +8,9 @@ import { Outlet } from "react-router-dom";
 export default function DashboardLayout() {
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar   />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <header className="flex h-16 shrink-0 items-center gap-2 px-4 bg-gradient-to-r from-[#042F16] via-[#6F9975] to-[#14400D]">
           <SidebarTrigger className="-ml-1" />
         </header>
 

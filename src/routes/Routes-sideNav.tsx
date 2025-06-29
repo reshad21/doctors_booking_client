@@ -1,44 +1,44 @@
 import {
   BellIcon,
-  BriefcaseBusiness,
-  ClipboardList,
-  GitCompareArrowsIcon,
-  GroupIcon,
+  Building,
+  Calendar,
+  FileText,
+  HelpCircle,
   KeySquareIcon,
+  LayoutDashboard,
   LogOutIcon,
   MonitorPlayIcon,
-  PersonStanding,
   RepeatIcon,
-  StethoscopeIcon,
-  VenusAndMars,
+  UserCog,
+  Users
 } from "lucide-react";
 
 export const sideNavMenu = [
   {
     title: "Dashboard",
     url: "/dashboard",
-    icon: GroupIcon,
-    isActive: true,
+    icon: LayoutDashboard,
+    isActive: false,
   },
   {
     title: "Patient",
     url: "/dashboard/patient",
-    icon: VenusAndMars,
+    icon: Users,
   },
   {
     title: "Appointment Mgt",
     url: "/dashboard/appointment",
-    icon: StethoscopeIcon,
+    icon: Calendar,
   },
   {
     title: "Prescription",
     url: "/dashboard/prescription",
-    icon: ClipboardList,
+    icon: FileText,
   },
   {
     title: "Chamber",
     url: "/dashboard/chamber",
-    icon: BriefcaseBusiness,
+    icon: Building,
   },
   {
     title: "Notice",
@@ -48,12 +48,12 @@ export const sideNavMenu = [
   {
     title: "Staff Management",
     url: "/dashboard/staff",
-    icon: PersonStanding,
+    icon: UserCog,
   },
   {
     title: "Service Details",
     url: "/dashboard/service",
-    icon: GitCompareArrowsIcon,
+    icon: HelpCircle,
   },
   {
     title: "Pre Management",
