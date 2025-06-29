@@ -128,4 +128,7 @@ html {
   .bg-brand {
     background-color: #14400d;
   }
+  .text-brand {
+    color: #042f16;
+  }
 }

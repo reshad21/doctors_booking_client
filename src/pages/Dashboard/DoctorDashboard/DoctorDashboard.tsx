@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge, Download, Users } from "lucide-react";
+import { Download, Users } from "lucide-react";
 
 const appointmentData = [
   { sn: 10, name: "John Doe", phone: "01758191780", status: "On Going" },
