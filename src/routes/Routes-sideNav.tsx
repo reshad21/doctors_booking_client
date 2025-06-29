@@ -70,10 +70,10 @@ export const sideNavMenu = [
     url: "/dashboard/update-password",
     icon: KeySquareIcon,
   },
-  {
-    title: "Logout",
-    url: "#",
-    icon: LogOutIcon,
-    // isActive: false,
-  },
+  // {
+  //   title: "Logout",
+  //   url: "#",
+  //   icon: LogOutIcon,
+  //   // isActive: false,
+  // },
 ];
