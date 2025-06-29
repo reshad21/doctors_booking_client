@@ -13,6 +13,7 @@ import ServiceManagement from "@/pages/ServiceManagement/ServiceManagement";
 import StaffManagement from "@/pages/StaffManagement/StaffManagement";
 import UpdatePassword from "@/pages/UpdatePassword/UpdatePassword";
 import WatchVideo from "@/pages/Watch Video/WatchVideo";
+import PrivateRout from "@/PrivateRout/PrivateRout";
 import { createBrowserRouter } from "react-router-dom";
 
 const router = createBrowserRouter([
@@ -23,21 +24,26 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: <DashboardLayout />,
+    element: (
+      <PrivateRout>
+        <DashboardLayout />
+      </PrivateRout>
+    ),
     children: [
-      {path: "", element: <DoctorDashboard/> },
-      {path: "/dashboard/patient", element: <Patient /> },
-      {path: "/dashboard/appointment", element: <AppointmentManagement/>},
-      {path: "/dashboard/prescription", element: <Prescription/> },
-      {path: "/dashboard/chamber", element: <Chamber/> },
-      {path: "/dashboard/notice", element: <Notice/> },
-      {path: "/dashboard/staff", element: <StaffManagement/>},
-      {path: "/dashboard/service", element:<ServiceManagement/>},
-      {path: "/dashboard/pre-management", element: <PrescriptionManagement/> },
-      {path: "/dashboard/watch-video", element: <WatchVideo /> },
-      {path: "/dashboard/update-password", element: <UpdatePassword /> },
-     
-      
+      { path: "", element: <DoctorDashboard /> },
+      { path: "/dashboard/patient", element: <Patient /> },
+      { path: "/dashboard/appointment", element: <AppointmentManagement /> },
+      { path: "/dashboard/prescription", element: <Prescription /> },
+      { path: "/dashboard/chamber", element: <Chamber /> },
+      { path: "/dashboard/notice", element: <Notice /> },
+      { path: "/dashboard/staff", element: <StaffManagement /> },
+      { path: "/dashboard/service", element: <ServiceManagement /> },
+      {
+        path: "/dashboard/pre-management",
+        element: <PrescriptionManagement />,
+      },
+      { path: "/dashboard/watch-video", element: <WatchVideo /> },
+      { path: "/dashboard/update-password", element: <UpdatePassword /> },
     ],
   },
 

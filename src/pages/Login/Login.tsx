@@ -10,8 +10,17 @@ import {
 import { User, Lock } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useLoginUserMutation } from "@/redux/api/auth/auth";
+import { useAppDispatch } from "@/redux/hooks";
+import type { AppDispatch } from "@/redux/store";
+import { setUserToken } from "@/redux/api/features/authSlice";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Login = () => {
+  const [login] = useLoginUserMutation()
+  const dispatch = useAppDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -20,8 +29,12 @@ const Login = () => {
     },
   });
 
-  const onSubmit = (data: LoginSchemaType) => {
-    console.log(data);
+  const onSubmit =async (data: LoginSchemaType) => {
+    const res = await login(data)
+        dispatch(setUserToken({ token: res?.data?.data?.accessToken }));
+        toast.success('Teacher Logged In!');
+        navigate('/dashboard');
+    
   };
 
   return (

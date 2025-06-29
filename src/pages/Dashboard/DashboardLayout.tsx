@@ -5,7 +5,12 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "./_component/app-sidebar";
 import { Outlet } from "react-router-dom";
+import { useAppSelector } from "@/redux/hooks";
+import { useCurrentToken } from "@/redux/api/features/authSlice";
 export default function DashboardLayout() {
+  const token = useAppSelector(useCurrentToken);
+  console.log(token);
+  
   return (
     <SidebarProvider>
       <AppSidebar   />
