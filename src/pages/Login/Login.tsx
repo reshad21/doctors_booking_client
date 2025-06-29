@@ -31,6 +31,8 @@ const Login = () => {
 
   const onSubmit =async (data: LoginSchemaType) => {
     const res = await login(data)
+    console.log(res);
+    
         dispatch(setUserToken({ token: res?.data?.data?.accessToken }));
         toast.success('Teacher Logged In!');
         navigate('/dashboard');

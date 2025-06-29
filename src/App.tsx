@@ -1,14 +1,9 @@
-
 import { Outlet } from "react-router-dom";
-import Login from "./pages/Login/Login";
 
 function App() {
   return (
     <div>
-      {/* <Login /> */}
-      {/* <div className="text-center text-xl font-semibold">
-        <span className="text-green-500">Doctor</span> Booking Component
-      </div> */}
+      <h1>This is Home page currently in development</h1>
       <Outlet />
     </div>
   );
