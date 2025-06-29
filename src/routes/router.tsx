@@ -2,6 +2,7 @@ import App from "@/App";
 import AppointmentManagement from "@/pages/AppointmentManagement/AppointmentManagement";
 import Chamber from "@/pages/Chamber/Chamber";
 import DashboardLayout from "@/pages/Dashboard/DashboardLayout";
+import DoctorDashboard from "@/pages/Dashboard/DoctorDashboard/DoctorDashboard";
 
 import Login from "@/pages/Login/Login";
 import Notice from "@/pages/Notice/Notice";
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: <DashboardLayout />,
     children: [
+      {path: "/dashboard", element: <DoctorDashboard/> },
       {path: "/dashboard/patient", element: <Patient /> },
       {path: "/dashboard/appointment", element: <AppointmentManagement/>},
       {path: "/dashboard/prescription", element: <Prescription/> },
