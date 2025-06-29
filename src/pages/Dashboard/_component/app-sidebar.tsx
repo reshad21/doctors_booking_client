@@ -39,7 +39,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </div>
           </div>
         </div>
-        <h1 className="text-xs font-semibold text-purple-300 uppercase tracking-wider">
+        <h1 className="text-xs font-semibold text-white uppercase tracking-wider">
           Main Menu
         </h1>
       </SidebarHeader>
