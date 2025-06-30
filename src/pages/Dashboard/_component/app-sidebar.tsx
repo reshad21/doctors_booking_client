@@ -22,7 +22,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <div className="flex items-center space-x-3">
             <Avatar className="w-12 h-12">
               <AvatarImage
-                src="/public/images/doctorprofile.png?height=48&width=48"
+                src="/images/doctorprofile.png?height=48&width=48"
                 alt="Dr. Stven N Carter"
               />
               <AvatarFallback>SC</AvatarFallback>
