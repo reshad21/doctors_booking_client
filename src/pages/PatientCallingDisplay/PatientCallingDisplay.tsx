@@ -43,7 +43,7 @@ const PatientCallingDisplay = () => {
         </Button>
       </div>
 
-      <SpeakNames />
+
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-6">
@@ -127,6 +127,8 @@ const PatientCallingDisplay = () => {
 
         {/* Notice Section */}
         <div className="mt-8">
+          
+      <SpeakNames />
           <div className="bg-[#042F16] text-white py-3 px-6 rounded-t-lg">
             <h2 className="text-lg font-semibold text-center">Notice</h2>
           </div>
