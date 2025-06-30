@@ -134,7 +134,7 @@ const PatientCallingDisplay = () => {
           </div>
           <Card className="rounded-t-none py-0">
             <CardContent className="p-4">
-              <p className="text-gray-800 text-lg leading-relaxed">
+              <p className="text-brand font-bold text-lg leading-relaxed">
                 Welcome To Dr. A. F. M. Helal Uddin Medical Application. Now You
                 Can Make Online Appointment From Here. Welcome To Dr. A. F. M.
                 Helal Uddin Medical Application. Now You Can Make Online
