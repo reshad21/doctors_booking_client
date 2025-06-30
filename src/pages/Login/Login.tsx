@@ -12,14 +12,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLoginUserMutation } from "@/redux/api/auth/auth";
 import { useAppDispatch } from "@/redux/hooks";
-import type { AppDispatch } from "@/redux/store";
 import { setUserToken } from "@/redux/api/features/authSlice";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { decodeToken } from "@/hooks/decodedToken";
+import { setAdminDecodeData } from "@/redux/api/features/adminSlice";
 
 const Login = () => {
-  const [login] = useLoginUserMutation()
-  const dispatch = useAppDispatch<AppDispatch>();
+  const [login] = useLoginUserMutation();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
@@ -29,14 +30,16 @@ const Login = () => {
     },
   });
 
-  const onSubmit =async (data: LoginSchemaType) => {
-    const res = await login(data)
-    console.log(res);
-    
-        dispatch(setUserToken({ token: res?.data?.data?.accessToken }));
-        toast.success('Teacher Logged In!');
-        navigate('/dashboard');
-    
+  const onSubmit = async (data: LoginSchemaType) => {
+    const res = await login(data);
+    const token = res?.data?.data?.accessToken;
+
+    dispatch(setUserToken({ token: token }));
+    const decoded = decodeToken(token);
+
+    dispatch(setAdminDecodeData(decoded));
+    toast.success("Teacher Logged In!");
+    navigate("/dashboard");
   };
 
   return (
@@ -122,5 +125,3 @@ const Login = () => {
 };
 
 export default Login;
-
-
