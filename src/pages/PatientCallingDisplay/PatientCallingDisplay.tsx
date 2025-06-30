@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Volume2, X, ChevronRight } from "lucide-react";
 import { getCurrentDateTime } from "@/utils/getCurrentDateTime";
+import SpeakNames from "./SpeakNames";
 
 const patientQueue = [
   { sn: 10, name: "Asif Khan", status: "ongoing" },
@@ -41,6 +42,8 @@ const PatientCallingDisplay = () => {
           <X size={28} />
         </Button>
       </div>
+
+      <SpeakNames />
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-6">
