@@ -1,9 +1,10 @@
+import PageHeader from "@/components/shared/PageHeader";
 
 
 const ServiceManagement = () => {
   return (
     <div>
-      <h1>Hello,This is ServiceManagement Route!</h1>
+    <PageHeader title="Service Management" />
     </div>
   );
 };

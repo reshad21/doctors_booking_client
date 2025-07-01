@@ -1,3 +1,4 @@
+import PageHeader from "@/components/shared/PageHeader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,8 @@ const appointmentData = [
 const DoctorDashboard = () => {
   return (
     <div>
-      <main className="flex-1 p-6 overflow-auto">
+      <PageHeader title="Dashboard" />
+      <main className="flex-1 p-6 mt-4 sm:mt-2 overflow-auto">
         {/* Welcome Section */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">

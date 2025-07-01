@@ -1,9 +1,11 @@
+import PageHeader from "@/components/shared/PageHeader";
 
 
 const Prescription = () => {
   return (
     <div>
-      <h1>Hello,This is Prescription Route!</h1>
+      <PageHeader title="Prescription" />
+      
     </div>
   );
 };

@@ -1,8 +1,9 @@
+import PageHeader from "@/components/shared/PageHeader";
 
 const UpdatePassword = () => {
   return (
     <div>
-      <h1>Hello,This is UpdatePassword Route!</h1>
+     <PageHeader title="Update Password" />
     </div>
   );
 };
