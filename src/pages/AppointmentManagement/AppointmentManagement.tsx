@@ -1,9 +1,9 @@
-
+import PageHeader from "@/components/shared/PageHeader";
 
 const AppointmentManagement = () => {
   return (
     <div>
-      <h1>Hello,This is AppointmentManagement Route!</h1>
+      <PageHeader title="Appointment History" />
     </div>
   );
 };

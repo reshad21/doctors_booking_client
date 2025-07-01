@@ -1,9 +1,10 @@
+import PageHeader from "@/components/shared/PageHeader";
 
 
 const StaffManagement = () => {
   return (
     <div>
-      <h1>Hello,This is StaffManagement Route!</h1>
+    <PageHeader title="Staff Management" />
     </div>
   );
 };

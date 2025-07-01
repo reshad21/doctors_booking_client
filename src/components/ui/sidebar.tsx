@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva,type VariantProps } from "class-variance-authority"
-import { PanelLeftIcon } from "lucide-react"
+import { AlignJustifyIcon} from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -271,7 +271,12 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <PanelLeftIcon />
+      {/* <PanelLeftIcon /> */}
+      <div className="text-white hover:bg-white hover:text-black p-2 rounded-md cursor-pointer transition-colors duration-200">
+  <AlignJustifyIcon />
+</div>
+
+      
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )

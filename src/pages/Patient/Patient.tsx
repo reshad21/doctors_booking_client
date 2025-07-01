@@ -1,9 +1,11 @@
+import PageHeader from "@/components/shared/PageHeader";
 
 
 const Patient = () => {
   return (
     <div>
-      <h1>Hello,This is Patient Route!</h1>
+      <PageHeader title="Patient History" />
+     
     </div>
   );
 };

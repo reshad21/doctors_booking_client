@@ -30,9 +30,9 @@ const appointmentData = [
 const DoctorDashboard = () => {
   return (
     <div>
-      <main className="flex-1 p-6 overflow-auto">
+      <main className="flex-1 p-6 mt-4 sm:mt-2 overflow-auto">
         {/* Welcome Section */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8 bg-white p-4 lg:p-6 rounded-sm">
           <div className="flex items-center space-x-4">
             <Avatar className="w-16 h-16">
               <AvatarImage

@@ -1,9 +1,11 @@
+import PageHeader from "@/components/shared/PageHeader";
 
 
 const Notice = () => {
   return (
     <div>
-      <h1>Hello,This is Notice Route!</h1>
+      <PageHeader title="Notice" />
+    
     </div>
   );
 };
