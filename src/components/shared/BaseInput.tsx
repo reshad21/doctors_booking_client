@@ -17,6 +17,7 @@ interface BaseInputProps {
   title?: string;
   placeholder?: string;
   classname?: string;
+  label:string;
   icon?: React.ReactNode;
   type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
 }
@@ -27,6 +28,7 @@ const BaseInput = ({
   placeholder,
   classname,
   icon,
+  label,
   type = "text",
 }: BaseInputProps) => {
   const { control } = useFormContext();
@@ -47,6 +49,7 @@ const BaseInput = ({
                   {icon}
                 </div>
               )}
+              <label htmlFor="">{label}</label>
               <Input
                 {...field}
                 type={type}

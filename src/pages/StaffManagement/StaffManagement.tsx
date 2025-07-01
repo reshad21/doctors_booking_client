@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -14,22 +15,47 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Plus, ChevronDown, SquarePlus, SquarePen } from "lucide-react";
 import {
-  Plus,
-  ChevronDown,
-  SquarePlus,
-  SquarePen,
-} from "lucide-react";
-import {  useDeleteStaffMutation, useGetStaffQuery } from "@/redux/api/staff/staff";
+  useDeleteStaffMutation,
+  useGetStaffQuery,
+} from "@/redux/api/staff/staff";
 import type { Staff } from "@/types/staff.types";
 import ConfirmAlert from "@/components/shared/ConfirmAlert";
+import CustomModal from "@/components/shared/CustomModal";
 
 const StaffManagement = () => {
   const { data: staffData } = useGetStaffQuery(undefined);
-  const [deleteStaff] = useDeleteStaffMutation()
+  const [deleteStaff] = useDeleteStaffMutation();
 
+   const handleModalSubmit = (data: Record<string, any>) => {
+    console.log("Form Data:", data);
+  };
   return (
     <div className="customContainer">
+           <CustomModal
+        triggerText="Open Modal"
+        title="Dynamic Modal"
+        description="Fill in the form:"
+        handleFormSubmit={(data) => {
+          handleModalSubmit(data); 
+        }}
+        input={[
+          { label: "First Name", name: "firstName" },
+          { label: "Last Name", name: "lastName" },
+        ]}
+        select={[
+          {
+            label: "Select Gender",
+            name: "gender",
+            options: [
+              { name: "Male", val: "male" },
+              { name: "Female", val: "female" },
+            ],
+          },
+        ]}
+      />
+
       <div className="w-full">
         {/* Header Section */}
         <div className="flex items-center justify-between mb-6">
@@ -62,8 +88,16 @@ const StaffManagement = () => {
           <Table className="no-border">
             <TableHeader className="no-border">
               <TableRow className="bg-[#f7f7f7] no-border">
-                {["SN","Image","Staff Name","Email","JoinDate","Phone Number","Status","Action"]
-                .map((header, ind) => (
+                {[
+                  "SN",
+                  "Image",
+                  "Staff Name",
+                  "Email",
+                  "JoinDate",
+                  "Phone Number",
+                  "Status",
+                  "Action",
+                ].map((header, ind) => (
                   <TableHead
                     key={ind}
                     className={`${ind == 7 && "text-center"}`}
@@ -117,7 +151,11 @@ const StaffManagement = () => {
                       </div>
                       
                       <div>
-                        <ConfirmAlert id={member?.id} onDeleted={deleteStaff} person={"Staff"}/>
+                        <ConfirmAlert
+                          id={member?.id}
+                          onDeleted={deleteStaff}
+                          person={"Staff"}
+                        />
                       </div>
                     </div>
                   </TableCell>
