@@ -9,7 +9,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { sideNavMenu } from "@/routes/Routes-sideNav";
+import { sideNavMenu } from "@/context/Routes-sideNav";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOutIcon } from "lucide-react";
 import { useAppDispatch } from "@/redux/hooks";
@@ -27,7 +27,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <div className="flex items-center space-x-3">
             <Avatar className="w-12 h-12">
               <AvatarImage
-                src="/public/images/doctorprofile.png?height=48&width=48"
+                src="/images/doctorprofile.png?height=48&width=48"
                 alt="Dr. Stven N Carter"
               />
               <AvatarFallback>SC</AvatarFallback>
@@ -44,24 +44,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </div>
           </div>
         </div>
-        <h1 className="text-xs font-semibold text-purple-300 uppercase tracking-wider">
+        <h1 className="text-xs font-semibold text-white uppercase tracking-wider">
           Main Menu
         </h1>
       </SidebarHeader>
       <SidebarContent className="bg-[#25102E] text-white">
         <SidebarMenu className="space-y-1 px-2">
-          {/* {sideNavMenu.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild isActive={item.isActive}>
-                <Link to={item.url}>
-                  
-                  <item.icon /> <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))} */}
           {sideNavMenu.map((item) => {
-            // const isActive = location.pathname.startsWith(item.url);
             const isActive =
               item.url === "/dashboard"
                 ? location.pathname === item.url

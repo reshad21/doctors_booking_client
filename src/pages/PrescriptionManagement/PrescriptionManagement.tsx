@@ -1,9 +1,11 @@
-import React from 'react';
+import PageHeader from "@/components/shared/PageHeader";
+
 
 const PrescriptionManagement = () => {
   return (
     <div>
-      <h1>Hello,This is PrescriptionManagementRoute!</h1>
+      <PageHeader title="Prescription Management" />
+
     </div>
   );
 };

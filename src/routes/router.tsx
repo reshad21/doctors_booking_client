@@ -13,7 +13,7 @@ import ServiceManagement from "@/pages/ServiceManagement/ServiceManagement";
 import StaffManagement from "@/pages/StaffManagement/StaffManagement";
 import UpdatePassword from "@/pages/UpdatePassword/UpdatePassword";
 import WatchVideo from "@/pages/Watch Video/WatchVideo";
-import PrivateRout from "@/PrivateRout/PrivateRout";
+import PrivateRout from "@/PrivateRoute/PrivateRoute";
 import { createBrowserRouter } from "react-router-dom";
 
 const router = createBrowserRouter([

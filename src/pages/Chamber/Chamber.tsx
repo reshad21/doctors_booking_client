@@ -1,9 +1,10 @@
-import React from 'react';
+import PageHeader from "@/components/shared/PageHeader";
 
 const Chamber = () => {
   return (
     <div>
-      <h1>Hello,This is Chamber Route!</h1>
+      <PageHeader title="Chamber" />
+     
     </div>
   );
 };

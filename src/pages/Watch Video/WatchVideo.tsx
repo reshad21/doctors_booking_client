@@ -1,9 +1,10 @@
+import PageHeader from "@/components/shared/PageHeader";
 
 
 const WatchVideo = () => {
   return (
     <div>
-      <h1>Hello,This is WatchVideo Route!</h1>
+     <PageHeader title="Watch Video" />
     </div>
   );
 };
