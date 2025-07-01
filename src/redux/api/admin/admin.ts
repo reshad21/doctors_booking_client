@@ -5,7 +5,7 @@ const adminApi = baseApi.injectEndpoints({
     getAdminByToken: builder.query({
       query: () => {
         return {
-          url: "/admin",
+          url: "/admin/me",
           method: "GET",
         };
       },

@@ -6,7 +6,7 @@ import type { RootState } from "../store";
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `${import.meta.env.BACKEND_URL}`,
+    baseUrl: `${import.meta.env.VITE_BACKEND_URL}/api/v1`,
     credentials: "include",
     prepareHeaders: (
       headers: Headers,

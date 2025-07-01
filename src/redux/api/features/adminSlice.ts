@@ -6,6 +6,7 @@ export interface DecodedToken {
   name: string;
   status: string;
   profilePhoto: string;
+  type: string;
   iat: number;
   exp: number;
 }
@@ -16,6 +17,7 @@ const initialState: DecodedToken = {
   name: "",
   status: "",
   profilePhoto: "",
+  type: "",
   iat: 0,
   exp: 0,
 };
@@ -36,4 +38,4 @@ const adminSlice = createSlice({
 });
 
 export const { setAdminDecodeData, clearAdminDecodeData } = adminSlice.actions;
-export default adminSlice.reducer
+export default adminSlice.reducer;

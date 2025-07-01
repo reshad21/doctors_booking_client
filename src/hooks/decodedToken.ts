@@ -8,6 +8,7 @@ export interface DecodedToken {
   profilePhoto: string;
   iat: number;
   exp: number;
+  type: string;
 }
 
 /**

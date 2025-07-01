@@ -5,7 +5,6 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "./_component/app-sidebar";
 import { Outlet } from "react-router-dom";
-import { useAppSelector } from "@/redux/hooks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -16,9 +15,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Home, KeyRound, LogOut, User } from "lucide-react";
+import { useGetAdminByTokenQuery } from "@/redux/api/admin/admin";
 export default function DashboardLayout() {
-  const adminData = useAppSelector((state) => state.admin);
-  console.log(adminData, "Admin Data in Dashboard Layout");
+  const { data: adminDataFromApi } = useGetAdminByTokenQuery({});
+  console.log(adminDataFromApi, "Admin Data From APi");
 
   return (
     <SidebarProvider>
