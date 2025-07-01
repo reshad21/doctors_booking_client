@@ -45,18 +45,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent className="bg-[#25102E] text-white">
         <SidebarMenu className="space-y-1 px-2">
-          {/* {sideNavMenu.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild isActive={item.isActive}>
-                <Link to={item.url}>
-                  
-                  <item.icon /> <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))} */}
           {sideNavMenu.map((item) => {
-            // const isActive = location.pathname.startsWith(item.url);
             const isActive =
               item.url === "/dashboard"
                 ? location.pathname === item.url

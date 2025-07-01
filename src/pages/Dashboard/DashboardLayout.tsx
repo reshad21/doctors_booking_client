@@ -18,7 +18,7 @@ import { ChevronDown, Home, KeyRound, LogOut, User } from "lucide-react";
 import { useGetAdminByTokenQuery } from "@/redux/api/admin/admin";
 export default function DashboardLayout() {
   const { data: adminDataFromApi } = useGetAdminByTokenQuery({});
-  console.log(adminDataFromApi, "Admin Data From APi");
+  console.log(adminDataFromApi?.data, "Admin Data From APi");
 
   return (
     <SidebarProvider>
