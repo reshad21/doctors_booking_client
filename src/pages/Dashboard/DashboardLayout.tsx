@@ -25,7 +25,7 @@ export default function DashboardLayout() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex justify-between h-16 shrink-0 items-center gap-2 px-4 bg-gradient-to-r from-[#042F16] via-[#6F9975] to-[#14400D]">
+        <header className="flex justify-between h-20 shrink-0 items-center gap-2 px-4 bg-gradient-to-r from-[#042F16] via-[#6F9975] to-[#14400D]">
           <SidebarTrigger className="-ml-1" />
 
           <div className="flex items-center text-white">
