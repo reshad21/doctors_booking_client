@@ -129,3 +129,14 @@ html {
     background-color: #14400d;
   }
 }
+@layer utilities {
+  .customContainer {
+    @apply p-[30px] h-screen flex justify-center items-start bg-[#f4f6f9];
+  }
+  .no-border {
+    @apply border-0;
+  }
+  .no-padding {
+    @apply p-0;
+  }
+}
