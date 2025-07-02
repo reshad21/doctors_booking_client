@@ -1,18 +1,22 @@
-import React from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogDescription,
   AlertDialogTrigger,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import BaseInput from "./BaseInput";
 import BaseSelect from "./BaseSelect";
-import { SquarePen } from "lucide-react";
+import BaseImageUpload from "./BaseImageUpload";
+import { Plus, SquarePen } from "lucide-react";
+import { FormField } from "../ui/form";
+import { ScrollArea } from "../ui/scroll-area";
+import { Label } from "@radix-ui/react-label";
 
 type FieldConfig = {
   label: string;
@@ -25,11 +29,14 @@ type SelectConfig = FieldConfig & {
 
 interface CustomModalProps {
   title: string;
-  description: string;
+  description?: string;
   input?: FieldConfig[];
+  file?: any[];
   select?: SelectConfig[];
   open: boolean;
   setOpen: (value: boolean) => void;
+  buttonProperty: any;
+  defaultValues?: Record<string, any>;
   handleFormSubmit: (
     data: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
@@ -41,11 +48,23 @@ const CustomModal: React.FC<CustomModalProps> = ({
   description,
   input = [],
   select = [],
+  file = [],
   open,
   setOpen,
   handleFormSubmit,
+  buttonProperty,
+  defaultValues = {},
 }) => {
-  const formMethods = useForm<Record<string, any>>();
+  const formMethods = useForm<Record<string, any>>({
+    defaultValues,
+  });
+
+  // Optional: Sync defaultValues on prop change
+  useEffect(() => {
+    if (defaultValues && Object.keys(defaultValues).length > 0) {
+      formMethods.reset(defaultValues);
+    }
+  }, [defaultValues, formMethods]);
 
   const onSubmit = async (data: Record<string, any>) => {
     await handleFormSubmit(data, {
@@ -57,46 +76,87 @@ const CustomModal: React.FC<CustomModalProps> = ({
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button className="shadow-none !px-0 !py-0 no-padding no-border">
-          <SquarePen className="!h-5 !w-5 text-[#14400D]" />
-        </Button>
+        {buttonProperty.type === "create" ? (
+          <Button className="bg-brand hover:bg-green-800 text-white">
+            <Plus className="mr-2 h-4 w-4" />
+            {buttonProperty?.text}
+          </Button>
+        ) : (
+          <Button className="shadow-none !px-0 !py-0 no-padding no-border">
+            <SquarePen className="!h-5 !w-5 text-[#14400D]" />
+          </Button>
+        )}
       </AlertDialogTrigger>
-      <AlertDialogContent>
+
+      <AlertDialogContent className="max-h-[90vh] overflow-hidden">
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
+          {description && (
+            <p className="text-sm text-muted-foreground">{description}</p>
+          )}
+          <hr className="text-gray-300 mt-2" />
         </AlertDialogHeader>
-        <FormProvider {...formMethods}>
-          <form onSubmit={formMethods.handleSubmit(onSubmit)} className="space-y-4">
-            {input.map(({ label, name }) => (
-              <BaseInput
-                key={name}
+
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <FormProvider {...formMethods}>
+            {/* File Upload Field */}
+            {file.map(({ name,label }) => (
+              <div className="pb-2">
+                <Label>{label}</Label>
+                <FormField
+                control={formMethods.control}
                 name={name}
-                label={label}
-                placeholder={`Enter your ${label}`}
-                classname="bg-gray-50"
+                render={({ field }) => (
+                  <BaseImageUpload
+                    classname="mt-2"
+                    onFileChange={(file) => field.onChange(file)}
+                  />
+                )}
               />
+              </div>
             ))}
-            {select.map(({ label, name, options }) => (
-              <BaseSelect
-                key={name}
-                name={name}
-                label={label}
-                options={options.map(({ name, val }) => ({ name, value: val }))}
-              />
-            ))}
-            <div className="flex justify-end space-x-4 pt-4">
-              <AlertDialogCancel asChild>
-                <Button variant="outline" type="button">
-                  Close
+
+            {/* Form */}
+            <form
+              onSubmit={formMethods.handleSubmit(onSubmit)}
+              className="space-y-4"
+            >
+              {input.map(({ label, name }) => (
+                <BaseInput
+                  key={name}
+                  name={name}
+                  label={label}
+                  placeholder={`Enter your ${label}`}
+                  classname="bg-gray-50"
+                />
+              ))}
+
+              {select.map(({ label, name, options }) => (
+                <BaseSelect
+                  key={name}
+                  name={name}
+                  label={label}
+                  options={options.map(({ name, val }) => ({
+                    name,
+                    value: val,
+                  }))}
+                />
+              ))}
+
+              {/* Buttons */}
+              <div className="flex justify-end space-x-4 pt-4 pb-2">
+                <AlertDialogCancel asChild>
+                  <Button variant="outline" type="button">
+                    Close
+                  </Button>
+                </AlertDialogCancel>
+                <Button type="submit" className="bg-brand">
+                  Submit
                 </Button>
-              </AlertDialogCancel>
-              <Button type="submit" className="bg-brand">
-                Submit
-              </Button>
-            </div>
-          </form>
-        </FormProvider>
+              </div>
+            </form>
+          </FormProvider>
+        </ScrollArea>
       </AlertDialogContent>
     </AlertDialog>
   );

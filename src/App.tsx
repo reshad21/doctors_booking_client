@@ -1,13 +1,13 @@
 import { Outlet } from "react-router-dom";
 import PatientCallingDisplay from "./pages/PatientCallingDisplay/PatientCallingDisplay";
-import BaseImageUpload from "./components/shared/BaseImageUpload";
+import DemoShadcnForm from "./components/shared/DemoShadcnForm";
 
 function App() {
   return (
     <div>
       <PatientCallingDisplay />
       <Outlet />
-      <BaseImageUpload />
+      <DemoShadcnForm />
     </div>
   );
 }

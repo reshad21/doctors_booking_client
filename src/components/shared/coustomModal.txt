@@ -1,0 +1,34 @@
+<CustomModal
+                open={modalOpen}
+                setOpen={setModalOpen}
+                title="Create User"
+                description="Fill in the form below."
+                handleFormSubmit={handleFormSubmit}
+                input={[
+                  { label: "Full Name", name: "name" },
+                  { label: "Email", name: "email" },
+                  { label: "Phone", name: "phone" },
+                  { label: "Password", name: "password" },
+                ]}
+                select={[
+                  {
+                    label: "Role",
+                    name: "role",
+                    options: [
+                      { name: "Admin", val: "admin" },
+                      { name: "User", val: "user" },
+                    ],
+                  },
+                ]}
+                file={[
+                   { label: "Profile Image", name: "image" },
+                ]}
+                buttonProperty={{ type: "create", text: "AddNew Staff" }}
+                defaultValues={{
+                  name: "Asif Khan",
+                  email: "asif@example.com",
+                  role: "editor",
+                  phone:"01799888",
+                  password:"2345677"
+                }}
+              />

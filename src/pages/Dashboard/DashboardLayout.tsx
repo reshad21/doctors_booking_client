@@ -4,6 +4,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "./_component/app-sidebar";
+import { sideNavMenu } from "@/context/Routes-sideNav";
 import { Outlet } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -16,13 +17,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Home, KeyRound, LogOut, User } from "lucide-react";
 import { useGetAdminByTokenQuery } from "@/redux/api/admin/admin";
+import { filterSideNavMenuByAccess } from "@/utils/filterSideNavMenu";
 export default function DashboardLayout() {
-  const { data: adminDataFromApi } = useGetAdminByTokenQuery({});
-  console.log(adminDataFromApi?.data, "Admin Data From APi");
+  const { data: adminDataFromApi, isLoading } = useGetAdminByTokenQuery({});
+  
+  // Wait for user data before rendering dashboard
+  if (isLoading) return null;
+
+  const routeAccess = adminDataFromApi?.data?.routeAccess || [];
+  const filteredMenu = filterSideNavMenuByAccess(sideNavMenu, routeAccess);
 
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar sideNavMenu={filteredMenu} />
       <SidebarInset>
         <header className="flex justify-between h-20 shrink-0 items-center gap-2 px-4 bg-gradient-to-r from-[#042F16] via-[#6F9975] to-[#14400D]">
           <SidebarTrigger className="-ml-1" />

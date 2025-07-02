@@ -9,6 +9,17 @@ const staffApi = baseApi.injectEndpoints({
             method: "GET",
           }
       },
+      providesTags: ["staff"],
+    }),
+    createStaff: builder.mutation({
+      query: (data) => {
+        return {
+            url: `/staff/create-staff`,
+            method: "POST",
+            body:data
+          }
+      },
+      invalidatesTags:["staff"]
     }),
     deleteStaff: builder.mutation({
       query: (id) => {
@@ -17,8 +28,9 @@ const staffApi = baseApi.injectEndpoints({
             method: "DELETE",
           }
       },
+      invalidatesTags:["staff"]
     }),
    
   }),
 });
-export const {useGetStaffQuery,useDeleteStaffMutation} = staffApi;
+export const {useGetStaffQuery,useDeleteStaffMutation,useCreateStaffMutation} = staffApi;

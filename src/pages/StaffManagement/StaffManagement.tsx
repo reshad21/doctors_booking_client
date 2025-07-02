@@ -15,8 +15,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Plus, ChevronDown, SquarePlus, SquarePen } from "lucide-react";
+import { ChevronDown, SquarePlus, SquarePen } from "lucide-react";
 import {
+  useCreateStaffMutation,
   useDeleteStaffMutation,
   useGetStaffQuery,
 } from "@/redux/api/staff/staff";
@@ -24,63 +25,38 @@ import type { Staff } from "@/types/staff.types";
 import ConfirmAlert from "@/components/shared/ConfirmAlert";
 import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
+import { useAppSelector } from "@/redux/hooks";
 
 const StaffManagement = () => {
   const { data: staffData } = useGetStaffQuery(undefined);
   const [deleteStaff] = useDeleteStaffMutation();
   const [modalOpen, setModalOpen] = useState(false);
+  const [createStaff] = useCreateStaffMutation();
+  const doctorId = useAppSelector((state) => state.admin.id);
 
   const handleFormSubmit = async (
     data: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
   ) => {
-    try {
-      console.log(data);
-      
-      const res = await fetch("/api/submit", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
-
-      const result = await res.json();
-
-      if (result.success) {
-        // ✅ success: close modal and reset form
-        helpers.reset();
-        helpers.close();
-      } else {
-        // ❌ failure: stay open, maybe show error toast
-        console.error("Submission failed:", result.message);
-      }
-    } catch (err) {
-      console.error("Something went wrong", err);
+    console.log(data);
+    
+    const res = await createStaff({
+      ...data,
+      doctorId,
+    });
+    console.log(res);
+    
+    if (res?.data?.success) {
+      helpers.reset();
+      helpers.close();
+    } else {
+      console.error("Submission failed:");
     }
   };
+  
+  
   return (
     <div className="customContainer">
-          <CustomModal
-      open={modalOpen}
-      setOpen={setModalOpen}
-      title="Create User"
-      description="Fill in the form below."
-      handleFormSubmit={handleFormSubmit}
-      input={[
-        { label: "Full Name", name: "name" },
-        { label: "Email", name: "email" },
-      ]}
-      select={[
-        {
-          label: "Role",
-          name: "role",
-          options: [
-            { name: "Admin", val: "admin" },
-            { name: "User", val: "user" },
-          ],
-        },
-      ]}
-    />
-
       <div className="w-full">
         {/* Header Section */}
         <div className="flex items-center justify-between mb-6">
@@ -100,10 +76,23 @@ const StaffManagement = () => {
             </DropdownMenu>
 
             {staffData?.data?.length == 0 && (
-              <Button className="bg-brand hover:bg-green-800 text-white">
-                <Plus className="mr-2 h-4 w-4" />
-                Add New Staff
-              </Button>
+              <CustomModal
+                open={modalOpen}
+                setOpen={setModalOpen}
+                title="Create User"
+                description="Fill in the form below."
+                handleFormSubmit={handleFormSubmit}
+                input={[
+                  { label: "Full Name", name: "name" },
+                  { label: "Email", name: "email" },
+                  { label: "Phone", name: "phone" },
+                  { label: "Password", name: "password" },
+                ]}
+                file={[
+                   { label: "Profile Image", name: "staffImage" },
+                ]}
+                buttonProperty={{ type: "create", text: "AddNew Staff" }}
+              />
             )}
           </div>
         </div>
@@ -174,7 +163,7 @@ const StaffManagement = () => {
                       <div className=" hover:bg-green-50 no-border">
                         <SquarePen className="h-5 w-5 text-[#14400D]" />
                       </div>
-                      
+
                       <div>
                         <ConfirmAlert
                           id={member?.id}

@@ -6,7 +6,6 @@ import {
   HelpCircle,
   KeySquareIcon,
   LayoutDashboard,
-  LogOutIcon,
   MonitorPlayIcon,
   RepeatIcon,
   UserCog,
@@ -77,3 +76,4 @@ export const sideNavMenu = [
   //   // isActive: false,
   // },
 ];
+

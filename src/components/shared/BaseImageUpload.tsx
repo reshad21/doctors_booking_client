@@ -4,13 +4,23 @@ import type React from "react";
 import { useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
-const BaseImageUpload = () => {
+interface BaseImageUploadProps {
+  classname?: string;
+  onFileChange?: (file: File | null) => void;
+}
+
+
+const BaseImageUpload = ({ classname, onFileChange }: BaseImageUploadProps) => {
   const [image, setImage] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    if (onFileChange) {
+      onFileChange(file || null);
+    }
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -27,7 +37,10 @@ const BaseImageUpload = () => {
   return (
     <div>
       <div
-        className="border border-gray-300 rounded-md p-3 text-center bg-[#D9D9D9] min-h-[20px] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors duration-200"
+        className={cn(
+          "border border-gray-300 rounded-md p-3 text-center bg-[#D9D9D9] min-h-[20px] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors duration-200",
+          classname
+        )}
         onClick={handleUploadClick}
       >
         <Input
