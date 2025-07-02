@@ -77,3 +77,4 @@ export const sideNavMenu = [
     // isActive: false,
   },
 ];
+

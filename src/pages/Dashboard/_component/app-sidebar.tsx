@@ -9,10 +9,18 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { Link, useLocation } from "react-router-dom";
-import { sideNavMenu } from "@/context/Routes-sideNav";
+// sideNavMenu is now passed as a prop
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+import type { sideNavMenu as SideNavMenuType } from "@/context/Routes-sideNav";
+
+type SideNavMenuItem = typeof SideNavMenuType[number];
+
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  sideNavMenu: SideNavMenuItem[];
+}
+
+export function AppSidebar({ sideNavMenu, ...props }: AppSidebarProps) {
   const location = useLocation();
   return (
     <Sidebar {...props}>
