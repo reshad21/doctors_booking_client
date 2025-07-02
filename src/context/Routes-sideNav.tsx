@@ -18,7 +18,7 @@ export const sideNavMenu = [
     title: "Dashboard",
     url: "/dashboard",
     icon: LayoutDashboard,
-    // isActive: false,
+    // isActive: false, 
   },
   {
     title: "Patient",
