@@ -23,38 +23,63 @@ import {
 import type { Staff } from "@/types/staff.types";
 import ConfirmAlert from "@/components/shared/ConfirmAlert";
 import CustomModal from "@/components/shared/CustomModal";
+import { useState } from "react";
 
 const StaffManagement = () => {
   const { data: staffData } = useGetStaffQuery(undefined);
   const [deleteStaff] = useDeleteStaffMutation();
+  const [modalOpen, setModalOpen] = useState(false);
 
-   const handleModalSubmit = (data: Record<string, any>) => {
-    console.log("Form Data:", data);
+  const handleFormSubmit = async (
+    data: Record<string, any>,
+    helpers: { reset: () => void; close: () => void }
+  ) => {
+    try {
+      console.log(data);
+      
+      const res = await fetch("/api/submit", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        // ✅ success: close modal and reset form
+        helpers.reset();
+        helpers.close();
+      } else {
+        // ❌ failure: stay open, maybe show error toast
+        console.error("Submission failed:", result.message);
+      }
+    } catch (err) {
+      console.error("Something went wrong", err);
+    }
   };
   return (
     <div className="customContainer">
-           <CustomModal
-        triggerText="Open Modal"
-        title="Dynamic Modal"
-        description="Fill in the form:"
-        handleFormSubmit={(data) => {
-          handleModalSubmit(data); 
-        }}
-        input={[
-          { label: "First Name", name: "firstName" },
-          { label: "Last Name", name: "lastName" },
-        ]}
-        select={[
-          {
-            label: "Select Gender",
-            name: "gender",
-            options: [
-              { name: "Male", val: "male" },
-              { name: "Female", val: "female" },
-            ],
-          },
-        ]}
-      />
+          <CustomModal
+      open={modalOpen}
+      setOpen={setModalOpen}
+      title="Create User"
+      description="Fill in the form below."
+      handleFormSubmit={handleFormSubmit}
+      input={[
+        { label: "Full Name", name: "name" },
+        { label: "Email", name: "email" },
+      ]}
+      select={[
+        {
+          label: "Role",
+          name: "role",
+          options: [
+            { name: "Admin", val: "admin" },
+            { name: "User", val: "user" },
+          ],
+        },
+      ]}
+    />
 
       <div className="w-full">
         {/* Header Section */}
