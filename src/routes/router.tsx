@@ -10,6 +10,7 @@ import Patient from "@/pages/Patient/Patient";
 import Prescription from "@/pages/Prescription/Prescription";
 import PrescriptionManagement from "@/pages/PrescriptionManagement/PrescriptionManagement";
 import ServiceManagement from "@/pages/ServiceManagement/ServiceManagement";
+import StaffLogin from "@/pages/StaffLogin/StaffLogin";
 import StaffManagement from "@/pages/StaffManagement/StaffManagement";
 import UpdatePassword from "@/pages/UpdatePassword/UpdatePassword";
 import WatchVideo from "@/pages/Watch Video/WatchVideo";
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/staff-login",
+    element: <StaffLogin />,
   },
 ]);
 

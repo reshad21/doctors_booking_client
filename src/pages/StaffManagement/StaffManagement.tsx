@@ -52,8 +52,7 @@ const StaffManagement = () => {
       toast.error(res?.error?.data?.message || "something went wrong")
     }
   };
-  
-  
+
   return (
     <div className="customContainer">
       <div className="w-full">
