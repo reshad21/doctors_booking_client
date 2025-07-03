@@ -22,6 +22,7 @@ import {
   useDeleteWatchVideoMutation,
   useGetWatchVideoQuery,
 } from "@/redux/api/watchVideoApi/watchVideoApi";
+
 import toast from "react-hot-toast";
 
 import CustomModal from "@/components/shared/CustomModal";
