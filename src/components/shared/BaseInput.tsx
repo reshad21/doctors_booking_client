@@ -17,7 +17,7 @@ interface BaseInputProps {
   title?: string;
   placeholder?: string;
   classname?: string;
-  label:string;
+  label?:string;
   icon?: React.ReactNode;
   type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
 }
