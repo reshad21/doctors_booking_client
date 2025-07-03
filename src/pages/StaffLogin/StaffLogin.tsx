@@ -30,8 +30,6 @@ const StaffLogin = () => {
 
   const onSubmit = async (data: LoginSchemaType) => {
     const res = await login(data);
-    console.log(res);
-    
     const token = res?.data?.data?.accessToken;
 
     dispatch(setUserToken({ token: token }));

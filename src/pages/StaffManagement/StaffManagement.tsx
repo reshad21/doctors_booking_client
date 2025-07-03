@@ -15,7 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, SquarePlus, SquarePen } from "lucide-react";
+import { ChevronDown, SquarePlus, SquarePen, Info } from "lucide-react";
 import {
   useCreateStaffMutation,
   useDeleteStaffMutation,
@@ -81,10 +81,10 @@ const StaffManagement = () => {
                 description="Fill in the form below."
                 handleFormSubmit={handleFormSubmit}
                 input={[
-                  { label: "Full Name", name: "name" },
-                  { label: "Email", name: "email" },
-                  { label: "Phone", name: "phone" },
-                  { label: "Password", name: "password" },
+                  { label: "Full Name", name: "name" ,type:"text"},
+                  { label: "Email", name: "email",type:"email"},
+                  { label: "Phone", name: "phone" ,type:"number"},
+                  { label: "Password", name: "password",type:"password" },
                 ]}
                 file={[
                    { label: "Profile Image", name: "staffImage" },
@@ -97,7 +97,13 @@ const StaffManagement = () => {
 
         {/* Table Section */}
         <div className="rounded-lg overflow-hidden shadow-sm">
-          <Table className="no-border">
+          {
+            staffData?.data?.length == 0 ?(<div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
+              <div className="flex flex-col justify-center items-center text-yellow-900">
+                <Info />
+                <span>Staff not created yet!</span>
+              </div>
+            </div>) :<Table className="no-border">
             <TableHeader className="no-border">
               <TableRow className="bg-[#f7f7f7] no-border">
                 {[
@@ -175,6 +181,7 @@ const StaffManagement = () => {
               ))}
             </TableBody>
           </Table>
+          }
         </div>
       </div>
     </div>
