@@ -26,6 +26,7 @@ import ConfirmAlert from "@/components/shared/ConfirmAlert";
 import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
 import { useAppSelector } from "@/redux/hooks";
+import toast from "react-hot-toast";
 
 const StaffManagement = () => {
   const { data: staffData } = useGetStaffQuery(undefined);
@@ -38,19 +39,17 @@ const StaffManagement = () => {
     data: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
   ) => {
-    console.log(data);
-    
     const res = await createStaff({
       ...data,
       doctorId,
-    });
-    console.log(res);
-    
+    }) as any;
     if (res?.data?.success) {
       helpers.reset();
       helpers.close();
+      toast.success(res?.data?.message)
     } else {
-      console.error("Submission failed:");
+      console.error();
+      toast.error(res?.error?.data?.message || "something went wrong")
     }
   };
   
