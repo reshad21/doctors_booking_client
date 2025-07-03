@@ -8,9 +8,12 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 // sideNavMenu is now passed as a prop
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { LogOutIcon } from "lucide-react";
+import { useAppDispatch } from "@/redux/hooks";
+import { HandelLogout } from "@/lib/HandelLogout";
 
 import type { sideNavMenu as SideNavMenuType } from "@/context/Routes-sideNav";
 
@@ -22,6 +25,8 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 
 export function AppSidebar({ sideNavMenu, ...props }: AppSidebarProps) {
   const location = useLocation();
+ const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   return (
     <Sidebar {...props}>
       <SidebarHeader className="bg-[#25102E] text-white">
@@ -64,12 +69,13 @@ export function AppSidebar({ sideNavMenu, ...props }: AppSidebarProps) {
                 <SidebarMenuButton
                   asChild
                   isActive={isActive}
-                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ${isActive
-                    ? "bg-gradient-to-r from-[#043619] via-[#19924B] to-[#032E15]  !text-white"
-                    : ""
-                    }`}
+                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ${
+                    isActive
+                      ? "bg-gradient-to-r from-[#043619] via-[#19924B] to-[#032E15]  !text-white"
+                      : ""
+                  }`}
                 >
-                  <Link to={item.url} >
+                  <Link to={item.url}>
                     <item.icon className="w-4 h-4" />
                     <span>{item.title}</span>
                   </Link>
@@ -78,7 +84,12 @@ export function AppSidebar({ sideNavMenu, ...props }: AppSidebarProps) {
             );
           })}
         </SidebarMenu>
+        <div className="px-5 text-sm flex justify-start items-center gap-2 cursor-pointer" onClick={() => HandelLogout(navigate, dispatch)}>
+          <LogOutIcon className="size-4" />
+          Log-out
+        </div>
       </SidebarContent>
+
       <SidebarRail />
     </Sidebar>
   );
