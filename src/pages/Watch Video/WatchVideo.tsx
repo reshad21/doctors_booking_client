@@ -23,9 +23,10 @@ import {
   useGetWatchVideoQuery,
 } from "@/redux/api/watchVideoApi/watchVideoApi";
 import toast from "react-hot-toast";
-import type { WatchVideoTypes } from "./watchVideo";
+
 import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
+import type { WatchVideoTypes } from "./watchVideotypes";
 const WatchVideo = () => {
   const { data: watchVideoData } = useGetWatchVideoQuery(undefined);
   const [deleteWatchVideo] = useDeleteWatchVideoMutation();
@@ -55,21 +56,7 @@ const WatchVideo = () => {
       <div className="w-full">
         <div className="flex items-center justify-between mb-6"></div>
         <div className="flex items-center gap-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="bg-brand hover:bg-green-800 text-white">
-                Export
-                <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>Export as CSV</DropdownMenuItem>
-              <DropdownMenuItem>Export as PDF</DropdownMenuItem>
-              <DropdownMenuItem>Export as Excel</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-
+         
           {watchVideoData?.data?.length == 0 && (
             <CustomModal
               open={modalOpen}
@@ -78,16 +65,22 @@ const WatchVideo = () => {
               description="Fill in the form below."
               handleFormSubmit={handleFormSubmit}
               input={[
-                { label: "Video Full Link", name: "videoFile" },
-                { label: "Email", name: "email" },
-                { label: "Phone", name: "phone" },
-                { label: "Password", name: "password" },
+                { label: "Video Full Link", name: "videoFile", type: "text" },
               ]}
-
-              buttonProperty={{ type: "create", text: "AddNew Staff" }}
+              select={[
+                {
+                  label: "Status",
+                  name: "status",
+                  type: "select",
+                  options: [
+                    { name: "Active", val: "active" },
+                    { name: "Inactive", val: "inactive" },
+                  ],
+                },
+              ]}
+              buttonProperty={{ type: "create", text: "Add New Video" }}
             />
           )}
-
         </div>
 
         {/* Table Section */}
