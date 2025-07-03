@@ -1,6 +1,7 @@
 import { baseApi } from "../baseApi";
 
 const staffApi = baseApi.injectEndpoints({
+
   endpoints: (builder) => ({
     getStaff: builder.query({
       query: () => {

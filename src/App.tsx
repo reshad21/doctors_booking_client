@@ -7,7 +7,7 @@ function App() {
     <div>
       <PatientCallingDisplay />
       <Outlet />
-      <DemoShadcnForm />
+      {/* <DemoShadcnForm /> */}
     </div>
   );
 }
