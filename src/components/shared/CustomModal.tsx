@@ -21,6 +21,7 @@ import { Label } from "@radix-ui/react-label";
 type FieldConfig = {
   label: string;
   name: string;
+  type?:any
 };
 
 type SelectConfig = FieldConfig & {
@@ -121,11 +122,12 @@ const CustomModal: React.FC<CustomModalProps> = ({
               onSubmit={formMethods.handleSubmit(onSubmit)}
               className="space-y-4"
             >
-              {input.map(({ label, name }) => (
+              {input.map(({ label, name, type}) => (
                 <BaseInput
                   key={name}
                   name={name}
                   label={label}
+                  type={type}
                   placeholder={`Enter your ${label}`}
                   classname="bg-gray-50"
                 />
