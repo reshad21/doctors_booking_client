@@ -41,9 +41,15 @@ const DemoShadcnForm = () => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-4 max-w-md mx-auto mt-8">
-          <BaseInput name="name" title="Name" placeholder="Enter your name" />
-          <BaseInput name="email" title="Email" placeholder="Enter your email" type="email" />
-          <BaseSelect title="Status" placeholder="Select status" />
+          <BaseInput name="name" title="Name" placeholder="Enter your name" label="Name" />
+          <BaseInput name="email" title="Email" placeholder="Enter your email" type="email" label="Email" />
+          <BaseSelect
+            name="status"
+            options={[
+              { name: "Active", value: "active" },
+              { name: "Inactive", value: "inactive" },
+            ]}
+          />
           <FormField
             control={form.control}
             name="image"

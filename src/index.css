@@ -133,7 +133,7 @@ html {
   }
 }
 @layer utilities {
-  .customContainer {
+  .custom-container {
     @apply p-[30px] h-screen flex justify-center items-start bg-[#f4f6f9];
   }
   .no-border {

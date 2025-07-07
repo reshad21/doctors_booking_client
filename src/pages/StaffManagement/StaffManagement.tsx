@@ -55,7 +55,7 @@ const StaffManagement = () => {
   
   
   return (
-    <div className="customContainer">
+    <div className="custom-container">
       <div className="w-full">
         {/* Header Section */}
         <div className="flex items-center justify-between mb-6">

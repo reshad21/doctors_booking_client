@@ -1,9 +1,91 @@
-import PageHeader from "@/components/shared/PageHeader";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import CustomModal from "@/components/shared/CustomModal";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  useCreateStaffMutation,
+  useDeleteStaffMutation,
+  useGetStaffQuery,
+} from "@/redux/api/staff/staff";
+import { useAppSelector } from "@/redux/hooks";
+import { ChevronDown } from "lucide-react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const AppointmentManagement = () => {
+  const { data: staffData } = useGetStaffQuery(undefined);
+  const [deleteStaff] = useDeleteStaffMutation();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [createStaff] = useCreateStaffMutation();
+  const doctorId = useAppSelector((state) => state.admin.id);
+
+  const handleFormSubmit = async (
+    data: Record<string, any>,
+    helpers: { reset: () => void; close: () => void }
+  ) => {
+    const res = (await createStaff({
+      ...data,
+      doctorId,
+    })) as any;
+    if (res?.data?.success) {
+      helpers.reset();
+      helpers.close();
+      toast.success(res?.data?.message);
+    } else {
+      console.error();
+      toast.error(res?.error?.data?.message || "something went wrong");
+    }
+  };
+
   return (
-    <div>
-      <PageHeader title="Appointment History" />
+    <div className="custom-container">
+      <div className="w-full">
+        {/* Header Section */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="bg-brand hover:bg-green-800 cursor-pointer text-white">
+                  Export
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem>Export as CSV</DropdownMenuItem>
+                <DropdownMenuItem>Export as PDF</DropdownMenuItem>
+                <DropdownMenuItem>Export as Excel</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {staffData?.data?.length == 0 && (
+              <CustomModal
+                open={modalOpen}
+                setOpen={setModalOpen}
+                title="Create User"
+                description="Fill in the form below."
+                handleFormSubmit={handleFormSubmit}
+                input={[
+                  { label: "Full Name", name: "name" },
+                  { label: "Email", name: "email" },
+                  { label: "Phone", name: "phone" },
+                  { label: "Password", name: "password" },
+                ]}
+                file={[{ label: "Profile Image", name: "staffImage" }]}
+                buttonProperty={{ type: "create", text: "Add New Patient" }}
+              />
+            )}
+          </div>
+          <Button
+            className="bg-brand hover:bg-green-800 text-white"
+            onClick={() => setModalOpen(true)}
+          />
+        </div>
+      </div>
     </div>
   );
 };
