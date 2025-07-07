@@ -27,6 +27,7 @@ import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
 import { useAppSelector } from "@/redux/hooks";
 import toast from "react-hot-toast";
+import PageHeader from "@/components/shared/PageHeader";
 
 const StaffManagement = () => {
   const { data: staffData } = useGetStaffQuery(undefined);
@@ -55,9 +56,10 @@ const StaffManagement = () => {
 
   return (
     <div className="customContainer">
-      <div className="w-full">
+      <PageHeader title="Staff Management" />
+      <div className="w-full mt-[30px]">
         {/* Header Section */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb- bg-white py-[18px] ps-[20px] rounded-t-sm">
           <div className="flex items-center gap-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -84,7 +86,7 @@ const StaffManagement = () => {
                   { label: "Full Name", name: "name" ,type:"text"},
                   { label: "Email", name: "email",type:"email"},
                   { label: "Phone", name: "phone" ,type:"number"},
-                  { label: "Password", name: "password",type:"password" },
+                  { label: "Password", name: "password",type:"password"},
                 ]}
                 file={[
                    { label: "Profile Image", name: "staffImage" },
@@ -96,7 +98,7 @@ const StaffManagement = () => {
         </div>
 
         {/* Table Section */}
-        <div className="rounded-lg overflow-hidden shadow-sm">
+        <div className="rounded-b-sm overflow-hidden shadow-sm">
           {
             staffData?.data?.length == 0 ?(<div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
               <div className="flex flex-col justify-center items-center text-yellow-900">
