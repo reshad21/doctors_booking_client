@@ -19,6 +19,9 @@ const Prescription = () => {
   const handleAddMedicineInput = () => {
     setMedicineInputCount((prev) => [...prev, { content: prev.length + 1 }]);
   };
+  const handleRemoveMedicineInput = (contentToDelete: number) => {
+  setMedicineInputCount((prev) => prev.filter((item) => item.content !== contentToDelete));
+};
 
   const onSubmit = async (data: any) => {
     // Build medicine array
@@ -120,7 +123,11 @@ const Prescription = () => {
                   />
                 </div>
               </div>
-
+                   {medicineInputCount.length - 1 != idx && (
+                    <div onClick={() => handleRemoveMedicineInput(item.content)} className="contain-paint cursor-pointer w-[30px] h-[30px] bg-[#F44336] rounded-sm flex justify-center items-center">
+                      <Trash className=" h-[20px] w-[20px] text-white " />
+                    </div>
+                  )}
               {medicineInputCount.length - 1 == idx && (
                     <div onClick={handleAddMedicineInput} className="contain-paint cursor-pointer">
                       <Plus className="bg-[#14400D] w-[30px] h-[30px] text-white rounded-sm" />
