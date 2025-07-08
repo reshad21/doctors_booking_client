@@ -98,7 +98,7 @@ const AppointmentManagement = () => {
               <CustomModal
                 open={modalOpen}
                 setOpen={setModalOpen}
-                title="Create User"
+                title="Create Patient"
                 description="Fill in the form below."
                 handleFormSubmit={handleFormSubmit}
                 input={createPatientInputs}

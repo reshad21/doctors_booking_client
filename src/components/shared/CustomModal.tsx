@@ -22,6 +22,7 @@ type FieldConfig = {
   label: string;
   name: string;
   type?: any;
+  className?: string; // Optional custom class for input
 };
 
 type SelectConfig = FieldConfig & {
@@ -124,14 +125,14 @@ const CustomModal: React.FC<CustomModalProps> = ({
               onSubmit={formMethods.handleSubmit(onSubmit)}
               className="space-y-4"
             >
-              {input.map(({ label, name, type }) => (
+              {input.map(({ label, name, type, className }) => (
                 <BaseInput
                   key={name}
                   name={name}
                   label={label}
                   type={type}
-                  placeholder={`Enter your ${label}`}
-                  classname="bg-gray-50"
+                  placeholder={`${label}`}
+                  classname={`bg-gray-50${className ? ` ${className}` : ""}`}
                 />
               ))}
 

@@ -1,6 +1,6 @@
 import { baseApi } from "../baseApi";
 
-const staffApi = baseApi.injectEndpoints({
+const patientApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createPatient: builder.mutation({
       query: (data) => {
@@ -10,10 +10,9 @@ const staffApi = baseApi.injectEndpoints({
           body: data,
         };
       },
-      invalidatesTags: ["staff"],
+      invalidatesTags: ["patient"],
     }),
   }),
 });
-export const {
-  useCreatePatientMutation,
-} = staffApi;
+
+export const { useCreatePatientMutation } = patientApi;
