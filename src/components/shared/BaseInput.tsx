@@ -29,9 +29,10 @@ const BaseInput = ({
   classname,
   icon,
   label,
-  type = "text",
+  type ,
 }: BaseInputProps) => {
   const { control } = useFormContext();
+console.log(type);
 
   return (
     <FormField

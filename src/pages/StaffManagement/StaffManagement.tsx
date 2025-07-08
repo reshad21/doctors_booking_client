@@ -15,7 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, SquarePlus, SquarePen } from "lucide-react";
+import { ChevronDown, SquarePlus, SquarePen, Info } from "lucide-react";
 import {
   useCreateStaffMutation,
   useDeleteStaffMutation,
@@ -27,6 +27,7 @@ import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
 import { useAppSelector } from "@/redux/hooks";
 import toast from "react-hot-toast";
+import PageHeader from "@/components/shared/PageHeader";
 
 const StaffManagement = () => {
   const { data: staffData } = useGetStaffQuery(undefined);
@@ -52,13 +53,13 @@ const StaffManagement = () => {
       toast.error(res?.error?.data?.message || "something went wrong")
     }
   };
-  
-  
+
   return (
     <div className="custom-container">
-      <div className="w-full">
+      <PageHeader title="Staff Management" />
+      <div className="w-full mt-[30px]">
         {/* Header Section */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb- bg-white py-[18px] ps-[20px] rounded-t-sm">
           <div className="flex items-center gap-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -82,10 +83,10 @@ const StaffManagement = () => {
                 description="Fill in the form below."
                 handleFormSubmit={handleFormSubmit}
                 input={[
-                  { label: "Full Name", name: "name" },
-                  { label: "Email", name: "email" },
-                  { label: "Phone", name: "phone" },
-                  { label: "Password", name: "password" },
+                  { label: "Full Name", name: "name" ,type:"text"},
+                  { label: "Email", name: "email",type:"email"},
+                  { label: "Phone", name: "phone" ,type:"number"},
+                  { label: "Password", name: "password",type:"password"},
                 ]}
                 file={[
                    { label: "Profile Image", name: "staffImage" },
@@ -97,8 +98,14 @@ const StaffManagement = () => {
         </div>
 
         {/* Table Section */}
-        <div className="rounded-lg overflow-hidden shadow-sm">
-          <Table className="no-border">
+        <div className="rounded-b-sm overflow-hidden shadow-sm">
+          {
+            staffData?.data?.length == 0 ?(<div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
+              <div className="flex flex-col justify-center items-center text-yellow-900">
+                <Info />
+                <span>Staff not created yet!</span>
+              </div>
+            </div>) :<Table className="no-border">
             <TableHeader className="no-border">
               <TableRow className="bg-[#f7f7f7] no-border">
                 {[
@@ -176,9 +183,11 @@ const StaffManagement = () => {
               ))}
             </TableBody>
           </Table>
+          }
         </div>
       </div>
     </div>
   );
 };
 export default StaffManagement;
+

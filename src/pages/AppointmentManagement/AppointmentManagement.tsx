@@ -7,8 +7,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useCreatePatientMutation } from "@/redux/api/patient/patient";
 import {
-  useCreateStaffMutation,
   useDeleteStaffMutation,
   useGetStaffQuery,
 } from "@/redux/api/staff/staff";
@@ -21,14 +21,46 @@ const AppointmentManagement = () => {
   const { data: staffData } = useGetStaffQuery(undefined);
   const [deleteStaff] = useDeleteStaffMutation();
   const [modalOpen, setModalOpen] = useState(false);
-  const [createStaff] = useCreateStaffMutation();
+  const [createPatient] = useCreatePatientMutation();
   const doctorId = useAppSelector((state) => state.admin.id);
+
+
+  const createPatientInputs = [
+    { label: "Name", name: "name" },
+    { label: "Phone", name: "phoneNumber" },
+    { label: "Email", name: "email" },
+    { label: "Age", name: "age" },
+    { label: "Weight", name: "weight" },
+    { label: "Gender", name: "gender" },
+  ];
+
+  // Define select fields for Chamber and Status
+  const selectFields = [
+    // {
+    //   label: "Chamber",
+    //   name: "chamber",
+    //   options: [
+    //     { name: "Chamber 1", val: "chamber1" },
+    //     { name: "Chamber 2", val: "chamber2" },
+    //     { name: "Chamber 3", val: "chamber3" },
+    //   ],
+    // },
+    {
+      label: "Status",
+      name: "status",
+      options: [
+        { name: "New", val: "NEW" },
+        { name: "Old", val: "OLD" },
+        { name: "Report", val: "REPORT" },
+      ],
+    },
+  ];
 
   const handleFormSubmit = async (
     data: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
   ) => {
-    const res = (await createStaff({
+    const res = (await createPatient({
       ...data,
       doctorId,
     })) as any;
@@ -69,13 +101,8 @@ const AppointmentManagement = () => {
                 title="Create User"
                 description="Fill in the form below."
                 handleFormSubmit={handleFormSubmit}
-                input={[
-                  { label: "Full Name", name: "name" },
-                  { label: "Email", name: "email" },
-                  { label: "Phone", name: "phone" },
-                  { label: "Password", name: "password" },
-                ]}
-                file={[{ label: "Profile Image", name: "staffImage" }]}
+                input={createPatientInputs}
+                select={selectFields}
                 buttonProperty={{ type: "create", text: "Add New Patient" }}
               />
             )}
