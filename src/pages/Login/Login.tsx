@@ -38,7 +38,7 @@ const Login = () => {
     const decoded = decodeToken(token);
 
     dispatch(setAdminDecodeData(decoded));
-    toast.success("Teacher Logged In!");
+    toast.success("Doctor Logged In");
     navigate("/dashboard");
   };
 
