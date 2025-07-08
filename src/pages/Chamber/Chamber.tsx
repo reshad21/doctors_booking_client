@@ -8,10 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  useDeleteStaffMutation,
-  useGetStaffQuery,
-} from "@/redux/api/staff/staff";
+import { useDeleteStaffMutation } from "@/redux/api/staff/staff";
 import { useAppSelector } from "@/redux/hooks";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -24,13 +21,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Info, SquarePen, SquarePlus } from "lucide-react";
 import CustomModal from "@/components/shared/CustomModal";
-import type { Staff } from "@/types/staff.types";
 import { Switch } from "@/components/ui/switch";
 import ConfirmAlert from "@/components/shared/ConfirmAlert";
-import { useCreateChamberMutation } from "@/redux/api/chamber/chamber";
+import {
+  useCreateChamberMutation,
+  useGetChambersQuery,
+} from "@/redux/api/chamber/chamber";
+import type { Chamber } from "@/types/chamber.types";
+import { Badge } from "@/components/ui/badge";
 
 const Chamber = () => {
-  const { data: staffData } = useGetStaffQuery(undefined);
+  const { data: chamberData } = useGetChambersQuery(undefined);
   const [deleteStaff] = useDeleteStaffMutation();
   const [modalOpen, setModalOpen] = useState(false);
   const [createChamber] = useCreateChamberMutation();
@@ -74,7 +75,7 @@ const Chamber = () => {
   };
 
   return (
-    <div>
+    <div className="">
       <div className="w-full mt-[30px]">
         {/* Header Section */}
         <div className="flex items-center justify-between mb- bg-white py-[18px] ps-[20px] rounded-t-sm">
@@ -93,7 +94,7 @@ const Chamber = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {staffData?.data?.length == 0 && (
+            {chamberData?.data?.length == 0 && (
               <CustomModal
                 open={modalOpen}
                 setOpen={setModalOpen}
@@ -109,8 +110,8 @@ const Chamber = () => {
         </div>
 
         {/* Table Section */}
-        <div className="rounded-b-sm overflow-hidden shadow-sm">
-          {staffData?.data?.length == 0 ? (
+        <div className="rounded-b-sm overflow-hidden shadow-sm custom-container">
+          {chamberData?.data?.length == 0 ? (
             <div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
               <div className="flex flex-col justify-center space-y-2 items-center text-yellow-900">
                 <Info />
@@ -123,11 +124,10 @@ const Chamber = () => {
                 <TableRow className="bg-[#f7f7f7] no-border">
                   {[
                     "SN",
-                    "Image",
-                    "Staff Name",
-                    "Email",
-                    "JoinDate",
-                    "Phone Number",
+                    "Chamber Name",
+                    "Start Date",
+                    "End Date",
+                    "Patient (Tk)",
                     "Status",
                     "Action",
                   ].map((header, ind) => (
@@ -141,32 +141,31 @@ const Chamber = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {staffData?.data?.map((member: Staff, index: number) => (
+                {chamberData?.data?.map((member: Chamber, index: number) => (
                   <TableRow
                     key={member.id}
                     className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
                   >
                     <TableCell className="font-medium">{index + 1}</TableCell>
-                    <TableCell>
-                      <div className="w-10 h-10 rounded-full overflow-hidden">
-                        <img
-                          src={member.image}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </TableCell>
                     <TableCell className="text-[#5C727D]">
                       {member.name}
                     </TableCell>
                     <TableCell className="text-[#5C727D]">
-                      {member.email}
+                      {member.startTime || "N/A"}
                     </TableCell>
                     <TableCell className="text-[#5C727D]">
-                      {member.createdAt}
+                      {member.endTime || "N/A"}
                     </TableCell>
-                    <TableCell className="text-[#5C727D]">
-                      {member.phone}
+                    <TableCell className="text-[#5C727D] space-x-2">
+                      <Badge variant="outline" className="rounded">
+                        New {member.newPatientFee}
+                      </Badge>
+                      <Badge variant="outline" className="rounded">
+                        Old {member.oldPatientFee}
+                      </Badge>
+                      <Badge variant="outline" className="rounded">
+                        Report {member.reportFee}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <Switch

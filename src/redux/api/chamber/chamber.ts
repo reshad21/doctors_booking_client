@@ -12,7 +12,14 @@ const chamberApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["chamber"],
     }),
+    getChambers: builder.query({
+      query: () => {
+        return {
+          url: `/chamber/get-chambers`
+        }
+      }
+    })
   }),
 });
 
-export const { useCreateChamberMutation } = chamberApi;
+export const { useCreateChamberMutation, useGetChambersQuery } = chamberApi;
