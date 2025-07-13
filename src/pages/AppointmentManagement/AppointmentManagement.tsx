@@ -114,14 +114,10 @@ const AppointmentManagement = () => {
               />
             )}
           </div>
-          <Button
-            className="bg-brand hover:bg-green-800 text-white"
-            onClick={() => setModalOpen(true)}
-          />
         </div>
 
         {/* Table Section */}
-        <div className="rounded-b-sm overflow-hidden shadow-sm custom-container">
+        <div className="rounded-b-sm overflow-hidden shadow-sm">
           <PatientTable patientsData={patientsData?.data} deleteStaff={deleteStaff} />
         </div>
       </div>
