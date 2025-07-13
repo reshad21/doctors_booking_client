@@ -14,7 +14,6 @@ import {
 } from "@/redux/api/patient/patient";
 import {
   useDeleteStaffMutation,
-  useGetStaffQuery,
 } from "@/redux/api/staff/staff";
 import { useAppSelector } from "@/redux/hooks";
 import { ChevronDown } from "lucide-react";
@@ -23,7 +22,6 @@ import toast from "react-hot-toast";
 import PatientTable from "./_components/PatientTable";
 
 const AppointmentManagement = () => {
-  const { data: staffData } = useGetStaffQuery(undefined);
   const [deleteStaff] = useDeleteStaffMutation();
   const [modalOpen, setModalOpen] = useState(false);
   const [createPatient] = useCreatePatientMutation();
@@ -34,12 +32,12 @@ const AppointmentManagement = () => {
   if (isLoading) <div>Loading</div>;
 
   const createPatientInputs = [
-    { label: "Name", name: "name" },
-    { label: "Phone", name: "phoneNumber" },
-    { label: "Email", name: "email" },
-    { label: "Age", name: "age" },
-    { label: "Weight", name: "weight" },
-    { label: "Gender", name: "gender" },
+    { label: "Name", name: "name" , type:"text"},
+    { label: "Phone", name: "phoneNumber", type:"number" },
+    { label: "Email", name: "email" ,type:"email"},
+    { label: "Age", name: "age" ,type:"text"},
+    { label: "Weight", name: "weight" ,type:"text"},
+    { label: "Gender", name: "gender" ,type:"text"},
   ];
 
   // Define select fields for Chamber and Status
@@ -101,8 +99,7 @@ const AppointmentManagement = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {staffData?.data?.length == 0 && (
-              <CustomModal
+            <CustomModal
                 open={modalOpen}
                 setOpen={setModalOpen}
                 title="Create Patient"
@@ -112,7 +109,6 @@ const AppointmentManagement = () => {
                 select={selectFields}
                 buttonProperty={{ type: "create", text: "Add New Patient" }}
               />
-            )}
           </div>
         </div>
 

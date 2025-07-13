@@ -7,6 +7,7 @@ import DoctorDashboard from "@/pages/Dashboard/DoctorDashboard/DoctorDashboard";
 import Login from "@/pages/Login/Login";
 import Notice from "@/pages/Notice/Notice";
 import Patient from "@/pages/Patient/Patient";
+import CreatePrescription from "@/pages/Prescription/CreatePrescription/CreatePrescription";
 import Prescription from "@/pages/Prescription/Prescription";
 import PrescriptionManagement from "@/pages/PrescriptionManagement/PrescriptionManagement";
 import ServiceManagement from "@/pages/ServiceManagement/ServiceManagement";
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
       { path: "/dashboard/patient", element: <Patient /> },
       { path: "/dashboard/appointment", element: <AppointmentManagement /> },
       { path: "/dashboard/prescription", element: <Prescription /> },
+      { path: "/dashboard/create-prescription/:patientId", element: <CreatePrescription /> },
       { path: "/dashboard/chamber", element: <Chamber /> },
       { path: "/dashboard/notice", element: <Notice /> },
       { path: "/dashboard/staff", element: <StaffManagement /> },
