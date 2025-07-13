@@ -1,12 +1,13 @@
-import Login from "./pages/Login/Login";
+import { Outlet } from "react-router-dom";
+import PatientCallingDisplay from "./pages/PatientCallingDisplay/PatientCallingDisplay";
+import DemoShadcnForm from "./components/shared/DemoShadcnForm";
 
 function App() {
   return (
     <div>
-      <Login />
-      <div className="text-center text-xl font-semibold">
-        <span className="text-green-500">Doctor</span> Booking Component
-      </div>
+      <PatientCallingDisplay />
+      <Outlet />
+      <DemoShadcnForm />
     </div>
   );
 }

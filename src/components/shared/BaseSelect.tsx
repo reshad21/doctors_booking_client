@@ -1,39 +1,48 @@
+import React from "react";
+import { useFormContext } from "react-hook-form";
 import {
   Select,
-  SelectContent,
   SelectItem,
+  SelectContent,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 interface BaseSelectProps {
-  placeholder?: string;
-  title?: string;
+  name: string;
+  label?: string;
+  options: { name: string; value: string | number }[];
+  className?: string;
 }
 
-const BaseSelect = ({ placeholder, title }: BaseSelectProps) => {
-  const [status, setStatus] = useState("active");
+const BaseSelect: React.FC<BaseSelectProps> = ({
+  name,
+  label,
+  options,
+  className,
+}) => {
+  const { setValue, watch } = useFormContext();
+  const value = watch(name);
+
   return (
-    <div>
-      {title && (
-        <label className="text-[#5A5A5A] text-sm font-medium text-[16px] mb-2 block">
-          {title}
-        </label>
-      )}
-      <Select value={status} onValueChange={setStatus}>
-        <SelectTrigger className="w-full rounded-[4px] border-[#A0B19E] h-12 border text-[#5F597480]">
-          <SelectValue placeholder={placeholder || 'Select'} />
+    <div className="flex flex-col space-y-1">
+      {label && <Label htmlFor={name}>{label}</Label>}
+      <Select onValueChange={(val) => setValue(name, val)} value={value || ""}>
+        <SelectTrigger className={cn("!h-12", className)}>
+          <SelectValue placeholder="Select an option" />
         </SelectTrigger>
-        <SelectContent>
-          <div className="text-xs text-gray-500 py-1.5">Select</div>
-          <SelectItem
-            value="active"
-            className="data-[state=checked]:bg-green-700 data-[state=checked]:text-white focus:bg-green-700 focus:text-white"
-          >
-            Active
-          </SelectItem>
-          <SelectItem value="inactive">Inactive</SelectItem>
+        <SelectContent className="w-full rounded-[4px]">
+          {options.map(({ name, value }) => (
+            <SelectItem
+              key={value}
+              value={String(value)}
+              className="rounded focus:bg-green-800 focus:text-white"
+            >
+              {name}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>

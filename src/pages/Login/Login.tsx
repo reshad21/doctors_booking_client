@@ -10,8 +10,18 @@ import {
 import { User, Lock } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAppDispatch } from "@/redux/hooks";
+import { setUserToken } from "@/redux/api/features/authSlice";
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { decodeToken } from "@/hooks/decodedToken";
+import { setAdminDecodeData } from "@/redux/api/features/adminSlice";
+import { useLoginAdminMutation } from "@/redux/api/auth/auth";
 
 const Login = () => {
+  const [login] = useLoginAdminMutation();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -20,8 +30,16 @@ const Login = () => {
     },
   });
 
-  const onSubmit = (data: LoginSchemaType) => {
-    console.log(data);
+  const onSubmit = async (data: LoginSchemaType) => {
+    const res = await login(data);
+    const token = res?.data?.data?.accessToken;
+
+    dispatch(setUserToken({ token: token }));
+    const decoded = decodeToken(token);
+
+    dispatch(setAdminDecodeData(decoded));
+    toast.success("Doctor Logged In!");
+    navigate("/dashboard");
   };
 
   return (
@@ -79,6 +97,7 @@ const Login = () => {
                   </Button>
                 </form>
               </Form>
+              <Link to={'/staff-login'} className="text-xs mt-4">Need to login Staff <span className="text-blue-400 font-semibold underline cursor-pointer"> Account</span> </Link>
             </div>
 
             {/* Decorative elements - Hidden on small screens for better UX */}

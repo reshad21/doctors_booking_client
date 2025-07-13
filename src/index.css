@@ -128,4 +128,19 @@ html {
   .bg-brand {
     background-color: #14400d;
   }
+  .text-brand {
+    color: #042f16;
+  }
+}
+
+@layer utilities {
+  .custom-container {
+    @apply p-[30px] h-screen flex justify-center items-start bg-[#f4f6f9];
+  }
+  .no-border {
+    @apply border-0;
+  }
+  .no-padding {
+    @apply p-0;
+  }
 }
