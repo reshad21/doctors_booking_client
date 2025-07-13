@@ -3,8 +3,6 @@
 import PrescriptionTable from "./_components/PrescriptionTable";
 
 const Prescription = () => {
- 
-
   return (
     <div>
       <PrescriptionTable />

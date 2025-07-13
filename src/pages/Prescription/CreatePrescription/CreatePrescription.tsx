@@ -4,10 +4,14 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import CreatePrescriptionForm from "../_components/CreatePrescriptionForm";
+import { useCreatePrescriptionMutation } from "@/redux/api/prescription/prescription";
+import { useAppSelector } from "@/redux/hooks";
+import toast from "react-hot-toast";
 
 const CreatePrescription = () => {
+  const [createPrescription] = useCreatePrescriptionMutation()
   const { patientId } = useParams();
-
+  const doctorId = useAppSelector((state) => state.admin.id);
   const [testInputCount, setTestInputCount] = useState([{ content: 1 }]);
   const [medicineInputCount, setMedicineInputCount] = useState([
     { content: 1 },
@@ -65,17 +69,24 @@ const CreatePrescription = () => {
     for (let i = 1; i < testIndex; i++) {
       delete cleanedData[`test${i}`];
     }
-    // Final object matching your backend expectation
-    const finalData = {
+    const prescriptionData = {
       patientId,
-      doctorId: cleanedData.doctorId,
+      doctorId,
       name: cleanedData.name,
       advice: cleanedData.advice,
       nextVisit: cleanedData.nxVisit,
       medicines: medicineArray,
       tests: testsArray,
     };
-    console.log("Final Data for Backend:", finalData);
+    const res = await createPrescription(prescriptionData) as any
+    console.log( res);
+    if (res?.data?.success) {
+      toast.success(res?.data?.message)
+      form.reset()
+    }else{
+      toast.error(res?.error?.data?.message)
+      console.log(res?.error?.data?.message);
+    }
   };
 
   return (
