@@ -138,7 +138,7 @@ const WatchVideo = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center justify-center gap-2 h-full">
-                            <div className=" hover:bg-green-50 no-border">
+                            <div className=" hover:bg-green-50 no-border cursor-pointer">
                               <SquarePen
                                 // id={video?.id}
                                 onClick={() => handleUpdateClick(video)}
@@ -146,7 +146,7 @@ const WatchVideo = () => {
                               />
                             </div>
 
-                            <div>
+                            <div className="">
                               <ConfirmAlert
                                 id={video?.id}
                                 onDeleted={deleteWatchVideo}
@@ -164,12 +164,13 @@ const WatchVideo = () => {
           )}
         </div>
       </div>
-
-      <UpdateWatchVideoModal
-        open={openEditModal}
-        setOpen={setOpenEditModal}
-        data={modalDataToUpdate}
-      />
+      <div className="hidden">
+        <UpdateWatchVideoModal
+          open={openEditModal}
+          setOpen={setOpenEditModal}
+          data={modalDataToUpdate}
+        />
+      </div>
     </div>
   );
 };
