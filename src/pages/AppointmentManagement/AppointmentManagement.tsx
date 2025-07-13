@@ -1,4 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import CustomModal from "@/components/shared/CustomModal";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,15 +15,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useCreatePatientMutation } from "@/redux/api/patient/patient";
+import { useGetChambersQuery } from "@/redux/api/chamber/chamber";
+import {
+  useCreatePatientMutation,
+  useGetPatientQuery,
+} from "@/redux/api/patient/patient";
 import {
   useDeleteStaffMutation,
   useGetStaffQuery,
 } from "@/redux/api/staff/staff";
 import { useAppSelector } from "@/redux/hooks";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Info, SquarePen, SquarePlus } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { Switch } from "@/components/ui/switch";
+import ConfirmAlert from "@/components/shared/ConfirmAlert";
+import type { Patient } from "@/types/patient.types";
 
 const AppointmentManagement = () => {
   const { data: staffData } = useGetStaffQuery(undefined);
@@ -23,7 +38,12 @@ const AppointmentManagement = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [createPatient] = useCreatePatientMutation();
   const doctorId = useAppSelector((state) => state.admin.id);
+  const { data: chambersData } = useGetChambersQuery(undefined);
+  const { data: patientsData, isLoading } = useGetPatientQuery({});
 
+  if (isLoading) <div>Loading</div>;
+
+  console.log(patientsData, "patients");
 
   const createPatientInputs = [
     { label: "Name", name: "name" },
@@ -36,15 +56,14 @@ const AppointmentManagement = () => {
 
   // Define select fields for Chamber and Status
   const selectFields = [
-    // {
-    //   label: "Chamber",
-    //   name: "chamber",
-    //   options: [
-    //     { name: "Chamber 1", val: "chamber1" },
-    //     { name: "Chamber 2", val: "chamber2" },
-    //     { name: "Chamber 3", val: "chamber3" },
-    //   ],
-    // },
+    {
+      label: "Chamber",
+      name: "chamberId",
+      options: (chambersData?.data || []).map((chamber: any) => ({
+        name: chamber.name,
+        val: chamber.id,
+      })),
+    },
     {
       label: "Status",
       name: "status",
@@ -111,6 +130,95 @@ const AppointmentManagement = () => {
             className="bg-brand hover:bg-green-800 text-white"
             onClick={() => setModalOpen(true)}
           />
+        </div>
+
+        {/* Table Section */}
+        <div className="rounded-b-sm overflow-hidden shadow-sm custom-container">
+          {patientsData?.data?.length == 0 ? (
+            <div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
+              <div className="flex flex-col justify-center space-y-2 items-center text-yellow-900">
+                <Info />
+                <span>Chamber not created yet!</span>
+              </div>
+            </div>
+          ) : (
+            <Table className="no-border">
+              <TableHeader className="no-border">
+                <TableRow className="bg-[#f7f7f7] no-border">
+                  {[
+                    "SN",
+                    "Token",
+                    "Patient Name",
+                    "Phone",
+                    "Date",
+                    "Patient Status",
+                    "Payment",
+                    "Visited",
+                    "Action",
+                  ].map((header, ind) => (
+                    <TableHead
+                      key={ind}
+                      className={`${ind == 7 && "text-center"}`}
+                    >
+                      {header}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {patientsData?.data?.map((patient: Patient, index: number) => (
+                  <TableRow
+                    key={patient.id}
+                    className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
+                  >
+                    <TableCell className="font-medium">{index + 1}</TableCell>
+                    <TableCell className="text-[#5C727D]">
+                      {patient.name}
+                    </TableCell>
+                    <TableCell className="text-[#5C727D]">
+                      {patient.name || "N/A"}
+                    </TableCell>
+                    <TableCell className="text-[#5C727D] space-x-2">
+                      {patient.phoneNumber}
+                    </TableCell>
+                    <TableCell className="text-[#5C727D] space-x-2">
+                      {patient.createdAt || "N/A"}
+                    </TableCell>
+                    <TableCell className="text-[#5C727D] space-x-2">
+                      {patient.visitStatus || "N/A"}
+                    </TableCell>
+                    <TableCell className="text-[#5C727D] space-x-2">
+                      Paid
+                    </TableCell>
+                    <TableCell>
+                      <Switch
+                        checked={patient.status === "ACTIVE"}
+                        className="data-[state=checked]:bg-green-600"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center justify-center gap-2 h-full">
+                        <div className=" hover:bg-green-50 no-border">
+                          <SquarePlus className="h-5 w-5 text-[#14400D]" />
+                        </div>
+                        <div className=" hover:bg-green-50 no-border">
+                          <SquarePen className="h-5 w-5 text-[#14400D]" />
+                        </div>
+
+                        <div>
+                          <ConfirmAlert
+                            id={patient?.id}
+                            onDeleted={deleteStaff}
+                            person={"Staff"}
+                          />
+                        </div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </div>
       </div>
     </div>

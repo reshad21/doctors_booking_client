@@ -12,7 +12,15 @@ const patientApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["patient"],
     }),
+    getPatient: builder.query({
+      query: () => {
+        return {
+          url: `/patients/get-all-patients`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
-export const { useCreatePatientMutation } = patientApi;
+export const { useCreatePatientMutation, useGetPatientQuery} = patientApi;
