@@ -22,6 +22,7 @@ import toast from "react-hot-toast";
 import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
 import type { WatchVideoTypes } from "./watchVideotypes";
+import { getISODateMonthYear } from "@/utils/getISODateMonthYear";
 const WatchVideo = () => {
   const { data: watchVideoData } = useGetWatchVideoQuery(undefined);
   const [deleteWatchVideo] = useDeleteWatchVideoMutation();
@@ -47,11 +48,11 @@ const WatchVideo = () => {
   };
 
   return (
-    <div className="customContainer">
+    <div className="custom-container">
       <div className="w-full">
         <div className="flex items-center justify-between mb-6"></div>
         <div className="flex items-center gap-3">
-          {watchVideoData?.data?.length == 0 && (
+       
             <CustomModal
               open={modalOpen}
               setOpen={setModalOpen}
@@ -74,7 +75,7 @@ const WatchVideo = () => {
               ]}
               buttonProperty={{ type: "create", text: "Add New Video" }}
             />
-          )}
+          
         </div>
 
         {/* Table Section */}
@@ -87,7 +88,8 @@ const WatchVideo = () => {
               </div>
             </div>
           ) : (
-            <Table className="no-border">
+            <div className="overflow-x-auto  ">
+            <Table className="no-border ">
               <TableHeader className="no-border">
                 <TableRow className="bg-[#f7f7f7] no-border">
                   {["SN", "Video", "Date", "Status", "Action"].map(
@@ -114,9 +116,11 @@ const WatchVideo = () => {
                       <TableCell className="text-[#5C727D]">
                         {video.videoFile}
                       </TableCell>
-
                       <TableCell className="text-[#5C727D]">
-                        {video.createdAt}
+                     
+
+                     {getISODateMonthYear(video.createdAt)}
+                      
                       </TableCell>
 
                       <TableCell>
@@ -148,6 +152,7 @@ const WatchVideo = () => {
                 )}
               </TableBody>
             </Table>
+          </div>
           )}
         </div>
       </div>
