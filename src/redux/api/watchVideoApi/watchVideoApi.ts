@@ -21,6 +21,16 @@ const WatchVideoApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["watchVideo"],
     }),
+    updateWatchVideo: builder.mutation({
+      query: ({ id, data }) => {
+        return {
+          url: `/watch-video/${id}`,
+          method: "PATCH",
+          body: data,
+        };
+      },
+      invalidatesTags: ["watchVideo"],
+    }),
     deleteWatchVideo: builder.mutation({
       query: (id) => {
         return {
@@ -36,4 +46,5 @@ export const {
   useGetWatchVideoQuery,
   useCreateWatchVideoMutation,
   useDeleteWatchVideoMutation,
+  useUpdateWatchVideoMutation,
 } = WatchVideoApi;
