@@ -26,8 +26,8 @@ const ConfirmAlert = ({ id, onDeleted, person }: any) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button className="shadow-none !px-0 !py-0 no-padding  no-border ">
-          <SquareX className="!h-5 !w-5 text-[#F44336]" />
+        <Button className="shadow-none !px-0 !py-0 no-padding  no-border !bg-none">
+          <SquareX className="!h-5 !w-5 text-[#F44336] " />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
