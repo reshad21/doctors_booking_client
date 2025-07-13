@@ -9,7 +9,7 @@ const WatchVideoApi = baseApi.injectEndpoints({
           method: "GET",
         };
       },
-      providesTags: ["watch-video"],
+      providesTags: ["watchVideo"],
     }),
     createWatchVideo: builder.mutation({
       query: (data) => {
@@ -19,7 +19,7 @@ const WatchVideoApi = baseApi.injectEndpoints({
           body: data,
         };
       },
-      invalidatesTags: ["watch-video"],
+      invalidatesTags: ["watchVideo"],
     }),
     deleteWatchVideo: builder.mutation({
       query: (id) => {
@@ -28,7 +28,7 @@ const WatchVideoApi = baseApi.injectEndpoints({
           method: "DELETE",
         };
       },
-      invalidatesTags: ["watch-video"],
+      invalidatesTags: ["watchVideo"],
     }),
   }),
 });

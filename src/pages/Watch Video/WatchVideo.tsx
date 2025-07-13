@@ -7,14 +7,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { ChevronDown, SquarePen, SquarePlus } from "lucide-react";
+
+import { Info, SquarePen, SquarePlus } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import ConfirmAlert from "@/components/shared/ConfirmAlert";
 import {
@@ -57,7 +51,6 @@ const WatchVideo = () => {
       <div className="w-full">
         <div className="flex items-center justify-between mb-6"></div>
         <div className="flex items-center gap-3">
-         
           {watchVideoData?.data?.length == 0 && (
             <CustomModal
               open={modalOpen}
@@ -74,8 +67,8 @@ const WatchVideo = () => {
                   name: "status",
                   type: "select",
                   options: [
-                    { name: "Active", val: "active" },
-                    { name: "Inactive", val: "inactive" },
+                    { name: "Active", val: "ACTIVE" },
+                    { name: "Inactive", val: "INACTIVE" },
                   ],
                 },
               ]}
@@ -86,67 +79,76 @@ const WatchVideo = () => {
 
         {/* Table Section */}
         <div className="rounded-lg overflow-hidden shadow-sm">
-          <Table className="no-border">
-            <TableHeader className="no-border">
-              <TableRow className="bg-[#f7f7f7] no-border">
-                {["SN", "Video", "Date", "Status", "Action"].map(
-                  (header, ind) => (
-                    <TableHead
-                      key={ind}
-                      className={`${ind == 7 && "text-center"}`}
+          {watchVideoData?.data?.length == 0 ? (
+            <div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
+              <div className="flex flex-col justify-center items-center text-yellow-900">
+                <Info />
+                <span>Video not created yet!</span>
+              </div>
+            </div>
+          ) : (
+            <Table className="no-border">
+              <TableHeader className="no-border">
+                <TableRow className="bg-[#f7f7f7] no-border">
+                  {["SN", "Video", "Date", "Status", "Action"].map(
+                    (header, ind) => (
+                      <TableHead
+                        key={ind}
+                        className={`${ind == 7 && "text-center"}`}
+                      >
+                        {header}
+                      </TableHead>
+                    )
+                  )}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {watchVideoData?.data?.map(
+                  (video: WatchVideoTypes, index: number) => (
+                    <TableRow
+                      key={video.id}
+                      className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
                     >
-                      {header}
-                    </TableHead>
+                      <TableCell className="font-medium">{index + 1}</TableCell>
+
+                      <TableCell className="text-[#5C727D]">
+                        {video.videoFile}
+                      </TableCell>
+
+                      <TableCell className="text-[#5C727D]">
+                        {video.createdAt}
+                      </TableCell>
+
+                      <TableCell>
+                        <Switch
+                          checked={video.status === "ACTIVE"}
+                          className="data-[state=checked]:bg-green-600"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-center gap-2 h-full">
+                          <div className=" hover:bg-green-50 no-border">
+                            <SquarePlus className="h-5 w-5 text-[#14400D]" />
+                          </div>
+                          <div className=" hover:bg-green-50 no-border">
+                            <SquarePen className="h-5 w-5 text-[#14400D]" />
+                          </div>
+
+                          <div>
+                            <ConfirmAlert
+                              id={video?.id}
+                              onDeleted={deleteWatchVideo}
+                              person={"Watch Video"}
+                            />
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
                   )
                 )}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {watchVideoData?.data?.map(
-                (video: WatchVideoTypes, index: number) => (
-                  <TableRow
-                    key={video.id}
-                    className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
-                  >
-                    <TableCell className="font-medium">{index + 1}</TableCell>
-
-                    <TableCell className="text-[#5C727D]">
-                      {video.videoFile}
-                    </TableCell>
-
-                    <TableCell className="text-[#5C727D]">
-                      {video.createdAt}
-                    </TableCell>
-
-                    <TableCell>
-                      <Switch
-                        checked={video.status === "ACTIVE"}
-                        className="data-[state=checked]:bg-green-600"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center justify-center gap-2 h-full">
-                        <div className=" hover:bg-green-50 no-border">
-                          <SquarePlus className="h-5 w-5 text-[#14400D]" />
-                        </div>
-                        <div className=" hover:bg-green-50 no-border">
-                          <SquarePen className="h-5 w-5 text-[#14400D]" />
-                        </div>
-
-                        <div>
-                          <ConfirmAlert
-                            id={video?.id}
-                            onDeleted={deleteWatchVideo}
-                            person={"WatchVideo"}
-                          />
-                        </div>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )
-              )}
-            </TableBody>
-          </Table>
+              </TableBody>
+            </Table>
+          )}
         </div>
       </div>
     </div>
