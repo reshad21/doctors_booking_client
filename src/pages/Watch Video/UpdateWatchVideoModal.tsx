@@ -17,7 +17,7 @@ export function UpdateWatchVideoModal({
 
   const handleUpdateSubmit = async (
     formData: Record<string, any>,
-    helpers: { reset: () => void; close: () => void }
+    // helpers: { reset: () => void; close: () => void }
   ) => {
     try {
       const res = (await updateWatchVideo({
@@ -27,8 +27,8 @@ export function UpdateWatchVideoModal({
 
       if (res?.data?.success) {
         toast.success(res?.data?.message || "Video updated successfully");
-        helpers.reset();
-        helpers.close();
+        // helpers.reset();
+        // helpers.close();
       } else {
         toast.error(res?.error?.data?.message || "Update failed");
       }

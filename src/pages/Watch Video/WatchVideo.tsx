@@ -32,12 +32,12 @@ const WatchVideo = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
 
-  const [openModal, setOpenModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
   const [modalDataToUpdate, setModalDataToUpdate] = useState<any>(null);
 
   const handleUpdateClick = (exam: any) => {
     setModalDataToUpdate(exam);
-    setOpenModal(true);
+    setOpenEditModal(true);
   };
 
   const handleFormSubmit = async (
@@ -140,7 +140,7 @@ const WatchVideo = () => {
                           <div className="flex items-center justify-center gap-2 h-full">
                             <div className=" hover:bg-green-50 no-border">
                               <SquarePen
-                                id={video?.id}
+                                // id={video?.id}
                                 onClick={() => handleUpdateClick(video)}
                                 className="h-5 w-5 text-[#14400D]"
                               />
@@ -166,8 +166,8 @@ const WatchVideo = () => {
       </div>
 
       <UpdateWatchVideoModal
-        open={openModal}
-        setOpen={setOpenModal}
+        open={openEditModal}
+        setOpen={setOpenEditModal}
         data={modalDataToUpdate}
       />
     </div>
