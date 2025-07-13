@@ -6,10 +6,10 @@ import type { Patient } from "@/types/patient.types";
 
 interface PatientTableProps {
   patientsData: Patient[];
-  deleteStaff: (id: string) => void;
+  deletePatient: (id: string) => void;
 }
 
-const PatientTable = ({ patientsData, deleteStaff }: PatientTableProps) => {
+const PatientTable = ({ patientsData, deletePatient }: PatientTableProps) => {
   if (!patientsData?.length) {
     return (
       <div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
@@ -24,7 +24,7 @@ const PatientTable = ({ patientsData, deleteStaff }: PatientTableProps) => {
     <Table className="no-border">
       <TableHeader className="no-border">
         <TableRow className="bg-[#f7f7f7] no-border">
-          {["SN", "Token", "Patient Name", "Phone", "Date", "Patient Status", "Payment", "Visited", "Action"].map((header, ind) => (
+          {["SN", "Patient Name", "Phone", "Date", "Patient Status", "Payment", "Visited", "Action"].map((header, ind) => (
             <TableHead key={ind} className={`${ind == 7 && "text-center"}`}>{header}</TableHead>
           ))}
         </TableRow>
@@ -33,7 +33,6 @@ const PatientTable = ({ patientsData, deleteStaff }: PatientTableProps) => {
         {patientsData?.map((patient: Patient, index: number) => (
           <TableRow key={patient.id} className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}>
             <TableCell className="font-medium">{index + 1}</TableCell>
-            <TableCell className="text-[#5C727D]">{patient.name}</TableCell>
             <TableCell className="text-[#5C727D]">{patient.name || "N/A"}</TableCell>
             <TableCell className="text-[#5C727D] space-x-2">{patient.phoneNumber}</TableCell>
             <TableCell className="text-[#5C727D] space-x-2">{patient.createdAt || "N/A"}</TableCell>
@@ -51,7 +50,7 @@ const PatientTable = ({ patientsData, deleteStaff }: PatientTableProps) => {
                   <SquarePen className="h-5 w-5 text-[#14400D]" />
                 </div>
                 <div>
-                  <ConfirmAlert id={patient?.id} onDeleted={deleteStaff} person={"Staff"} />
+                  <ConfirmAlert id={patient?.id} onDeleted={deletePatient} person={"Patient"} />
                 </div>
               </div>
             </TableCell>

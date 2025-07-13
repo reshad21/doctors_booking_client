@@ -10,10 +10,10 @@ import {
 import { useGetChambersQuery } from "@/redux/api/chamber/chamber";
 import {
   useCreatePatientMutation,
+  useDeletePatientMutation,
   useGetPatientQuery,
 } from "@/redux/api/patient/patient";
 import {
-  useDeleteStaffMutation,
   useGetStaffQuery,
 } from "@/redux/api/staff/staff";
 import { useAppSelector } from "@/redux/hooks";
@@ -21,10 +21,11 @@ import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import PatientTable from "./_components/PatientTable";
+import HeaderSelect from "./_components/HeaderSelect";
 
 const AppointmentManagement = () => {
   const { data: staffData } = useGetStaffQuery(undefined);
-  const [deleteStaff] = useDeleteStaffMutation();
+  const [deletePatient] = useDeletePatientMutation()
   const [modalOpen, setModalOpen] = useState(false);
   const [createPatient] = useCreatePatientMutation();
   const doctorId = useAppSelector((state) => state.admin.id);
@@ -83,10 +84,11 @@ const AppointmentManagement = () => {
 
   return (
     <div className="custom-container">
-      <div className="w-full">
+      <div className="w-full bg-white">
         {/* Header Section */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
+        <HeaderSelect />
+        <div className="flex items-center justify-between py-4 pl-4">
+          <div className="flex items-center gap-3 justify-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className="bg-brand hover:bg-green-800 cursor-pointer text-white">
@@ -118,7 +120,7 @@ const AppointmentManagement = () => {
 
         {/* Table Section */}
         <div className="rounded-b-sm overflow-hidden shadow-sm">
-          <PatientTable patientsData={patientsData?.data} deleteStaff={deleteStaff} />
+          <PatientTable patientsData={patientsData?.data} deletePatient={deletePatient} />
         </div>
       </div>
     </div>
