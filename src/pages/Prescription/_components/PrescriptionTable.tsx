@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Table,
   TableBody,
@@ -9,15 +10,12 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Eye, Info, Plus } from "lucide-react";
 import type { Patient } from "@/types/patient.types";
-import { useGetPatientQuery } from "@/redux/api/patient/patient";
 import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const PrescriptionTable = () => {
+const PrescriptionTable = ({patients}:any) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const { data: patients } = useGetPatientQuery(undefined);
-  console.log(patients);
   const handleFormSubmit = async (
     data: Record<string, unknown>,
     helpers: { reset: () => void; close: () => void }
@@ -101,9 +99,9 @@ const PrescriptionTable = () => {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center justify-center gap-2 h-full">
-                    <div className=" hover:bg-green-50 no-border">
+                    <Link to={`/dashboard/view-prescription/${patient.id}`} className=" hover:bg-green-50 no-border ">
                       <Eye className="h-5 w-5 text-[#14400D]" />
-                    </div>
+                    </Link>
                     <div className=" hover:bg-green-50 no-border">
                       <CustomModal
                         open={modalOpen}

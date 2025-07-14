@@ -12,7 +12,15 @@ const prescriptionApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["prescription"],
     }),
+    getPerceptionByPatientId: builder.query({
+      query: (patientId) => {
+        return {
+          url: `/prescription/${patientId}`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
-export const { useCreatePrescriptionMutation} = prescriptionApi;
+export const { useCreatePrescriptionMutation,useGetPerceptionByPatientIdQuery} = prescriptionApi;
