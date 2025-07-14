@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import prHead from "@/assets/pr-head.png";
 import { useGetPerceptionByPatientIdQuery } from "@/redux/api/prescription/prescription";
+import { Edit, Printer } from "lucide-react";
 import { useParams } from "react-router-dom";
 
 const ViewPrescription = () => {
@@ -20,7 +21,18 @@ const ViewPrescription = () => {
         console.log(medic);
 
         return (
-          <div className="max-w-4xl m-5 bg-white rounded-lg overflow-hidden w-1/2  shadow-md">
+          <div className="m-5">
+            <div className="flex justify-start items-center gap-2 pb-2">
+              <button className=" flex justify-center items-center gap-2 bg-brand text-white py-1 px-3 rounded-sm">
+                <Printer className="size-4  text-white"/>
+                <span>Print</span>
+              </button>
+              <button className=" flex justify-center items-center gap-2 bg-[#47C363] text-white py-1 px-3 rounded-sm">
+                <Edit className="size-4  text-white"/>
+                <span>Edit</span>
+              </button>
+            </div>
+            <div className="max-w-4xl bg-white rounded-lg overflow-hidden w-1/2  shadow-md">
             {/* Header Section */}
             <div className="p-2">
               <img src={prHead} alt="" />
@@ -84,6 +96,7 @@ const ViewPrescription = () => {
             <div className="p-2">
               <img src={prHead} alt="" />
             </div>
+          </div>
           </div>
         );
       })}
