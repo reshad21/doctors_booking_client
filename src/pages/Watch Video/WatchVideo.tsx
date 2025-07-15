@@ -92,7 +92,7 @@ const WatchVideo = () => {
             <div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
               <div className="flex flex-col justify-center items-center text-yellow-900">
                 <Info />
-                <span>Video not created yet!</span>
+                <span> Video not created yet!</span>
               </div>
             </div>
           ) : (

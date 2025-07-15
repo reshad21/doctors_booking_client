@@ -11,6 +11,15 @@ const WatchVideoApi = baseApi.injectEndpoints({
       },
       providesTags: ["watchVideo"],
     }),
+    getOnlyActiveVideo: builder.query({
+      query: () => {
+        return {
+          url: "/watch-video/active",
+          method: "GET",
+        };
+      },
+      providesTags: ["watchVideo"],
+    }),
     createWatchVideo: builder.mutation({
       query: (data) => {
         return {
@@ -44,6 +53,7 @@ const WatchVideoApi = baseApi.injectEndpoints({
 });
 export const {
   useGetWatchVideoQuery,
+  useGetOnlyActiveVideoQuery,
   useCreateWatchVideoMutation,
   useDeleteWatchVideoMutation,
   useUpdateWatchVideoMutation,
