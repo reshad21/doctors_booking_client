@@ -12,6 +12,16 @@ const prescriptionApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["prescription"],
     }),
+    updatePrescription: builder.mutation({
+      query: (prescriptionData) => {
+        return {
+          url: `/prescription/update-prescription`,
+          method: "PATCH",
+          body: prescriptionData,
+        };
+      },
+      invalidatesTags: ["prescription"],
+    }),
     getPerceptionByPatientId: builder.query({
       query: (patientId) => {
         return {
@@ -23,4 +33,4 @@ const prescriptionApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useCreatePrescriptionMutation,useGetPerceptionByPatientIdQuery} = prescriptionApi;
+export const { useCreatePrescriptionMutation,useGetPerceptionByPatientIdQuery,useUpdatePrescriptionMutation} = prescriptionApi;

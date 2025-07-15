@@ -2,24 +2,18 @@
 import prHead from "@/assets/pr-head.png";
 import { useGetPerceptionByPatientIdQuery } from "@/redux/api/prescription/prescription";
 import { Edit, Printer } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const ViewPrescription = () => {
   const { patientId } = useParams();
   const { data: perceptions } = useGetPerceptionByPatientIdQuery(patientId);
   console.log(perceptions?.data);
 
-  const patient = {
-    name: "Asif Khan",
-    age: "20 Years",
-    date: "20/04/2025",
-    id: "20052503",
-  };
   return (
     <div>
       {perceptions?.data?.map((medic: any) => {
-        console.log(medic);
-
+        console.log(medic,"21");
+        
         return (
           <div className="m-5">
             <div className="flex justify-start items-center gap-2 pb-2">
@@ -27,10 +21,10 @@ const ViewPrescription = () => {
                 <Printer className="size-4  text-white"/>
                 <span>Print</span>
               </button>
-              <button className=" flex justify-center items-center gap-2 bg-[#47C363] text-white py-1 px-3 rounded-sm">
+              <Link to={'/dashboard/update-prescription'} state={{perception:medic}} className=" flex justify-center items-center gap-2 bg-[#47C363] text-white py-1 px-3 rounded-sm">
                 <Edit className="size-4  text-white"/>
                 <span>Edit</span>
-              </button>
+              </Link>
             </div>
             <div className="max-w-4xl bg-white rounded-lg overflow-hidden w-1/2  shadow-md">
             {/* Header Section */}
@@ -51,7 +45,7 @@ const ViewPrescription = () => {
                   <strong>Date:</strong> {medic?.createdAt.split("T")[0]}
                 </span>
                 <span>
-                  <strong>ID:</strong> {patient.id}
+                  <strong>ID:</strong> {"N/A"}
                 </span>
               </div>
             </div>
@@ -105,3 +99,5 @@ const ViewPrescription = () => {
 };
 
 export default ViewPrescription;
+
+
