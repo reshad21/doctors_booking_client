@@ -31,11 +31,11 @@ const WatchVideoApi = baseApi.injectEndpoints({
       invalidatesTags: ["watchVideo"],
     }),
     updateWatchVideo: builder.mutation({
-      query: ({ id, data }) => {
+      query: ({ id, payload }) => {
         return {
           url: `/watch-video/${id}`,
           method: "PATCH",
-          body: data,
+          body: payload,
         };
       },
       invalidatesTags: ["watchVideo"],

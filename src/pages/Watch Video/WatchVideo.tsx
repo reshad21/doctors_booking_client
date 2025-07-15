@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Table,
@@ -15,6 +16,7 @@ import {
   useCreateWatchVideoMutation,
   useDeleteWatchVideoMutation,
   useGetWatchVideoQuery,
+  useUpdateWatchVideoMutation,
 } from "@/redux/api/watchVideoApi/watchVideoApi";
 
 import toast from "react-hot-toast";
@@ -29,9 +31,9 @@ const WatchVideo = () => {
   const { data: watchVideoData } = useGetWatchVideoQuery(undefined);
   const [deleteWatchVideo] = useDeleteWatchVideoMutation();
   const [createWatchVideo] = useCreateWatchVideoMutation();
+  const [updateWatchVideo] = useUpdateWatchVideoMutation();
 
   const [modalOpen, setModalOpen] = useState(false);
-
   const [openEditModal, setOpenEditModal] = useState(false);
   const [modalDataToUpdate, setModalDataToUpdate] = useState<any>(null);
 
@@ -57,6 +59,23 @@ const WatchVideo = () => {
     }
   };
 
+  // handle status updates
+  const handleStatusUpdate = async (id: string, checked: boolean) => {
+    try {
+      const updatedStatus = checked ? "ACTIVE" : "INACTIVE";
+      const res = (await updateWatchVideo({
+        id,
+        payload: { status: updatedStatus },
+      })) as any;
+
+      if (res?.data?.success) {
+        toast.success(`Status changed to ${updatedStatus}`);
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+  };
+
   return (
     <div className="custom-container">
       <div className="w-full">
@@ -69,6 +88,7 @@ const WatchVideo = () => {
             description="Fill in the form below."
             handleFormSubmit={handleFormSubmit}
             input={[
+              { label: "Video Title", name: "title", type: "text" },
               { label: "Video Full Link", name: "videoFile", type: "text" },
             ]}
             select={[
@@ -100,7 +120,7 @@ const WatchVideo = () => {
               <Table className="no-border ">
                 <TableHeader className="no-border">
                   <TableRow className="bg-[#f7f7f7] no-border">
-                    {["SN", "Video", "Date", "Status", "Action"].map(
+                    {["SN", "Title", "Video", "Date", "Status", "Action"].map(
                       (header, ind) => (
                         <TableHead
                           key={ind}
@@ -122,9 +142,12 @@ const WatchVideo = () => {
                         <TableCell className="font-medium">
                           {index + 1}
                         </TableCell>
+                        <TableCell className="text-[#5C727D]">
+                          {video.title}
+                        </TableCell>
 
                         <TableCell className="text-[#5C727D]">
-                          {video.videoFile}
+                          {video.videoFile.slice(0, 20)}...
                         </TableCell>
                         <TableCell className="text-[#5C727D]">
                           {getISODateMonthYear(video.createdAt)}
@@ -133,14 +156,16 @@ const WatchVideo = () => {
                         <TableCell>
                           <Switch
                             checked={video.status === "ACTIVE"}
+                            onCheckedChange={(checked) =>
+                              handleStatusUpdate(video.id, checked)
+                            }
                             className="data-[state=checked]:bg-green-600"
                           />
                         </TableCell>
-                        <TableCell>
-                          <div className="flex items-center justify-center gap-2 h-full">
+                        <TableCell className="text-center">
+                          <div className="flex items-center justify-center gap-2 ">
                             <div className=" hover:bg-green-50 no-border cursor-pointer">
                               <SquarePen
-                                // id={video?.id}
                                 onClick={() => handleUpdateClick(video)}
                                 className="h-5 w-5 text-[#14400D]"
                               />

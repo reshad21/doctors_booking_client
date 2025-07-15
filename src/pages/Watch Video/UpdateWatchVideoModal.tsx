@@ -17,18 +17,18 @@ export function UpdateWatchVideoModal({
 
   const handleUpdateSubmit = async (
     formData: Record<string, any>,
-     helpers: { reset: () => void; close: () => void }
+    helpers: { reset: () => void; close: () => void }
   ) => {
     try {
       const res = (await updateWatchVideo({
         id: data?.id,
-        body: formData,
+        payload: formData,
       })) as any;
 
       if (res?.data?.success) {
         toast.success(res?.data?.message || "Video updated successfully");
-         helpers.reset();
-         helpers.close();
+        helpers.reset();
+        helpers.close();
       } else {
         toast.error(res?.error?.data?.message || "Update failed");
       }
@@ -45,7 +45,10 @@ export function UpdateWatchVideoModal({
       title="Update Video"
       description="Edit the form fields to update the video."
       handleFormSubmit={handleUpdateSubmit}
-      input={[{ label: "Video Full Link", name: "videoFile", type: "text" }]}
+      input={[
+        { label: "Video Title", name: "title", type: "text" },
+        { label: "Video Full Link", name: "videoFile", type: "text" },
+      ]}
       select={[
         {
           label: "Status",
@@ -59,8 +62,9 @@ export function UpdateWatchVideoModal({
       ]}
       buttonProperty={{ type: "update", text: "Update Video" }}
       defaultValues={{
+        title: data?.title || "",
         videoFile: data?.videoFile || "",
-        status: data?.status || "INACTIVE",
+        status: data?.status || " ",
       }}
     />
   );
