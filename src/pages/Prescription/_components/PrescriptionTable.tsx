@@ -79,7 +79,7 @@ const PrescriptionTable = ({patients}:any) => {
                   {patient.phoneNumber}
                 </TableCell>
                 <TableCell className="text-white space-x-2">
-                  <Link to={`/dashboard/create-prescription/${patient?.id}`} className="bg-brand flex justify-center items-center gap-2 rounded-sm cursor-pointer">
+                  <Link to={`/dashboard/create-prescription/${patient?.id}`} state={{patient:{name:patient.name,age:patient.age}}} className="bg-brand flex justify-center items-center gap-2 rounded-sm cursor-pointer">
                     <Plus />
                     <span>Add</span>
                   </Link>

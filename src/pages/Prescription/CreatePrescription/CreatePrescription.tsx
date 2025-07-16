@@ -2,7 +2,7 @@
 import prHead from "@/assets/pr-head.png";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import CreatePrescriptionForm from "../_components/CreatePrescriptionForm";
 import { useCreatePrescriptionMutation } from "@/redux/api/prescription/prescription";
 import { useAppSelector } from "@/redux/hooks";
@@ -11,6 +11,8 @@ import toast from "react-hot-toast";
 const CreatePrescription = () => {
   const [createPrescription] = useCreatePrescriptionMutation()
   const { patientId } = useParams();
+  const location = useLocation();
+  const patient = location.state 
   const doctorId = useAppSelector((state) => state.admin.id);
   const [testInputCount, setTestInputCount] = useState([{ content: 1 }]);
   const [medicineInputCount, setMedicineInputCount] = useState([
@@ -104,6 +106,7 @@ const CreatePrescription = () => {
           handleRemoveMedicineInput={handleRemoveMedicineInput}
           handleAddMedicineInput={handleAddMedicineInput}
           handleAddTestInput={handleAddTestInput}
+          patient={patient}
         />
         <div className="pt-[30px]">
           <img src={prHead} alt="" />

@@ -12,17 +12,17 @@ import {
   useCreatePatientMutation,
   useGetPatientQuery,
 } from "@/redux/api/patient/patient";
-import {
-  useDeleteStaffMutation,
-} from "@/redux/api/staff/staff";
+import { useDeleteStaffMutation } from "@/redux/api/staff/staff";
 import { useAppSelector } from "@/redux/hooks";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import PatientTable from "./_components/PatientTable";
+import { useSendSingleMessageMutation } from "@/redux/api/message/message";
 
 const AppointmentManagement = () => {
   const [deleteStaff] = useDeleteStaffMutation();
+  const [sendSingleMessage] = useSendSingleMessageMutation();
   const [modalOpen, setModalOpen] = useState(false);
   const [createPatient] = useCreatePatientMutation();
   const doctorId = useAppSelector((state) => state.admin.id);
@@ -32,12 +32,12 @@ const AppointmentManagement = () => {
   if (isLoading) <div>Loading</div>;
 
   const createPatientInputs = [
-    { label: "Name", name: "name" , type:"text"},
-    { label: "Phone", name: "phoneNumber", type:"number" },
-    { label: "Email", name: "email" ,type:"email"},
-    { label: "Age", name: "age" ,type:"text"},
-    { label: "Weight", name: "weight" ,type:"text"},
-    { label: "Gender", name: "gender" ,type:"text"},
+    { label: "Name", name: "name", type: "text" },
+    { label: "Phone", name: "phoneNumber", type: "number" },
+    { label: "Email", name: "email", type: "email" },
+    { label: "Age", name: "age", type: "text" },
+    { label: "Weight", name: "weight", type: "text" },
+    { label: "Gender", name: "gender", type: "text" },
   ];
 
   // Define select fields for Chamber and Status
@@ -70,9 +70,21 @@ const AppointmentManagement = () => {
       doctorId,
     })) as any;
     if (res?.data?.success) {
+      const response = await sendSingleMessage({
+        number: data?.phoneNumber,
+        message: "this is test message",
+      });
+      console.log(response);
       helpers.reset();
       helpers.close();
-      toast.success(res?.data?.message);
+
+      if (response?.data?.data?.success_message) {
+        toast.success(
+          `${res?.data?.message} & ${response?.data?.data?.success_message}`
+        );
+      } else {
+        toast.success(`${res?.data?.message} `);
+      }
     } else {
       console.error();
       toast.error(res?.error?.data?.message || "something went wrong");
@@ -100,21 +112,24 @@ const AppointmentManagement = () => {
             </DropdownMenu>
 
             <CustomModal
-                open={modalOpen}
-                setOpen={setModalOpen}
-                title="Create Patient"
-                description="Fill in the form below."
-                handleFormSubmit={handleFormSubmit}
-                input={createPatientInputs}
-                select={selectFields}
-                buttonProperty={{ type: "create", text: "Add New Patient" }}
-              />
+              open={modalOpen}
+              setOpen={setModalOpen}
+              title="Create Patient"
+              description="Fill in the form below."
+              handleFormSubmit={handleFormSubmit}
+              input={createPatientInputs}
+              select={selectFields}
+              buttonProperty={{ type: "create", text: "Add New Patient" }}
+            />
           </div>
         </div>
 
         {/* Table Section */}
         <div className="rounded-b-sm overflow-hidden shadow-sm">
-          <PatientTable patientsData={patientsData?.data} deleteStaff={deleteStaff} />
+          <PatientTable
+            patientsData={patientsData?.data}
+            deleteStaff={deleteStaff}
+          />
         </div>
       </div>
     </div>

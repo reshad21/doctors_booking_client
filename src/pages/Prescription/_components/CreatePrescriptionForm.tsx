@@ -11,6 +11,7 @@ const CreatePrescriptionForm = ({
   handleRemoveMedicineInput,
   handleAddMedicineInput,
   handleAddTestInput,
+  patient
 }: any) => {
   return (
     <div>
@@ -20,19 +21,25 @@ const CreatePrescriptionForm = ({
           className="space-y-4 sm:space-y-6"
         >
           <div className="flex justify-between items-center w-full">
-            {["name", "age", "date", "Id"].map((item) => (
-              <div className="w-[48%] sm:w-[22%] min-w-[150px]" key={item}>
+            {
+            ["name", "age", "date", "Id"]?.map((item) =>{
+              return (
+                <div className="w-[48%] sm:w-[22%] min-w-[150px]" key={item}>
                 <div className="flex items-center gap-2">
                   <label className="font-semibold text-xs">{item}</label>
-                  <input
-                    {...form.register(item, { required: true })}
-                    className="border-b border-dashed w-full focus:outline-none focus:border-b focus:border-dashed"
-                  />
+                  <span className="border-b border-dashed w-full">
+                    {item == "name" && patient?.patient?.name}
+                    {item == "age" && patient?.patient?.age}
+                    {item == "date" && "2323"}
+                    {item == "Id" && <span className="text-[10px] bg-green-600 text-green-100 p-1 rounded-md">generating</span>}
+                    </span>
                 </div>
               </div>
-            ))}
+              )
+            })
+              
+            }
           </div>
-
           {testInputCount.map((item: any, index: number) => (
             <div key={index}>
               <label className="font-semibold text-xs">

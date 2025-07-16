@@ -22,6 +22,6 @@ export const baseApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["staff", "patient", "chamber","prescription"],
+  tagTypes: ["staff", "patient", "chamber","prescription","message"],
   endpoints: () => ({}),
 });

@@ -12,9 +12,9 @@ const UpdatePrescriptionForm = ({
   handleRemoveMedicineInput,
   handleAddMedicineInput,
   handleAddTestInput,
-  patientId
+  patientId,
+  patient
 }: any) => {
-  console.log(patientId);
   
   return (
     <div>
@@ -23,20 +23,26 @@ const UpdatePrescriptionForm = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-4 sm:space-y-6"
         >
-          <div className="flex justify-between items-center w-full">
-            {["name", "age", "date", "Id"].map((item) => (
-              <div className="w-[48%] sm:w-[22%] min-w-[150px]" key={item}>
+           <div className="flex justify-between items-center w-full">
+            {
+            ["name", "age", "date", "Id"]?.map((item) =>{
+              return (
+                <div className="w-[48%] sm:w-[22%] min-w-[150px]" >
                 <div className="flex items-center gap-2">
                   <label className="font-semibold text-xs">{item}</label>
-                  <input
-                    {...form.register(item, { required: true })}
-                    className="border-b border-dashed w-full focus:outline-none focus:border-b focus:border-dashed"
-                  />
+                  <span className="border-b border-dashed w-full">
+                    {item == "name" && patient?.name}
+                    {item == "age" && patient?.age}
+                    {item == "date" && "2323"}
+                    {item == "Id" && <span className="text-[10px] bg-green-600 text-green-100 p-1 rounded-md">generating</span>}
+                    </span>
                 </div>
               </div>
-            ))}
+              )
+            })
+              
+            }
           </div>
-
           {testInputCount.map((item: any, index: number) => (
             <div key={index}>
               <label className="font-semibold text-xs">
@@ -69,8 +75,8 @@ const UpdatePrescriptionForm = ({
           ))}
 
           {medicineInputCount.map((item:any, idx:number) => (
-            <div className="flex justify-between items-center gap-2">
-              <div key={idx} className="grid grid-cols-8 gap-4 mb-4">
+            <div key={idx} className="flex justify-between items-center gap-2">
+              <div className="grid grid-cols-8 gap-4 mb-4">
                 <div className="flex col-span-5 justify-between gap-4 items-start">
                   {["Medicine", "Dosage", "Day", "Time"].map((label, i) => (
                     <div key={i} className="flex flex-col gap-2 w-full">

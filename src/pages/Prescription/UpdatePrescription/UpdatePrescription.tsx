@@ -14,8 +14,8 @@ const UpdatePrescription = () => {
   const { perception } = location.state || {};
   const [testInputCount, setTestInputCount] = useState([{ content: 1 }]);
   const [medicineInputCount, setMedicineInputCount] = useState([{ content: 1 }]);
-  const form = useForm();
   
+  const form = useForm();
   useEffect(() => {
     if (perception) {
       setMedicineInputCount(
@@ -158,6 +158,7 @@ const UpdatePrescription = () => {
           handleAddMedicineInput={handleAddMedicineInput}
           handleAddTestInput={handleAddTestInput}
           patientId={perception?.patientId}
+          patient={perception?.patient}
         />
         <div className="pt-[30px]">
           <img src={prHead} alt="" />
