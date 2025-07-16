@@ -75,7 +75,6 @@ const CustomModal: React.FC<CustomModalProps> = ({
     });
   };
 
-  // Chamber and Status select fields are now passed via the select prop from the parent, not hardcoded here.
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
