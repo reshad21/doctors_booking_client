@@ -14,6 +14,8 @@ import StaffLogin from "@/pages/StaffLogin/StaffLogin";
 import StaffManagement from "@/pages/StaffManagement/StaffManagement";
 import UpdatePassword from "@/pages/UpdatePassword/UpdatePassword";
 import WatchVideo from "@/pages/Watch Video/WatchVideo";
+
+
 import PrivateRout from "@/PrivateRoute/PrivateRoute";
 import { createBrowserRouter } from "react-router-dom";
 
@@ -43,7 +45,7 @@ const router = createBrowserRouter([
         path: "/dashboard/pre-management",
         element: <PrescriptionManagement />,
       },
-      { path: "/dashboard/watch-video", element: <WatchVideo /> },
+      { path: "/dashboard/watch-video", element: <WatchVideo/> },
       { path: "/dashboard/update-password", element: <UpdatePassword /> },
     ],
   },

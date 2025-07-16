@@ -1,0 +1,18 @@
+{/* Video Player */}
+          <div className="space-y-4">
+            <Card className="overflow-hidden py-0">
+              <CardContent className="p-0">
+                <div className="relative bg-gray-900 aspect-video">
+                  {/* Embedded YouTube Video */}
+                  <iframe
+                    className="w-full h-full"
+                    src="https://www.youtube.com/embed/Zi_XLOBDo_Y?si=0Uuakyb8Dqriw8Az&autoplay=0&mute=0&controls=1"
+                    title="YouTube video player"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>

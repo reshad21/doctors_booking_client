@@ -31,7 +31,7 @@ export function AppSidebar({ sideNavMenu, ...props }: AppSidebarProps) {
     <Sidebar {...props}>
       <SidebarHeader className="bg-[#25102E] text-white">
         {/* Profile Section */}
-        <div className="p-4 border-b border-purple-700">
+        <div className="p-3 border-b border-purple-700">
           <div className="flex items-center space-x-3">
             <Avatar className="w-12 h-12">
               <AvatarImage

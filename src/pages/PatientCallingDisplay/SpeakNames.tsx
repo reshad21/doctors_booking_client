@@ -11,7 +11,7 @@ const SpeakNames = () => {
   useEffect(() => {
     const loadVoices = () => {
       const voices = window.speechSynthesis.getVoices();
-      console.log("Available voices:", voices);
+      // console.log("Available voices:", voices);
 
       
       const bnVoice = voices.find((voice) => voice.lang === "bn-IN");
