@@ -38,11 +38,19 @@ const AppointmentManagement = () => {
     { label: "Email", name: "email" },
     { label: "Age", name: "age" },
     { label: "Weight", name: "weight" },
-    { label: "Gender", name: "gender" },
   ];
 
   // Define select fields for Chamber and Status
   const selectFields = [
+    {
+      label: "Gender",
+      name: "gender",
+      options: [
+        { name: "Male", val: "MALE" },
+        { name: "Female", val: "FEMALE" },
+        { name: "Other", val: "OTHER" },
+      ],
+    },
     {
       label: "Chamber",
       name: "chamberId",

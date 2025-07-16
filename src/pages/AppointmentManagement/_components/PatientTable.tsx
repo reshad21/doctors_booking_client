@@ -11,6 +11,7 @@ import ConfirmAlert from "@/components/shared/ConfirmAlert";
 import type { Patient } from "@/types/patient.types";
 import formatDateToReadable from "@/utils/formateDateToReveal";
 import { Badge } from "@/components/ui/badge";
+import { useUpdatePatientMutation } from "@/redux/api/patient/patient";
 
 interface PatientTableProps {
   patientsData: Patient[];
@@ -18,6 +19,8 @@ interface PatientTableProps {
 }
 
 const PatientTable = ({ patientsData, deletePatient }: PatientTableProps) => {
+  const [updatePatientStatus] = useUpdatePatientMutation()
+
   if (!patientsData?.length) {
     return (
       <div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
@@ -28,6 +31,7 @@ const PatientTable = ({ patientsData, deletePatient }: PatientTableProps) => {
       </div>
     );
   }
+  
   return (
     <Table className="no-border">
       <TableHeader className="no-border">
