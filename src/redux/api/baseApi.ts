@@ -22,7 +22,14 @@ export const baseApi = createApi({
       return headers;
     },
   }),
-  
-  tagTypes: ["staff", "patient", "chamber","watchVideo"],
+
+  tagTypes: [
+    "staff",
+    "patient",
+    "chamber",
+    "watchVideo",
+    "prescription",
+    "message",
+  ],
   endpoints: () => ({}),
 });
