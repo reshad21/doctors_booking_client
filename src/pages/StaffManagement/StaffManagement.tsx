@@ -27,7 +27,6 @@ import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
 import { useAppSelector } from "@/redux/hooks";
 import toast from "react-hot-toast";
-import PageHeader from "@/components/shared/PageHeader";
 
 const StaffManagement = () => {
   const { data: staffData } = useGetStaffQuery(undefined);
@@ -56,7 +55,6 @@ const StaffManagement = () => {
 
   return (
     <div className="custom-container">
-      <PageHeader title="Staff Management" />
       <div className="w-full mt-[30px]">
         {/* Header Section */}
         <div className="flex items-center justify-between mb- bg-white py-[18px] ps-[20px] rounded-t-sm">

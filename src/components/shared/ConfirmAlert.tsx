@@ -26,7 +26,7 @@ const ConfirmAlert = ({ id, onDeleted, person }: any) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" className="shadow-none !px-0 !py-0 no-padding no-border ">
+        <Button variant="ghost" className="shadow-none !px-0 !py-0 no-padding no-border cursor-pointer">
           <SquareX className="!h-5 !w-5 text-[#F44336]" />
         </Button>
       </AlertDialogTrigger>
@@ -39,11 +39,11 @@ const ConfirmAlert = ({ id, onDeleted, person }: any) => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => handelCancel()}>
+          <AlertDialogCancel className="cursor-pointer" onClick={() => handelCancel()}>
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
-            className="bg-brand"
+            className="bg-brand cursor-pointer"
             onClick={() => handelSubmit()}
           >
             Continue
