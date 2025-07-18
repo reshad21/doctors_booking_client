@@ -11,93 +11,41 @@ import {
 } from "@/components/ui/dialog";
 import { SquarePlus } from "lucide-react";
 import type { RouteAccess } from "@/types/staff.types";
+import { useUpdateRoutePermissionMutation } from "@/redux/api/staff/staff";
 
 interface Permission {
+  id: string;
+  staffId: string;
   name: string;
   selected: boolean;
   create: boolean;
   edit: boolean;
   delete: boolean;
   view: boolean;
+  allowed: boolean;
 }
-
-const initialPermissions: Permission[] = [
-  {
-    name: "Dashboard",
-    selected: true,
-    create: true,
-    edit: true,
-    delete: true,
-    view: true,
-  },
-  {
-    name: "Patient",
-    selected: false,
-    create: false,
-    edit: false,
-    delete: false,
-    view: false,
-  },
-  {
-    name: "Appointment",
-    selected: false,
-    create: false,
-    edit: false,
-    delete: false,
-    view: false,
-  },
-  {
-    name: "Prescription",
-    selected: false,
-    create: false,
-    edit: false,
-    delete: false,
-    view: false,
-  },
-  {
-    name: "Chamber",
-    selected: false,
-    create: false,
-    edit: false,
-    delete: false,
-    view: false,
-  },
-  {
-    name: "Notice",
-    selected: false,
-    create: false,
-    edit: false,
-    delete: false,
-    view: false,
-  },
-  {
-    name: "Service Details",
-    selected: false,
-    create: false,
-    edit: false,
-    delete: false,
-    view: false,
-  },
-  {
-    name: "Video",
-    selected: false,
-    create: false,
-    edit: false,
-    delete: false,
-    view: false,
-  },
-];
 
 export default function RoutesModal({
   routesAccess,
 }: {
-  routesAccess: RouteAccess;
+  routesAccess: RouteAccess[];
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [permissions, setPermissions] =
-    useState<Permission[]>(initialPermissions);
+  const [updateRoutePermission] = useUpdateRoutePermissionMutation();
 
-  console.log(routesAccess);
+  const [permissions, setPermissions] = useState(
+    routesAccess.map((route: RouteAccess) => ({
+      id: route.id, // add id
+      staffId: route.staffId, // add staffId
+      name: route.name,
+      selected: route.allowed ?? true, // Set selected based on allowed status
+      create: route.allowed ?? true,
+      edit: route.allowed ?? true,
+      delete: route.allowed ?? true,
+      view: route.allowed ?? true,
+      allowed: route.allowed ?? true,
+    }))
+  );
 
   const updatePermission = (
     index: number,
@@ -118,12 +66,23 @@ export default function RoutesModal({
       edit: selected,
       delete: selected,
       view: selected,
+      allowed: selected,
     };
     setPermissions(newPermissions);
   };
 
-  const handleSave = () => {
-    console.log("Saving permissions:", permissions);
+  const handleSave = async () => {
+    // Save ALL routes with their allowed status (both true and false)
+    const routesWithPermissions = permissions.map(
+      ({ id, staffId, allowed }) => ({
+        id,
+        staffId,
+        allowed,
+      })
+    );
+
+   await updateRoutePermission(routesWithPermissions);
+
     setIsOpen(false);
   };
 

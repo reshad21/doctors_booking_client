@@ -18,14 +18,18 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, Home, KeyRound, LogOut, User } from "lucide-react";
 import { useGetAdminByTokenQuery } from "@/redux/api/admin/admin";
 import { filterSideNavMenuByAccess } from "@/utils/filterSideNavMenu";
+import { useAppDispatch } from "@/redux/hooks";
+import { setPermissions } from "@/redux/api/features/permissionSlice";
 export default function DashboardLayout() {
   const { data: adminDataFromApi, isLoading } = useGetAdminByTokenQuery({});
+  const dispatch = useAppDispatch()
 
-  // Wait for user data before rendering dashboard
   if (isLoading) return null;
 
   const routeAccess = adminDataFromApi?.data?.routeAccess || [];
+  
   const filteredMenu = filterSideNavMenuByAccess(sideNavMenu, routeAccess);
+  dispatch(setPermissions(routeAccess))
 
   return (
     <SidebarProvider>
