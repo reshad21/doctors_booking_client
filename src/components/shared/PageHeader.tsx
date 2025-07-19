@@ -6,7 +6,7 @@ interface PageHeaderProps {
 // const PageHeader = ({ title}: { title: string }) => {
 const PageHeader: React.FC<PageHeaderProps> = ({ title }) => {
   return (
-    <div className="absolute top-15 bottom-0 left-0 right-0">
+    <div className="absolute top-15 bottom-0 left-0 right-0 mx-2">
       <Card className="py-1 rounded-sm mx-6">
         <CardHeader>
           <CardTitle className="text-lg font-semibold p-2 flex items-center text-green-800">

@@ -32,7 +32,7 @@ const BaseInput = ({
   type ,
 }: BaseInputProps) => {
   const { control } = useFormContext();
-console.log(type);
+
 
   return (
     <FormField

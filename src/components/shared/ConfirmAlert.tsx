@@ -10,7 +10,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import { SquareX } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -26,9 +25,9 @@ const ConfirmAlert = ({ id, onDeleted, person }: any) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button className="shadow-none !px-0 !py-0 no-padding  no-border ">
-          <SquareX className="!h-5 !w-5 text-[#F44336]" />
-        </Button>
+        <div className="shadow-none !px-0 !py-0 no-padding no-border !bg-none cursor-pointer">
+          <SquareX className="!h-5 !w-5 text-[#F44336] " />
+        </div>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -39,11 +38,14 @@ const ConfirmAlert = ({ id, onDeleted, person }: any) => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => handelCancel()}>
+          <AlertDialogCancel
+            className="cursor-pointer"
+            onClick={() => handelCancel()}
+          >
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
-            className="bg-brand"
+            className="bg-brand cursor-pointer"
             onClick={() => handelSubmit()}
           >
             Continue

@@ -13,6 +13,7 @@ import {
 import storage from "redux-persist/lib/storage";
 import { baseApi } from "./api/baseApi";
 import adminReducer from "./api/features/adminSlice";
+import { permissionReducer } from "./api/features/permissionSlice";
 
 const persistAuthConfig = {
   key: "userInfo",
@@ -29,6 +30,7 @@ export const store = configureStore({
     [baseApi.reducerPath]: baseApi.reducer,
     auth: persisterAuthReducer,
     admin: persistedAdminReducer,
+    routes: permissionReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

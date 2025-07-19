@@ -1,10 +1,100 @@
-import PageHeader from "@/components/shared/PageHeader";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useAppSelector } from "@/redux/hooks";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import CustomModal from "@/components/shared/CustomModal";
+import {
+  useCreateChamberMutation,
+  useDeleteChamberMutation,
+  useGetChambersQuery,
+} from "@/redux/api/chamber/chamber";
+import type { Chamber } from "@/types/chamber.types";
+import ChamberTable from "./ChamberTable";
+import { convertTo12HourFormat } from "@/utils/TweleveHoursFormat";
+import { Input } from "@/components/ui/input";
 
 const Chamber = () => {
+  const { data: chamberData } = useGetChambersQuery(undefined);
+  const [deleteChamber] = useDeleteChamberMutation();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [createChamber] = useCreateChamberMutation();
+  const doctorId = useAppSelector((state) => state.admin.id);
+
+  const chamberInputFields = [
+    { label: "Name", name: "name", type: "text" },
+    { label: "Address", name: "address", type: "text" },
+    { label: "Old Patient", name: "oldPatientFee", type: "text" },
+    { label: "New Patient", name: "newPatientFee", type: "text" },
+    { label: "Report", name: "reportFee", type: "text" },
+    { label: "Start Time", name: "startTime", type: "time" },
+    { label: "End Time", name: "endTime", type: "time" },
+  ];
+
+  const selectFields = [
+    {
+      label: "Status",
+      name: "status",
+      options: [
+        { name: "Active", val: "ACTIVE" },
+        { name: "Inactive", val: "INACTIVE" },
+      ],
+    },
+  ];
+
+  const handleFormSubmit = async (
+    data: Record<string, any>,
+    helpers: { reset: () => void; close: () => void }
+  ) => {
+    const formattedData = {
+      ...data,
+      startTime: convertTo12HourFormat(data.startTime),
+      endTime: convertTo12HourFormat(data.endTime),
+      doctorId,
+    };
+
+    const res = (await createChamber(formattedData)) as any;
+    if (res?.data?.success) {
+      helpers.reset();
+      helpers.close();
+      toast.success(res?.data?.message);
+    } else {
+      console.error();
+      toast.error(res?.error?.data?.message || "something went wrong");
+    }
+  };
+
   return (
-    <div>
-      <PageHeader title="Chamber" />
-     
+    <div className="custom-container">
+      <div className="w-full">
+        {/* Header Section */}
+        <div className="flex items-center justify-between mb- bg-white py-[18px] pl-4">
+          <div className="flex items-center gap-3">
+            <CustomModal
+              open={modalOpen}
+              setOpen={setModalOpen}
+              title="Create Chamber"
+              description="Fill in the form below."
+              handleFormSubmit={handleFormSubmit}
+              input={chamberInputFields}
+              select={selectFields}
+              buttonProperty={{ type: "create", text: "Add New Chamber" }}
+            />
+          </div>
+          {/* <BaseInput name="search" label="Search" placeholder="search" type="text" /> */}
+          <div className="flex items-center justify-center pr-4 gap-x-2">
+            <span className="text-sm">Search:</span>
+            <Input placeholder="Search" className="text-xs rounded" />
+          </div>
+        </div>
+
+        {/* Table Section */}
+        <div className="rounded-b-sm overflow-hidden shadow-sm">
+          <ChamberTable
+            chambersData={chamberData?.data}
+            deleteChamber={deleteChamber}
+          />
+        </div>
+      </div>
     </div>
   );
 };
