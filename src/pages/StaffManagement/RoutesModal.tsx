@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState } from "react";
@@ -12,6 +13,7 @@ import {
 import { SquarePlus } from "lucide-react";
 import type { RouteAccess } from "@/types/staff.types";
 import { useUpdateRoutePermissionMutation } from "@/redux/api/staff/staff";
+import toast from "react-hot-toast";
 
 interface Permission {
   id: string;
@@ -35,10 +37,10 @@ export default function RoutesModal({
 
   const [permissions, setPermissions] = useState(
     routesAccess.map((route: RouteAccess) => ({
-      id: route.id, // add id
-      staffId: route.staffId, // add staffId
+      id: route.id,
+      staffId: route.staffId,
       name: route.name,
-      selected: route.allowed ?? true, // Set selected based on allowed status
+      selected: route.allowed ?? true,
       create: route.allowed ?? true,
       edit: route.allowed ?? true,
       delete: route.allowed ?? true,
@@ -72,18 +74,22 @@ export default function RoutesModal({
   };
 
   const handleSave = async () => {
-    // Save ALL routes with their allowed status (both true and false)
-    const routesWithPermissions = permissions.map(
-      ({ id, staffId, allowed }) => ({
-        id,
-        staffId,
-        allowed,
-      })
-    );
+    try {
+      const routesWithPermissions = permissions.map(
+        ({ id, staffId, allowed }) => ({
+          id,
+          staffId,
+          allowed,
+        })
+      );
 
-   await updateRoutePermission(routesWithPermissions);
+      await updateRoutePermission(routesWithPermissions).unwrap();
 
-    setIsOpen(false);
+      toast.success("Permissions updated successfully!");
+      setIsOpen(false);
+    } catch (error) {
+      toast.error("Failed to update permissions.");
+    }
   };
 
   const handleClose = () => {
@@ -133,7 +139,7 @@ export default function RoutesModal({
                           onCheckedChange={(checked) =>
                             toggleRouteSelection(index, checked as boolean)
                           }
-                          className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600 flex-shrink-0"
+                          className="data-[state=checked]:bg-green-600 cursor-pointer data-[state=checked]:border-green-600 flex-shrink-0"
                         />
                         <span className="text-gray-800 truncate">
                           {permission.name}

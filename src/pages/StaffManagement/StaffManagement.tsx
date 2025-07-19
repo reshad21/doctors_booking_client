@@ -28,6 +28,7 @@ import { useState } from "react";
 import { useAppSelector } from "@/redux/hooks";
 import toast from "react-hot-toast";
 import RoutesModal from "./RoutesModal";
+import formatDateToReadable from "@/utils/formateDateToReveal";
 
 const StaffManagement = () => {
   const { data: staffData } = useGetStaffQuery(undefined);
@@ -35,8 +36,6 @@ const StaffManagement = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [createStaff] = useCreateStaffMutation();
   const doctorId = useAppSelector((state) => state.admin.id);
-
-  console.log(staffData, "staffData");
 
   const handleFormSubmit = async (
     data: Record<string, any>,
@@ -151,7 +150,7 @@ const StaffManagement = () => {
                       {member.email}
                     </TableCell>
                     <TableCell className="text-[#5C727D]">
-                      {member.createdAt}
+                      {formatDateToReadable(member.createdAt)}
                     </TableCell>
                     <TableCell className="text-[#5C727D]">
                       {member.phone}
@@ -164,7 +163,7 @@ const StaffManagement = () => {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-center gap-2 h-full">
-                        <RoutesModal routesAccess={member?.routeAccess} />
+                        <RoutesModal routesAccess={member?.routeAccess ?? []} />
                         <div className=" hover:bg-green-50 no-border">
                           <SquarePen className="h-5 w-5 text-[#14400D]" />
                         </div>

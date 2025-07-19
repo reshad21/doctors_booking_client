@@ -27,6 +27,9 @@ export default function DashboardLayout() {
   if (isLoading) return null;
 
   const routeAccess = adminDataFromApi?.data?.routeAccess || [];
+
+  console.log(routeAccess, "routeAccess")
+  console.log(adminDataFromApi, "adminData")
   
   const filteredMenu = filterSideNavMenuByAccess(sideNavMenu, routeAccess);
   dispatch(setPermissions(routeAccess))

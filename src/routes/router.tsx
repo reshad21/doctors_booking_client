@@ -3,7 +3,6 @@ import AppointmentManagement from "@/pages/AppointmentManagement/AppointmentMana
 import Chamber from "@/pages/Chamber/Chamber";
 import DashboardLayout from "@/pages/Dashboard/DashboardLayout";
 import DoctorDashboard from "@/pages/Dashboard/DoctorDashboard/DoctorDashboard";
-
 import Login from "@/pages/Login/Login";
 import Notice from "@/pages/Notice/Notice";
 import Patient from "@/pages/Patient/Patient";
