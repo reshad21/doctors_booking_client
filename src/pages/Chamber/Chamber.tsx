@@ -8,7 +8,6 @@ import {
   useDeleteChamberMutation,
   useGetChambersQuery,
 } from "@/redux/api/chamber/chamber";
-import type { Chamber } from "@/types/chamber.types";
 import ChamberTable from "./ChamberTable";
 import { convertTo12HourFormat } from "@/utils/TweleveHoursFormat";
 import { Input } from "@/components/ui/input";
