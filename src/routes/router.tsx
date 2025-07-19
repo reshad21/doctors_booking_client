@@ -17,7 +17,7 @@ import StaffManagement from "@/pages/StaffManagement/StaffManagement";
 import UnauthorizedPage from "@/pages/Unauthorize/Unauthorize";
 import UpdatePassword from "@/pages/UpdatePassword/UpdatePassword";
 import WatchVideo from "@/pages/Watch Video/WatchVideo";
-import PrivateRout from "@/PrivateRoute/PrivateRoute";
+import PrivateRoute from "@/PrivateRoute/PrivateRoute";
 import { createBrowserRouter } from "react-router-dom";
 
 const router = createBrowserRouter([
@@ -29,9 +29,9 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-      <PrivateRout>
+      <PrivateRoute>
         <DashboardLayout />
-      </PrivateRout>
+      </PrivateRoute>
     ),
     children: [
       {

@@ -8,7 +8,7 @@ import {
 } from "@/redux/api/features/authSlice";
 import type { AppDispatch } from "@/redux/store";
 
-const PrivateRout = ({ children }: { children: ReactNode }) => {
+const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const token = useAppSelector(useCurrentToken);
   const routeAccess = useAppSelector((state) => state.routes.permissions);
   const dispatch = useAppDispatch<AppDispatch>();
@@ -38,7 +38,7 @@ const PrivateRout = ({ children }: { children: ReactNode }) => {
         ? currentPath
         : `/${currentPath}`;
 
-
+  
       const isAllowed = routeAccess.some((r) => {
         const cleanRoute = r.path.startsWith("/") ? r.path : `/${r.path}`;
         const allowed = r.allowed && normalizedPath.startsWith(cleanRoute);
@@ -49,6 +49,7 @@ const PrivateRout = ({ children }: { children: ReactNode }) => {
       if (!isAllowed && normalizedPath !== "/dashboard") {
         navigate("/unauthorized", { replace: true });
       }
+
     } catch (error) {
       console.error("Invalid token:", error);
       dispatch(clearUserToken());
@@ -63,4 +64,4 @@ const PrivateRout = ({ children }: { children: ReactNode }) => {
   return <>{children}</>;
 };
 
-export default PrivateRout;
+export default PrivateRoute;
