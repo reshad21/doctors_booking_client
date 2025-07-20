@@ -15,16 +15,15 @@ const UpdateStaff = ({ staff }: { staff: Staff }) => {
   ) => {
     try {
       const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("email", data.email);
-      formData.append("phone", data.phone);
-      formData.append("id", staff.id);
 
-      // Append file
-      if (data.staffImage && data.staffImage[0]) {
-        formData.append("staffImage", data.staffImage[0]);
-      }
-
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === "staffImage" && value instanceof File) {
+          formData.append("staffImage", value);
+        } else {
+          formData.append(key, value);
+        }
+      });
+      
       const res = (await updateStaff(formData)) as any;
 
       if (res?.data?.success) {
