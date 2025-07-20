@@ -15,7 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, SquarePen, Info } from "lucide-react";
+import { ChevronDown, Info } from "lucide-react";
 import {
   useCreateStaffMutation,
   useDeleteStaffMutation,
@@ -27,8 +27,9 @@ import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
 import { useAppSelector } from "@/redux/hooks";
 import toast from "react-hot-toast";
-import RoutesModal from "./RoutesModal";
+import RoutesModal from "./_components/RoutesModal";
 import formatDateToReadable from "@/utils/formateDateToReveal";
+import UpdateStaff from "./_components/UpdateStaff";
 
 const StaffManagement = () => {
   const { data: staffData } = useGetStaffQuery(undefined);
@@ -37,14 +38,25 @@ const StaffManagement = () => {
   const [createStaff] = useCreateStaffMutation();
   const doctorId = useAppSelector((state) => state.admin.id);
 
+  console.log(staffData, "staffData")
+
   const handleFormSubmit = async (
     data: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
   ) => {
-    const res = (await createStaff({
-      ...data,
-      doctorId,
-    })) as any;
+    const formData = new FormData();
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "staffImage" && value instanceof File) {
+        formData.append("staffImage", value);
+      } else {
+        formData.append(key, value);
+      }
+    });
+
+    formData.append("doctorId", doctorId);
+    
+    const res = (await createStaff(formData)) as any;
     if (res?.data?.success) {
       helpers.reset();
       helpers.close();
@@ -165,9 +177,8 @@ const StaffManagement = () => {
                       <div className="flex items-center justify-center gap-2 h-full">
                         <RoutesModal routesAccess={member?.routeAccess ?? []} />
                         <div className=" hover:bg-green-50 no-border">
-                          <SquarePen className="h-5 w-5 text-[#14400D]" />
+                          <UpdateStaff staff={member} />
                         </div>
-
                         <div>
                           <ConfirmAlert
                             id={member?.id}
