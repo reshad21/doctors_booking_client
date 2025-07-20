@@ -75,7 +75,6 @@ const CustomModal: React.FC<CustomModalProps> = ({
     });
   };
 
-
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
@@ -113,6 +112,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
                     <BaseImageUpload
                       classname="mt-2"
                       onFileChange={(file) => field.onChange(file)}
+                      defaultImage={defaultValues?.image}
                     />
                   )}
                 />
