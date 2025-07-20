@@ -30,10 +30,11 @@ const patientApi = baseApi.injectEndpoints({
     }),
     updatePatient: builder.mutation({
       query: ({ id, payload }) => ({
-        url: `/patient/${id}`,
+        url: `/patients/${id}`,
         method: "PUT",
         body: payload,
       }),
+      invalidatesTags: ["patient"],
     }),
   }),
 });
