@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Volume2, X, ChevronRight } from "lucide-react";
 import { getCurrentDateTime } from "@/utils/getCurrentDateTime";
 import SpeakNames from "./SpeakNames";
+import { useGetOnlyActiveVideoQuery } from "@/redux/api/watchVideoApi/watchVideoApi";
 
 const patientQueue = [
   { sn: 10, name: "Asif Khan", status: "ongoing" },
@@ -16,6 +17,41 @@ const patientQueue = [
 const upcomingNumbers = [16, 17, 18, 19, 20, 21];
 
 const PatientCallingDisplay = () => {
+  const { data: onlyActiveVideo, isLoading } =
+    useGetOnlyActiveVideoQuery(undefined);
+
+  // console.log(onlyActiveVideo.data?.[0].videoFile);
+  if (isLoading) {
+    return <div className="text-center p-8 text-lg">Loading...</div>;
+  }
+
+  const activeVideo = onlyActiveVideo?.data?.find(
+    (video) => video.status === "ACTIVE"
+  );
+  // const convertToEmbedUrl = (url: string) => {
+  //   if (url.includes("youtu.be")) {
+  //     const id = url.split("youtu.be/")[1].split("?")[0];
+  //     return `https://www.youtube.com/embed/${id}`;
+  //   } else if (url.includes("watch?v=")) {
+  //     const id = url.split("watch?v=")[1].split("&")[0];
+  //     return `https://www.youtube.com/embed/${id}`;
+  //   }
+  //   return url;
+  // };
+
+
+  const convertToEmbedUrl = (url: string) => {
+  let videoId = "";
+
+  if (url.includes("youtu.be")) {
+    videoId = url.split("youtu.be/")[1].split("?")[0];
+  } else if (url.includes("watch?v=")) {
+    videoId = url.split("watch?v=")[1].split("&")[0];
+  }
+
+  return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}`;
+};
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
@@ -42,8 +78,6 @@ const PatientCallingDisplay = () => {
           <X size={28} />
         </Button>
       </div>
-
-
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-6">
@@ -105,20 +139,22 @@ const PatientCallingDisplay = () => {
               </CardContent>
             </Card>
           </div>
-
-          {/* Video Player */}
+          {/* Video Display Section */}
           <div className="space-y-4">
             <Card className="overflow-hidden py-0">
               <CardContent className="p-0">
-                <div className="relative bg-gray-900 aspect-video">
-                  {/* Embedded YouTube Video */}
-                  <iframe
-                    className="w-full h-full"
-                    src="https://www.youtube.com/embed/Zi_XLOBDo_Y?si=0Uuakyb8Dqriw8Az&autoplay=0&mute=0&controls=1"
-                    title="YouTube video player"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                  ></iframe>
+                <div className="relative bg-gray-900 aspect-video flex items-center justify-center">
+                  {activeVideo?.videoFile ? (
+                    <iframe
+                      className="w-full h-full"
+                      src={convertToEmbedUrl(activeVideo.videoFile)}
+                      title="Active YouTube video"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    ></iframe>
+                  ) : (
+                    <p className="text-white text-lg">No active video yet</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -127,8 +163,7 @@ const PatientCallingDisplay = () => {
 
         {/* Notice Section */}
         <div className="mt-8">
-          
-      <SpeakNames />
+          <SpeakNames />
           <div className="bg-[#042F16] text-white py-3 px-6 rounded-t-lg">
             <h2 className="text-lg font-semibold text-center">Notice</h2>
           </div>

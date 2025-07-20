@@ -1,19 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useDeleteStaffMutation } from "@/redux/api/staff/staff";
 import { useAppSelector } from "@/redux/hooks";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import CustomModal from "@/components/shared/CustomModal";
 import {
   useCreateChamberMutation,
+  useDeleteChamberMutation,
   useGetChambersQuery,
 } from "@/redux/api/chamber/chamber";
 import type { Chamber } from "@/types/chamber.types";
 import ChamberTable from "./ChamberTable";
+import { convertTo12HourFormat } from "@/utils/TweleveHoursFormat";
+import { Input } from "@/components/ui/input";
 
 const Chamber = () => {
   const { data: chamberData } = useGetChambersQuery(undefined);
-  const [deleteStaff] = useDeleteStaffMutation();
+  const [deleteChamber] = useDeleteChamberMutation();
   const [modalOpen, setModalOpen] = useState(false);
   const [createChamber] = useCreateChamberMutation();
   const doctorId = useAppSelector((state) => state.admin.id);
@@ -24,6 +26,8 @@ const Chamber = () => {
     { label: "Old Patient", name: "oldPatientFee", type: "text" },
     { label: "New Patient", name: "newPatientFee", type: "text" },
     { label: "Report", name: "reportFee", type: "text" },
+    { label: "Start Time", name: "startTime", type: "time" },
+    { label: "End Time", name: "endTime", type: "time" },
   ];
 
   const selectFields = [
@@ -41,10 +45,14 @@ const Chamber = () => {
     data: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
   ) => {
-    const res = (await createChamber({
+    const formattedData = {
       ...data,
+      startTime: convertTo12HourFormat(data.startTime),
+      endTime: convertTo12HourFormat(data.endTime),
       doctorId,
-    })) as any;
+    };
+
+    const res = (await createChamber(formattedData)) as any;
     if (res?.data?.success) {
       helpers.reset();
       helpers.close();
@@ -72,13 +80,18 @@ const Chamber = () => {
               buttonProperty={{ type: "create", text: "Add New Chamber" }}
             />
           </div>
+          {/* <BaseInput name="search" label="Search" placeholder="search" type="text" /> */}
+          <div className="flex items-center justify-center pr-4 gap-x-2">
+            <span className="text-sm">Search:</span>
+            <Input placeholder="Search" className="text-xs rounded" />
+          </div>
         </div>
 
         {/* Table Section */}
         <div className="rounded-b-sm overflow-hidden shadow-sm">
           <ChamberTable
             chambersData={chamberData?.data}
-            deleteStaff={deleteStaff}
+            deleteChamber={deleteChamber}
           />
         </div>
       </div>
