@@ -41,13 +41,12 @@ export function UpdateChamberModal({
     helpers: { reset: () => void; close: () => void }
   ) => {
     try {
-      console.log(data);
+      
       const res = (await updateChamber({
         id: data?.id,
         data: formData,
       })) as any;
 
-      console.log(formData, "formData");
 
       if (res?.data?.success) {
         toast.success(res?.data?.message || "Video updated successfully");
