@@ -106,7 +106,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
             {/* File Upload Field */}
             {file.map(({ name, label }) => (
               <div className="pb-2" key={name}>
-                <Label>{label}</Label>
+                <Label >{label}</Label>
                 <FormField
                   control={formMethods.control}
                   name={name}
