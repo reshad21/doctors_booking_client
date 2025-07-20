@@ -1,9 +1,11 @@
-
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { clearUserToken, useCurrentToken } from "@/redux/api/features/authSlice";
+import {
+  clearUserToken,
+  useCurrentToken,
+} from "@/redux/api/features/authSlice";
 import type { AppDispatch } from "@/redux/store";
 
 const PrivateRout = ({ children }: { children: ReactNode }) => {
@@ -34,7 +36,7 @@ const PrivateRout = ({ children }: { children: ReactNode }) => {
   }, [token, dispatch, navigate]);
 
   if (!token || isExpired) {
-    return null; 
+    return null;
   }
 
   return <>{children}</>;
