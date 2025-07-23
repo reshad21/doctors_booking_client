@@ -15,32 +15,48 @@ import {
 } from "@/redux/api/patient/patient";
 import { useAppSelector } from "@/redux/hooks";
 import { ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Pagination from "@/components/shared/Pagination";
 import toast from "react-hot-toast";
 import PatientTable from "./_components/PatientTable";
 import HeaderSelect from "./_components/HeaderSelect";
 import { useSendSingleMessageMutation } from "@/redux/api/message/message";
+import { Input } from "@/components/ui/input";
+import { createPatientInputs } from "@/constant/appointment-table.constant";
 
 const AppointmentManagement = () => {
   const [deletePatient] = useDeletePatientMutation();
   const [sendSingleMessage] = useSendSingleMessageMutation();
-  const [modalOpen, setModalOpen] = useState(false);
   const [createPatient] = useCreatePatientMutation();
-  const doctorId = useAppSelector((state) => state.admin.id);
   const { data: chambersData } = useGetChambersQuery(undefined);
-  const { data: patientsData, isLoading } = useGetPatientQuery({});
+  const [modalOpen, setModalOpen] = useState(false);
+  const doctorId = useAppSelector((state) => state.admin.id);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [searchInput, setSearchInput] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [headerSelect, setHeaderSelect] = useState({ date: "", chamber: "" });
 
-  if (isLoading) <div>Loading</div>;
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchTerm(searchInput);
+      setPage(1);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchInput]);
 
-  const createPatientInputs = [
-    { label: "Name", name: "name", type: "text" },
-    { label: "Phone", name: "phoneNumber", type: "number" },
-    { label: "Email", name: "email", type: "email" },
-    { label: "Age", name: "age", type: "text" },
-    { label: "Weight", name: "weight", type: "text" },
-  ];
+  const { data: patientsData, isLoading } = useGetPatientQuery({
+    page,
+    limit,
+    searchTerm,
+    filter: JSON.stringify({
+      chamberId: headerSelect.chamber || undefined,
+      createdAt: headerSelect.date || undefined,
+    }),
+  });
 
-  // Define select fields for Chamber and Status
+  if (isLoading) return <div>Loading</div>;
+
   const selectFields = [
     {
       label: "Gender",
@@ -104,10 +120,17 @@ const AppointmentManagement = () => {
     <div className="custom-container">
       <div className="w-full">
         <div className="mb-4">
-          <HeaderSelect chambersData={chambersData?.data} />
+          <HeaderSelect
+            chambersData={chambersData?.data}
+            selected={headerSelect}
+            onChange={(val) => {
+              setHeaderSelect(val);
+              setPage(1);
+            }}
+          />
         </div>
         {/* Header Section */}
-        <div className="flex items-center justify-between py-4 pl-4 bg-white">
+        <div className="flex items-center justify-between py-4 px-4 bg-white">
           <div className="flex items-center gap-3 justify-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -134,13 +157,26 @@ const AppointmentManagement = () => {
               buttonProperty={{ type: "create", text: "Add New Patient" }}
             />
           </div>
+          <Input
+            className="w-80 rounded"
+            placeholder="Search"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+          />
         </div>
-
         {/* Table Section */}
         <div className="rounded-b-sm overflow-hidden shadow-sm">
           <PatientTable
-            patientsData={patientsData?.data}
+            patientsData={patientsData?.data?.data}
             deletePatient={deletePatient}
+          />
+        </div>
+        {/* Pagination Section */}
+        <div className="mt-4">
+          <Pagination
+            active={patientsData?.data?.meta?.currentPage || 1}
+            totalPages={patientsData?.data?.meta?.totalPages || 1}
+            onPageChange={setPage}
           />
         </div>
       </div>
