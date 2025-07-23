@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "./_component/app-sidebar";
 import { sideNavMenu } from "@/context/Routes-sideNav";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -18,14 +18,21 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, Home, KeyRound, LogOut, User } from "lucide-react";
 import { useGetAdminByTokenQuery } from "@/redux/api/admin/admin";
 import { filterSideNavMenuByAccess } from "@/utils/filterSideNavMenu";
+import { useAppDispatch } from "@/redux/hooks";
+import { setPermissions } from "@/redux/api/features/permissionSlice";
 export default function DashboardLayout() {
   const { data: adminDataFromApi, isLoading } = useGetAdminByTokenQuery({});
-  
-  // Wait for user data before rendering dashboard
+  const dispatch = useAppDispatch()
+
   if (isLoading) return null;
 
   const routeAccess = adminDataFromApi?.data?.routeAccess || [];
+
+  console.log(routeAccess, "routeAccess")
+  console.log(adminDataFromApi, "adminData")
+  
   const filteredMenu = filterSideNavMenuByAccess(sideNavMenu, routeAccess);
+  dispatch(setPermissions(routeAccess))
 
   return (
     <SidebarProvider>
@@ -35,10 +42,12 @@ export default function DashboardLayout() {
           <SidebarTrigger className="-ml-1" />
 
           <div className="flex items-center text-white">
-            <Button variant="ghost">
-              <Home className="w-4 h-4" />
-              <span className="">Home</span>
-            </Button>
+            <Link to={"/"}>
+              <Button variant="ghost" className="cursor-pointer">
+                <Home className="w-4 h-4" />
+                <span>Home</span>
+              </Button>
+            </Link>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

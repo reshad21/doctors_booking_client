@@ -1,7 +1,6 @@
 "use client";
 
-import type React from "react";
-import { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -9,11 +8,11 @@ import { cn } from "@/lib/utils";
 interface BaseImageUploadProps {
   classname?: string;
   onFileChange?: (file: File | null) => void;
+  defaultImage?: string | null;
 }
 
-
-const BaseImageUpload = ({ classname, onFileChange }: BaseImageUploadProps) => {
-  const [image, setImage] = useState<string | null>(null);
+const BaseImageUpload = ({ classname, onFileChange, defaultImage }: BaseImageUploadProps) => {
+  const [image, setImage] = useState<string | null>(defaultImage || null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,6 +32,13 @@ const BaseImageUpload = ({ classname, onFileChange }: BaseImageUploadProps) => {
   const handleUploadClick = () => {
     inputRef.current?.click();
   };
+
+  // Update image if defaultImage changes (e.g., when editing different staff)
+  useEffect(() => {
+    if (defaultImage) {
+      setImage(defaultImage);
+    }
+  }, [defaultImage]);
 
   return (
     <div>

@@ -15,7 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, SquarePlus, Info } from "lucide-react";
+import { ChevronDown, Info } from "lucide-react";
 import {
   useCreateStaffMutation,
   useDeleteStaffMutation,
@@ -27,8 +27,9 @@ import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
 import { useAppSelector } from "@/redux/hooks";
 import toast from "react-hot-toast";
+import RoutesModal from "./_components/RoutesModal";
+import formatDateToReadable from "@/utils/formateDateToReveal";
 import UpdateStaff from "./_components/UpdateStaff";
-// import PageHeader from "@/components/shared/PageHeader";
 
 const StaffManagement = () => {
   const { data: staffData } = useGetStaffQuery(undefined);
@@ -37,43 +38,38 @@ const StaffManagement = () => {
   const [createStaff] = useCreateStaffMutation();
   const doctorId = useAppSelector((state) => state.admin.id);
 
+  console.log(staffData, "staffData")
+
   const handleFormSubmit = async (
     data: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
   ) => {
-    try {
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("email", data.email);
-      formData.append("phone", data.phone);
-      formData.append("password", data.password);
-      formData.append("doctorId", doctorId);
+    const formData = new FormData();
 
-      // Append file
-      if (data.staffImage && data.staffImage[0]) {
-        formData.append("staffImage", data.staffImage[0]);
-      }
-
-      const res = (await createStaff(formData)) as any;
-
-      if (res?.data?.success) {
-        helpers.reset();
-        helpers.close();
-        toast.success(res?.data?.message);
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "staffImage" && value instanceof File) {
+        formData.append("staffImage", value);
       } else {
-        console.error();
-        toast.error(res?.error?.data?.message || "Something went wrong");
+        formData.append(key, value);
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong");
+    });
+
+    formData.append("doctorId", doctorId);
+    
+    const res = (await createStaff(formData)) as any;
+    if (res?.data?.success) {
+      helpers.reset();
+      helpers.close();
+      toast.success(res?.data?.message);
+    } else {
+      console.error();
+      toast.error(res?.error?.data?.message || "something went wrong");
     }
   };
 
   return (
     <div className="custom-container">
-      {/* <PageHeader title="Staff Management" />  */}
-      <div className="w-full mt-[30px]">
+      <div className="w-full">
         {/* Header Section */}
         <div className="flex items-center justify-between mb- bg-white py-[18px] ps-[20px] rounded-t-sm">
           <div className="flex items-center gap-3">
@@ -166,7 +162,7 @@ const StaffManagement = () => {
                       {member.email}
                     </TableCell>
                     <TableCell className="text-[#5C727D]">
-                      {member.createdAt}
+                      {formatDateToReadable(member.createdAt)}
                     </TableCell>
                     <TableCell className="text-[#5C727D]">
                       {member.phone}
@@ -179,13 +175,10 @@ const StaffManagement = () => {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-center gap-2 h-full">
+                        <RoutesModal routesAccess={member?.routeAccess ?? []} />
                         <div className=" hover:bg-green-50 no-border">
-                          <SquarePlus className="h-5 w-5 text-[#14400D]" />
+                          <UpdateStaff staff={member} />
                         </div>
-                        <div>
-                          <UpdateStaff staff={member}/>
-                        </div>
-
                         <div>
                           <ConfirmAlert
                             id={member?.id}

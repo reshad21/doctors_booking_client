@@ -19,8 +19,29 @@ const patientApi = baseApi.injectEndpoints({
           method: "GET",
         };
       },
+      providesTags: ["patient"],
+    }),
+    deletePatient: builder.mutation({
+      query: (id) => ({
+        url: `/patients/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["patient"],
+    }),
+    updatePatient: builder.mutation({
+      query: ({ id, payload }) => ({
+        url: `/patients/${id}`,
+        method: "PUT",
+        body: payload,
+      }),
+      invalidatesTags: ["patient"],
     }),
   }),
 });
 
-export const { useCreatePatientMutation, useGetPatientQuery} = patientApi;
+export const {
+  useCreatePatientMutation,
+  useGetPatientQuery,
+  useUpdatePatientMutation,
+  useDeletePatientMutation,
+} = patientApi;

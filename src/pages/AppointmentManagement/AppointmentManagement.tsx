@@ -10,18 +10,19 @@ import {
 import { useGetChambersQuery } from "@/redux/api/chamber/chamber";
 import {
   useCreatePatientMutation,
+  useDeletePatientMutation,
   useGetPatientQuery,
 } from "@/redux/api/patient/patient";
-import { useDeleteStaffMutation } from "@/redux/api/staff/staff";
 import { useAppSelector } from "@/redux/hooks";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import PatientTable from "./_components/PatientTable";
+import HeaderSelect from "./_components/HeaderSelect";
 import { useSendSingleMessageMutation } from "@/redux/api/message/message";
 
 const AppointmentManagement = () => {
-  const [deleteStaff] = useDeleteStaffMutation();
+  const [deletePatient] = useDeletePatientMutation();
   const [sendSingleMessage] = useSendSingleMessageMutation();
   const [modalOpen, setModalOpen] = useState(false);
   const [createPatient] = useCreatePatientMutation();
@@ -37,11 +38,19 @@ const AppointmentManagement = () => {
     { label: "Email", name: "email", type: "email" },
     { label: "Age", name: "age", type: "text" },
     { label: "Weight", name: "weight", type: "text" },
-    { label: "Gender", name: "gender", type: "text" },
   ];
 
   // Define select fields for Chamber and Status
   const selectFields = [
+    {
+      label: "Gender",
+      name: "gender",
+      options: [
+        { name: "Male", val: "MALE" },
+        { name: "Female", val: "FEMALE" },
+        { name: "Other", val: "OTHER" },
+      ],
+    },
     {
       label: "Chamber",
       name: "chamberId",
@@ -94,12 +103,15 @@ const AppointmentManagement = () => {
   return (
     <div className="custom-container">
       <div className="w-full">
+        <div className="mb-4">
+          <HeaderSelect chambersData={chambersData?.data} />
+        </div>
         {/* Header Section */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between py-4 pl-4 bg-white">
+          <div className="flex items-center gap-3 justify-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className="bg-brand hover:bg-green-800 cursor-pointer text-white">
+                <Button className="bg-brand rounded hover:bg-green-800 cursor-pointer text-white">
                   Export
                   <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
@@ -128,7 +140,7 @@ const AppointmentManagement = () => {
         <div className="rounded-b-sm overflow-hidden shadow-sm">
           <PatientTable
             patientsData={patientsData?.data}
-            deleteStaff={deleteStaff}
+            deletePatient={deletePatient}
           />
         </div>
       </div>

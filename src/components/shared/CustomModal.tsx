@@ -75,18 +75,16 @@ const CustomModal: React.FC<CustomModalProps> = ({
     });
   };
 
-  // Chamber and Status select fields are now passed via the select prop from the parent, not hardcoded here.
-
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         {buttonProperty.type === "create" ? (
-          <Button className="bg-brand hover:bg-green-800 cursor-pointer text-white">
+          <Button className="bg-brand hover:bg-green-800 rounded cursor-pointer text-white">
             <Plus className="mr-2 h-4 w-4" />
             {buttonProperty?.text}
           </Button>
         ) : (
-          <Button className="shadow-none !px-0 !py-0 no-padding cursor-pointer no-border">
+          <Button className="shadow-none !px-0 rounded !py-0 no-padding cursor-pointer no-border">
             <SquarePen className="!h-5 !w-5 text-[#14400D]" />
           </Button>
         )}
@@ -114,6 +112,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
                     <BaseImageUpload
                       classname="mt-2"
                       onFileChange={(file) => field.onChange(file)}
+                      defaultImage={defaultValues?.image}
                     />
                   )}
                 />
