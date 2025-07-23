@@ -14,12 +14,12 @@ import { Badge } from "@/components/ui/badge";
 import { UpdatePatientModal } from "./UpdatePatientModal";
 import { useState } from "react";
 
-interface PatientTableProps {
+interface AppointmentTableProps {
   patientsData: Patient[];
   deletePatient: (id: string) => void;
 }
 
-const PatientTable = ({ patientsData, deletePatient }: PatientTableProps) => {
+const AppointmentTable = ({ patientsData, deletePatient }: AppointmentTableProps) => {
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [modalDataToUpdate, setModalDataToUpdate] = useState<Patient | null>(
     null
@@ -130,4 +130,4 @@ const PatientTable = ({ patientsData, deletePatient }: PatientTableProps) => {
   );
 };
 
-export default PatientTable;
+export default AppointmentTable;

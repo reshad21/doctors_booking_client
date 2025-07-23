@@ -18,7 +18,7 @@ import { ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import Pagination from "@/components/shared/Pagination";
 import toast from "react-hot-toast";
-import PatientTable from "./_components/PatientTable";
+import PatientTable from "./_components/AppointementTable";
 import HeaderSelect from "./_components/HeaderSelect";
 import { useSendSingleMessageMutation } from "@/redux/api/message/message";
 import { Input } from "@/components/ui/input";
