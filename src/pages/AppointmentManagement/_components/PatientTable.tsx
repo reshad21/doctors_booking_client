@@ -13,6 +13,8 @@ import formatDateToReadable from "@/utils/formateDateToReveal";
 import { Badge } from "@/components/ui/badge";
 import { UpdatePatientModal } from "./UpdatePatientModal";
 import { useState } from "react";
+import { useUpdatePatientMutation } from "@/redux/api/patient/patient";
+import toast from "react-hot-toast";
 
 interface PatientTableProps {
   patientsData: Patient[];
@@ -21,14 +23,28 @@ interface PatientTableProps {
 
 const PatientTable = ({ patientsData, deletePatient }: PatientTableProps) => {
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
-  const [modalDataToUpdate, setModalDataToUpdate] = useState<Patient | null>(
-    null
-  );
+  const [modalDataToUpdate, setModalDataToUpdate] = useState<Patient | null>(null);
+  const [updatePatient] = useUpdatePatientMutation();
+
+  console.log(patientsData, "patientsData")
 
   const handleUpdateClick = (patient: Patient) => {
     setModalDataToUpdate(patient);
     setUpdateModalOpen(true);
   };
+
+  const handleVisitChange = async (id: string, visitStatus: string) => {
+    try {
+      await updatePatient({
+        id,
+        payload: { visitStatus },
+      });
+      toast.success("Visit status updated successfully");
+    } catch (error) {
+      toast.success("Visit status is not updated");
+      console.error('Failed to update visit status', error);
+    }
+  }
 
   if (!patientsData?.length) {
     return (
@@ -89,13 +105,12 @@ const PatientTable = ({ patientsData, deletePatient }: PatientTableProps) => {
               </TableCell>
               <TableCell>
                 <select
-                  value={
-                    patient.status === "ACTIVE" ? "VISITED" : "NOT VISITED"
-                  }
+                  value={patient.visitStatus}
+                  onChange={(e) => handleVisitChange(patient.id, e.target.value)}
                   className="border rounded text-xs bg-[#14400D] text-white p-1 focus:outline-none"
                 >
                   <option value="VISITED">Visited</option>
-                  <option value="NOT VISITED">Not Visited</option>
+                  <option value="NOT_VISITED">Not Visited</option>
                 </select>
               </TableCell>
               <TableCell>
