@@ -90,6 +90,7 @@ const AppointmentManagement = () => {
     data: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
   ) => {
+
     const res = (await createPatient({
       ...data,
       doctorId,
@@ -99,7 +100,7 @@ const AppointmentManagement = () => {
         number: data?.phoneNumber,
         message: "this is test message",
       });
-      console.log(response);
+      
       helpers.reset();
       helpers.close();
 
