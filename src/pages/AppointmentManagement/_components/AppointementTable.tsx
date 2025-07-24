@@ -26,8 +26,6 @@ const AppointmentTable = ({ patientsData, deletePatient }: AppointmentTableProps
   const [modalDataToUpdate, setModalDataToUpdate] = useState<Patient | null>(null);
   const [updatePatient] = useUpdatePatientMutation();
 
-  console.log(patientsData, "patientsData")
-
   const handleUpdateClick = (patient: Patient) => {
     setModalDataToUpdate(patient);
     setUpdateModalOpen(true);

@@ -1,12 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import CustomModal from "@/components/shared/CustomModal";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useGetChambersQuery } from "@/redux/api/chamber/chamber";
 import {
   useCreatePatientMutation,
@@ -14,15 +7,15 @@ import {
   useGetPatientQuery,
 } from "@/redux/api/patient/patient";
 import { useAppSelector } from "@/redux/hooks";
-import { ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import Pagination from "@/components/shared/Pagination";
 import toast from "react-hot-toast";
-import PatientTable from "./_components/AppointementTable";
 import HeaderSelect from "./_components/HeaderSelect";
 import { useSendSingleMessageMutation } from "@/redux/api/message/message";
 import { Input } from "@/components/ui/input";
 import { createPatientInputs } from "@/constant/appointment-table.constant";
+import ExportDropdown from "@/components/shared/ExportDropdown";
+import AppointmentTable from "./_components/AppointementTable";
 
 const AppointmentManagement = () => {
   const [deletePatient] = useDeletePatientMutation();
@@ -100,7 +93,7 @@ const AppointmentManagement = () => {
         number: data?.phoneNumber,
         message: "this is test message",
       });
-      
+
       helpers.reset();
       helpers.close();
 
@@ -133,19 +126,16 @@ const AppointmentManagement = () => {
         {/* Header Section */}
         <div className="flex items-center justify-between py-4 px-4 bg-white">
           <div className="flex items-center gap-3 justify-center">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="bg-brand rounded hover:bg-green-800 cursor-pointer text-white">
-                  Export
-                  <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>Export as CSV</DropdownMenuItem>
-                <DropdownMenuItem>Export as PDF</DropdownMenuItem>
-                <DropdownMenuItem>Export as Excel</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ExportDropdown
+              data={patientsData?.data?.data || []}
+              columns={[
+                { label: "Name", key: "name" },
+                { label: "Phone", key: "phoneNumber" },
+                { label: "Gender", key: "gender" },
+                { label: "Status", key: "status" },
+                { label: "Date", key: "createdAt" }
+              ]}
+            />
 
             <CustomModal
               open={modalOpen}
@@ -167,7 +157,7 @@ const AppointmentManagement = () => {
         </div>
         {/* Table Section */}
         <div className="rounded-b-sm overflow-hidden shadow-sm">
-          <PatientTable
+          <AppointmentTable
             patientsData={patientsData?.data?.data}
             deletePatient={deletePatient}
           />
