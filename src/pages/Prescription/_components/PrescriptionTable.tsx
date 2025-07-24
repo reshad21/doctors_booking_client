@@ -33,7 +33,7 @@ const PrescriptionTable = ({patients}:any) => {
 
   if (!patients?.data?.length) {
     return (
-      <div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
+      <div className="flex justify-center items-center min-h-[91vh] font-semibold text-xs">
         <div className="flex flex-col justify-center space-y-2 items-center text-yellow-900">
           <Info />
           <span>No prescription yet!</span>
