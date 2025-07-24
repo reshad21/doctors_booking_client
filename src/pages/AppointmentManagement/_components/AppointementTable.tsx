@@ -16,12 +16,12 @@ import { useState } from "react";
 import { useUpdatePatientMutation } from "@/redux/api/patient/patient";
 import toast from "react-hot-toast";
 
-interface PatientTableProps {
+interface AppointmentTableProps {
   patientsData: Patient[];
   deletePatient: (id: string) => void;
 }
 
-const PatientTable = ({ patientsData, deletePatient }: PatientTableProps) => {
+const AppointmentTable = ({ patientsData, deletePatient }: AppointmentTableProps) => {
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [modalDataToUpdate, setModalDataToUpdate] = useState<Patient | null>(null);
   const [updatePatient] = useUpdatePatientMutation();
@@ -145,4 +145,4 @@ const PatientTable = ({ patientsData, deletePatient }: PatientTableProps) => {
   );
 };
 
-export default PatientTable;
+export default AppointmentTable;
