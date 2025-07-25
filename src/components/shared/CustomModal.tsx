@@ -22,7 +22,7 @@ type FieldConfig = {
   label: string;
   name: string;
   type?: any;
-  className?: string; // Optional custom class for input
+  className?: string;
 };
 
 type SelectConfig = FieldConfig & {
@@ -39,10 +39,12 @@ interface CustomModalProps {
   setOpen: (value: boolean) => void;
   buttonProperty: any;
   defaultValues?: Record<string, any>;
-  handleFormSubmit: (
+  handleFormSubmit?: (
     data: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
   ) => void | Promise<void>;
+  hideForm?: boolean;
+  children?: React.ReactNode;
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({
@@ -56,12 +58,11 @@ const CustomModal: React.FC<CustomModalProps> = ({
   handleFormSubmit,
   buttonProperty,
   defaultValues = {},
+  hideForm = false,
+  children,
 }) => {
-  const formMethods = useForm<Record<string, any>>({
-    defaultValues,
-  });
+  const formMethods = useForm<Record<string, any>>({ defaultValues });
 
-  // Optional: Sync defaultValues on prop change
   useEffect(() => {
     if (defaultValues && Object.keys(defaultValues).length > 0) {
       formMethods.reset(defaultValues);
@@ -69,6 +70,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
   }, [defaultValues, formMethods]);
 
   const onSubmit = async (data: Record<string, any>) => {
+    if (!handleFormSubmit) return;
     await handleFormSubmit(data, {
       reset: () => formMethods.reset(),
       close: () => setOpen(false),
@@ -84,7 +86,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
             {buttonProperty?.text}
           </Button>
         ) : (
-          <Button className="shadow-none !px-0 rounded !py-0 no-padding cursor-pointer no-border">
+          <Button className="shadow-none !px-0 rounded !py-0 cursor-pointer">
             <SquarePen className="!h-5 !w-5 text-[#14400D]" />
           </Button>
         )}
@@ -101,69 +103,76 @@ const CustomModal: React.FC<CustomModalProps> = ({
 
         <ScrollArea className="max-h-[65vh] pr-4">
           <FormProvider {...formMethods}>
-            {/* File Upload Field */}
-            {file.map(({ name, label }) => (
-              <div className="pb-2" key={name}>
-                <Label>{label}</Label>
-                <FormField
-                  control={formMethods.control}
-                  name={name}
-                  render={({ field }) => (
-                    <BaseImageUpload
-                      classname="mt-2"
-                      onFileChange={(file) => field.onChange(file)}
-                      defaultImage={defaultValues?.image}
-                    />
-                  )}
-                />
-              </div>
-            ))}
-
-            {/* Form */}
-            <form
-              onSubmit={formMethods.handleSubmit(onSubmit)}
-              className="space-y-4"
-            >
-              {input.map(({ label, name, type, className }) => (
-                <BaseInput
-                  key={name}
-                  name={name}
-                  label={label}
-                  type={type}
-                  placeholder={`${label}`}
-                  classname={`bg-gray-50${className ? ` ${className}` : ""}`}
-                />
+            {!hideForm &&
+              file.map(({ name, label }) => (
+                <div className="pb-2" key={name}>
+                  <Label>{label}</Label>
+                  <FormField
+                    control={formMethods.control}
+                    name={name}
+                    render={({ field }) => (
+                      <BaseImageUpload
+                        classname="mt-2"
+                        onFileChange={(file) => field.onChange(file)}
+                        defaultImage={defaultValues?.image}
+                      />
+                    )}
+                  />
+                </div>
               ))}
 
-              {select.map(({ label, name, options }) => (
-                <BaseSelect
-                  key={name}
-                  name={name}
-                  label={label}
-                  options={options.map(({ name, val }) => ({
-                    name,
-                    value: val,
-                  }))}
-                  className="border-[#A0B19E] rounded-[4px] border text-[#5F597480] w-full bg-gray-50"
-                />
-              ))}
+            {!hideForm ? (
+              <form
+                onSubmit={formMethods.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
+                {input.map(({ label, name, type, className }) => (
+                  <BaseInput
+                    key={name}
+                    name={name}
+                    label={label}
+                    type={type}
+                    placeholder={`${label}`}
+                    classname={`bg-gray-50${className ? ` ${className}` : ""}`}
+                  />
+                ))}
 
-              {/* Buttons */}
-              <div className="flex justify-end space-x-4 pt-4 pb-2">
-                <AlertDialogCancel asChild>
-                  <Button
-                    variant="outline"
-                    type="button"
-                    className="cursor-pointer"
-                  >
-                    Close
+                {select.map(({ label, name, options }) => (
+                  <BaseSelect
+                    key={name}
+                    name={name}
+                    label={label}
+                    options={options.map(({ name, val }) => ({
+                      name,
+                      value: val,
+                    }))}
+                    className="border-[#A0B19E] rounded-[4px] border text-[#5F597480] w-full bg-gray-50"
+                  />
+                ))}
+
+                <div className="flex justify-end space-x-4 pt-4 pb-2">
+                  <AlertDialogCancel asChild>
+                    <Button variant="outline" type="button">
+                      Close
+                    </Button>
+                  </AlertDialogCancel>
+                  <Button type="submit" className="bg-brand">
+                    Submit
                   </Button>
-                </AlertDialogCancel>
-                <Button type="submit" className="bg-brand cursor-pointer">
-                  Submit
-                </Button>
+                </div>
+              </form>
+            ) : (
+              <div className="pt-4">
+                {children}
+                <div className="flex justify-end space-x-4 pt-4 pb-2">
+                  <AlertDialogCancel asChild>
+                    <Button variant="outline" type="button">
+                      Close
+                    </Button>
+                  </AlertDialogCancel>
+                </div>
               </div>
-            </form>
+            )}
           </FormProvider>
         </ScrollArea>
       </AlertDialogContent>
