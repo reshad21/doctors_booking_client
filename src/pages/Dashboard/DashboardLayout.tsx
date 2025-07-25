@@ -20,19 +20,28 @@ import { useGetAdminByTokenQuery } from "@/redux/api/admin/admin";
 import { filterSideNavMenuByAccess } from "@/utils/filterSideNavMenu";
 import { useAppDispatch } from "@/redux/hooks";
 import { setPermissions } from "@/redux/api/features/permissionSlice";
+import { useEffect, useMemo } from "react";
+import type { PermissionItem } from "@/redux/api/features/permissionSlice";
 export default function DashboardLayout() {
   const { data: adminDataFromApi, isLoading } = useGetAdminByTokenQuery({});
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
+
+  const routeAccess: PermissionItem[] = useMemo(() => (
+    Array.isArray(adminDataFromApi?.data?.routeAccess)
+      ? adminDataFromApi.data.routeAccess
+      : []
+  ), [adminDataFromApi]);
+
+  const filteredMenu = useMemo(() => filterSideNavMenuByAccess(sideNavMenu, routeAccess), [routeAccess]);
+
+  useEffect(() => {
+    if (routeAccess.length > 0) {
+      dispatch(setPermissions(routeAccess));
+    }
+  }, [dispatch, routeAccess]);
 
   if (isLoading) return null;
 
-  const routeAccess = adminDataFromApi?.data?.routeAccess || [];
-
-  console.log(routeAccess, "routeAccess")
-  console.log(adminDataFromApi, "adminData")
-  
-  const filteredMenu = filterSideNavMenuByAccess(sideNavMenu, routeAccess);
-  dispatch(setPermissions(routeAccess))
 
   return (
     <SidebarProvider>

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useAppSelector } from "@/redux/hooks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import CustomModal from "@/components/shared/CustomModal";
 import {
@@ -8,17 +7,25 @@ import {
   useDeleteChamberMutation,
   useGetChambersQuery,
 } from "@/redux/api/chamber/chamber";
-import type { Chamber } from "@/types/chamber.types";
 import ChamberTable from "./ChamberTable";
 import { convertTo12HourFormat } from "@/utils/TweleveHoursFormat";
 import { Input } from "@/components/ui/input";
 
 const Chamber = () => {
-  const { data: chamberData } = useGetChambersQuery(undefined);
   const [deleteChamber] = useDeleteChamberMutation();
   const [modalOpen, setModalOpen] = useState(false);
   const [createChamber] = useCreateChamberMutation();
-  const doctorId = useAppSelector((state) => state.admin.id);
+  const [searchInput, setSearchInput] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const { data: chamberData } = useGetChambersQuery({ searchTerm });
+
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchTerm(searchInput);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchInput]);
 
   const chamberInputFields = [
     { label: "Name", name: "name", type: "text" },
@@ -49,7 +56,6 @@ const Chamber = () => {
       ...data,
       startTime: convertTo12HourFormat(data.startTime),
       endTime: convertTo12HourFormat(data.endTime),
-      doctorId,
     };
 
     const res = (await createChamber(formattedData)) as any;
@@ -83,7 +89,12 @@ const Chamber = () => {
           {/* <BaseInput name="search" label="Search" placeholder="search" type="text" /> */}
           <div className="flex items-center justify-center pr-4 gap-x-2">
             <span className="text-sm">Search:</span>
-            <Input placeholder="Search" className="text-xs rounded" />
+            <Input
+              placeholder="Search"
+              className="text-xs rounded"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
           </div>
         </div>
 

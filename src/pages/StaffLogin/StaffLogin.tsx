@@ -89,7 +89,7 @@ const StaffLogin = () => {
                   />
                   <Button
                     type="submit"
-                    className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold py-3 px-4 rounded-md transition-colors duration-200 text-base sm:text-lg"
+                    className="w-full bg-green-700 cursor-pointer hover:bg-green-800 text-white font-semibold py-3 px-4 rounded-md transition-colors duration-200 text-base sm:text-lg"
                   >
                     LOGIN
                   </Button>

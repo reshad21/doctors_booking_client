@@ -14,7 +14,7 @@ import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const PrescriptionTable = ({patients}:any) => {
+const PrescriptionTable = ({ patients }: any) => {
   const [modalOpen, setModalOpen] = useState(false);
   const handleFormSubmit = async (
     data: Record<string, unknown>,
@@ -31,9 +31,10 @@ const PrescriptionTable = ({patients}:any) => {
     }
   };
 
-  if (!patients?.data?.length) {
+
+  if (!patients?.data?.data?.length) {
     return (
-      <div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
+      <div className="flex justify-center items-center min-h-[91vh] font-semibold text-xs">
         <div className="flex flex-col justify-center space-y-2 items-center text-yellow-900">
           <Info />
           <span>No prescription yet!</span>
@@ -41,6 +42,8 @@ const PrescriptionTable = ({patients}:any) => {
       </div>
     );
   }
+
+
   return (
     <div className="custom-container">
       <div className="rounded-b-sm overflow-hidden shadow-sm w-full mt-[30px]">
@@ -65,7 +68,7 @@ const PrescriptionTable = ({patients}:any) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {patients?.data?.map((patient: Patient, index: number) => (
+            {patients?.data?.data?.map((patient: Patient, index: number) => (
               <TableRow
                 key={patient.id}
                 className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
@@ -79,7 +82,7 @@ const PrescriptionTable = ({patients}:any) => {
                   {patient.phoneNumber}
                 </TableCell>
                 <TableCell className="text-white space-x-2">
-                  <Link to={`/dashboard/create-prescription/${patient?.id}`} state={{patient:{name:patient.name,age:patient.age}}} className="bg-brand flex justify-center items-center gap-2 rounded-sm cursor-pointer">
+                  <Link to={`/dashboard/create-prescription/${patient?.id}`} state={{ patient: { name: patient.name, age: patient.age } }} className="bg-brand flex justify-center items-center gap-2 rounded-sm cursor-pointer">
                     <Plus />
                     <span>Add</span>
                   </Link>

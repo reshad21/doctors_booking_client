@@ -20,17 +20,26 @@ const persistAuthConfig = {
   storage,
 };
 
-const persistAdminConfig = { key: "adminInfo", storage };
+const persistAdminConfig = {
+  key: "adminInfo",
+  storage
+};
+
+const persistPermissionConfig = {
+  key: "permissions",
+  storage
+};
 
 const persisterAuthReducer = persistReducer(persistAuthConfig, authReducer);
 const persistedAdminReducer = persistReducer(persistAdminConfig, adminReducer);
+const persistedPermissionReducer = persistReducer(persistPermissionConfig, permissionReducer);
 
 export const store = configureStore({
   reducer: {
     [baseApi.reducerPath]: baseApi.reducer,
     auth: persisterAuthReducer,
     admin: persistedAdminReducer,
-    routes: permissionReducer
+    routes: persistedPermissionReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
