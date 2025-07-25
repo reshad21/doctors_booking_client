@@ -81,9 +81,7 @@ const StaffManagement = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem>Export as CSV</DropdownMenuItem>
                 <DropdownMenuItem>Export as PDF</DropdownMenuItem>
-                <DropdownMenuItem>Export as Excel</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -199,3 +197,5 @@ const StaffManagement = () => {
   );
 };
 export default StaffManagement;
+
+
