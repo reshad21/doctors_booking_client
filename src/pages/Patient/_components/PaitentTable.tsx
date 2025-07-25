@@ -42,7 +42,6 @@ const PatientTable = ({ patientsData, deletePatient }: PatientTableProps) => {
     setSelectedPatient(null);
   };
 
-  console.log(patientsData)
 
   if (!patientsData?.length) {
     return (

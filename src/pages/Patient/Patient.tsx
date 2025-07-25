@@ -11,7 +11,7 @@ import PatientTable from "./_components/PaitentTable";
 
 const Patient = () => {
   const [deletePatient] = useDeletePatientMutation();
-  const { data: chambersData } = useGetChambersQuery(undefined);
+  const { data: chambersData } = useGetChambersQuery({});
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [searchInput, setSearchInput] = useState("");
