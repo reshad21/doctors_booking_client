@@ -17,6 +17,8 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
   // Only read permissions from Redux
   const routeAccess = useAppSelector((state) => state.routes.permissions);
   const isLoadingPermissions = !routeAccess || routeAccess.length === 0;
+  console.log(isLoadingPermissions);
+  
 
   useEffect(() => {
     if (!token) {

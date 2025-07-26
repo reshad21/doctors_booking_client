@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAppSelector } from "@/redux/hooks";
 import { Download, Users } from "lucide-react";
 
 const appointmentData = [
@@ -28,6 +29,7 @@ const appointmentData = [
 ];
 
 const DoctorDashboard = () => {
+  const doctor = useAppSelector((state) => state.admin);
   return (
     <div>
       <main className="flex-1 p-6 mt-4 sm:mt-2 overflow-auto">
@@ -37,13 +39,13 @@ const DoctorDashboard = () => {
             <Avatar className="w-16 h-16">
               <AvatarImage
                 src="/placeholder.svg?height=64&width=64"
-                alt="Dr. Stven N Carter"
+                alt={doctor?.name}
               />
-              <AvatarFallback>SC</AvatarFallback>
+              <AvatarFallback>{doctor?.name.slice(0,1)}</AvatarFallback>
             </Avatar>
             <div>
               <h2 className="text-2xl font-bold text-gray-800">
-                Welcome To DR. Stven N Carter
+                Welcome To {doctor?.name}
               </h2>
               <p className="text-gray-600">Have a nice day at work</p>
             </div>
