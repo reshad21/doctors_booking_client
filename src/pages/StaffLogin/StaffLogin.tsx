@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import BaseInput from "@/components/shared/BaseInput";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -29,7 +30,10 @@ const StaffLogin = () => {
   });
 
   const onSubmit = async (data: LoginSchemaType) => {
-    const res = await login(data);
+    const res = await login(data) as any;
+    if (res?.error) {
+      return toast.error(res?.error?.data?.message);
+    }
     const token = res?.data?.data?.accessToken;
 
     dispatch(setUserToken({ token: token }));
