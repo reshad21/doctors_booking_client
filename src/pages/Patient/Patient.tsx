@@ -8,10 +8,12 @@ import Pagination from "@/components/shared/Pagination";
 import { Input } from "@/components/ui/input";
 import PatientHeaderSelect from "./_components/PatientHeaderSelect";
 import PatientTable from "./_components/PaitentTable";
+import ExportDropdown from "@/components/shared/ExportDropdown";
 
 const Patient = () => {
   const [deletePatient] = useDeletePatientMutation();
-  const { data: chambersData, isLoading: isChamberLoading } = useGetChambersQuery({searchTerm: ""});
+  const { data: chambersData, isLoading: isChamberLoading } =
+    useGetChambersQuery({ searchTerm: "" });
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [searchInput, setSearchInput] = useState("");
@@ -41,9 +43,8 @@ const Patient = () => {
     }),
   });
 
-  
   if (isLoading || isChamberLoading) return <div>Loading</div>;
-  
+
   return (
     <div className="custom-container">
       <div className="w-full">
@@ -59,7 +60,18 @@ const Patient = () => {
         </div>
         {/* Header Section */}
         <div className="flex items-center justify-between py-4 px-4 bg-white">
-          <div className="flex items-center gap-3 justify-center"></div>
+          <div className="flex items-center gap-3 justify-center">
+            <ExportDropdown
+              data={patientsData?.data?.data || []}
+              columns={[
+                { label: "Name", key: "name" },
+                { label: "Phone", key: "phoneNumber" },
+                { label: "Gender", key: "gender" },
+                { label: "Status", key: "status" },
+                { label: "Date", key: "createdAt" },
+              ]}
+            />
+          </div>
           <Input
             className="w-80 rounded"
             placeholder="Search"

@@ -89,7 +89,8 @@ const AppointmentManagement = () => {
     })) as any;
 
     console.log(res, "create patient response");
-    if (res?.data?.data?.success) {
+
+    if (res?.data?.success) {
       const response = await sendSingleMessage({
         number: data?.phoneNumber,
         message: "this is test message",
@@ -103,17 +104,11 @@ const AppointmentManagement = () => {
           `${res?.data?.message} & ${response?.data?.data?.success_message}`
         );
       } else {
-        toast.success(`${res?.data?.data?.message} `);
+        toast.success(`${res?.data?.message}`);
       }
     } else {
-      // console.error();
-      // toast.error(res?.error?.data?.data?.message || "something went wrong");
-      const errorMessage =
-        res?.error?.data?.message ||
-        res?.error?.data?.errorSources?.[0]?.message ||
-        "Something went wrong";
-
-      toast.error(errorMessage);
+      console.error(res?.error);
+      toast.error(res?.error?.data?.message || "Something went wrong");
     }
   };
 

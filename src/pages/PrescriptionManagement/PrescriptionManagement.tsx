@@ -209,7 +209,7 @@ const PrescriptionManagement = () => {
                 { label: "Header Image", name: "headerImage" },
                 { label: "Footer Image", name: "footerImage" },
               ]}
-              buttonProperty={{ type: "create", text: "Add Prescription" }}
+              buttonProperty={{ type: "create", text: "Add Prescription UI" }}
             />
           ) : (
             <CustomModal
@@ -217,7 +217,7 @@ const PrescriptionManagement = () => {
               setOpen={setViewModalOpen}
               title="Uploaded Prescription"
               description="You can only delete the uploaded prescription."
-              buttonProperty={{ type: "create", text: "Uploaded Prescription" }}
+              buttonProperty={{ type: "create", text: "Uploaded Prescription UI" }}
               hideForm
             >
               {preManagementData?.data?.data?.map((item: any) => (

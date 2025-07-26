@@ -91,15 +91,12 @@ const PatientTable = ({ patientsData, deletePatient }: PatientTableProps) => {
                 <Badge className="bg-[#14400D] rounded">Paid</Badge>
               </TableCell>
               <TableCell>
-                <select
-                  value={
-                    patient.status === "ACTIVE" ? "VISITED" : "NOT VISITED"
-                  }
-                  className="border rounded text-xs bg-[#14400D] text-white p-1 focus:outline-none"
-                >
-                  <option value="VISITED">Visited</option>
-                  <option value="NOT VISITED">Not Visited</option>
-                </select>
+                <span className="border rounded text-xs bg-[#14400D] text-white p-1 capitalize focus:outline-none">
+                  {{
+                    VISITED: "Visited",
+                    NOT_VISITED: "Not Visited",
+                  }[patient?.visitStatus ?? ""] || "N/A"}
+                </span>
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2 h-full">

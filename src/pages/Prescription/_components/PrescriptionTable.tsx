@@ -7,15 +7,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Switch } from "@/components/ui/switch";
 import { Eye, Info, Plus } from "lucide-react";
 import type { Patient } from "@/types/patient.types";
 import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useUpdatePatientMutation } from "@/redux/api/patient/patient";
+import toast from "react-hot-toast";
 
 const PrescriptionTable = ({ patients }: any) => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [updatePatient] = useUpdatePatientMutation();
   const handleFormSubmit = async (
     data: Record<string, unknown>,
     helpers: { reset: () => void; close: () => void }
@@ -31,6 +33,18 @@ const PrescriptionTable = ({ patients }: any) => {
     }
   };
 
+  const handleVisitChange = async (id: string, visitStatus: string) => {
+    try {
+      await updatePatient({
+        id,
+        payload: { visitStatus },
+      });
+      toast.success("Visit status updated successfully");
+    } catch (error) {
+      toast.success("Visit status is not updated");
+      console.error("Failed to update visit status", error);
+    }
+  };
 
   if (!patients?.data?.data?.length) {
     return (
@@ -42,7 +56,6 @@ const PrescriptionTable = ({ patients }: any) => {
       </div>
     );
   }
-
 
   return (
     <div className="custom-container">
@@ -82,7 +95,13 @@ const PrescriptionTable = ({ patients }: any) => {
                   {patient.phoneNumber}
                 </TableCell>
                 <TableCell className="text-white space-x-2">
-                  <Link to={`/dashboard/create-prescription/${patient?.id}`} state={{ patient: { name: patient.name, age: patient.age } }} className="bg-brand flex justify-center items-center gap-2 rounded-sm cursor-pointer">
+                  <Link
+                    to={`/dashboard/create-prescription/${patient?.id}`}
+                    state={{
+                      patient: { name: patient.name, age: patient.age },
+                    }}
+                    className="bg-brand flex justify-center items-center gap-2 rounded-sm cursor-pointer"
+                  >
                     <Plus />
                     <span>Add</span>
                   </Link>
@@ -92,17 +111,23 @@ const PrescriptionTable = ({ patients }: any) => {
                 </TableCell>
                 <TableCell className="text-[#5C727D] space-x-2">Paid</TableCell>
                 <TableCell>
-                  <Switch
-                    checked={
-                      patient.visitStatus !==
-                      ("NOT_VISITED" as typeof patient.visitStatus)
+                  <select
+                    value={patient.visitStatus}
+                    onChange={(e) =>
+                      handleVisitChange(patient.id, e.target.value)
                     }
-                    className="data-[state=checked]:bg-green-600"
-                  />
+                    className="border rounded text-xs bg-[#14400D] text-white p-1 focus:outline-none"
+                  >
+                    <option value="VISITED">Visited</option>
+                    <option value="NOT_VISITED">Not Visited</option>
+                  </select>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center justify-center gap-2 h-full">
-                    <Link to={`/dashboard/view-prescription/${patient.id}`} className=" hover:bg-green-50 no-border ">
+                    <Link
+                      to={`/dashboard/view-prescription/${patient.id}`}
+                      className=" hover:bg-green-50 no-border "
+                    >
                       <Eye className="h-5 w-5 text-[#14400D]" />
                     </Link>
                     <div className=" hover:bg-green-50 no-border">
@@ -134,9 +159,7 @@ const PrescriptionTable = ({ patients }: any) => {
                         }}
                       />
                     </div>
-                    <div>
-                      {/* <ConfirmAlert id={patient?.id} onDeleted={deleteStaff} person={"Staff"} /> */}
-                    </div>
+                    <div></div>
                   </div>
                 </TableCell>
               </TableRow>
