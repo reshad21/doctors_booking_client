@@ -11,7 +11,7 @@ import PatientTable from "./_components/PaitentTable";
 
 const Patient = () => {
   const [deletePatient] = useDeletePatientMutation();
-  const { data: chambersData } = useGetChambersQuery({});
+  const { data: chambersData, isLoading: isChamberLoading } = useGetChambersQuery({searchTerm: ""});
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [searchInput, setSearchInput] = useState("");
@@ -41,8 +41,9 @@ const Patient = () => {
     }),
   });
 
-  if (isLoading) return <div>Loading</div>;
-
+  
+  if (isLoading || isChamberLoading) return <div>Loading</div>;
+  
   return (
     <div className="custom-container">
       <div className="w-full">

@@ -21,7 +21,7 @@ const AppointmentManagement = () => {
   const [deletePatient] = useDeletePatientMutation();
   const [sendSingleMessage] = useSendSingleMessageMutation();
   const [createPatient] = useCreatePatientMutation();
-  const { data: chambersData } = useGetChambersQuery(undefined);
+  const { data: chambersData } = useGetChambersQuery({});
   const [modalOpen, setModalOpen] = useState(false);
   const doctorId = useAppSelector((state) => state.admin.id);
   const [page, setPage] = useState(1);
@@ -83,12 +83,13 @@ const AppointmentManagement = () => {
     data: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
   ) => {
-
     const res = (await createPatient({
       ...data,
       doctorId,
     })) as any;
-    if (res?.data?.success) {
+
+    console.log(res, "create patient response");
+    if (res?.data?.data?.success) {
       const response = await sendSingleMessage({
         number: data?.phoneNumber,
         message: "this is test message",
@@ -102,11 +103,17 @@ const AppointmentManagement = () => {
           `${res?.data?.message} & ${response?.data?.data?.success_message}`
         );
       } else {
-        toast.success(`${res?.data?.message} `);
+        toast.success(`${res?.data?.data?.message} `);
       }
     } else {
-      console.error();
-      toast.error(res?.error?.data?.message || "something went wrong");
+      // console.error();
+      // toast.error(res?.error?.data?.data?.message || "something went wrong");
+      const errorMessage =
+        res?.error?.data?.message ||
+        res?.error?.data?.errorSources?.[0]?.message ||
+        "Something went wrong";
+
+      toast.error(errorMessage);
     }
   };
 
@@ -133,7 +140,7 @@ const AppointmentManagement = () => {
                 { label: "Phone", key: "phoneNumber" },
                 { label: "Gender", key: "gender" },
                 { label: "Status", key: "status" },
-                { label: "Date", key: "createdAt" }
+                { label: "Date", key: "createdAt" },
               ]}
             />
 
