@@ -22,7 +22,17 @@ const messageApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["message"],
     }),
+    displayNotice: builder.mutation({
+      query: (data) => {
+        return {
+          url: `/notice/notice-create`,
+          method: "POST",
+          body: data,
+        };
+      },
+      invalidatesTags: ["message"],
+    }),
   }),
 });
 
-export const {useSendSingleMessageMutation,useSendMultipleMessageMutation} = messageApi;
+export const {useSendSingleMessageMutation,useSendMultipleMessageMutation,useDisplayNoticeMutation} = messageApi;

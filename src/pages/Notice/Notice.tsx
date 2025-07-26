@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import CustomModal from "@/components/shared/CustomModal";
-import { Button } from "@/components/ui/button";
 import { useSendMultipleMessageMutation } from "@/redux/api/message/message";
-import { Plus } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import DisplayNotice from "./_components/DisplayNotice";
 const createPatientInputs = [
   { label: "Write your message", name: "message", type: "text" },
 ];
@@ -38,15 +37,15 @@ const Notice = () => {
         {/* Header Section */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <Button className="bg-brand hover:bg-green-800 cursor-pointer text-white">
+            {/* <Button className="bg-brand hover:bg-green-800 cursor-pointer text-white">
               <Plus className="ml-2 h-4 w-4" />
               Add display notice
-            </Button>
-
+            </Button> */}
+            <DisplayNotice />
             <CustomModal
               open={modalOpen}
               setOpen={setModalOpen}
-              title="Create Patient"
+              title="Display notice"
               description="Fill in the form below."
               handleFormSubmit={handleFormSubmit}
               input={createPatientInputs}
