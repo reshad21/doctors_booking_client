@@ -51,7 +51,7 @@ const DisplayNotice = () => {
         handleFormSubmit={handleFormSubmit}
         input={createPatientInputs}
         select={selectFields}
-        buttonProperty={{ type: "create", text: "Add sMS notice" }}
+        buttonProperty={{ type: "create", text: "Add Display notice" }}
       />
     </div>
   );

@@ -49,7 +49,7 @@ const Notice = () => {
               description="Fill in the form below."
               handleFormSubmit={handleFormSubmit}
               input={createPatientInputs}
-              buttonProperty={{ type: "create", text: "Add sMS notice" }}
+              buttonProperty={{ type: "create", text: "Add SMS notice" }}
             />
           </div>
         </div>
