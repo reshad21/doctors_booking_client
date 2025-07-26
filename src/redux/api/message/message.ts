@@ -12,7 +12,27 @@ const messageApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["message"],
     }),
+    sendMultipleMessage: builder.mutation({
+      query: (data) => {
+        return {
+          url: `/message/message`,
+          method: "POST",
+          body: data,
+        };
+      },
+      invalidatesTags: ["message"],
+    }),
+    displayNotice: builder.mutation({
+      query: (data) => {
+        return {
+          url: `/notice/notice-create`,
+          method: "POST",
+          body: data,
+        };
+      },
+      invalidatesTags: ["message"],
+    }),
   }),
 });
 
-export const {useSendSingleMessageMutation} = messageApi;
+export const {useSendSingleMessageMutation,useSendMultipleMessageMutation,useDisplayNoticeMutation} = messageApi;

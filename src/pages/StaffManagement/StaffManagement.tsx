@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -9,13 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ChevronDown, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import {
   useCreateStaffMutation,
   useDeleteStaffMutation,
@@ -30,6 +23,7 @@ import toast from "react-hot-toast";
 import RoutesModal from "./_components/RoutesModal";
 import formatDateToReadable from "@/utils/formateDateToReveal";
 import UpdateStaff from "./_components/UpdateStaff";
+import ExportDropdown from "@/components/shared/ExportDropdown";
 
 const StaffManagement = () => {
   const { data: staffData } = useGetStaffQuery(undefined);
@@ -54,7 +48,7 @@ const StaffManagement = () => {
     });
 
     formData.append("doctorId", doctorId);
-    
+
     const res = (await createStaff(formData)) as any;
     if (res?.data?.success) {
       helpers.reset();
@@ -72,19 +66,16 @@ const StaffManagement = () => {
         {/* Header Section */}
         <div className="flex items-center justify-between mb- bg-white py-[18px] ps-[20px] rounded-t-sm">
           <div className="flex items-center gap-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="bg-brand hover:bg-green-800 text-white">
-                  Export
-                  <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>Export as CSV</DropdownMenuItem>
-                <DropdownMenuItem>Export as PDF</DropdownMenuItem>
-                <DropdownMenuItem>Export as Excel</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ExportDropdown
+              data={staffData?.data || []}
+              columns={[
+                { label: "Staff Name", key: "name" },
+                { label: "Email", key: "email" },
+                { label: "Phone", key: "phone" },
+                { label: "Status", key: "status" },
+                { label: "Join Date", key: "createdAt" },
+              ]}
+            />
 
             {staffData?.data?.length == 0 && (
               <CustomModal
