@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import BaseInput from "@/components/shared/BaseInput";
@@ -31,9 +32,11 @@ const Login = () => {
   });
 
   const onSubmit = async (data: LoginSchemaType) => {
-    const res = await login(data);
+    const res = (await login(data)) as any;
+    if (res?.error) {
+      return toast.error(res?.error?.data?.message);
+    }
     const token = res?.data?.data?.accessToken;
-
     dispatch(setUserToken({ token: token }));
     const decoded = decodeToken(token);
 
@@ -97,7 +100,13 @@ const Login = () => {
                   </Button>
                 </form>
               </Form>
-              <Link to={'/staff-login'} className="text-xs mt-4">Need to login Staff <span className="text-blue-400 font-semibold underline cursor-pointer"> Account</span> </Link>
+              <Link to={"/staff-login"} className="text-xs mt-4">
+                Need to login Staff{" "}
+                <span className="text-blue-400 font-semibold underline cursor-pointer">
+                  {" "}
+                  Account
+                </span>{" "}
+              </Link>
             </div>
 
             {/* Decorative elements - Hidden on small screens for better UX */}
