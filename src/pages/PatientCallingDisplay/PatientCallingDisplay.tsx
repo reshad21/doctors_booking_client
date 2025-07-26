@@ -26,7 +26,7 @@ const PatientCallingDisplay = () => {
   }
 
   const activeVideo = onlyActiveVideo?.data?.find(
-    (video) => video.status === "ACTIVE"
+    (video: { status: string }) => video.status === "ACTIVE"
   );
   // const convertToEmbedUrl = (url: string) => {
   //   if (url.includes("youtu.be")) {
