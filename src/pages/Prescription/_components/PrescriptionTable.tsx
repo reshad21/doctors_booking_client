@@ -13,8 +13,14 @@ import type { Patient } from "@/types/patient.types";
 import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import Pagination from "@/components/shared/Pagination";
 
-const PrescriptionTable = ({ patients }: any) => {
+const PrescriptionTable = ({
+  patients,
+  active,
+  totalPages,
+  onPageChange,
+}: any) => {
   const [modalOpen, setModalOpen] = useState(false);
   const handleFormSubmit = async (
     data: Record<string, unknown>,
@@ -31,7 +37,6 @@ const PrescriptionTable = ({ patients }: any) => {
     }
   };
 
-
   if (!patients?.data?.data?.length) {
     return (
       <div className="flex justify-center items-center min-h-[91vh] font-semibold text-xs">
@@ -43,10 +48,9 @@ const PrescriptionTable = ({ patients }: any) => {
     );
   }
 
-
   return (
-    <div className="custom-container">
-      <div className="rounded-b-sm overflow-hidden shadow-sm w-full mt-[30px]">
+    <div className="">
+      <div className="rounded-b-sm overflow-hidden shadow-sm w-full">
         <Table className="no-border">
           <TableHeader className="no-border">
             <TableRow className="bg-[#f7f7f7] no-border">
@@ -82,7 +86,13 @@ const PrescriptionTable = ({ patients }: any) => {
                   {patient.phoneNumber}
                 </TableCell>
                 <TableCell className="text-white space-x-2">
-                  <Link to={`/dashboard/create-prescription/${patient?.id}`} state={{ patient: { name: patient.name, age: patient.age } }} className="bg-brand flex justify-center items-center gap-2 rounded-sm cursor-pointer">
+                  <Link
+                    to={`/dashboard/create-prescription/${patient?.id}`}
+                    state={{
+                      patient: { name: patient.name, age: patient.age },
+                    }}
+                    className="bg-brand flex justify-center items-center gap-2 rounded-sm cursor-pointer"
+                  >
                     <Plus />
                     <span>Add</span>
                   </Link>
@@ -102,7 +112,10 @@ const PrescriptionTable = ({ patients }: any) => {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center justify-center gap-2 h-full">
-                    <Link to={`/dashboard/view-prescription/${patient.id}`} className=" hover:bg-green-50 no-border ">
+                    <Link
+                      to={`/dashboard/view-prescription/${patient.id}`}
+                      className=" hover:bg-green-50 no-border "
+                    >
                       <Eye className="h-5 w-5 text-[#14400D]" />
                     </Link>
                     <div className=" hover:bg-green-50 no-border">
@@ -143,6 +156,14 @@ const PrescriptionTable = ({ patients }: any) => {
             ))}
           </TableBody>
         </Table>
+        {/* Pagination Section */}
+        <div className="mt-4 px-2">
+          <Pagination
+            active={active}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
+        </div>
       </div>
     </div>
   );
