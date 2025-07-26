@@ -156,15 +156,16 @@ const PrescriptionTable = ({
             ))}
           </TableBody>
         </Table>
-        {/* Pagination Section */}
-        <div className="mt-4 px-2">
+        
+      </div>
+      {/* Pagination Section */}
+        <div className="mt-4">
           <Pagination
             active={active}
             totalPages={totalPages}
             onPageChange={onPageChange}
           />
         </div>
-      </div>
     </div>
   );
 };
