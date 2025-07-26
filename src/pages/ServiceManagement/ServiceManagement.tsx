@@ -63,11 +63,51 @@ export default function ServiceManagement() {
     0
   );
 
+  // Helper to format date (optional, for better display)
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      weekday: "long",
+    });
+  };
+
+  // Determine date display for cards
+  const getDateDisplay = () => {
+    const { startDate, endDate } = filters;
+    if (startDate && endDate) {
+      return {
+        from: formatDate(startDate),
+        to: formatDate(endDate),
+      };
+    } else if (startDate) {
+      return {
+        from: formatDate(startDate),
+        to: "",
+      };
+    } else if (endDate) {
+      return {
+        from: formatDate(endDate),
+        to: "",
+      };
+    } else {
+      return {
+        from: "",
+        to: "",
+      };
+    }
+  };
+
+  const dateDisplay = getDateDisplay();
+
   const cards = [
     {
       title: "New Patient History",
-      from: "6th April, 2025 Sunday",
-      to: "16th April, 2025 Tuesday",
+      from: dateDisplay.from,
+      to: dateDisplay.to,
       stats: [
         { label: "New Patient", value: newPatientCount },
         { label: "Visited", value: newPatientCount },
@@ -76,8 +116,8 @@ export default function ServiceManagement() {
     },
     {
       title: "Old Patient History",
-      from: "6th April, 2025 Sunday",
-      to: "16th April, 2025 Tuesday",
+      from: dateDisplay.from,
+      to: dateDisplay.to,
       stats: [
         { label: "Old Patient", value: oldPatientCount },
         { label: "Visited", value: oldPatientCount },
@@ -86,8 +126,8 @@ export default function ServiceManagement() {
     },
     {
       title: "Report History",
-      from: "6th April, 2025 Sunday",
-      to: "18th April, 2025 Tuesday",
+      from: dateDisplay.from,
+      to: dateDisplay.to,
       stats: [
         { label: "Report", value: reportPatientCount },
         { label: "Visited", value: reportPatientCount },
@@ -210,7 +250,7 @@ import BaseSelect from "@/components/shared/BaseSelect";
 import type { Chamber } from "@/types/chamber.types";
 import { FormProvider, useForm } from "react-hook-form";
 import BaseInput from "@/components/shared/BaseInput";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 interface HistoryCardProps {
   title: string;
@@ -220,28 +260,64 @@ interface HistoryCardProps {
 }
 
 export function HistoryCard({ title, from, to, stats }: HistoryCardProps) {
+  // Create a ref for the card
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Print only this card
+  const handlePrint = () => {
+    if (!cardRef.current) return;
+    const printContents = cardRef.current.innerHTML;
+    const originalContents = document.body.innerHTML;
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+    window.location.reload(); // reload to restore event handlers
+  };
+
   return (
-    <Card className="bg-gray-100">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-600 mb-1">
-              <span className="font-medium">From</span> {from}{" "}
-              <span className="font-medium">To</span> {to} :
-              <Download className="h-4 w-4 text-gray-600 inline ml-2" />
-            </p>
+    <div
+      ref={cardRef}
+      className="print:bg-white print:text-black print:p-8 print:shadow-none"
+    >
+      <Card className="bg-gray-100 print:bg-white print:shadow-none">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 mb-1 print:text-black">
+                {from && to ? (
+                  <>
+                    <span className="font-medium">From </span> {from}{" "}
+                    <span className="font-medium">To</span> {to}
+                  </>
+                ) : from ? (
+                  <>
+                    <span className="font-medium">Date: </span> {from}
+                  </>
+                ) : null}
+                <Download
+                  className="h-4 w-4 text-gray-600 inline ml-2 cursor-pointer print:hidden"
+                  onClick={handlePrint}
+                  aria-label="Download PDF"
+                />
+              </p>
+            </div>
           </div>
-        </div>
-        <CardTitle className="text-lg font-semibold">{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {stats.map((stat, idx) => (
-          <div key={idx} className="flex justify-between items-center">
-            <span className="font-medium">{stat.label} :</span>
-            <span className="font-bold text-lg">{stat.value}</span>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
+          <CardTitle className="text-lg font-semibold print:text-black">
+            {title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {stats.map((stat, idx) => (
+            <div
+              key={idx}
+              className="flex justify-between items-center print:text-black"
+            >
+              <span className="font-medium">{stat.label} :</span>
+              <span className="font-bold text-lg">{stat.value}</span>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
