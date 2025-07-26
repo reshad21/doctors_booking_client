@@ -27,7 +27,7 @@ import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
 import { useAppSelector } from "@/redux/hooks";
 import toast from "react-hot-toast";
-import RoutesModal from "./RoutesModal";
+import RoutesModal from "./_components/RoutesModal";
 import formatDateToReadable from "@/utils/formateDateToReveal";
 import UpdateStaff from "./_components/UpdateStaff";
 
@@ -38,7 +38,6 @@ const StaffManagement = () => {
   const [createStaff] = useCreateStaffMutation();
   const doctorId = useAppSelector((state) => state.admin.id);
 
-  console.log(staffData, "staffData")
 
   const handleFormSubmit = async (
     data: Record<string, any>,
@@ -81,9 +80,7 @@ const StaffManagement = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem>Export as CSV</DropdownMenuItem>
                 <DropdownMenuItem>Export as PDF</DropdownMenuItem>
-                <DropdownMenuItem>Export as Excel</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -199,3 +196,5 @@ const StaffManagement = () => {
   );
 };
 export default StaffManagement;
+
+

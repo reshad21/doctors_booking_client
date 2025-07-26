@@ -125,7 +125,7 @@ export default function RoutesModal({
               </div>
 
               {/* Permission Rows - scrollable area */}
-              <div className="max-h-60 overflow-y-auto">
+              <div className="max-h-60 xl:max-h-80 overflow-y-auto">
                 {permissions.map((permission, index) => (
                   <div
                     key={permission.name}

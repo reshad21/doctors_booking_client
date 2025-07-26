@@ -7,8 +7,10 @@ import CreatePrescriptionForm from "../_components/CreatePrescriptionForm";
 import { useCreatePrescriptionMutation } from "@/redux/api/prescription/prescription";
 import { useAppSelector } from "@/redux/hooks";
 import toast from "react-hot-toast";
+import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 
 const CreatePrescription = () => {
+  const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const [createPrescription] = useCreatePrescriptionMutation()
   const { patientId } = useParams();
   const location = useLocation();
@@ -95,7 +97,7 @@ const CreatePrescription = () => {
     <div className="custom-container mt-[30px]">
       <div className="p-5 bg-white">
         <div className="pb-[30px]">
-          <img src={prHead} alt="" />
+          <img src={preManagementData?.data?.[0]?.headerImage} alt="" />
         </div>
         <CreatePrescriptionForm
           form={form}
@@ -109,7 +111,7 @@ const CreatePrescription = () => {
           patient={patient}
         />
         <div className="pt-[30px]">
-          <img src={prHead} alt="" />
+          <img src={preManagementData?.data?.[0]?.footerImage} alt="" />
         </div>
       </div>
     </div>

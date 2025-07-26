@@ -15,6 +15,7 @@ import type { Chamber } from "@/types/chamber.types";
 import { UpdateChamberModal } from "./UpdateChamberModal";
 import { useState } from "react";
 import { useUpdateChamberMutation } from "@/redux/api/chamber/chamber";
+import toast from "react-hot-toast";
 
 interface ChamberTableProps {
   chambersData: Chamber[];
@@ -42,8 +43,11 @@ const ChamberTable = ({ chambersData, deleteChamber }: ChamberTableProps) => {
           status: updatedStatus,
         },
       }).unwrap();
+
+      toast.success(`Status changed to ${updatedStatus}`);
     } catch (error) {
       console.error("Failed to toggle status:", error);
+      toast.error("Failed to change status");
     }
   };
 
@@ -109,7 +113,7 @@ const ChamberTable = ({ chambersData, deleteChamber }: ChamberTableProps) => {
                 <Switch
                   checked={member.status === "ACTIVE"}
                   onCheckedChange={() => handleStatusToggle(member)}
-                  className="data-[state=checked]:bg-green-600"
+                  className="data-[state=checked]:bg-green-600 cursor-pointer"
                 />
               </TableCell>
               <TableCell>

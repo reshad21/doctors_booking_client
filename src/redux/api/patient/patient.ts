@@ -13,10 +13,16 @@ const patientApi = baseApi.injectEndpoints({
       invalidatesTags: ["patient"],
     }),
     getPatient: builder.query({
-      query: () => {
+      query: ({ page, limit, searchTerm, filter }) => {
         return {
-          url: `/patients/get-all-patients`,
+          url: `/patients/get-all-patients/`,
           method: "GET",
+          params: {
+            page,
+            limit,
+            searchTerm,
+            filter,
+          },
         };
       },
       providesTags: ["patient"],
@@ -30,10 +36,11 @@ const patientApi = baseApi.injectEndpoints({
     }),
     updatePatient: builder.mutation({
       query: ({ id, payload }) => ({
-        url: `/patient/${id}`,
+        url: `/patients/${id}`,
         method: "PUT",
         body: payload,
       }),
+      invalidatesTags: ["patient"],
     }),
   }),
 });

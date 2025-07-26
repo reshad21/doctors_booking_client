@@ -15,13 +15,22 @@ interface FormData {
 
 interface HeaderSelectProps {
   chambersData: Chamber[];
+  selected: {
+    date: string;
+    chamber: string;
+  };
+  onChange: (val: { date: string; chamber: string }) => void;
 }
 
-const HeaderSelect: React.FC<HeaderSelectProps> = ({ chambersData }) => {
+const HeaderSelect: React.FC<HeaderSelectProps> = ({
+  chambersData,
+  selected,
+  onChange,
+}) => {
   const methods = useForm<FormData>({
     defaultValues: {
-      date: "",
-      chamber: "",
+      date: selected.date || "",
+      chamber: selected.chamber || "",
     },
   });
 
@@ -30,8 +39,15 @@ const HeaderSelect: React.FC<HeaderSelectProps> = ({ chambersData }) => {
     val: chamber.id,
   }));
 
+  // Handle send button click
+  const handleSend = methods.handleSubmit((data) => {
+    onChange(data);
+  });
+
+  // Handle cross button click
   const handleClose = () => {
     methods.reset();
+    onChange({ date: "", chamber: "" });
   };
 
   return (
@@ -48,27 +64,32 @@ const HeaderSelect: React.FC<HeaderSelectProps> = ({ chambersData }) => {
               placeholder="Date"
             />
           </div>
-
           {/* Chamber Selection */}
           <div className="flex-1 min-w-0">
             <span className="block text-sm mb-1 font-medium">Chamber</span>
             <BaseSelect
               name="chamber"
-              options={chamberOptions.map(chamber => ({
+              options={chamberOptions.map((chamber) => ({
                 name: chamber.name,
-                value: chamber.val
+                value: chamber.val,
               }))}
               className="w-full border-[#A0B19E] rounded-[4px] !h-10 border text-[#5F597480] bg-slate-50"
             />
           </div>
-
-          {/* Close Button */}
-          <div className="flex justify-end sm:justify-start sm:flex-shrink-0 sm:self-end">
+          <div className="flex gap-2 justify-end sm:justify-start sm:flex-shrink-0 sm:self-end">
+            <Button
+              type="button"
+              variant="default"
+              className="h-11 px-6 cursor-pointer bg-brand text-white rounded-sm"
+              onClick={handleSend}
+            >
+              Send
+            </Button>
             <Button
               type="button"
               variant="outline"
               size="icon"
-              className="h-11 w-11 border-gray-300 hover:bg-slate-50 bg-white rounded-sm"
+              className="h-11 w-11 cursor-pointer border-gray-300 hover:bg-slate-50 bg-white rounded-sm"
               onClick={handleClose}
             >
               <X className="h-4 w-4 text-gray-600" />

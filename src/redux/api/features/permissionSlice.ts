@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export interface PermissionItem {
@@ -54,3 +55,5 @@ export const {
 } = permissionSlice.actions;
 
 export const permissionReducer = permissionSlice.reducer;
+export const useRouteAccess = (path: string) => (state: any) =>
+  state.permission.permissions.find((r: any) => r.path === path)?.allowed ?? false;

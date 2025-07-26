@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "./_component/app-sidebar";
 import { sideNavMenu } from "@/context/Routes-sideNav";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -18,21 +18,37 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, Home, KeyRound, LogOut, User } from "lucide-react";
 import { useGetAdminByTokenQuery } from "@/redux/api/admin/admin";
 import { filterSideNavMenuByAccess } from "@/utils/filterSideNavMenu";
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setPermissions } from "@/redux/api/features/permissionSlice";
+import { useEffect, useMemo } from "react";
+import type { PermissionItem } from "@/redux/api/features/permissionSlice";
+import { HandelLogout } from "@/lib/HandelLogout";
 export default function DashboardLayout() {
   const { data: adminDataFromApi, isLoading } = useGetAdminByTokenQuery({});
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const doctor = useAppSelector((state) => state.admin);
+
+  const routeAccess: PermissionItem[] = useMemo(
+    () =>
+      Array.isArray(adminDataFromApi?.data?.routeAccess)
+        ? adminDataFromApi.data.routeAccess
+        : [],
+    [adminDataFromApi]
+  );
+
+  const filteredMenu = useMemo(
+    () => filterSideNavMenuByAccess(sideNavMenu, routeAccess),
+    [routeAccess]
+  );
+
+  useEffect(() => {
+    if (routeAccess.length > 0) {
+      dispatch(setPermissions(routeAccess));
+    }
+  }, [dispatch, routeAccess]);
 
   if (isLoading) return null;
-
-  const routeAccess = adminDataFromApi?.data?.routeAccess || [];
-
-  console.log(routeAccess, "routeAccess")
-  console.log(adminDataFromApi, "adminData")
-  
-  const filteredMenu = filterSideNavMenuByAccess(sideNavMenu, routeAccess);
-  dispatch(setPermissions(routeAccess))
 
   return (
     <SidebarProvider>
@@ -48,19 +64,26 @@ export default function DashboardLayout() {
                 <span>Home</span>
               </Button>
             </Link>
-
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="text-white  ">
                   <div className="flex items-center space-x-1 ">
                     <Avatar className="w-6 h-6">
-                      <AvatarImage
-                        src="https://github.com/shadcn.png"
-                        alt="Dr. Stven N Carter"
-                      />
+                      {doctor?.profilePhoto != "N/A" && (
+                        <AvatarImage
+                          src={doctor?.profilePhoto}
+                          alt={doctor?.name}
+                        />
+                      )}
+                      {doctor?.profilePhoto == "N/A" && (
+                        <AvatarImage
+                          src="https://github.com/shadcn.png"
+                          alt={doctor?.name}
+                        />
+                      )}
                       <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
-                    <span className="text-sm">Dr. Stven N Carter</span>
+                    <span className="text-sm">{doctor?.name}</span>
                     <ChevronDown className="w-4 h-4" />
                   </div>
                 </Button>
@@ -75,7 +98,7 @@ export default function DashboardLayout() {
                   Change Password
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600">
+                <DropdownMenuItem className="text-red-600" onClick={() => HandelLogout(navigate, dispatch)}>
                   <LogOut className="w-4 h-4 mr-2" />
                   Logout
                 </DropdownMenuItem>
