@@ -195,9 +195,9 @@ const PrescriptionManagement = () => {
   return (
     <div className="custom-container">
       <div className="w-full">
-        <div className="flex items-center justify-between mb-6" />
+        <div className="flex items-center justify-between" />
 
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-6 py-4 px-4 bg-white rounded">
           {!hasPrescription ? (
             <CustomModal
               open={modalOpen}

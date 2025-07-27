@@ -79,8 +79,8 @@ const WatchVideo = () => {
   return (
     <div className="custom-container">
       <div className="w-full">
-        <div className="flex items-center justify-between mb-6"></div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between"></div>
+        <div className="flex items-center gap-3 py-4 px-4 bg-white mb-4 rounded">
           <CustomModal
             open={modalOpen}
             setOpen={setModalOpen}
@@ -116,15 +116,15 @@ const WatchVideo = () => {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto  ">
-              <Table className="no-border ">
+            <div className="overflow-x-auto shadow-sm">
+              <Table className="no-border">
                 <TableHeader className="no-border">
                   <TableRow className="bg-[#f7f7f7] no-border">
                     {["SN", "Title", "Video", "Date", "Status", "Action"].map(
                       (header, ind) => (
                         <TableHead
                           key={ind}
-                          className={`${ind == 7 && "text-center"}`}
+                          className={`${ind == 7 && "text-center"} pl-4`}
                         >
                           {header}
                         </TableHead>
@@ -139,7 +139,7 @@ const WatchVideo = () => {
                         key={video.id}
                         className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
                       >
-                        <TableCell className="font-medium">
+                        <TableCell className="font-medium pl-4">
                           {index + 1}
                         </TableCell>
                         <TableCell className="text-[#5C727D]">
