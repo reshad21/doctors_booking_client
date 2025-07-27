@@ -47,7 +47,35 @@ const messageApi = baseApi.injectEndpoints({
       },
       providesTags: ["patient"],
     }),
+  updateDisplayNotice: builder.mutation({
+      query: (data) => {
+        return {
+          url: `/notice/${data?.id}`,
+          method: "PUT",
+          body: data?.updateValue,
+        };
+      },
+      invalidatesTags: ["message"],
+    }),
+    deleteDisplayNotice: builder.mutation({
+      query: (id) => {
+        console.log(id);
+        
+        return {
+          url: `/notice/${id}`,
+          method: "delete",
+        };
+      },
+      invalidatesTags: ["message"],
+    }),
   }),
 });
 
-export const {useSendSingleMessageMutation,useSendMultipleMessageMutation,useDisplayNoticeMutation,useGetDisplayNoticeQuery} = messageApi;
+export const {
+  useSendSingleMessageMutation,
+  useSendMultipleMessageMutation,
+  useDisplayNoticeMutation,
+  useGetDisplayNoticeQuery,
+  useDeleteDisplayNoticeMutation,
+  useUpdateDisplayNoticeMutation
+} = messageApi;

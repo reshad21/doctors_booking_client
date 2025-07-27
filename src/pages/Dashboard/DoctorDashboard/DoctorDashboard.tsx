@@ -1,35 +1,35 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-
-  CardContent,
-  
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAppSelector } from "@/redux/hooks";
-import { Download, Users } from "lucide-react";
-
-const appointmentData = [
-  { sn: 10, name: "John Doe", phone: "01758191780", status: "On Going" },
-  { sn: 10, name: "John Doe", phone: "01758191780", status: "Next" },
-  { sn: 10, name: "John Doe", phone: "01758191780", status: "Next" },
-  { sn: 10, name: "John Doe", phone: "01758191780", status: "Next" },
-];
+import { useGetPatientSummaryQuery } from "@/redux/api/patient-summary/patient-summary";
+import { Users } from "lucide-react";
+import StatCard from "../_component/StatCard";
+import PatientPercentageCard from "../_component/PatientPerchantageCard";
+import PaymentCard from "../_component/PaymentCard";
+import PatientChart from "../_component/PatientChart";
+import { useGetPatientQuery } from "@/redux/api/patient/patient";
+import TodayAppointments from "../_component/TodayAppointment";
 
 const DoctorDashboard = () => {
-  const doctor = useAppSelector((state) => state.admin);
+  const today = new Date().toISOString().split("T")[0];
+  const { data: patientSummaryData, isLoading: isPatientSummaryLoading } =
+    useGetPatientSummaryQuery({});
+  const { data: patientApiData, isLoading: isPatientLoading } =
+    useGetPatientQuery({
+      filter: JSON.stringify({
+        createdAt: today,
+      }),
+    });
+
+  const appointmentData =
+    patientApiData?.data?.data?.map((patient: any, index: number) => ({
+      sn: index + 1,
+      name: patient.name,
+      phone: patient.phoneNumber,
+      status: patient.visitStatus || "Unknown",
+    })) || [];
+
+  if (isPatientSummaryLoading || isPatientLoading) return <div>Loading...</div>;
+
   return (
     <div>
       <main className="flex-1 p-6 mt-4 sm:mt-2 overflow-auto">
@@ -39,13 +39,13 @@ const DoctorDashboard = () => {
             <Avatar className="w-16 h-16">
               <AvatarImage
                 src="/placeholder.svg?height=64&width=64"
-                alt={doctor?.name}
+                alt="Dr. Stven N Carter"
               />
-              <AvatarFallback>{doctor?.name.slice(0,1)}</AvatarFallback>
+              <AvatarFallback>SC</AvatarFallback>
             </Avatar>
             <div>
               <h2 className="text-2xl font-bold text-gray-800">
-                Welcome To {doctor?.name}
+                Welcome To DR. Stven N Carter
               </h2>
               <p className="text-gray-600">Have a nice day at work</p>
             </div>
@@ -57,47 +57,35 @@ const DoctorDashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-100 text-sm">Total Appointment's</p>
-                  <p className="text-3xl font-bold">1000</p>
-                </div>
-                <div className="w-12 h-12 bg-blue-400 rounded-lg flex items-center justify-center">
-                  <Users className="w-6 h-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <StatCard
+            title="Total Appointment's"
+            value={patientSummaryData?.data?.totalPatients || 0}
+            icon={Users}
+            gradientFrom="from-blue-500"
+            gradientTo="to-blue-600"
+            bgIconColor="bg-blue-400"
+            subtitleColor="text-blue-100"
+          />
 
-          <Card className="bg-gradient-to-br from-red-500 to-red-600 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-red-100 text-sm">Today's Appointment</p>
-                  <p className="text-3xl font-bold">80</p>
-                </div>
-                <div className="w-12 h-12 bg-red-400 rounded-lg flex items-center justify-center">
-                  <Users className="w-6 h-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <StatCard
+            title="Today's Appointment"
+            value={patientSummaryData?.data?.todaysPatients || 0}
+            icon={Users}
+            gradientFrom="from-red-500"
+            gradientTo="to-red-600"
+            bgIconColor="bg-red-400"
+            subtitleColor="text-red-100"
+          />
 
-          <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-orange-100 text-sm">Monthly Appointment</p>
-                  <p className="text-3xl font-bold">200</p>
-                </div>
-                <div className="w-12 h-12 bg-orange-400 rounded-lg flex items-center justify-center">
-                  <Users className="w-6 h-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <StatCard
+            title="Monthly Appointment"
+            value={patientSummaryData?.data?.monthlyPatients || 0}
+            icon={Users}
+            gradientFrom="from-orange-500"
+            gradientTo="to-orange-600"
+            bgIconColor="bg-orange-400"
+            subtitleColor="text-orange-100"
+          />
         </div>
 
         {/* Patient Summary */}
@@ -108,242 +96,29 @@ const DoctorDashboard = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             {/* Patient Percentage */}
-            <Card className="border-none">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Patient Percentage</CardTitle>
-                  <div className="flex space-x-2">
-                    <Tabs defaultValue="daily" className="w-auto">
-                      <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="daily" className="text-xs">
-                          Daily
-                        </TabsTrigger>
-                        <TabsTrigger value="weekly" className="text-xs">
-                          Weekly
-                        </TabsTrigger>
-                        <TabsTrigger value="monthly" className="text-xs">
-                          Monthly
-                        </TabsTrigger>
-                      </TabsList>
-                    </Tabs>
-                    <Button variant="outline" size="sm">
-                      <Download className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-1 h-8 bg-gray-800 rounded"></div>
-                      <div>
-                        <p className="font-bold text-2xl">90%</p>
-                        <p className="text-sm text-gray-600">New Patient</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-1 h-8 bg-gray-800 rounded"></div>
-                      <div>
-                        <p className="font-bold text-2xl">78%</p>
-                        <p className="text-sm text-gray-600">Old Patient</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-1 h-8 bg-gray-800 rounded"></div>
-                      <div>
-                        <p className="font-bold text-2xl">50%</p>
-                        <p className="text-sm text-gray-600">Report Patient</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <PatientPercentageCard
+              daily={patientSummaryData?.data?.dailyStatus}
+              weekly={patientSummaryData?.data?.weeklyStatus}
+              monthly={patientSummaryData?.data?.monthlyStatus}
+            />
 
             {/* Payment */}
-            <Card className="border-none">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Payment</CardTitle>
-                  <div className="flex space-x-2">
-                    <Tabs defaultValue="daily" className="w-auto">
-                      <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="daily" className="text-xs">
-                          Daily
-                        </TabsTrigger>
-                        <TabsTrigger value="weekly" className="text-xs">
-                          Weekly
-                        </TabsTrigger>
-                        <TabsTrigger value="monthly" className="text-xs">
-                          Monthly
-                        </TabsTrigger>
-                      </TabsList>
-                    </Tabs>
-                    <Button variant="outline" size="sm">
-                      <Download className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-1 h-8 bg-gray-800 rounded"></div>
-                      <div>
-                        <p className="font-bold text-2xl">30000</p>
-                        <p className="text-sm text-gray-600">New Patient</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-1 h-8 bg-gray-800 rounded"></div>
-                      <div>
-                        <p className="font-bold text-2xl">20000</p>
-                        <p className="text-sm text-gray-600">Old Patient</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-1 h-8 bg-gray-800 rounded"></div>
-                      <div>
-                        <p className="font-bold text-2xl">10000</p>
-                        <p className="text-sm text-gray-600">Report Patient</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <PaymentCard
+              daily={patientSummaryData?.data?.dailyAmount}
+              weekly={patientSummaryData?.data?.weeklyAmount}
+              monthly={patientSummaryData?.data?.monthlyAmount}
+            />
           </div>
 
           {/* Bottom Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Chart */}
-            <Card className="border-none">
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  Patient Summary January 2025
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-center">
-                  <div className="relative w-48 h-48">
-                    <svg
-                      className="w-full h-full transform -rotate-90"
-                      viewBox="0 0 100 100"
-                    >
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="40"
-                        stroke="#e5e7eb"
-                        strokeWidth="8"
-                        fill="none"
-                      />
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="40"
-                        stroke="#3b82f6"
-                        strokeWidth="8"
-                        fill="none"
-                        strokeDasharray="150 251"
-                        strokeLinecap="round"
-                      />
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="40"
-                        stroke="#f59e0b"
-                        strokeWidth="8"
-                        fill="none"
-                        strokeDasharray="75 251"
-                        strokeDashoffset="-150"
-                        strokeLinecap="round"
-                      />
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="40"
-                        stroke="#d1d5db"
-                        strokeWidth="8"
-                        fill="none"
-                        strokeDasharray="26 251"
-                        strokeDashoffset="-225"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                  </div>
-                </div>
-                <div className="mt-6 space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded"></div>
-                    <span className="text-sm">New Patient</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-yellow-500 rounded"></div>
-                    <span className="text-sm">Old Patient</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-gray-400 rounded"></div>
-                    <span className="text-sm">Report Patient</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <PatientChart
+              yearlyStatus={patientSummaryData?.data?.yearlyStatus}
+            />
 
             {/* Today's Appointments */}
-            <Card className="border-none">
-              <CardHeader>
-                <CardTitle className="text-lg">Today Appointment's</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-xs">SN</TableHead>
-                      <TableHead className="text-xs">Patient Name</TableHead>
-                      <TableHead className="text-xs">Phone Number</TableHead>
-                      <TableHead className="text-xs">Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {appointmentData.map((appointment, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="text-sm">
-                          {appointment.sn}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {appointment.name}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {appointment.phone}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            className={
-                              appointment.status === "On Going"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-blue-100 text-blue-800"
-                            }
-                          >
-                            {appointment.status}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+            <TodayAppointments appointments={appointmentData} />
           </div>
         </div>
       </main>

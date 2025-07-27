@@ -7,6 +7,7 @@ import DisplayNotice from "./_components/DisplayNotice";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import Pagination from "@/components/shared/Pagination";
+import Actions from "./_components/Actions";
 const createPatientInputs = [
   { label: "Write your message", name: "message", type: "text" },
 ];
@@ -21,6 +22,7 @@ const Notice = () => {
     limit,
     searchTerm,
   });
+  
   const [sendMultipleMsg] = useSendMultipleMessageMutation();
   const handleFormSubmit = async (
     data: Record<string, any>,
@@ -71,9 +73,7 @@ const Notice = () => {
           <TableHeader className="no-border">
              <TableRow className="bg-[#f7f7f7] no-border">
                   {[
-                    "SN",
-                    "Display notice",
-                    "Sms notice",
+                    "SL",
                     "Sms status",
                     "Status",
                     "Action",
@@ -88,32 +88,18 @@ const Notice = () => {
                 </TableRow>
           </TableHeader>
           <TableBody>
-            {displayNotice?.data?.data?.map((patient: any, index: number) => (
+            {displayNotice?.data?.map((notice: any, index: number) => (
               <TableRow
-                key={patient.id}
+                key={notice.id}
                 className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
               >
                 <TableCell className="font-medium">{index + 1}</TableCell>
-                <TableCell className="text-[#5C727D]">{patient.name}</TableCell>
-                <TableCell className="text-[#5C727D]">
-                  {patient.name || "N/A"}
+                <TableCell className="text-[#5C727D] max-w-xs break-words whitespace-normal">
+                  {notice.description || "N/A"}
                 </TableCell>
-                <TableCell className="text-[#5C727D] space-x-2">
-                  {patient.phoneNumber}
-                </TableCell>
-                <TableCell className="text-[#5C727D] space-x-2">
-                  {patient.status || "N/A"}
-                </TableCell>
-                <TableCell className="text-[#5C727D] space-x-2">Paid</TableCell>
-                <TableCell>
-                  <Switch
-                    checked={
-                      patient.visitStatus !==
-                      ("NOT_VISITED" as typeof patient.visitStatus)
-                    }
-                    className="data-[state=checked]:bg-green-600"
-                  />
-                </TableCell>
+
+                
+                <Actions id={notice?.id} description={notice.description} status={notice.status}/>
               </TableRow>
             ))}
           </TableBody>

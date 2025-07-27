@@ -1,9 +1,9 @@
-import { useState } from "react";
-import PrescriptionTable from "./_components/PrescriptionTable";
 import { useGetPatientQuery } from "@/redux/api/patient/patient";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import ExportDropdown from "@/components/shared/ExportDropdown";
+import { useState } from "react";
+import PrescriptionTable from "./_components/PrescriptionTable";
 
 const Prescription = () => {
   const [page, setPage] = useState(1);

@@ -16,9 +16,8 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
 
   // Only read permissions from Redux
   const routeAccess = useAppSelector((state) => state.routes.permissions);
-  const isLoadingPermissions = !routeAccess || routeAccess.length === 0;
-  console.log(isLoadingPermissions);
-  
+  const isLoadingPermissions = false
+  // const isLoadingPermissions = !routeAccess || routeAccess.length === 0;
 
   useEffect(() => {
     if (!token) {
@@ -57,6 +56,7 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
     }
   }, [token, dispatch, navigate, location.pathname, routeAccess, isLoadingPermissions]);
 
+  // console.log(token, isExpired, isLoadingPermissions)
   if (!token || isExpired || isLoadingPermissions) {
     return <div style={{ textAlign: "center", marginTop: "2rem" }}>Loading...</div>;
   }
