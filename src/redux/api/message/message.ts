@@ -32,7 +32,22 @@ const messageApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["message"],
     }),
+    getDisplayNotice: builder.query({
+      query: ({ page, limit, searchTerm, filter }) => {
+        return {
+          url: `/notice/get-notice`,
+          method: "GET",
+          params: {
+            page,
+            limit,
+            searchTerm,
+            filter,
+          },
+        };
+      },
+      providesTags: ["patient"],
+    }),
   }),
 });
 
-export const {useSendSingleMessageMutation,useSendMultipleMessageMutation,useDisplayNoticeMutation} = messageApi;
+export const {useSendSingleMessageMutation,useSendMultipleMessageMutation,useDisplayNoticeMutation,useGetDisplayNoticeQuery} = messageApi;

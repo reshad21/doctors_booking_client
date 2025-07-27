@@ -8,7 +8,7 @@ import ExportDropdown from "@/components/shared/ExportDropdown";
 const Prescription = () => {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [limit] = useState(4);
+  const [limit] = useState(10);
   const { data: patients } = useGetPatientQuery({
     page,
     limit,
