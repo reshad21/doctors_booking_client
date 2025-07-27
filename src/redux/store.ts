@@ -23,17 +23,29 @@ const persistAuthConfig = {
 
 const persistAdminConfig = {
   key: "adminInfo",
-  storage
+  storage,
 };
 
 const persistPermissionConfig = {
   key: "permissions",
-  storage
+  storage,
+};
+
+const persistSerialConfig = {
+  key: "serial",
+  storage,
 };
 
 const persisterAuthReducer = persistReducer(persistAuthConfig, authReducer);
 const persistedAdminReducer = persistReducer(persistAdminConfig, adminReducer);
-const persistedPermissionReducer = persistReducer(persistPermissionConfig, permissionReducer);
+const persistedPermissionReducer = persistReducer(
+  persistPermissionConfig,
+  permissionReducer
+);
+const persistedSerialReducer = persistReducer(
+  persistSerialConfig,
+  serialReducer
+);
 
 export const store = configureStore({
   reducer: {
@@ -41,7 +53,7 @@ export const store = configureStore({
     auth: persisterAuthReducer,
     admin: persistedAdminReducer,
     routes: persistedPermissionReducer,
-    serial: serialReducer,
+    serial: persistedSerialReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

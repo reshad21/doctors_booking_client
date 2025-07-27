@@ -7,6 +7,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronRight } from "lucide-react";
 import { getCurrentDateTime } from "@/utils/getCurrentDateTime";
 import type { Patient } from "@/types/patient.types";
+import { useAppDispatch } from "@/redux/hooks";
+import { useEffect } from "react";
+import { setCurrentSerial } from "@/redux/api/features/serialSlice";
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -23,6 +26,17 @@ const PatientCallingDisplay = () => {
       filter: JSON.stringify({ createdAt: today }),
       orderBy: JSON.stringify({ createdAt: "desc" }),
     });
+
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "currentSerial") {
+        dispatch(setCurrentSerial(Number(e.newValue)));
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [dispatch]);
 
   if (isLoading || isPatientLoading) {
     return <div className="text-center p-8 text-lg">Loading...</div>;

@@ -1,5 +1,4 @@
-// PatientCaller.tsx
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Patient } from "@/types/patient.types";
@@ -11,12 +10,39 @@ interface PatientCallerProps {
 }
 
 const PatientCaller: React.FC<PatientCallerProps> = ({ patients }) => {
-  const currentSerial = useSelector((state: RootState) => state.serial.currentSerial);
+  const currentSerial = useSelector(
+    (state: RootState) => state.serial.currentSerial
+  );
 
   const hasSpokenRef = useRef<number | null>(null);
+  const [voicesLoaded, setVoicesLoaded] = useState(false);
+
+  // ✅ Ensure voices are available before speaking
+  useEffect(() => {
+    const voices = speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      setVoicesLoaded(true);
+    } else {
+      const handleVoicesChanged = () => {
+        setVoicesLoaded(true);
+      };
+      window.speechSynthesis.addEventListener(
+        "voiceschanged",
+        handleVoicesChanged
+      );
+      return () => {
+        window.speechSynthesis.removeEventListener(
+          "voiceschanged",
+          handleVoicesChanged
+        );
+      };
+    }
+  }, []);
+
 
   useEffect(() => {
     if (
+      voicesLoaded &&
       currentSerial >= 0 &&
       currentSerial < patients.length &&
       currentSerial !== hasSpokenRef.current
@@ -24,49 +50,33 @@ const PatientCaller: React.FC<PatientCallerProps> = ({ patients }) => {
       const serial = currentSerial + 1;
       const message = `Serial Number ${serial}, please be ready`;
       const lang = "en-US";
+      const voices = window.speechSynthesis.getVoices();
 
-      const speak = () => {
-        const voices = window.speechSynthesis.getVoices();
+      const preferredVoice = voices.find(
+        (v) => v.lang === lang && v.name.includes("Microsoft")
+      );
 
-        const utterance = new SpeechSynthesisUtterance(message);
-        utterance.lang = lang;
-        utterance.rate = 0.85;
-
-        const preferredVoice = voices.find(
-          (v) => v.lang === lang && v.name.includes("Microsoft")
-        );
-        if (preferredVoice) {
-          utterance.voice = preferredVoice;
+      let count = 0;
+      const repeat = () => {
+        if (count < 3) {
+          const utterance = new SpeechSynthesisUtterance(message);
+          utterance.lang = lang;
+          utterance.rate = 0.85;
+          if (preferredVoice) utterance.voice = preferredVoice;
+          utterance.onend = () => {
+            count++;
+            setTimeout(repeat, 400);
+          };
+          speechSynthesis.speak(utterance);
         }
-
-        let count = 0;
-        const repeat = () => {
-          if (count < 3) {
-            const u = new SpeechSynthesisUtterance(message);
-            u.lang = lang;
-            u.rate = 0.85;
-            u.voice = utterance.voice;
-            u.onend = () => {
-              count++;
-              setTimeout(repeat, 400);
-            };
-            window.speechSynthesis.speak(u);
-          }
-        };
-
-        repeat();
-        hasSpokenRef.current = currentSerial;
       };
 
-      // sometimes voices aren't loaded immediately
-      if (window.speechSynthesis.getVoices().length === 0) {
-        window.speechSynthesis.onvoiceschanged = speak;
-      } else {
-        speak();
-      }
+      repeat();
+      hasSpokenRef.current = currentSerial;
     }
-  }, [currentSerial, patients]);
+  }, [currentSerial, voicesLoaded, patients]);
 
+  // ✅ Determine visible patients
   const visibleCount = 6;
   let start = currentSerial >= 0 ? currentSerial : 0;
 
@@ -94,19 +104,27 @@ const PatientCaller: React.FC<PatientCallerProps> = ({ patients }) => {
           >
             <CardContent className="px-0 py-0">
               <div
-                className={`flex items-center justify-between p-2 rounded text-white ${isOngoing ? "bg-blue-600" : "bg-[#042F16]"}`}
+                className={`flex items-center justify-between p-2 rounded text-white ${
+                  isOngoing ? "bg-blue-600" : "bg-[#042F16]"
+                }`}
               >
                 <div className="flex items-center space-x-4">
                   <Badge
                     variant="secondary"
-                    className={`${isOngoing ? "bg-green-700" : "bg-green-600"} text-white px-3 py-1`}
+                    className={`${
+                      isOngoing ? "bg-green-700" : "bg-green-600"
+                    } text-white px-3 py-1`}
                   >
                     {isOngoing ? "Ongoing" : "Next"}
                   </Badge>
-                  <span className="text-sm font-semibold">S N : {realIdx + 1}</span>
+                  <span className="text-sm font-semibold">
+                    S N : {realIdx + 1}
+                  </span>
                   <span className="text-sm font-medium">
                     Patient Name:{" "}
-                    <span className="font-bold">{String(patient.name || "")}</span>
+                    <span className="font-bold">
+                      {String(patient.name || "")}
+                    </span>
                   </span>
                 </div>
               </div>

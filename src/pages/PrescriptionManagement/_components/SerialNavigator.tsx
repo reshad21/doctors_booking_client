@@ -29,12 +29,14 @@ const SerialControlPage = () => {
         <Button
           onClick={() => dispatch(prevSerial())}
           disabled={currentSerial <= 0}
+          className="bg-blue-400"
         >
           Previous Serial
         </Button>
         <Button
           onClick={() => dispatch(nextSerial(totalPatients))}
           disabled={currentSerial >= totalPatients - 1}
+          className="bg-green-500"
         >
           Next Serial
         </Button>

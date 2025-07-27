@@ -5,7 +5,10 @@ interface SerialState {
 }
 
 const initialState: SerialState = {
-  currentSerial: -1,
+  currentSerial:
+    localStorage.getItem("currentSerial") !== null
+      ? Number(localStorage.getItem("currentSerial"))
+      : -1,
 };
 
 const serialSlice = createSlice({
@@ -14,15 +17,18 @@ const serialSlice = createSlice({
   reducers: {
     setCurrentSerial(state, action: PayloadAction<number>) {
       state.currentSerial = action.payload;
+      localStorage.setItem("currentSerial", String(action.payload));
     },
     nextSerial(state, action: PayloadAction<number>) {
       if (state.currentSerial < action.payload - 1) {
         state.currentSerial += 1;
+        localStorage.setItem("currentSerial", String(state.currentSerial));
       }
     },
     prevSerial(state) {
       if (state.currentSerial > 0) {
         state.currentSerial -= 1;
+        localStorage.setItem("currentSerial", String(state.currentSerial));
       }
     },
   },
