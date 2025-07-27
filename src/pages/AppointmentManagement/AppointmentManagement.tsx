@@ -38,6 +38,7 @@ const AppointmentManagement = () => {
     return () => clearTimeout(handler);
   }, [searchInput]);
 
+  
   const { data: patientsData, isLoading } = useGetPatientQuery({
     page,
     limit,
@@ -46,6 +47,7 @@ const AppointmentManagement = () => {
       chamberId: headerSelect.chamber || undefined,
       createdAt: headerSelect.date || undefined,
     }),
+    orderBy: JSON.stringify({ createdAt: "desc" }),
   });
 
   if (isLoading) return <div>Loading</div>;

@@ -1,4 +1,3 @@
-
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 
 // import {
@@ -26,7 +25,6 @@
 //   const [createPreManagement] = useCreatePreManagementMutation();
 
 //   const [modalOpen, setModalOpen] = useState(false);
-
 
 //   const handleFormSubmit = async (
 //     data: Record<string, any>,
@@ -78,7 +76,6 @@
 //         </div>
 
 //         <div className="rounded-b-sm overflow-hidden shadow-sm">
-
 
 //           {preManagementData?.data?.length == 0 ? (
 //             <div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
@@ -142,8 +139,6 @@
 
 // export default PrescriptionManagement;
 
-
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import CustomModal from "@/components/shared/CustomModal";
 import {
@@ -154,17 +149,17 @@ import {
 import { useState } from "react";
 import toast from "react-hot-toast";
 import ConfirmAlert from "@/components/shared/ConfirmAlert";
+import SerialControlPage from "./_components/SerialNavigator";
 
 const PrescriptionManagement = () => {
-  const { data: preManagementData, refetch } = useGetPreManagementQuery(undefined);
+  const { data: preManagementData, refetch } =
+    useGetPreManagementQuery(undefined);
   const [deletePreManagement] = useDeletePreManagementMutation();
   const [createPreManagement] = useCreatePreManagementMutation();
   const [modalOpen, setModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
 
   const hasPrescription = preManagementData?.data?.data?.length > 0;
-
-  console.log("preManagementData", preManagementData)
 
   const handleFormSubmit = async (
     data: Record<string, any>,
@@ -217,7 +212,10 @@ const PrescriptionManagement = () => {
               setOpen={setViewModalOpen}
               title="Uploaded Prescription"
               description="You can only delete the uploaded prescription."
-              buttonProperty={{ type: "create", text: "Uploaded Prescription UI" }}
+              buttonProperty={{
+                type: "create",
+                text: "Uploaded Prescription UI",
+              }}
               hideForm
             >
               {preManagementData?.data?.data?.map((item: any) => (
@@ -246,7 +244,7 @@ const PrescriptionManagement = () => {
             </CustomModal>
           )}
         </div>
-
+        <SerialControlPage />
       </div>
     </div>
   );
