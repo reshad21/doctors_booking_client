@@ -8,6 +8,7 @@ import PaymentCard from "../_component/PaymentCard";
 import PatientChart from "../_component/PatientChart";
 import { useGetPatientQuery } from "@/redux/api/patient/patient";
 import TodayAppointments from "../_component/TodayAppointment";
+import { useAppSelector } from "@/redux/hooks";
 
 const DoctorDashboard = () => {
   const today = new Date().toISOString().split("T")[0];
@@ -19,7 +20,7 @@ const DoctorDashboard = () => {
         createdAt: today,
       }),
     });
-
+const doctor = useAppSelector((state) => state.admin);
   const appointmentData =
     patientApiData?.data?.data?.map((patient: any, index: number) => ({
       sn: index + 1,
@@ -39,13 +40,13 @@ const DoctorDashboard = () => {
             <Avatar className="w-16 h-16">
               <AvatarImage
                 src="/placeholder.svg?height=64&width=64"
-                alt="Dr. Stven N Carter"
+                alt={doctor?.name}
               />
-              <AvatarFallback>SC</AvatarFallback>
+              <AvatarFallback>{doctor?.name.slice(0,1)}</AvatarFallback>
             </Avatar>
             <div>
-              <h2 className="text-2xl font-bold text-gray-800">
-                Welcome To DR. Stven N Carter
+               <h2 className="text-2xl font-bold text-gray-800">
+                Welcome To {doctor?.name}
               </h2>
               <p className="text-gray-600">Have a nice day at work</p>
             </div>
@@ -90,10 +91,6 @@ const DoctorDashboard = () => {
 
         {/* Patient Summary */}
         <div className="mb-8">
-          <h3 className="text-xl font-bold text-gray-800 mb-6">
-            Patient Summary January 2025
-          </h3>
-
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             {/* Patient Percentage */}
             <PatientPercentageCard
