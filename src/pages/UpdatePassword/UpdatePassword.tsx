@@ -12,6 +12,7 @@ import {
   useUpdateStaffPassMutation,
 } from "@/redux/api/auth/auth";
 import { useAppSelector } from "@/redux/hooks";
+import UpdateProfile from "./_components/UpdateProfile";
 
 type FormData = {
   oldPassword: string;
@@ -55,7 +56,7 @@ const UpdatePassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-start justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-start justify-start p-4 ">
       <Card className="w-full bg-white">
         <CardHeader>
           <CardTitle className="text-xl font-semibold text-gray-900">
@@ -163,6 +164,7 @@ const UpdatePassword = () => {
           </form>
         </CardContent>
       </Card>
+      <UpdateProfile /> 
     </div>
   );
 };
