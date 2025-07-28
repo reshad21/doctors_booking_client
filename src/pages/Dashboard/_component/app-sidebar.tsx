@@ -12,7 +12,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 // sideNavMenu is now passed as a prop
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOutIcon } from "lucide-react";
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { HandelLogout } from "@/lib/HandelLogout";
 
 import type { sideNavMenu as SideNavMenuType } from "@/context/Routes-sideNav";
@@ -27,6 +27,7 @@ export function AppSidebar({ sideNavMenu, ...props }: AppSidebarProps) {
   const location = useLocation();
  const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const doctor = useAppSelector((state) => state.admin);
   return (
     <Sidebar {...props}>
       <SidebarHeader className="bg-[#25102E] text-white">
@@ -34,14 +35,22 @@ export function AppSidebar({ sideNavMenu, ...props }: AppSidebarProps) {
         <div className="p-3 border-b border-purple-700">
           <div className="flex items-center space-x-3">
             <Avatar className="w-12 h-12">
-              <AvatarImage
-                src="/images/doctorprofile.png?height=48&width=48"
-                alt="Dr. Stven N Carter"
-              />
-              <AvatarFallback>SC</AvatarFallback>
+              {doctor?.profilePhoto != "N/A" && (
+                        <AvatarImage
+                          src={doctor?.profilePhoto}
+                          alt={doctor?.name}
+                        />
+                      )}
+                      {doctor?.profilePhoto == "N/A" && (
+                        <AvatarImage
+                          src="/images/doctorprofile.png?height=48&width=48"
+                          alt={doctor?.name}
+                        />
+                      )}
+              <AvatarFallback>{doctor?.name?.slice(0,1)}</AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="font-semibold text-sm">Dr. Stven N Carter</h3>
+              <h3 className="font-semibold text-sm">{doctor?.name}</h3>
               <div className="flex items-center space-x-2 mt-1">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                 <span className="text-xs text-green-400">Subscription</span>
