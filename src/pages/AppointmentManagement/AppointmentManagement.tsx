@@ -93,8 +93,9 @@ const AppointmentManagement = () => {
     if (res?.data?.success) {
       const response = await sendSingleMessage({
         number: data?.phoneNumber,
-        message: "this is test message",
+        message: "Mr. Shifat, your booking with Dr. Mahabur Rahman has been confirmed.",
       });
+console.log(response);
 
       helpers.reset();
       helpers.close();
