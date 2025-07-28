@@ -21,7 +21,7 @@ const AppointmentManagement = () => {
   const [deletePatient] = useDeletePatientMutation();
   const [sendSingleMessage] = useSendSingleMessageMutation();
   const [createPatient] = useCreatePatientMutation();
-  const { data: chambersData } = useGetChambersQuery(undefined);
+  const { data: chambersData } = useGetChambersQuery({});
   const [modalOpen, setModalOpen] = useState(false);
   const doctorId = useAppSelector((state) => state.admin.id);
   const [page, setPage] = useState(1);
@@ -38,6 +38,7 @@ const AppointmentManagement = () => {
     return () => clearTimeout(handler);
   }, [searchInput]);
 
+  
   const { data: patientsData, isLoading } = useGetPatientQuery({
     page,
     limit,
@@ -46,6 +47,7 @@ const AppointmentManagement = () => {
       chamberId: headerSelect.chamber || undefined,
       createdAt: headerSelect.date || undefined,
     }),
+    orderBy: JSON.stringify({ createdAt: "desc" }),
   });
 
   if (isLoading) return <div>Loading</div>;
@@ -83,11 +85,13 @@ const AppointmentManagement = () => {
     data: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
   ) => {
-
     const res = (await createPatient({
       ...data,
       doctorId,
     })) as any;
+
+    console.log(res, "create patient response");
+
     if (res?.data?.success) {
       const response = await sendSingleMessage({
         number: data?.phoneNumber,
@@ -102,11 +106,11 @@ const AppointmentManagement = () => {
           `${res?.data?.message} & ${response?.data?.data?.success_message}`
         );
       } else {
-        toast.success(`${res?.data?.message} `);
+        toast.success(`${res?.data?.message}`);
       }
     } else {
-      console.error();
-      toast.error(res?.error?.data?.message || "something went wrong");
+      console.error(res?.error);
+      toast.error(res?.error?.data?.message || "Something went wrong");
     }
   };
 
@@ -133,7 +137,7 @@ const AppointmentManagement = () => {
                 { label: "Phone", key: "phoneNumber" },
                 { label: "Gender", key: "gender" },
                 { label: "Status", key: "status" },
-                { label: "Date", key: "createdAt" }
+                { label: "Date", key: "createdAt" },
               ]}
             />
 

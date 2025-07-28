@@ -1,56 +1,73 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Volume2, X, ChevronRight } from "lucide-react";
-import { getCurrentDateTime } from "@/utils/getCurrentDateTime";
-import SpeakNames from "./SpeakNames";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/redux/store";
 import { useGetOnlyActiveVideoQuery } from "@/redux/api/watchVideoApi/watchVideoApi";
+import { useGetPatientQuery } from "@/redux/api/patient/patient";
+import PatientCaller from "./_components/PatientCaller";
+import { Card, CardContent } from "@/components/ui/card";
+import { ChevronRight } from "lucide-react";
+import { getCurrentDateTime } from "@/utils/getCurrentDateTime";
+import type { Patient } from "@/types/patient.types";
+import { useAppDispatch } from "@/redux/hooks";
+import { useEffect } from "react";
+import { setCurrentSerial } from "@/redux/api/features/serialSlice";
 
-const patientQueue = [
-  { sn: 10, name: "Asif Khan", status: "ongoing" },
-  { sn: 11, name: "Salman Khan", status: "next" },
-  { sn: 12, name: "Asif Khan", status: "next" },
-  { sn: 13, name: "Salman Khan", status: "next" },
-  { sn: 14, name: "Salman Khan", status: "next" },
-];
-
-const upcomingNumbers = [16, 17, 18, 19, 20, 21];
+const today = new Date().toISOString().split("T")[0];
 
 const PatientCallingDisplay = () => {
+  const currentSerial = useSelector(
+    (state: RootState) => state.serial.currentSerial
+  );
+
   const { data: onlyActiveVideo, isLoading } =
     useGetOnlyActiveVideoQuery(undefined);
+  const { data: patientApiData, isLoading: isPatientLoading } =
+    useGetPatientQuery({
+      limit: 1000,
+      filter: JSON.stringify({ createdAt: today }),
+      orderBy: JSON.stringify({ createdAt: "desc" }),
+    });
 
-  // console.log(onlyActiveVideo.data?.[0].videoFile);
-  if (isLoading) {
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "currentSerial") {
+        dispatch(setCurrentSerial(Number(e.newValue)));
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [dispatch]);
+
+  if (isLoading || isPatientLoading) {
     return <div className="text-center p-8 text-lg">Loading...</div>;
   }
 
-  const activeVideo = onlyActiveVideo?.data?.find(
-    (video) => video.status === "ACTIVE"
-  );
-  // const convertToEmbedUrl = (url: string) => {
-  //   if (url.includes("youtu.be")) {
-  //     const id = url.split("youtu.be/")[1].split("?")[0];
-  //     return `https://www.youtube.com/embed/${id}`;
-  //   } else if (url.includes("watch?v=")) {
-  //     const id = url.split("watch?v=")[1].split("&")[0];
-  //     return `https://www.youtube.com/embed/${id}`;
-  //   }
-  //   return url;
-  // };
+  const patients = patientApiData?.data?.data || [];
 
+  const activeVideo = onlyActiveVideo?.data?.find(
+    (video: { status: string }) => video.status === "ACTIVE"
+  );
 
   const convertToEmbedUrl = (url: string) => {
-  let videoId = "";
+    let videoId = "";
 
-  if (url.includes("youtu.be")) {
-    videoId = url.split("youtu.be/")[1].split("?")[0];
-  } else if (url.includes("watch?v=")) {
-    videoId = url.split("watch?v=")[1].split("&")[0];
-  }
+    if (url.includes("youtu.be")) {
+      videoId = url.split("youtu.be/")[1].split("?")[0];
+    } else if (url.includes("watch?v=")) {
+      videoId = url.split("watch?v=")[1].split("&")[0];
+    }
 
-  return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}`;
-};
+    if (videoId) {
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}`;
+    }
+    return "";
+  };
+
+  const visibleCount = 6;
+  const upcomingCount = 7;
+  const start = Math.max(0, (currentSerial >= 0 ? currentSerial : 0) - 2);
+  const end = Math.min(patients.length, start + visibleCount);
+  const upcomingSerials = patients.slice(end, end + upcomingCount);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -67,16 +84,10 @@ const PatientCallingDisplay = () => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-4 sm:px-8 py-2">
-        <Button className="text-white hover:text-gray-300 transition-colors">
-          <Volume2 size={28} />
-        </Button>
+      <div className="flex items-center justify-center px-4 sm:px-8 py-2">
         <div className="bg-gray-200 text-gray-800 text-sm font-medium px-4 py-2 rounded-lg shadow">
           {getCurrentDateTime()}
         </div>
-        <Button className="text-white hover:text-gray-300 transition-colors">
-          <X size={28} />
-        </Button>
       </div>
 
       {/* Main Content */}
@@ -84,67 +95,38 @@ const PatientCallingDisplay = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Patient Queue */}
           <div className="space-y-2">
-            {/* Current and Next Patients */}
-            <div className="space-y-2">
-              {patientQueue.map((patient) => (
-                <Card key={patient.sn} className="overflow-hidden py-0">
-                  <CardContent className="px-0 py-0">
-                    <div
-                      className={`flex items-center justify-between p-2 text-white ${
-                        patient.status === "ongoing"
-                          ? "bg-gradient-to-r from-blue-600 to-blue-500"
-                          : "bg-gradient-to-r from-gray-800 to-gray-700"
-                      }`}
-                    >
-                      <div className="flex items-center space-x-4">
-                        <Badge
-                          variant="secondary"
-                          className={`${
-                            patient.status === "ongoing"
-                              ? "bg-green-600 text-white"
-                              : "bg-green-700 text-white"
-                          } px-3 py-1`}
-                        >
-                          {patient.status === "ongoing" ? "Ongoing" : "Next"}
-                        </Badge>
-                        <div className="text-sm">
-                          <span className="font-medium">
-                            S N : {patient.sn}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-sm">
-                        <span className="font-medium">
-                          Patient Name : {patient.name}
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
+            <PatientCaller patients={patients} />
             {/* Upcoming Numbers */}
-            <Card className="bg-gray-800 text-white py-0">
+            <Card className="bg-gray-800 text-white py-0 rounded">
               <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  {upcomingNumbers.map((num) => (
-                    <div key={num} className="flex items-cente text-sm">
-                      <span className="text-gray-300">S N : </span>
-                      <ChevronRight size={16} className="text-green-400" />
-                      <span className="font-medium">{num}</span>
-                    </div>
-                  ))}
-                </div>
+                {upcomingSerials.length > 0 ? (
+                  <div className="flex items-center justify-between">
+                    {upcomingSerials.map((patient: Patient, idx: number) => (
+                      <div
+                        key={patient?.id}
+                        className="flex items-center text-sm"
+                      >
+                        <span className="text-gray-300">S N : </span>
+                        <ChevronRight size={16} className="text-green-400" />
+                        <span className="font-medium">{end + idx + 1}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center text-gray-300 text-sm font-medium">
+                    No more upcoming patients at the moment.
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
           {/* Video Display Section */}
           <div className="space-y-4">
-            <Card className="overflow-hidden py-0">
+            <Card className="overflow-hidden rounded py-0">
               <CardContent className="p-0">
                 <div className="relative bg-gray-900 aspect-video flex items-center justify-center">
-                  {activeVideo?.videoFile ? (
+                  {activeVideo?.videoFile &&
+                  convertToEmbedUrl(activeVideo.videoFile) ? (
                     <iframe
                       className="w-full h-full"
                       src={convertToEmbedUrl(activeVideo.videoFile)}
@@ -163,7 +145,6 @@ const PatientCallingDisplay = () => {
 
         {/* Notice Section */}
         <div className="mt-8">
-          <SpeakNames />
           <div className="bg-[#042F16] text-white py-3 px-6 rounded-t-lg">
             <h2 className="text-lg font-semibold text-center">Notice</h2>
           </div>
