@@ -29,7 +29,16 @@ const authApi = baseApi.injectEndpoints({
           }
       },
     }),
+    updateStaffPass: builder.mutation({
+      query: (payload) => {
+        return {
+            url: "/admin/staff-password",
+            method: "PATCH",
+            body: payload,
+          }
+      },
+    }),
    
   }),
 });
-export const {useLoginAdminMutation,useLoginStaffMutation,useUpdateAdminPassMutation} = authApi;
+export const {useLoginAdminMutation,useLoginStaffMutation,useUpdateAdminPassMutation,useUpdateStaffPassMutation} = authApi;

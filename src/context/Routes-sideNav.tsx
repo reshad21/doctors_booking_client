@@ -65,7 +65,7 @@ export const sideNavMenu = [
     icon: MonitorPlayIcon,
   },
   {
-    title: "Update Password",
+    title: "Update Profile",
     url: "/dashboard/update-password",
     icon: KeySquareIcon,
   },

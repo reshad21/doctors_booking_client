@@ -1,118 +1,15 @@
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-// import prHead from "@/assets/pr-head.png";
-
-// import { useGetPerceptionByPatientIdQuery } from "@/redux/api/prescription/prescription";
-// import { Edit, Printer } from "lucide-react";
-// import { Link, useParams } from "react-router-dom";
-
-// const ViewPrescription = () => {
-//   const { patientId } = useParams();
-//   const { data: perceptions } = useGetPerceptionByPatientIdQuery(patientId);
-//   console.log(perceptions?.data);
-
-//   return (
-//     <div>
-//       {perceptions?.data?.map((medic: any) => {
-
-//         return (
-//           <div className="m-5">
-//             <div className="flex justify-start items-center gap-2 pb-2">
-//               <button className=" flex justify-center items-center gap-2 bg-brand text-white py-1 px-3 rounded-sm">
-//                 <Printer className="size-4  text-white" />
-//                 <span>Print</span>
-//               </button>
-//               <Link
-//                 to={"/dashboard/update-prescription"}
-//                 state={{ perception: medic }}
-//                 className=" flex justify-center items-center gap-2 bg-[#47C363] text-white py-1 px-3 rounded-sm"
-//               >
-//                 <Edit className="size-4  text-white" />
-//                 <span>Edit</span>
-//               </Link>
-//             </div>
-//             <div className="max-w-4xl bg-white rounded-lg overflow-hidden w-1/2  shadow-md">
-//               {/* Header Section */}
-//               <div className="p-2">
-//                 <img src={prHead} alt="" />
-//               </div>
-
-//               {/* Patient Information */}
-//               <div className="bg-gray-50 p-3 border-b border-gray-300">
-//                 <div className="flex justify-between items-center text-xs">
-//                   <span>
-//                     <strong>Name:</strong> {medic?.patient.name}
-//                   </span>
-//                   <span>
-//                     <strong>Age:</strong> {medic?.patient.age}
-//                   </span>
-//                   <span>
-//                     <strong>Date:</strong> {medic?.createdAt.split("T")[0]}
-//                   </span>
-//                   <span>
-//                     <strong>ID:</strong> {"N/A"}
-//                   </span>
-//                 </div>
-//               </div>
-
-//               {/* Main Content */}
-//               <div className="flex min-h-96">
-//                 {/* Diagnosis Section */}
-//                 <div className="w-1/3 p-4 border-r-2 border-gray-800">
-//                   <h3 className="font-bold text-xs mb-4">Diagnosis</h3>
-//                   <ul className="space-y-2">
-//                     {medic?.tests.map((item: any, index: number) => (
-//                       <li key={index} className="flex items-center text-xs">
-//                         <span className="w-2 h-2 bg-black rounded-full mr-2"></span>
-//                         {item.description}
-//                       </li>
-//                     ))}
-//                   </ul>
-//                 </div>
-//                 {/* Prescription Section */}
-//                 <div className="flex-1 p-4">
-//                   <div className="space-y-4">
-//                     {medic?.medicines.map((med: any, index: number) => (
-//                       <div key={index}>
-//                         <p className="text-xs font-semibold">
-//                           {index + 1}. {med.medicineName}
-//                         </p>
-//                         <div className="text-xs flex justify-between my-1  items-center">
-//                           <p>{med.dosage}</p>
-//                           <p>{med.day}</p>
-//                           <p>{med.time}</p>
-//                         </div>
-//                         {med.comment && (
-//                           <p className="text-xs text-gray-600 ml-4 mt-1">
-//                             {med.comment}
-//                           </p>
-//                         )}
-//                       </div>
-//                     ))}
-//                   </div>
-//                 </div>
-//               </div>
-//               <div className="p-2">
-//                 <img src={prHead} alt="" />
-//               </div>
-//             </div>
-//           </div>
-//         );
-//       })}
-//     </div>
-//   );
-// };
-
-// export default ViewPrescription;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import prHead from "@/assets/pr-head.png";
 import { useGetPerceptionByPatientIdQuery } from "@/redux/api/prescription/prescription";
 import { Edit, Printer } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useRef } from "react";
+import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 
 const ViewPrescription = () => {
   const { patientId } = useParams();
   const { data: perceptions } = useGetPerceptionByPatientIdQuery(patientId);
+    const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const printRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const setPrintRef = (el: HTMLDivElement | null, index: number) => {
@@ -261,8 +158,8 @@ const ViewPrescription = () => {
         </head>
         <body>
           <div class="print-container">
-            <img src="${window.location.origin}${prHead}" alt="Clinic Header" class="print-header-image" />
             
+             <img src=${preManagementData?.data?.[0]?.headerImage} alt="" />
             <div class="print-patient-info">
               <span><strong>Name:</strong> ${prescriptionData?.patient?.name || ''}</span>
               <span><strong>Age:</strong> ${prescriptionData?.patient?.age || ''}</span>
@@ -283,7 +180,8 @@ const ViewPrescription = () => {
               </div>
             </div>
             
-            <img src="${window.location.origin}${prHead}" alt="Clinic Footer" class="print-footer-image" />
+            <img src=${preManagementData?.data?.[0]?.footerImage} alt="" />
+           
           </div>
         </body>
       </html>
@@ -325,8 +223,8 @@ const ViewPrescription = () => {
             className="bg-white rounded-lg overflow-hidden shadow-md max-w-4xl mx-auto"
           >
             <div className="screen-container">
-              <img src={prHead} alt="Clinic Header" className="w-full h-auto max-h-32 " />
-              
+              {/* <img src={prHead} alt="Clinic Header" className="w-full h-auto max-h-32 " /> */}
+               <img src={preManagementData?.data?.[0]?.headerImage} alt="" />
               <div className="bg-gray-50 p-3 text-sm flex justify-between">
                 <span><strong>Name:</strong> {medic?.patient?.name}</span>
                 <span><strong>Age:</strong> {medic?.patient?.age}</span>
@@ -370,7 +268,8 @@ const ViewPrescription = () => {
                 </div>
               </div>
               
-              <img src={prHead} alt="Clinic Footer" className="w-full h-auto max-h-32 " />
+              <img src={preManagementData?.data?.[0]?.footerImage} alt="" />
+              {/* <img src={prHead} alt="Clinic Footer" className="w-full h-auto max-h-32 " /> */}
             </div>
           </div>
         </div>
