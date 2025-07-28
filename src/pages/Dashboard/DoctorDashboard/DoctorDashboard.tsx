@@ -19,6 +19,7 @@ const DoctorDashboard = () => {
       filter: JSON.stringify({
         createdAt: today,
       }),
+      limit: 1000,
     });
 const doctor = useAppSelector((state) => state.admin);
   const appointmentData =
@@ -91,6 +92,10 @@ const doctor = useAppSelector((state) => state.admin);
 
         {/* Patient Summary */}
         <div className="mb-8">
+          <h3 className="text-xl font-bold text-gray-800 mb-6">
+            Patient Summary
+          </h3>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             {/* Patient Percentage */}
             <PatientPercentageCard

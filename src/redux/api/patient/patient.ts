@@ -13,7 +13,7 @@ const patientApi = baseApi.injectEndpoints({
       invalidatesTags: ["patient"],
     }),
     getPatient: builder.query({
-      query: ({ page, limit, searchTerm, filter }) => {
+      query: ({ page, limit, searchTerm, filter, orderBy }) => {
         return {
           url: `/patients/get-all-patients/`,
           method: "GET",
@@ -22,6 +22,7 @@ const patientApi = baseApi.injectEndpoints({
             limit,
             searchTerm,
             filter,
+            orderBy
           },
         };
       },

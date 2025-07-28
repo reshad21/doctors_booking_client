@@ -14,6 +14,7 @@ import storage from "redux-persist/lib/storage";
 import { baseApi } from "./api/baseApi";
 import adminReducer from "./api/features/adminSlice";
 import { permissionReducer } from "./api/features/permissionSlice";
+import { serialReducer } from "./api/features/serialSlice";
 
 const persistAuthConfig = {
   key: "userInfo",
@@ -22,24 +23,37 @@ const persistAuthConfig = {
 
 const persistAdminConfig = {
   key: "adminInfo",
-  storage
+  storage,
 };
 
 const persistPermissionConfig = {
   key: "permissions",
-  storage
+  storage,
+};
+
+const persistSerialConfig = {
+  key: "serial",
+  storage,
 };
 
 const persisterAuthReducer = persistReducer(persistAuthConfig, authReducer);
 const persistedAdminReducer = persistReducer(persistAdminConfig, adminReducer);
-const persistedPermissionReducer = persistReducer(persistPermissionConfig, permissionReducer);
+const persistedPermissionReducer = persistReducer(
+  persistPermissionConfig,
+  permissionReducer
+);
+const persistedSerialReducer = persistReducer(
+  persistSerialConfig,
+  serialReducer
+);
 
 export const store = configureStore({
   reducer: {
     [baseApi.reducerPath]: baseApi.reducer,
     auth: persisterAuthReducer,
     admin: persistedAdminReducer,
-    routes: persistedPermissionReducer
+    routes: persistedPermissionReducer,
+    serial: persistedSerialReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
