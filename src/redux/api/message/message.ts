@@ -12,17 +12,7 @@ const messageApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["message"],
     }),
-    sendMultipleMessage: builder.mutation({
-      query: (data) => {
-        return {
-          url: `/message/message`,
-          method: "POST",
-          body: data,
-        };
-      },
-      invalidatesTags: ["message"],
-    }),
   }),
 });
 
-export const {useSendSingleMessageMutation,useSendMultipleMessageMutation} = messageApi;
+export const {useSendSingleMessageMutation} = messageApi;

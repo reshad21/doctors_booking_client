@@ -33,6 +33,8 @@ export const baseApi = createApi({
     "prescription",
     "preManagement",
     "message",
+    "visit",
+    "patient-summary"
   ],
   endpoints: () => ({}),
 });

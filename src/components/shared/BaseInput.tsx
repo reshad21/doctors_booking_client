@@ -40,7 +40,7 @@ const BaseInput = ({
       render={({ field }) => (
         <FormItem>
           {title && (
-            <FormLabel className="text-[#5A5A5A] text-sm ">{title}</FormLabel>
+            <FormLabel className="text-[#5A5A5A] text-sm">{title}</FormLabel>
           )}
           <FormControl>
             <div className="relative">

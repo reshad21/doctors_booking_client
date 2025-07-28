@@ -7,21 +7,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Switch } from "@/components/ui/switch";
 import { Eye, Info, Plus } from "lucide-react";
 import type { Patient } from "@/types/patient.types";
 import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Pagination from "@/components/shared/Pagination";
+import { useUpdatePatientMutation } from "@/redux/api/patient/patient";
+import toast from "react-hot-toast";
 
-const PrescriptionTable = ({
-  patients,
-  active,
-  totalPages,
-  onPageChange,
-}: any) => {
+const PrescriptionTable = ({ patients }: any) => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [updatePatient] = useUpdatePatientMutation();
   const handleFormSubmit = async (
     data: Record<string, unknown>,
     helpers: { reset: () => void; close: () => void }
@@ -37,6 +33,19 @@ const PrescriptionTable = ({
     }
   };
 
+  const handleVisitChange = async (id: string, visitStatus: string) => {
+    try {
+      await updatePatient({
+        id,
+        payload: { visitStatus },
+      });
+      toast.success("Visit status updated successfully");
+    } catch (error) {
+      toast.success("Visit status is not updated");
+      console.error("Failed to update visit status", error);
+    }
+  };
+
   if (!patients?.data?.data?.length) {
     return (
       <div className="flex justify-center items-center min-h-[91vh] font-semibold text-xs">
@@ -49,8 +58,8 @@ const PrescriptionTable = ({
   }
 
   return (
-    <div className="">
-      <div className="rounded-b-sm overflow-hidden shadow-sm w-full">
+    <div className="custom-container">
+      <div className="rounded-b-sm overflow-hidden shadow-sm w-full mt-[30px]">
         <Table className="no-border">
           <TableHeader className="no-border">
             <TableRow className="bg-[#f7f7f7] no-border">
@@ -102,13 +111,16 @@ const PrescriptionTable = ({
                 </TableCell>
                 <TableCell className="text-[#5C727D] space-x-2">Paid</TableCell>
                 <TableCell>
-                  <Switch
-                    checked={
-                      patient.visitStatus !==
-                      ("NOT_VISITED" as typeof patient.visitStatus)
+                  <select
+                    value={patient.visitStatus}
+                    onChange={(e) =>
+                      handleVisitChange(patient.id, e.target.value)
                     }
-                    className="data-[state=checked]:bg-green-600"
-                  />
+                    className="border rounded text-xs bg-[#14400D] text-white p-1 focus:outline-none"
+                  >
+                    <option value="VISITED">Visited</option>
+                    <option value="NOT_VISITED">Not Visited</option>
+                  </select>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center justify-center gap-2 h-full">
@@ -147,23 +159,13 @@ const PrescriptionTable = ({
                         }}
                       />
                     </div>
-                    <div>
-                      {/* <ConfirmAlert id={patient?.id} onDeleted={deleteStaff} person={"Staff"} /> */}
-                    </div>
+                    <div></div>
                   </div>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
-        {/* Pagination Section */}
-        <div className="mt-4 px-2">
-          <Pagination
-            active={active}
-            totalPages={totalPages}
-            onPageChange={onPageChange}
-          />
-        </div>
       </div>
     </div>
   );
