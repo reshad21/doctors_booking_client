@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import prHead from "@/assets/pr-head.png";
+// import prHead from "@/assets/pr-head.png";
 import { useGetPerceptionByPatientIdQuery } from "@/redux/api/prescription/prescription";
 import { Edit, Printer } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
