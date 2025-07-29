@@ -43,6 +43,8 @@ const Login = () => {
     dispatch(setAdminDecodeData(decoded));
     toast.success("Doctor Logged In!");
     navigate("/dashboard");
+     // Force a page reload to ensure fresh permission state
+    window.location.reload();
   };
 
   return (
