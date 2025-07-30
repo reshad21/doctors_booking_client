@@ -102,13 +102,20 @@ const PrescriptionTable = ({
                 </TableCell>
                 <TableCell className="text-[#5C727D] space-x-2">Paid</TableCell>
                 <TableCell>
-                  <Switch
+                  {/* <Switch
                     checked={
                       patient.visitStatus !==
                       ("NOT_VISITED" as typeof patient.visitStatus)
                     }
                     className="data-[state=checked]:bg-green-600"
-                  />
+                  /> */}
+
+                  <span className="border rounded text-xs bg-[#14400D] text-white p-1 capitalize focus:outline-none">
+                    {{
+                      VISITED: "Visited",
+                      NOT_VISITED: "Not Visited",
+                    }[patient?.visitStatus ?? ""] || "N/A"}
+                  </span>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center justify-center gap-2 h-full">
@@ -156,16 +163,16 @@ const PrescriptionTable = ({
             ))}
           </TableBody>
         </Table>
-        
+
       </div>
       {/* Pagination Section */}
-        <div className="mt-4">
-          <Pagination
-            active={active}
-            totalPages={totalPages}
-            onPageChange={onPageChange}
-          />
-        </div>
+      <div className="mt-4">
+        <Pagination
+          active={active}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+        />
+      </div>
     </div>
   );
 };
