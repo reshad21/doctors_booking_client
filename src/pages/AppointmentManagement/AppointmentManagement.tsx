@@ -38,6 +38,7 @@ const AppointmentManagement = () => {
     return () => clearTimeout(handler);
   }, [searchInput]);
 
+  const today = new Date().toISOString().split("T")[0];
   
   const { data: patientsData, isLoading } = useGetPatientQuery({
     page,
@@ -45,7 +46,7 @@ const AppointmentManagement = () => {
     searchTerm,
     filter: JSON.stringify({
       chamberId: headerSelect.chamber || undefined,
-      createdAt: headerSelect.date || undefined,
+      createdAt: headerSelect.date || today,
     }),
     orderBy: JSON.stringify({ createdAt: "desc" }),
   });
@@ -95,8 +96,9 @@ const AppointmentManagement = () => {
     if (res?.data?.success) {
       const response = await sendSingleMessage({
         number: data?.phoneNumber,
-        message: "this is test message",
+        message: "Mr. Shifat, your booking with Dr. Mahabur Rahman has been confirmed.",
       });
+console.log(response);
 
       helpers.reset();
       helpers.close();

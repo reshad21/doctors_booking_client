@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import prHead from "@/assets/pr-head.png";
+// import prHead from "@/assets/pr-head.png";
 import { useGetPerceptionByPatientIdQuery } from "@/redux/api/prescription/prescription";
 import { Edit, Printer } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useRef } from "react";
+import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 
 const ViewPrescription = () => {
   const { patientId } = useParams();
   const { data: perceptions } = useGetPerceptionByPatientIdQuery(patientId);
+    const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const printRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const setPrintRef = (el: HTMLDivElement | null, index: number) => {
@@ -15,35 +17,49 @@ const ViewPrescription = () => {
   };
 
   const handlePrint = (prescriptionData: any) => {
-    const printWindow = window.open('', '', 'width=800,height=600');
+    const printWindow = window.open("", "", "width=800,height=600");
     if (!printWindow) return;
 
     // Generate diagnosis list HTML
-    const diagnosisList = prescriptionData?.tests?.map((item: any) => `
+    const diagnosisList =
+      prescriptionData?.tests
+        ?.map(
+          (item: any) => `
       <li class="print-diagnosis-item">
         <span class="print-diagnosis-bullet"></span>
         <span>${item.description}</span>
       </li>
-    `).join('') || '';
+    `
+        )
+        .join("") || "";
 
     // Generate medicines list HTML
-    const medicinesList = prescriptionData?.medicines?.map((med: any, medIndex: number) => `
+    const medicinesList =
+      prescriptionData?.medicines
+        ?.map(
+          (med: any, medIndex: number) => `
       <div class="print-medicine-item">
-        <p class="print-medicine-header">
-          ${medIndex + 1}. ${med.medicineName}
-        </p>
         <div class="print-medicine-details">
+        <span class="print-medicine-header">
+          ${medIndex + 1}. ${med.medicineName}
+        </span>
           <span>${med.dosage}</span>
           <span>${med.day}</span>
           <span>${med.time}</span>
         </div>
-        ${med.comment ? `
+        ${
+          med.comment
+            ? `
           <p class="print-medicine-comment">
             ${med.comment}
           </p>
-        ` : ''}
+        `
+            : ""
+        }
       </div>
-    `).join('') || '';
+    `
+        )
+        .join("") || "";
 
     printWindow.document.write(`
       <!DOCTYPE html>
@@ -156,12 +172,12 @@ const ViewPrescription = () => {
         </head>
         <body>
           <div class="print-container">
-            <img src="${window.location.origin}${prHead}" alt="Clinic Header" class="print-header-image" />
             
+             <img src=${preManagementData?.data?.[0]?.headerImage} alt="" />
             <div class="print-patient-info">
-              <span><strong>Name:</strong> ${prescriptionData?.patient?.name || ''}</span>
-              <span><strong>Age:</strong> ${prescriptionData?.patient?.age || ''}</span>
-              <span><strong>Date:</strong> ${prescriptionData?.createdAt?.split("T")[0] || ''}</span>
+              <span><strong>Name:</strong> ${prescriptionData?.patient?.name || ""}</span>
+              <span><strong>Age:</strong> ${prescriptionData?.patient?.age || ""}</span>
+              <span><strong>Date:</strong> ${prescriptionData?.createdAt?.split("T")[0] || ""}</span>
               <span><strong>ID:</strong> N/A</span>
             </div>
             
@@ -178,7 +194,8 @@ const ViewPrescription = () => {
               </div>
             </div>
             
-            <img src="${window.location.origin}${prHead}" alt="Clinic Footer" class="print-footer-image" />
+            <img src=${preManagementData?.data?.[0]?.footerImage} alt="" />
+           
           </div>
         </body>
       </html>
@@ -197,7 +214,7 @@ const ViewPrescription = () => {
       {perceptions?.data?.map((medic: any, index: number) => (
         <div className="m-5" key={medic.id || index}>
           <div className="flex justify-start items-center gap-2 pb-2">
-            <button 
+            <button
               onClick={() => handlePrint(medic)}
               className="flex justify-center items-center gap-2 bg-brand text-white py-1 px-3 rounded-sm"
             >
@@ -213,59 +230,81 @@ const ViewPrescription = () => {
               <span>Edit</span>
             </Link>
           </div>
-          
+
           {/* Screen View */}
-          <div 
+          <div
             ref={(el) => setPrintRef(el, index)}
-            className="bg-white rounded-lg overflow-hidden shadow-md max-w-4xl mx-auto"
+            className="bg-white rounded-lg overflow-hidden shadow-md max-w-xl mx-auto "
           >
-            <div className="screen-container">
-              <img src={prHead} alt="Clinic Header" className="w-full h-auto max-h-32 " />
-              
-              <div className="bg-gray-50 p-3 text-sm flex justify-between">
-                <span><strong>Name:</strong> {medic?.patient?.name}</span>
-                <span><strong>Age:</strong> {medic?.patient?.age}</span>
-                <span><strong>Date:</strong> {medic?.createdAt?.split("T")[0]}</span>
-                <span><strong>ID:</strong> N/A</span>
-              </div>
-              
-              <div className="flex min-h-96">
-                <div className="w-1/3 p-4 border-r-2 border-gray-800">
-                  <h3 className="font-bold text-sm mb-4">Diagnosis</h3>
-                  <ul className="space-y-2">
-                    {medic?.tests?.map((item: any, idx: number) => (
-                      <li key={idx} className="flex items-start text-sm">
-                        <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
-                        {item.description}
-                      </li>
-                    ))}
-                  </ul>
+            <div className="screen-container min-h-[800px] flex flex-col justify-between">
+              <img
+                src={"prHead"}
+                alt="Clinic Header"
+                className="w-full h-auto max-h-32 "
+              />
+
+              <div className="min-h-[620px]">
+                <div className="bg-gray-50 p-3 text-sm flex justify-between">
+                  <span>
+                    <strong>Name:</strong> {medic?.patient?.name}
+                  </span>
+                  <span>
+                    <strong>Age:</strong> {medic?.patient?.age}
+                  </span>
+                  <span>
+                    <strong>Date:</strong> {medic?.createdAt?.split("T")[0]}
+                  </span>
+                  <span>
+                    <strong>ID:</strong> N/A
+                  </span>
                 </div>
-                
-                <div className="flex-1 p-4">
-                  <div className="space-y-4">
-                    {medic?.medicines?.map((med: any, medIndex: number) => (
-                      <div key={medIndex}>
-                        <p className="text-sm font-semibold">
-                          {medIndex + 1}. {med.medicineName}
-                        </p>
-                        <div className="text-sm flex justify-between my-1 items-center">
-                          <p>{med.dosage}</p>
-                          <p>{med.day}</p>
-                          <p>{med.time}</p>
-                        </div>
-                        {med.comment && (
-                          <p className="text-xs text-gray-600 ml-4 mt-1">
-                            {med.comment}
-                          </p>
-                        )}
+
+                <div className="h-screen">
+                  {" "}
+                  {/* or use a custom height if needed */}
+                  <div className="flex h-full">
+                    <div className="w-1/3 p-4 border-r-2 border-gray-800 h-full overflow-y-auto">
+                      <h3 className="font-bold text-sm mb-4">Diagnosis</h3>
+                      <ul className="space-y-2">
+                        {medic?.tests?.map((item: any, idx: number) => (
+                          <li key={idx} className="flex items-start text-sm">
+                            <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
+                            {item.description}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="flex-1 p-4 h-full overflow-y-auto">
+                      <div className="space-y-4">
+                        {medic?.medicines?.map((med: any, medIndex: number) => (
+                          <div key={medIndex}>
+                            <div className="text-sm flex justify-between my-1 items-center">
+                              <p className="text-sm font-semibold">
+                                {medIndex + 1}. {med.medicineName}
+                              </p>
+                              <p>{med.dosage}</p>
+                              <p>{med.day}</p>
+                              <p>{med.time}</p>
+                            </div>
+                            {med.comment && (
+                              <p className="text-xs text-gray-600 ml-4 mt-1">
+                                {med.comment}
+                              </p>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </div>
                   </div>
                 </div>
               </div>
-              
-              <img src={prHead} alt="Clinic Footer" className="w-full h-auto max-h-32 " />
+
+              <img
+                src={"prHead"}
+                alt="Clinic Footer"
+                className="w-full h-auto max-h-32 "
+              />
             </div>
           </div>
         </div>

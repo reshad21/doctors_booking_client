@@ -1,144 +1,3 @@
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-
-// import {
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableHead,
-//   TableHeader,
-//   TableRow,
-// } from "@/components/ui/table";
-// import CustomModal from "@/components/shared/CustomModal";
-// import {
-//   useCreatePreManagementMutation,
-//   useDeletePreManagementMutation,
-//   useGetPreManagementQuery,
-// } from "@/redux/api/PreManagement/PreManagementApi";
-// import { useState } from "react";
-// import toast from "react-hot-toast";
-// import { Info } from "lucide-react";
-// import ConfirmAlert from "@/components/shared/ConfirmAlert";
-
-// const PrescriptionManagement = () => {
-//   const { data: preManagementData } = useGetPreManagementQuery(undefined);
-//   const [deletePreManagement] = useDeletePreManagementMutation();
-//   const [createPreManagement] = useCreatePreManagementMutation();
-
-//   const [modalOpen, setModalOpen] = useState(false);
-
-//   const handleFormSubmit = async (
-//     data: Record<string, any>,
-//     helpers: { reset: () => void; close: () => void }
-//   ) => {
-//     const formData = new FormData();
-
-//     Object.entries(data).forEach(([key, value]) => {
-//       if (key === "headerImage" && value instanceof File) {
-//         formData.append("headerImage", value);
-//       } else if (key === "footerImage" && value instanceof File) {
-//         formData.append("footerImage", value);
-//       } else {
-//         formData.append(key, value);
-//       }
-//     });
-
-//     const res = (await createPreManagement(formData)) as any;
-//     if (res?.data?.success) {
-//       helpers.reset();
-//       helpers.close();
-//       toast.success(res?.data?.message);
-//     } else {
-//       console.error();
-//       toast.error(res?.error?.data?.message || "something went wrong");
-//     }
-//   };
-
-//   return (
-//     <div className="custom-container">
-//       <div className="w-full">
-//         <div className="flex items-center justify-between mb-6"></div>
-//         <div className="flex items-center gap-3">
-
-//           {preManagementData?.data?.length == 0 && (
-//             <CustomModal
-//               open={modalOpen}
-//               setOpen={setModalOpen}
-//               title="Create Prescription Video"
-//               description="Fill in the form below."
-//               handleFormSubmit={handleFormSubmit}
-//               file={[
-//                 { label: "Header Image", name: "headerImage" },
-//                 { label: "Footer Image ", name: "footerImage" },
-//               ]}
-//               buttonProperty={{ type: "create", text: "Add Prescription" }}
-//             />
-//           )}
-//         </div>
-
-//         <div className="rounded-b-sm overflow-hidden shadow-sm">
-
-//           {preManagementData?.data?.length == 0 ? (
-//             <div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
-//               <div className="flex flex-col justify-center items-center text-yellow-900">
-//                 <Info />
-//                 <span>Prescription not created yet!</span>
-//               </div>
-//             </div>
-//           ) : (<Table className="no-border">
-//             <TableHeader className="no-border">
-//               <TableRow className="bg-[#f7f7f7] no-border">
-//                 {["SN", "Header Image", "Footer Image", "Action"].map(
-//                   (header, ind) => (
-//                     <TableHead
-//                       key={ind}
-//                       className={`${ind == 3 && "text-center"}`}
-//                     >
-//                       {header}
-//                     </TableHead>
-//                   )
-//                 )}
-//               </TableRow>
-//             </TableHeader>
-//             <TableBody>
-//               {preManagementData?.data?.map((item: any, index: number) => (
-//                 <TableRow key={index}>
-//                   <TableCell>{index + 1}</TableCell>
-//                   <TableCell>
-//                     <img
-//                       src={item?.headerImage}
-//                       alt=""
-//                       className=" h-48"
-//                     />
-//                   </TableCell>
-//                   <TableCell>
-//                     <img
-//                       src={item?.footerImage}
-//                       alt=""
-//                       className="h-48"
-//                     />
-//                   </TableCell>
-//                   <TableCell className="text-center">
-//                     <div className="flex items-center justify-center gap-2">
-//                       <ConfirmAlert
-//                         id={item?.id}
-//                         onDeleted={deletePreManagement}
-//                         person={"preManagement"}
-//                       />
-//                     </div>
-//                   </TableCell>
-//                 </TableRow>
-//               ))}
-//             </TableBody>
-//           </Table>
-//           )}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default PrescriptionManagement;
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import CustomModal from "@/components/shared/CustomModal";
 import {
@@ -149,30 +8,30 @@ import {
 import { useState } from "react";
 import toast from "react-hot-toast";
 import ConfirmAlert from "@/components/shared/ConfirmAlert";
-import SerialControlPage from "./_components/SerialNavigator";
+import { useCreateAdviceMutation } from "@/redux/api/advice/advice";
 
 const PrescriptionManagement = () => {
   const { data: preManagementData, refetch } =
     useGetPreManagementQuery(undefined);
   const [deletePreManagement] = useDeletePreManagementMutation();
   const [createPreManagement] = useCreatePreManagementMutation();
-  const [modalOpen, setModalOpen] = useState(false);
-  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [createAdvice] = useCreateAdviceMutation();
 
-  const hasPrescription = preManagementData?.data?.data?.length > 0;
+  const [prescriptionModalOpen, setPrescriptionModalOpen] = useState(false);
+  const [viewPrescriptionModalOpen, setViewPrescriptionModalOpen] =
+    useState(false);
+  const [articleModalOpen, setArticleModalOpen] = useState(false);
 
-  const handleFormSubmit = async (
+  const hasPrescription = preManagementData?.data?.length > 0;
+
+  const handlePrescriptionSubmit = async (
     data: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
   ) => {
     const formData = new FormData();
 
     Object.entries(data).forEach(([key, value]) => {
-      if (value instanceof File) {
-        formData.append(key, value);
-      } else {
-        formData.append(key, value);
-      }
+      formData.append(key, value);
     });
 
     const res = (await createPreManagement(formData)) as any;
@@ -182,8 +41,24 @@ const PrescriptionManagement = () => {
       toast.success(res?.data?.message);
       refetch();
     } else {
-      console.error();
       toast.error(res?.error?.data?.message || "Something went wrong");
+    }
+  };
+
+  const handleAdviceSubmit = async (
+    data: Record<string, any>,
+    helpers: { reset: () => void; close: () => void }
+  ) => {
+    const res = await createAdvice(data);
+    console.log("Article Submitted:", data);
+
+    if (res?.data?.success) {
+      toast.success(res?.data?.message);
+      helpers.reset();
+      helpers.close();
+    } else {
+      toast.error("Failed to create advice");
+      console.log("Error creating advice:", res?.error)
     }
   };
 
@@ -192,33 +67,31 @@ const PrescriptionManagement = () => {
       <div className="w-full">
         <div className="flex items-center justify-between" />
 
-        <div className="flex items-center gap-3 mb-6 py-4 px-4 bg-white rounded">
+        <div className="flex flex-col md:flex-row items-center gap-4 py-4 px-4 bg-white rounded">
+          {/* Prescription Modal */}
           {!hasPrescription ? (
             <CustomModal
-              open={modalOpen}
-              setOpen={setModalOpen}
+              open={prescriptionModalOpen}
+              setOpen={setPrescriptionModalOpen}
               title="Create Prescription"
               description="Fill in the form below."
-              handleFormSubmit={handleFormSubmit}
+              handleFormSubmit={handlePrescriptionSubmit}
               file={[
                 { label: "Header Image", name: "headerImage" },
                 { label: "Footer Image", name: "footerImage" },
               ]}
-              buttonProperty={{ type: "create", text: "Add Prescription UI" }}
+              buttonProperty={{ type: "create", text: "Add Prescription" }}
             />
           ) : (
             <CustomModal
-              open={viewModalOpen}
-              setOpen={setViewModalOpen}
+              open={viewPrescriptionModalOpen}
+              setOpen={setViewPrescriptionModalOpen}
               title="Uploaded Prescription"
               description="You can only delete the uploaded prescription."
-              buttonProperty={{
-                type: "create",
-                text: "Uploaded Prescription UI",
-              }}
+              buttonProperty={{ type: "create", text: "Uploaded Prescription" }}
               hideForm
             >
-              {preManagementData?.data?.data?.map((item: any) => (
+              {preManagementData?.data?.map((item: any) => (
                 <div key={item?.id} className="mb-6">
                   <div className="grid grid-cols-1 gap-4 mb-2">
                     <img
@@ -243,8 +116,19 @@ const PrescriptionManagement = () => {
               ))}
             </CustomModal>
           )}
+
+          {/* Article Modal with TipTap Editor */}
+          <CustomModal
+            open={articleModalOpen}
+            setOpen={setArticleModalOpen}
+            title="Create Advice"
+            description="Fill the form to create a new advice"
+            input={[{ label: "Title", name: "title", type: "text" }]}
+            richTextEditor={{ name: "content", label: "Content" }}
+            buttonProperty={{ type: "create", text: "Patient Advice" }}
+            handleFormSubmit={handleAdviceSubmit}
+          />
         </div>
-        <SerialControlPage />
       </div>
     </div>
   );

@@ -24,7 +24,6 @@ export const baseApi = createApi({
   }),
   
   
-
   tagTypes: [
     "staff",
     "patient",
@@ -34,7 +33,8 @@ export const baseApi = createApi({
     "preManagement",
     "message",
     "visit",
-    "patient-summary"
+    "patient-summary",
+    "advice"
   ],
   endpoints: () => ({}),
 });
