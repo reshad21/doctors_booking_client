@@ -29,6 +29,7 @@ const CreatePrescriptionForm = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-4 sm:space-y-6"
         >
+          
           <div className="flex justify-between items-center w-full">
             {["name", "age", "date", "Id"]?.map((item) => {
               return (

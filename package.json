@@ -30,8 +30,8 @@
     "@tailwindcss/vite": "^4.1.7",
     "@tiptap/core": "^3.0.7",
     "@tiptap/extension-image": "^3.0.7",
-    "@tiptap/extension-text-align": "^3.0.7",
     "@tiptap/extension-link": "^3.0.7",
+    "@tiptap/extension-text-align": "^3.0.7",
     "@tiptap/extension-underline": "^3.0.7",
     "@tiptap/react": "^3.0.7",
     "@tiptap/starter-kit": "^3.0.7",
@@ -52,6 +52,7 @@
     "react-router-dom": "^7.6.1",
     "react-to-print": "^3.1.1",
     "redux-persist": "^6.0.0",
+    "sweetalert2": "^11.22.2",
     "tailwind-merge": "^3.3.0",
     "xlsx": "^0.18.5",
     "zod": "^3.25.67"

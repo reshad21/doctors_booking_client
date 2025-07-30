@@ -11,7 +11,8 @@ const SelectedAdvice = ({
   handleSelectAdvice,
   handleExtraSelectAdvice,
   handleSave,
-  handleExtraSelectAdviceInput
+  handleExtraSelectAdviceInput,
+  open
 }: any) => {
   const {data:disease} = useGetAdviceQuery(undefined)
 
@@ -70,9 +71,10 @@ const SelectedAdvice = ({
       <button
         type="button"
         onClick={handleSave}
-        className="bg-brand text-white text-xs px-4 py-2 mt-2 rounded-sm"
+        className={`text-white text-xs px-4 py-2 mt-2 rounded-sm ${open == false? "bg-brand" : "bg-gray-200"}`}
+        disabled={open}
       >
-        Save Optional
+        Save (Optional)
       </button>
     </div>
   );

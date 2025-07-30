@@ -12,6 +12,16 @@ const prescriptionApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["prescription"],
     }),
+    createExtraAdvice: builder.mutation({
+      query: (adviceData) => {
+        return {
+          url: `/prescription/create-createExtraAdvice`,
+          method: "POST",
+          body: adviceData,
+        };
+      },
+      invalidatesTags: ["prescription"],
+    }),
     updatePrescription: builder.mutation({
       query: (prescriptionData) => {
         return {
@@ -33,4 +43,4 @@ const prescriptionApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useCreatePrescriptionMutation,useGetPerceptionByPatientIdQuery,useUpdatePrescriptionMutation} = prescriptionApi;
+export const { useCreatePrescriptionMutation,useGetPerceptionByPatientIdQuery,useUpdatePrescriptionMutation,useCreateExtraAdviceMutation} = prescriptionApi;
