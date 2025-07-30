@@ -90,7 +90,7 @@ const Actions = ({
         />
       </TableCell>
       <TableCell>
-        <div className="flex items-center justify-center gap-2 h-full">
+        <div className="flex items-center gap-2 h-full">
           <div className="hover:bg-green-50 no-border cursor-pointer">
             <CustomModal
               open={modalOpen}

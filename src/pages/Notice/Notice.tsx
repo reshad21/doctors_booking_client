@@ -61,7 +61,7 @@ console.log(searchTerm);
     <div className="custom-container">
       <div className="w-full">
         {/* Header Section */}
-        <div className="flex items-center justify-between mb-6 w-full">
+        <div className="flex items-center justify-between mb-6 w-full bg-white px-4 py-4">
           <div className="flex justify-between items-center gap-3 w-full">
             <div className="flex justify-start items-center gap-2">
               <DisplayNotice />
@@ -100,7 +100,7 @@ console.log(searchTerm);
                 {["SL", "Sms status", "Status", "Action"].map((header, ind) => (
                   <TableHead
                     key={ind}
-                    className={`${ind == 7 && "text-center"}`}
+                    className={`${ind == 7 && "text-center"} pl-4`}
                   >
                     {header}
                   </TableHead>
@@ -113,7 +113,7 @@ console.log(searchTerm);
                   key={notice.id}
                   className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
                 >
-                  <TableCell className="font-medium">{index + 1}</TableCell>
+                  <TableCell className="font-medium pl-4">{index + 1}</TableCell>
                   <TableCell className="text-[#5C727D] max-w-xs break-words whitespace-normal">
                     {notice.description || "N/A"}
                   </TableCell>

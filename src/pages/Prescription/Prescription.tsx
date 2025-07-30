@@ -18,7 +18,7 @@ const Prescription = () => {
   return (
     <div className="custom-container">
       <div className="grid grid-cols-1 w-full">
-        <div className="flex items-center justify-between p-4 bg-gray-50 ">
+        <div className="flex items-center justify-between p-4 bg-white ">
           <ExportDropdown
             data={patients?.data?.data || []}
             columns={[

@@ -14,6 +14,7 @@ import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Pagination from "@/components/shared/Pagination";
+import { Badge } from "@/components/ui/badge";
 
 const PrescriptionTable = ({
   patients,
@@ -65,7 +66,10 @@ const PrescriptionTable = ({
                 "Visited",
                 "Action",
               ].map((header, ind) => (
-                <TableHead key={ind} className={`${ind == 7 && "text-center"}`}>
+                <TableHead
+                  key={ind}
+                  className={`${ind == 7 && "text-center"} pl-4`}
+                >
                   {header}
                 </TableHead>
               ))}
@@ -77,7 +81,7 @@ const PrescriptionTable = ({
                 key={patient.id}
                 className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
               >
-                <TableCell className="font-medium">{index + 1}</TableCell>
+                <TableCell className="font-medium pl-4">{index + 1}</TableCell>
                 <TableCell className="text-[#5C727D]">{patient.name}</TableCell>
                 <TableCell className="text-[#5C727D]">
                   {patient.name || "N/A"}
@@ -100,7 +104,14 @@ const PrescriptionTable = ({
                 <TableCell className="text-[#5C727D] space-x-2">
                   {patient.status || "N/A"}
                 </TableCell>
-                <TableCell className="text-[#5C727D] space-x-2">Paid</TableCell>
+                <TableCell className="text-[#5C727D] space-x-2">
+                  {" "}
+                  {patient.visitStatus === "VISITED" ? (
+                    <Badge className="bg-[#14400D] rounded">Offline Paid</Badge>
+                  ) : (
+                    <Badge className="bg-red-400 rounded">Unpaid</Badge>
+                  )}
+                </TableCell>
                 <TableCell>
                   <Switch
                     checked={
@@ -156,16 +167,15 @@ const PrescriptionTable = ({
             ))}
           </TableBody>
         </Table>
-        
       </div>
       {/* Pagination Section */}
-        <div className="mt-4">
-          <Pagination
-            active={active}
-            totalPages={totalPages}
-            onPageChange={onPageChange}
-          />
-        </div>
+      <div className="mt-4">
+        <Pagination
+          active={active}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+        />
+      </div>
     </div>
   );
 };
