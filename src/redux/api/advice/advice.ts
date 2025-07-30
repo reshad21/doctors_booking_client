@@ -16,7 +16,7 @@ const adviceApi = baseApi.injectEndpoints({
         url: `/advice/get-advice`,
         params: { searchTerm },
       }),
-      providesTags: ["chamber"],
+      providesTags: ["advice"],
     }),
 
     // getChamberById: builder.query({
@@ -26,23 +26,23 @@ const adviceApi = baseApi.injectEndpoints({
     //   providesTags: ["chamber"],
     // }),
 
-    // updateChamber: builder.mutation({
-    //   query: ({ id, data }) => ({
-    //     url: `/chamber/${id}`,
-    //     method: "PUT",
-    //     body: data,
-    //   }),
-    //   invalidatesTags: ["chamber"],
-    // }),
+    updateAdvice: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/advice/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["advice"],
+    }),
 
-    // deleteChamber: builder.mutation({
-    //   query: (id: string) => ({
-    //     url: `/chamber/${id}`,
-    //     method: "DELETE",
-    //   }),
-    //   invalidatesTags: ["chamber"],
-    // }),
+    deleteAdvice: builder.mutation({
+      query: (id: string) => ({
+        url: `/advice/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["advice"],
+    }),
   }),
 });
 
-export const { useCreateAdviceMutation } = adviceApi;
+export const { useCreateAdviceMutation, useGetAdviceQuery, useDeleteAdviceMutation, useUpdateAdviceMutation } = adviceApi;
