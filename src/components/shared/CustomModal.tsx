@@ -17,6 +17,7 @@ import { Plus, SquarePen } from "lucide-react";
 import { FormField } from "../ui/form";
 import { ScrollArea } from "../ui/scroll-area";
 import { Label } from "@radix-ui/react-label";
+import TipTapEditor from "./TiptapEditor";
 
 type FieldConfig = {
   label: string;
@@ -45,6 +46,10 @@ interface CustomModalProps {
   ) => void | Promise<void>;
   hideForm?: boolean;
   children?: React.ReactNode;
+  richTextEditor?: {
+    name: string;
+    label: string;
+  };
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({
@@ -60,6 +65,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
   defaultValues = {},
   hideForm = false,
   children,
+  richTextEditor,
 }) => {
   const formMethods = useForm<Record<string, any>>({ defaultValues });
 
@@ -149,6 +155,22 @@ const CustomModal: React.FC<CustomModalProps> = ({
                     className="border-[#A0B19E] rounded-[4px] border text-[#5F597480] w-full bg-gray-50"
                   />
                 ))}
+
+                {richTextEditor && (
+                  <FormField
+                    control={formMethods.control}
+                    name={richTextEditor.name}
+                    render={({ field }) => (
+                      <div className="space-y-1">
+                        <Label>{richTextEditor.label}</Label>
+                        <TipTapEditor
+                          content={field.value}
+                          onChange={field.onChange}
+                        />
+                      </div>
+                    )}
+                  />
+                )}
 
                 <div className="flex justify-end space-x-4 pt-4 pb-2">
                   <AlertDialogCancel asChild>

@@ -34,7 +34,8 @@ export const baseApi = createApi({
     "preManagement",
     "message",
     "visit",
-    "patient-summary"
+    "patient-summary",
+    "advice"
   ],
   endpoints: () => ({}),
 });

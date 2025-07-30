@@ -8,31 +8,30 @@ import {
 import { useState } from "react";
 import toast from "react-hot-toast";
 import ConfirmAlert from "@/components/shared/ConfirmAlert";
-import SerialControlPage from "./_components/SerialNavigator";
+import { useCreateAdviceMutation } from "@/redux/api/advice/advice";
 
 const PrescriptionManagement = () => {
   const { data: preManagementData, refetch } =
     useGetPreManagementQuery(undefined);
   const [deletePreManagement] = useDeletePreManagementMutation();
   const [createPreManagement] = useCreatePreManagementMutation();
+  const [createAdvice] = useCreateAdviceMutation();
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [prescriptionModalOpen, setPrescriptionModalOpen] = useState(false);
+  const [viewPrescriptionModalOpen, setViewPrescriptionModalOpen] =
+    useState(false);
+  const [articleModalOpen, setArticleModalOpen] = useState(false);
 
   const hasPrescription = preManagementData?.data?.length > 0;
 
-  const handleFormSubmit = async (
+  const handlePrescriptionSubmit = async (
     data: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
   ) => {
     const formData = new FormData();
 
     Object.entries(data).forEach(([key, value]) => {
-      if (value instanceof File) {
-        formData.append(key, value);
-      } else {
-        formData.append(key, value);
-      }
+      formData.append(key, value);
     });
 
     const res = (await createPreManagement(formData)) as any;
@@ -42,24 +41,41 @@ const PrescriptionManagement = () => {
       toast.success(res?.data?.message);
       refetch();
     } else {
-      console.error();
       toast.error(res?.error?.data?.message || "Something went wrong");
+    }
+  };
+
+  const handleAdviceSubmit = async (
+    data: Record<string, any>,
+    helpers: { reset: () => void; close: () => void }
+  ) => {
+    const res = await createAdvice(data);
+    console.log("Article Submitted:", data);
+
+    if (res?.data?.success) {
+      toast.success(res?.data?.message);
+      helpers.reset();
+      helpers.close();
+    } else {
+      toast.error("Failed to create advice");
+      console.log("Error creating advice:", res?.error)
     }
   };
 
   return (
     <div className="custom-container">
       <div className="w-full">
-        <div className="flex items-center justify-between mb-6" />
+        <div className="flex items-center justify-between" />
 
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-4 py-4 px-4 bg-white rounded">
+          {/* Prescription Modal */}
           {!hasPrescription ? (
             <CustomModal
-              open={modalOpen}
-              setOpen={setModalOpen}
+              open={prescriptionModalOpen}
+              setOpen={setPrescriptionModalOpen}
               title="Create Prescription"
               description="Fill in the form below."
-              handleFormSubmit={handleFormSubmit}
+              handleFormSubmit={handlePrescriptionSubmit}
               file={[
                 { label: "Header Image", name: "headerImage" },
                 { label: "Footer Image", name: "footerImage" },
@@ -68,8 +84,8 @@ const PrescriptionManagement = () => {
             />
           ) : (
             <CustomModal
-              open={viewModalOpen}
-              setOpen={setViewModalOpen}
+              open={viewPrescriptionModalOpen}
+              setOpen={setViewPrescriptionModalOpen}
               title="Uploaded Prescription"
               description="You can only delete the uploaded prescription."
               buttonProperty={{ type: "create", text: "Uploaded Prescription" }}
@@ -100,8 +116,19 @@ const PrescriptionManagement = () => {
               ))}
             </CustomModal>
           )}
+
+          {/* Article Modal with TipTap Editor */}
+          <CustomModal
+            open={articleModalOpen}
+            setOpen={setArticleModalOpen}
+            title="Create Advice"
+            description="Fill the form to create a new advice"
+            input={[{ label: "Title", name: "title", type: "text" }]}
+            richTextEditor={{ name: "content", label: "Content" }}
+            buttonProperty={{ type: "create", text: "Patient Advice" }}
+            handleFormSubmit={handleAdviceSubmit}
+          />
         </div>
-        <SerialControlPage />
       </div>
     </div>
   );
