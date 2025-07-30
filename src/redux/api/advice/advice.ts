@@ -11,13 +11,13 @@ const adviceApi = baseApi.injectEndpoints({
       invalidatesTags: ["advice"],
     }),
 
-    // getChambers: builder.query({
-    //   query: ({ searchTerm }) => ({
-    //     url: `/chamber/get-chambers`,
-    //     params: { searchTerm },
-    //   }),
-    //   providesTags: ["chamber"],
-    // }),
+    getAdvice: builder.query({
+      query: ({ searchTerm }) => ({
+        url: `/advice/get-advice`,
+        params: { searchTerm },
+      }),
+      providesTags: ["chamber"],
+    }),
 
     // getChamberById: builder.query({
     //   query: (id: string) => ({

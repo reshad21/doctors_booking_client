@@ -174,11 +174,11 @@ const CustomModal: React.FC<CustomModalProps> = ({
 
                 <div className="flex justify-end space-x-4 pt-4 pb-2">
                   <AlertDialogCancel asChild>
-                    <Button variant="outline" type="button">
+                    <Button variant="outline" type="button" className="cursor-pointer">
                       Close
                     </Button>
                   </AlertDialogCancel>
-                  <Button type="submit" className="bg-brand">
+                  <Button type="submit" className="bg-brand cursor-pointer">
                     Submit
                   </Button>
                 </div>
@@ -188,7 +188,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
                 {children}
                 <div className="flex justify-end space-x-4 pt-4 pb-2">
                   <AlertDialogCancel asChild>
-                    <Button variant="outline" type="button">
+                    <Button variant="outline" className="cursor-pointer" type="button">
                       Close
                     </Button>
                   </AlertDialogCancel>
