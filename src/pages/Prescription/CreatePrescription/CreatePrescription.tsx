@@ -44,7 +44,7 @@ const CreatePrescription = () => {
       return {
         medicineName: data[`medicine${key}`],
         dosage: data[`dosage${key}`],
-        day: data[`day${key}`],
+        day: `${data[`day${key}`]}-দিন` ,
         time: data[`time${key}`],
         comment: data[`comment${key}`],
       };
@@ -91,7 +91,10 @@ const CreatePrescription = () => {
       console.log(res?.error?.data?.message);
     }
   };
-
+const handleAdviceGet = (value: string) => {
+    console.log(value,"line 95");
+    
+  };
   return (
     <div className="custom-container mt-[30px]">
       <div className="p-5 bg-white">
@@ -108,6 +111,7 @@ const CreatePrescription = () => {
           handleAddMedicineInput={handleAddMedicineInput}
           handleAddTestInput={handleAddTestInput}
           patient={patient}
+          handleAdviceGet={handleAdviceGet}
         />
         <div className="pt-[30px]">
           <img src={preManagementData?.data?.[0]?.footerImage} alt="" />
