@@ -7,7 +7,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Switch } from "@/components/ui/switch";
 import { Eye, Info, Plus } from "lucide-react";
 import type { Patient } from "@/types/patient.types";
 import CustomModal from "@/components/shared/CustomModal";
@@ -113,13 +112,20 @@ const PrescriptionTable = ({
                   )}
                 </TableCell>
                 <TableCell>
-                  <Switch
+                  {/* <Switch
                     checked={
                       patient.visitStatus !==
                       ("NOT_VISITED" as typeof patient.visitStatus)
                     }
                     className="data-[state=checked]:bg-green-600"
-                  />
+                  /> */}
+
+                  <span className="border rounded text-xs bg-[#14400D] text-white p-1 capitalize focus:outline-none">
+                    {{
+                      VISITED: "Visited",
+                      NOT_VISITED: "Not Visited",
+                    }[patient?.visitStatus ?? ""] || "N/A"}
+                  </span>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center justify-center gap-2 h-full">
