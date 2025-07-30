@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import prHead from "@/assets/pr-head.png";
+// import prHead from "@/assets/pr-head.png";
 import { useGetPerceptionByPatientIdQuery } from "@/redux/api/prescription/prescription";
 import { Edit, Printer } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useRef } from "react";
+import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 
 const ViewPrescription = () => {
   const { patientId } = useParams();
   const { data: perceptions } = useGetPerceptionByPatientIdQuery(patientId);
+    const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const printRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const setPrintRef = (el: HTMLDivElement | null, index: number) => {
@@ -170,8 +172,8 @@ const ViewPrescription = () => {
         </head>
         <body>
           <div class="print-container">
-            <img src="${window.location.origin}${prHead}" alt="Clinic Header" class="print-header-image" />
             
+             <img src=${preManagementData?.data?.[0]?.headerImage} alt="" />
             <div class="print-patient-info">
               <span><strong>Name:</strong> ${prescriptionData?.patient?.name || ""}</span>
               <span><strong>Age:</strong> ${prescriptionData?.patient?.age || ""}</span>
@@ -192,7 +194,8 @@ const ViewPrescription = () => {
               </div>
             </div>
             
-            <img src="${window.location.origin}${prHead}" alt="Clinic Footer" class="print-footer-image" />
+            <img src=${preManagementData?.data?.[0]?.footerImage} alt="" />
+           
           </div>
         </body>
       </html>
@@ -235,7 +238,7 @@ const ViewPrescription = () => {
           >
             <div className="screen-container min-h-[800px] flex flex-col justify-between">
               <img
-                src={prHead}
+                src={"prHead"}
                 alt="Clinic Header"
                 className="w-full h-auto max-h-32 "
               />
@@ -298,7 +301,7 @@ const ViewPrescription = () => {
               </div>
 
               <img
-                src={prHead}
+                src={"prHead"}
                 alt="Clinic Footer"
                 className="w-full h-auto max-h-32 "
               />

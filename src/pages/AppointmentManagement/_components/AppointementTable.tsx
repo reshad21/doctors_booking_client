@@ -21,9 +21,14 @@ interface AppointmentTableProps {
   deletePatient: (id: string) => void;
 }
 
-const AppointmentTable = ({ patientsData, deletePatient }: AppointmentTableProps) => {
+const AppointmentTable = ({
+  patientsData,
+  deletePatient,
+}: AppointmentTableProps) => {
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
-  const [modalDataToUpdate, setModalDataToUpdate] = useState<Patient | null>(null);
+  const [modalDataToUpdate, setModalDataToUpdate] = useState<Patient | null>(
+    null
+  );
   const [updatePatient] = useUpdatePatientMutation();
 
   const handleUpdateClick = (patient: Patient) => {
@@ -40,9 +45,9 @@ const AppointmentTable = ({ patientsData, deletePatient }: AppointmentTableProps
       toast.success("Visit status updated successfully");
     } catch (error) {
       toast.success("Visit status is not updated");
-      console.error('Failed to update visit status', error);
+      console.error("Failed to update visit status", error);
     }
-  }
+  };
 
   if (!patientsData?.length) {
     return (
@@ -99,12 +104,20 @@ const AppointmentTable = ({ patientsData, deletePatient }: AppointmentTableProps
                 {patient.status ? patient.status.toLowerCase() : "N/A"}
               </TableCell>
               <TableCell className="text-[#5C727D] space-x-2">
-                <Badge className="bg-[#14400D] rounded">Paid</Badge>
+                <TableCell className="text-[#5C727D] space-x-2">
+                  {patient.visitStatus === "VISITED" ? (
+                    <Badge className="bg-[#14400D] rounded">Offline Paid</Badge>
+                  ) : (
+                    <Badge className="bg-red-400 rounded">Unpaid</Badge>
+                  )}
+                </TableCell>
               </TableCell>
               <TableCell>
                 <select
                   value={patient.visitStatus}
-                  onChange={(e) => handleVisitChange(patient.id, e.target.value)}
+                  onChange={(e) =>
+                    handleVisitChange(patient.id, e.target.value)
+                  }
                   className="border rounded text-xs bg-[#14400D] text-white p-1 focus:outline-none"
                 >
                   <option value="VISITED">Visited</option>

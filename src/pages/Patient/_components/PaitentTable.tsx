@@ -88,7 +88,11 @@ const PatientTable = ({ patientsData, deletePatient }: PatientTableProps) => {
                 {patient.status ? patient.status.toLowerCase() : "N/A"}
               </TableCell>
               <TableCell className="text-[#5C727D] space-x-2">
-                <Badge className="bg-[#14400D] rounded">Paid</Badge>
+                {patient.visitStatus === "VISITED" ? (
+                  <Badge className="bg-[#14400D] rounded">Offline Paid</Badge>
+                ) : (
+                  <Badge className="bg-red-400 rounded">Unpaid</Badge>
+                )}
               </TableCell>
               <TableCell>
                 <span className="border rounded text-xs bg-[#14400D] text-white p-1 capitalize focus:outline-none">

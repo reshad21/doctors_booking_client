@@ -38,6 +38,7 @@ const AppointmentManagement = () => {
     return () => clearTimeout(handler);
   }, [searchInput]);
 
+  const today = new Date().toISOString().split("T")[0];
   
   const { data: patientsData, isLoading } = useGetPatientQuery({
     page,
@@ -45,7 +46,7 @@ const AppointmentManagement = () => {
     searchTerm,
     filter: JSON.stringify({
       chamberId: headerSelect.chamber || undefined,
-      createdAt: headerSelect.date || undefined,
+      createdAt: headerSelect.date || today,
     }),
     orderBy: JSON.stringify({ createdAt: "desc" }),
   });

@@ -42,6 +42,8 @@ const StaffLogin = () => {
     dispatch(setAdminDecodeData(decoded));
     toast.success("Staff login Logged In!");
     navigate("/dashboard");
+    // Force a page reload to ensure fresh permission state
+    window.location.reload();
   };
 
   return (
