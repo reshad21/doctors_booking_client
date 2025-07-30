@@ -3,9 +3,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useGetPatientSummaryQuery } from "@/redux/api/patient-summary/patient-summary";
 import { Users } from "lucide-react";
 import StatCard from "../_component/StatCard";
-import PatientPercentageCard from "../_component/PatientPerchantageCard";
-import PaymentCard from "../_component/PaymentCard";
-import PatientChart from "../_component/PatientChart";
 import { useGetPatientQuery } from "@/redux/api/patient/patient";
 import TodayAppointments from "../_component/TodayAppointment";
 import { useAppSelector } from "@/redux/hooks";
@@ -22,6 +19,8 @@ const DoctorDashboard = () => {
       limit: 1000,
     });
 const doctor = useAppSelector((state) => state.admin);
+// console.log(doctor, "doctor");
+// console.log(patientApiData, "Patient api data");
   const appointmentData =
     patientApiData?.data?.data?.map((patient: any, index: number) => ({
       sn: index + 1,
@@ -40,7 +39,8 @@ const doctor = useAppSelector((state) => state.admin);
           <div className="flex items-center space-x-4">
             <Avatar className="w-16 h-16">
               <AvatarImage
-                src="/placeholder.svg?height=64&width=64"
+                // src="/placeholder.svg?height=64&width=64"
+                src={doctor?.profilePhoto}
                 alt={doctor?.name}
               />
               <AvatarFallback>{doctor?.name.slice(0,1)}</AvatarFallback>
@@ -60,7 +60,7 @@ const doctor = useAppSelector((state) => state.admin);
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <StatCard
-            title="Total Appointment's"
+            title="Total Visited Appointment's"
             value={patientSummaryData?.data?.totalPatients || 0}
             icon={Users}
             gradientFrom="from-blue-500"
@@ -70,7 +70,7 @@ const doctor = useAppSelector((state) => state.admin);
           />
 
           <StatCard
-            title="Today's Appointment"
+            title="Today's Visited Appointment"
             value={patientSummaryData?.data?.todaysPatients || 0}
             icon={Users}
             gradientFrom="from-red-500"
@@ -80,7 +80,7 @@ const doctor = useAppSelector((state) => state.admin);
           />
 
           <StatCard
-            title="Monthly Appointment"
+            title="Monthly Visited Appointment"
             value={patientSummaryData?.data?.monthlyPatients || 0}
             icon={Users}
             gradientFrom="from-orange-500"
@@ -90,39 +90,10 @@ const doctor = useAppSelector((state) => state.admin);
           />
         </div>
 
-        {/* Patient Summary */}
-        <div className="mb-8">
-          <h3 className="text-xl font-bold text-gray-800 mb-6">
-            Patient Summary
-          </h3>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Patient Percentage */}
-            <PatientPercentageCard
-              daily={patientSummaryData?.data?.dailyStatus}
-              weekly={patientSummaryData?.data?.weeklyStatus}
-              monthly={patientSummaryData?.data?.monthlyStatus}
-            />
-
-            {/* Payment */}
-            <PaymentCard
-              daily={patientSummaryData?.data?.dailyAmount}
-              weekly={patientSummaryData?.data?.weeklyAmount}
-              monthly={patientSummaryData?.data?.monthlyAmount}
-            />
-          </div>
-
-          {/* Bottom Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Chart */}
-            <PatientChart
-              yearlyStatus={patientSummaryData?.data?.yearlyStatus}
-            />
-
-            {/* Today's Appointments */}
             <TodayAppointments appointments={appointmentData} />
-          </div>
-        </div>
+
+
       </main>
     </div>
   );
