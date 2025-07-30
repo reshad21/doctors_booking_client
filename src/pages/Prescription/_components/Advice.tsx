@@ -1,58 +1,73 @@
-import { useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useRef, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
-import TipTapEditor from "@/components/shared/TiptapEditor";
+import TipTapEditor, { type TipTapEditorRef } from "@/components/shared/TiptapEditor";
+import SelectedAdvice from "./SelectedAdvice";
 
 interface AdviceProps {
   onSaveAdvice: (value: string) => void;
+  initialContent?: string;
+  handleAdviceSaveInput:any
 }
 
-const Advice = ({ onSaveAdvice }: AdviceProps) => {
+const Advice = ({ onSaveAdvice, initialContent = "",handleAdviceSaveInput }: AdviceProps) => {
   const form = useFormContext();
-  const defaultContent = "<ol><li><p>Hello world</p></li></ol><p></p>"; 
-
-  const [editorContent, setEditorContent] = useState(defaultContent);
+  const editorRef = useRef<TipTapEditorRef>(null);
 
   useEffect(() => {
     form.register("content", { required: "Description is required" });
-
-    // If form is reset dynamically or populated later, update state
-    const subscription = form.watch((value) => {
-      if (value.content !== editorContent) {
-        setEditorContent(value.content || "");
-      }
-    });
-
-    return () => subscription.unsubscribe();
   }, [form]);
 
+  const handleEditorChange = (content: string) => {
+    form.setValue("content", content, { shouldValidate: true });
+    onSaveAdvice(content); 
+  };
+
   const handleSave = () => {
-    form.setValue("content", editorContent, { shouldValidate: true });
-    onSaveAdvice(editorContent);
+    const html = editorRef.current?.getHTML() ?? "";
+    onSaveAdvice(html);
+  };
+
+  const handleSelectAdvice = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value;
+    if (selected) {
+      editorRef.current?.insertContent(`<p>${selected}</p>`);
+    }
+  };
+
+  const handleExtraSelectAdvice = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value;
+    if (selected) {
+      editorRef.current?.insertContent(`<p>${selected}</p>`);
+    }
+  };
+  const handleExtraSelectAdviceInput = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value;
+    if (selected) {
+      handleAdviceSaveInput(`<u><li>${selected}</li></u>`);
+    }
   };
 
   return (
-    <div className="flex flex-col w-full">
-      <h2 className="text-sm font-semibold mb-4">Description</h2>
-      <TipTapEditor
-        content={editorContent} // pass default content here
-        onChange={(value) => {
-          setEditorContent(value);
-          form.setValue("content", value, { shouldValidate: true });
-        }}
+    <div className="flex justify-between items-center gap-5">
+      <SelectedAdvice 
+        handleExtraSelectAdvice={handleExtraSelectAdvice} 
+        handleSelectAdvice={handleSelectAdvice} 
+        handleSave={handleSave}
+        handleExtraSelectAdviceInput={handleExtraSelectAdviceInput}
       />
-      {form.formState.errors.content && (
-        <p className="text-red-500 text-xs mt-1">
-          {form.formState.errors.content.message?.toString()}
-        </p>
-      )}
-
-      <button
-        type="button"
-        onClick={handleSave}
-        className="bg-blue-600 text-white text-xs px-4 py-2 mt-2 rounded-sm"
-      >
-        Save Description
-      </button>
+      <div className="flex flex-col w-1/2">
+        <TipTapEditor
+          ref={editorRef}
+          content={initialContent} 
+          onChange={handleEditorChange} 
+        />
+        {form.formState.errors.content && (
+          <p className="text-red-500 text-xs mt-1">
+            {form.formState.errors.content.message?.toString()}
+          </p>
+        )}
+      </div>
     </div>
   );
 };

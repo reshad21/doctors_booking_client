@@ -2,8 +2,6 @@
 import { Form } from "@/components/ui/form";
 import { Plus, Trash } from "lucide-react";
 import Advice from "./Advice";
-import { useState } from "react";
-
 const CreatePrescriptionForm = ({
   form,
   onSubmit,
@@ -14,14 +12,14 @@ const CreatePrescriptionForm = ({
   handleAddMedicineInput,
   handleAddTestInput,
   patient,
-  handleAdviceGet,
+  handleAdviceChange,
+  handleAdviceInputChange
 }: any) => {
-  const [adviceContent, setAdviceContent] = useState("");
-
   const handleAdviceSave = (value: string) => {
-    setAdviceContent(value);
-    console.log(value);
-    
+    handleAdviceChange(value);
+  };
+  const handleAdviceSaveInput = (value: string) => {
+    handleAdviceInputChange(value);
   };
 
   return (
@@ -186,15 +184,6 @@ const CreatePrescriptionForm = ({
           ))}
 
           <div className="flex flex-col justify-start items-start gap-2">
-            <h5 className="font-semibold text-xs">Advice</h5>
-            <textarea
-              {...form.register("advice", { required: true })}
-              className="w-full rounded-sm border border-gray-300 bg-[#FDFDFF] p-2"
-              placeholder="Text here..."
-            />
-          </div>
-
-          <div className="flex flex-col justify-start items-start gap-2">
             <label className="font-semibold text-xs">Next Visit</label>
             <input
               {...form.register("nxVisit", { required: true })}
@@ -203,13 +192,19 @@ const CreatePrescriptionForm = ({
               placeholder="Ex: 20 days"
             />
           </div>
-          <Advice onSaveAdvice={handleAdviceSave} />
+          {/* <Advice onSaveAdvice={handleAdviceSave} /> */}
+          <Advice
+            onSaveAdvice={handleAdviceSave}
+            handleAdviceSaveInput={handleAdviceSaveInput}
+            initialContent={""} 
+          />
           <hr className="text-gray-300" />
           <div className="flex justify-start items-start gap-4 max-w-sm">
             <button
               type="submit"
               className="bg-brand font-semibold text-xs text-white px-5 py-2 rounded-sm"
-              onClick={() => handleAdviceGet(adviceContent)}
+              // onClick={() => handleAdviceGet(adviceContent)}
+              // onClick={() => handleAdviceChange(adviceContent)}
             >
               Save
             </button>

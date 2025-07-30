@@ -9,11 +9,13 @@ import toast from "react-hot-toast";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 
 const CreatePrescription = () => {
+  const [adviceContent, setAdviceContent] = useState("");
+  const [adviceInputContent, setAdviceInputContent] = useState("");
   const { data: preManagementData } = useGetPreManagementQuery(undefined);
-  const [createPrescription] = useCreatePrescriptionMutation()
+  const [createPrescription] = useCreatePrescriptionMutation();
   const { patientId } = useParams();
   const location = useLocation();
-  const patient = location.state 
+  const patient = location.state;
   const doctorId = useAppSelector((state) => state.admin.id);
   const [testInputCount, setTestInputCount] = useState([{ content: 1 }]);
   const [medicineInputCount, setMedicineInputCount] = useState([
@@ -44,7 +46,7 @@ const CreatePrescription = () => {
       return {
         medicineName: data[`medicine${key}`],
         dosage: data[`dosage${key}`],
-        day: `${data[`day${key}`]}-দিন` ,
+        day: `${data[`day${key}`]}-দিন`,
         time: data[`time${key}`],
         comment: data[`comment${key}`],
       };
@@ -76,25 +78,26 @@ const CreatePrescription = () => {
       patientId,
       doctorId,
       name: cleanedData.name,
-      advice: cleanedData.advice,
+      advice: `${adviceContent} ${adviceInputContent}`,
       nextVisit: cleanedData.nxVisit,
       medicines: medicineArray,
       tests: testsArray,
     };
-    const res = await createPrescription(prescriptionData) as any
-    console.log( res);
+    const res = (await createPrescription(prescriptionData)) as any;
+    console.log(res);
     if (res?.data?.success) {
-      toast.success(res?.data?.message)
-      form.reset()
-    }else{
-      toast.error(res?.error?.data?.message)
+      toast.success(res?.data?.message);
+      form.reset();
+    } else {
+      toast.error(res?.error?.data?.message);
       console.log(res?.error?.data?.message);
     }
   };
-const handleAdviceGet = (value: string) => {
-    console.log(value,"line 95");
-    
-  };
+ 
+  
+  console.log(adviceContent,"line number 97");
+  console.log(adviceInputContent,"line number 98");
+  
   return (
     <div className="custom-container mt-[30px]">
       <div className="p-5 bg-white">
@@ -111,7 +114,8 @@ const handleAdviceGet = (value: string) => {
           handleAddMedicineInput={handleAddMedicineInput}
           handleAddTestInput={handleAddTestInput}
           patient={patient}
-          handleAdviceGet={handleAdviceGet}
+          handleAdviceChange={setAdviceContent}
+          handleAdviceInputChange={setAdviceInputContent}
         />
         <div className="pt-[30px]">
           <img src={preManagementData?.data?.[0]?.footerImage} alt="" />
