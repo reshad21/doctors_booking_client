@@ -180,7 +180,7 @@ const CreatePrescription = () => {
   };
  
   
-  console.log(adviceContent,"line number 97");
+  console.log(doctorId,"line number 97");
   console.log(adviceInputContent,"line number 98");
   
   return (
