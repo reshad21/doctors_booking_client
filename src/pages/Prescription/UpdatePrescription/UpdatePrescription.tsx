@@ -12,6 +12,8 @@ const UpdatePrescription = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { perception } = location.state || {};
+  const [adviceContent, setAdviceContent] = useState("");
+    const [adviceInputContent, setAdviceInputContent] = useState("");
   const [testInputCount, setTestInputCount] = useState([{ content: 1 }]);
   const [chiefComplaint, setChiefComplaint] = useState([{ content: 1 }]);
   const [onExaminations, setOnExaminations] = useState([{ content: 1 }]);
@@ -20,7 +22,6 @@ const UpdatePrescription = () => {
   const [medicineInputCount, setMedicineInputCount] = useState([
     { content: 1 },
   ]);
-
   const form = useForm();
 
   useEffect(() => {
@@ -230,7 +231,7 @@ const UpdatePrescription = () => {
     const prescriptionData = {
       id:perception?.id,
       name: cleanedData.name,
-      advice: cleanedData.advice,
+      advice: `${adviceContent} ${adviceInputContent}`,
       nextVisit: cleanedData.nxVisit,
       medicines: medicineArray,
       tests: testsArray,
@@ -239,7 +240,6 @@ const UpdatePrescription = () => {
       diagnosis: diagnosisArray,
       investigation: investigationArray,
     };
-console.log(prescriptionData);
 
     const res = (await updatePrescription(prescriptionData)) as any;
     console.log(res);
@@ -282,6 +282,9 @@ console.log(prescriptionData);
           handleRemoveInvestigation={handleRemoveInvestigation}
           handleRemoveDiagnosis={handleRemoveDiagnosis}
           handleAddDiagnosis={handleAddDiagnosis}
+          advice={perception?.advice}
+          handleAdviceInputChange={setAdviceInputContent}
+          handleAdviceChange={setAdviceContent}
         />
         <div className="pt-[30px]">
           <img src={prHead} alt="" />
