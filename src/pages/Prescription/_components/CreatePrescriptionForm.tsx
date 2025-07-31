@@ -13,7 +13,19 @@ const CreatePrescriptionForm = ({
   handleAddTestInput,
   patient,
   handleAdviceChange,
-  handleAdviceInputChange
+  handleAdviceInputChange,
+  chiefComplaint,
+  handleRemoveChiefComplaintInput,
+  handleAddChiefComplaint,
+  onExaminations,
+  handleRemoveOnExaminations,
+  handleAddOnExaminations,
+  diagnosis,
+  handleAddDiagnosis,
+  handleRemoveDiagnosis,
+  handleRemoveInvestigation,
+  handleAddInvestigation,
+  investigation
 }: any) => {
   const handleAdviceSave = (value: string) => {
     handleAdviceChange(value);
@@ -51,6 +63,126 @@ const CreatePrescriptionForm = ({
               );
             })}
           </div>
+          {chiefComplaint.map((item: any, index: number) => (
+            <div key={index}>
+              <label className="font-semibold text-xs">
+                Chief complaint{item.content}
+              </label>
+              <div className="flex justify-start items-center gap-2">
+                <input
+                  {...form.register(`chiefComplaint${item.content}`, { required: true })}
+                  className="w-full rounded-sm border border-gray-300 bg-[#FDFDFF] p-2"
+                  placeholder="Text here..."
+                />
+                {chiefComplaint.length - 1 != index && (
+                  <div
+                    onClick={() => handleRemoveChiefComplaintInput(item.content)}
+                    className="contain-paint cursor-pointer w-[30px] h-[30px] bg-[#F44336] rounded-sm flex justify-center items-center"
+                  >
+                    <Trash className=" h-[20px] w-[20px] text-white " />
+                  </div>
+                )}
+                {chiefComplaint.length - 1 === index && (
+                  <div
+                    onClick={handleAddChiefComplaint}
+                    className="contain-paint cursor-pointer"
+                  >
+                    <Plus className="bg-[#14400D] w-[30px] h-[30px] text-white rounded-sm" />
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+          {onExaminations.map((item: any, index: number) => (
+            <div key={index}>
+              <label className="font-semibold text-xs">
+                On examinations {item.content}
+              </label>
+              <div className="flex justify-start items-center gap-2">
+                <input
+                  {...form.register(`onExaminations${item.content}`, { required: true })}
+                  className="w-full rounded-sm border border-gray-300 bg-[#FDFDFF] p-2"
+                  placeholder="Text here..."
+                />
+                {onExaminations.length - 1 != index && (
+                  <div
+                    onClick={() => handleRemoveOnExaminations(item.content)}
+                    className="contain-paint cursor-pointer w-[30px] h-[30px] bg-[#F44336] rounded-sm flex justify-center items-center"
+                  >
+                    <Trash className=" h-[20px] w-[20px] text-white " />
+                  </div>
+                )}
+                {onExaminations.length - 1 === index && (
+                  <div
+                    onClick={handleAddOnExaminations}
+                    className="contain-paint cursor-pointer"
+                  >
+                    <Plus className="bg-[#14400D] w-[30px] h-[30px] text-white rounded-sm" />
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+          {diagnosis.map((item: any, index: number) => (
+            <div key={index}>
+              <label className="font-semibold text-xs">
+                Diagnosis {item.content}
+              </label>
+              <div className="flex justify-start items-center gap-2">
+                <input
+                  {...form.register(`diagnosis${item.content}`, { required: true })}
+                  className="w-full rounded-sm border border-gray-300 bg-[#FDFDFF] p-2"
+                  placeholder="Text here..."
+                />
+                {diagnosis.length - 1 != index && (
+                  <div
+                    onClick={() => handleRemoveDiagnosis(item.content)}
+                    className="contain-paint cursor-pointer w-[30px] h-[30px] bg-[#F44336] rounded-sm flex justify-center items-center"
+                  >
+                    <Trash className=" h-[20px] w-[20px] text-white " />
+                  </div>
+                )}
+                {diagnosis.length - 1 === index && (
+                  <div
+                    onClick={handleAddDiagnosis}
+                    className="contain-paint cursor-pointer"
+                  >
+                    <Plus className="bg-[#14400D] w-[30px] h-[30px] text-white rounded-sm" />
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+          {investigation.map((item: any, index: number) => (
+            <div key={index}>
+              <label className="font-semibold text-xs">
+                Investigation {item.content}
+              </label>
+              <div className="flex justify-start items-center gap-2">
+                <input
+                  {...form.register(`investigation${item.content}`, { required: true })}
+                  className="w-full rounded-sm border border-gray-300 bg-[#FDFDFF] p-2"
+                  placeholder="Text here..."
+                />
+                {investigation.length - 1 != index && (
+                  <div
+                    onClick={() => handleRemoveInvestigation(item.content)}
+                    className="contain-paint cursor-pointer w-[30px] h-[30px] bg-[#F44336] rounded-sm flex justify-center items-center"
+                  >
+                    <Trash className=" h-[20px] w-[20px] text-white " />
+                  </div>
+                )}
+                {investigation.length - 1 === index && (
+                  <div
+                    onClick={handleAddInvestigation}
+                    className="contain-paint cursor-pointer"
+                  >
+                    <Plus className="bg-[#14400D] w-[30px] h-[30px] text-white rounded-sm" />
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
           {testInputCount.map((item: any, index: number) => (
             <div key={index}>
               <label className="font-semibold text-xs">
@@ -81,7 +213,6 @@ const CreatePrescriptionForm = ({
               </div>
             </div>
           ))}
-
           {medicineInputCount.map((item: any, idx: number) => (
             <div className="flex justify-between items-center gap-2">
               <div key={idx} className="grid grid-cols-8 gap-4 mb-4">
