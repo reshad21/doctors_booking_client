@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // import prHead from "@/assets/pr-head.png";
 import { useGetPerceptionByPatientIdQuery } from "@/redux/api/prescription/prescription";
-import { Edit, Printer } from "lucide-react";
+import { Edit, Info, Printer } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useRef } from "react";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
@@ -213,6 +213,14 @@ const ViewPrescription = () => {
 
   return (
     <div>
+      {
+        perceptions?.data?.length == 0 && (<div className="flex  justify-center items-center min-h-[85vh]">
+        <div className="flex flex-col items-center justify-center gap-2">
+         <Info />
+          <span className="font-semibold text-xs">No perceptions Found</span>
+        </div>
+        </div>)
+      }
       {perceptions?.data?.map((medic: any, index: number) => (
         <div className="m-5" key={medic.id || index}>
           <div className="flex justify-start items-center gap-2 pb-2">
