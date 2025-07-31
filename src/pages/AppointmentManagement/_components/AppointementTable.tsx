@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Table,
   TableBody,
@@ -9,11 +10,13 @@ import {
 import { Info, SquarePen } from "lucide-react";
 import ConfirmAlert from "@/components/shared/ConfirmAlert";
 import type { Patient } from "@/types/patient.types";
-import formatDateToReadable from "@/utils/formateDateToReveal";
 import { Badge } from "@/components/ui/badge";
 import { UpdatePatientModal } from "./UpdatePatientModal";
 import { useState } from "react";
 import { useUpdatePatientMutation } from "@/redux/api/patient/patient";
+import { useAppDispatch } from "@/redux/hooks";
+import { useSelector } from "react-redux";
+import { toggleSerial, endSerial } from "@/redux/api/features/serialSlice";
 import toast from "react-hot-toast";
 
 interface AppointmentTableProps {
@@ -30,6 +33,8 @@ const AppointmentTable = ({
     null
   );
   const [updatePatient] = useUpdatePatientMutation();
+  const dispatch = useAppDispatch();
+  const calledSerials = useSelector((state: any) => state.serial.calledSerials);
 
   const handleUpdateClick = (patient: Patient) => {
     setModalDataToUpdate(patient);
@@ -69,10 +74,10 @@ const AppointmentTable = ({
               "SN",
               "Patient Name",
               "Phone",
-              "Date",
               "Patient Status",
               "Payment",
               "Visited",
+              "Patient Calling",
               "Action",
             ].map((header, ind) => (
               <TableHead
@@ -97,9 +102,6 @@ const AppointmentTable = ({
               <TableCell className="text-[#5C727D] space-x-2">
                 {patient.phoneNumber}
               </TableCell>
-              <TableCell className="text-[#5C727D] space-x-2">
-                {formatDateToReadable(patient.createdAt) || "N/A"}
-              </TableCell>
               <TableCell className="text-[#5C727D] capitalize space-x-2">
                 {patient.status ? patient.status.toLowerCase() : "N/A"}
               </TableCell>
@@ -123,6 +125,29 @@ const AppointmentTable = ({
                   <option value="VISITED">Visited</option>
                   <option value="NOT_VISITED">Not Visited</option>
                 </select>
+              </TableCell>
+              <TableCell className="text-[#5C727D] capitalize space-x-2">
+                {calledSerials.includes(patient.id) ? (
+                  <Badge
+                    className="rounded bg-green-600 cursor-pointer"
+                    onClick={() => dispatch(toggleSerial(patient.id))}
+                  >
+                    Called
+                  </Badge>
+                ) : (
+                  <Badge
+                    className="rounded bg-[#14400D] cursor-pointer"
+                    onClick={() => dispatch(toggleSerial(patient.id))}
+                  >
+                    Call
+                  </Badge>
+                )}
+                <Badge
+                  className="rounded bg-red-500 cursor-pointer"
+                  onClick={() => dispatch(endSerial(patient.id))}
+                >
+                  End
+                </Badge>
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2 h-full">
