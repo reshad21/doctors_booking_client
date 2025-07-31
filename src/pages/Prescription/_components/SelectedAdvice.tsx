@@ -10,6 +10,8 @@ const SelectedAdvice = ({
 }: any) => {
   const {data:disease} = useGetAdviceQuery(undefined)
   const {data:extraAdvice} = useGetExtraAdviceQuery(undefined)
+
+  console.log(extraAdvice, "extraAdvice")
   return (
     <div className="mb-4 w-1/2">
       <div className="mb-4 w-full">

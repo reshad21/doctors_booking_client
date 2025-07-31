@@ -6,7 +6,7 @@ import {
 } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { List, ListOrdered } from "lucide-react";
+import { List } from "lucide-react";
 import { Button } from "../ui/button";
 
 export interface TipTapEditorRef {
@@ -30,11 +30,11 @@ const TipTapEditor = forwardRef<TipTapEditorRef, TipTapEditorProps>(
     const editor = useEditor({
       extensions: [
         StarterKit.configure({
-          orderedList: {
-            HTMLAttributes: {
-              class: "list-decimal ml-4",
-            },
-          },
+          // orderedList: {
+          //   HTMLAttributes: {
+          //     class: "list-decimal ml-4",
+          //   },
+          // },
           bulletList: {
             HTMLAttributes: {
               class: "list-disc ml-4",
@@ -89,7 +89,7 @@ const TipTapEditor = forwardRef<TipTapEditorRef, TipTapEditorProps>(
           >
             <List className="h-4 w-4" />
           </Button>
-          <Button
+          {/* <Button
             variant="ghost"
             size="icon"
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
@@ -97,7 +97,7 @@ const TipTapEditor = forwardRef<TipTapEditorRef, TipTapEditorProps>(
             type="button"
           >
             <ListOrdered className="h-4 w-4" />
-          </Button>
+          </Button> */}
         </div>
         <EditorContent editor={editor} />
       </div>
