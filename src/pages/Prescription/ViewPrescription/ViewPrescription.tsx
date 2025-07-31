@@ -5,12 +5,14 @@ import { Edit, Printer } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useRef } from "react";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
+import TipTapView from "./TipTapView";
 
 const ViewPrescription = () => {
   const { patientId } = useParams();
   const { data: perceptions } = useGetPerceptionByPatientIdQuery(patientId);
     const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const printRefs = useRef<(HTMLDivElement | null)[]>([]);
+  
 
   const setPrintRef = (el: HTMLDivElement | null, index: number) => {
     printRefs.current[index] = el;
@@ -234,14 +236,10 @@ const ViewPrescription = () => {
           {/* Screen View */}
           <div
             ref={(el) => setPrintRef(el, index)}
-            className="bg-white rounded-lg overflow-hidden shadow-md max-w-xl mx-auto "
+            className="bg-white rounded-lg overflow-hidden shadow-md max-w-2xl mx-auto "
           >
             <div className="screen-container min-h-[800px] flex flex-col justify-between">
-              <img
-                src={"prHead"}
-                alt="Clinic Header"
-                className="w-full h-auto max-h-32 "
-              />
+              <img src={preManagementData?.data?.[0]?.headerImage} alt="" />
 
               <div className="min-h-[620px]">
                 <div className="bg-gray-50 p-3 text-sm flex justify-between">
@@ -263,23 +261,68 @@ const ViewPrescription = () => {
                   {" "}
                   {/* or use a custom height if needed */}
                   <div className="flex h-full">
-                    <div className="w-1/3 p-4 border-r-2 border-gray-800 h-full overflow-y-auto">
-                      <h3 className="font-bold text-sm mb-4">Diagnosis</h3>
+
+
+                    <div className="flex flex-col items-start justify-start w-1/3 border-r-2 border-gray-800 gap-5 mt-5">
+                      <div className="ps-4 overflow-y-auto">
+                      <h3 className="font-bold text-xs">ChiefComplaint</h3>
                       <ul className="space-y-2">
-                        {medic?.tests?.map((item: any, idx: number) => (
+                        {medic?.chiefComplaint?.map((item: any, idx: number) => (
                           <li key={idx} className="flex items-start text-sm">
                             <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
-                            {item.description}
+                            <span className="text-xs">
+                              {item.description}
+                            </span>
                           </li>
                         ))}
                       </ul>
                     </div>
+                      <div className="ps-4 overflow-y-auto">
+                      <h3 className="font-bold text-xs">On examinations</h3>
+                      <ul className="space-y-2">
+                        {medic?.onExaminations?.map((item: any, idx: number) => (
+                          <li key={idx} className="flex items-start text-sm">
+                            <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
+                            <span className="text-xs">
+                              {item.description}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="ps-4 overflow-y-auto">
+                      <h3 className="font-bold text-xs">Diagnosis</h3>
+                      <ul className="space-y-2">
+                        {medic?.diagnosis?.map((item: any, idx: number) => (
+                          <li key={idx} className="flex items-start text-sm">
+                            <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
+                            <span className="text-xs">
+                              {item.description}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="ps-4 overflow-y-auto">
+                      <h3 className="font-bold text-xs">Investigation</h3>
+                      <ul className="space-y-2">
+                        {medic?.investigation?.map((item: any, idx: number) => (
+                          <li key={idx} className="flex items-start text-sm">
+                            <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
+                            <span className="text-xs">
+                              {item.description}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    </div>
 
-                    <div className="flex-1 p-4 h-full overflow-y-auto">
+                    <div className="flex-1 flex flex-col justify-between items-start px-2 py-4 h-full overflow-y-auto w-full">
                       <div className="space-y-4">
                         {medic?.medicines?.map((med: any, medIndex: number) => (
                           <div key={medIndex}>
-                            <div className="text-sm flex justify-between my-1 items-center">
+                            <div className="text-sm flex justify-between my-1 items-center gap-10">
                               <p className="text-sm font-semibold">
                                 {medIndex + 1}. {med.medicineName}
                               </p>
@@ -295,16 +338,18 @@ const ViewPrescription = () => {
                           </div>
                         ))}
                       </div>
+                    <div>
+                      <span className="font-semibold text-xs">Advice</span>
+                      <span className="ps-2">
+                        <TipTapView content={medic?.advice}  className="[&_p]:my-1 [&>p]:leading-tight text-xs"/>
+                      </span>
+                    </div>
                     </div>
                   </div>
                 </div>
               </div>
-
-              <img
-                src={"prHead"}
-                alt="Clinic Footer"
-                className="w-full h-auto max-h-32 "
-              />
+                       
+              <img src={preManagementData?.data?.[0]?.footerImage} alt="" />
             </div>
           </div>
         </div>
