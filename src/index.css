@@ -133,6 +133,87 @@ html {
   }
 }
 
+/* Editor Styles */
+.tiptap {
+  > * + * {
+    margin-top: 0.75em;
+  }
+
+  ul,
+  ol {
+    padding: 0 1rem;
+  }
+
+  h1 {
+    font-size: 2em;
+    font-weight: bold;
+  }
+
+  h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+
+  h3 {
+    font-size: 1.17em;
+    font-weight: bold;
+  }
+
+  blockquote {
+    padding-left: 1rem;
+    border-left: 2px solid #ddd;
+  }
+
+  code {
+    background-color: rgb(241, 241, 241);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+  }
+
+  pre {
+    background: #0d0d0d;
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+
+    code {
+      color: inherit;
+      padding: 0;
+      background: none;
+    }
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  hr {
+    margin: 1rem 0;
+    border-top: 2px solid #ddd;
+  }
+}
+
+.ProseMirror {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  min-height: 200px;
+  outline: none;
+
+  &:focus {
+    border-color: #a5a5a5;
+  }
+
+  > * + * {
+    margin-top: 0.75em;
+  }
+
+  &.resize-cursor {
+    cursor: row-resize;
+  }
+}
+
 @layer utilities {
   .custom-container {
     @apply p-[30px] h-screen flex justify-center items-start bg-[#f4f6f9];

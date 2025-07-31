@@ -12,9 +12,9 @@ const adviceApi = baseApi.injectEndpoints({
     }),
 
     getAdvice: builder.query({
-      query: ({ searchTerm }) => ({
+      query: () => ({
         url: `/advice/get-advice`,
-        params: { searchTerm },
+        // params: { searchTerm },
       }),
       providesTags: ["advice"],
     }),
