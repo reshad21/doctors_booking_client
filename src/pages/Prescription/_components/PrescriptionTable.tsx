@@ -112,14 +112,6 @@ const PrescriptionTable = ({
                   )}
                 </TableCell>
                 <TableCell>
-                  {/* <Switch
-                    checked={
-                      patient.visitStatus !==
-                      ("NOT_VISITED" as typeof patient.visitStatus)
-                    }
-                    className="data-[state=checked]:bg-green-600"
-                  /> */}
-
                   <span className="border rounded text-xs bg-[#14400D] text-white p-1 capitalize focus:outline-none">
                     {{
                       VISITED: "Visited",
