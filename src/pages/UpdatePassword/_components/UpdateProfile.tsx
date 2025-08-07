@@ -23,7 +23,6 @@ const UpdateProfile = () => {
   const [imagePreview, setImagePreview] = useState<string>(
     adminDataFromApi?.data?.image
   );
-  console.log(imagePreview);
   
   const {
     register,
