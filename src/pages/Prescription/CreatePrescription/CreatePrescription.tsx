@@ -4,10 +4,9 @@ import { useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
 import CreatePrescriptionForm from "../_components/CreatePrescriptionForm";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
+import { Card } from "@/components/ui/card";
 
 const CreatePrescription = () => {
-  const [adviceContent, setAdviceContent] = useState("");
-  const [adviceInputContent, setAdviceInputContent] = useState("");
   const { data: preManagementData } = useGetPreManagementQuery(undefined);
   // const [createPrescription] = useCreatePrescriptionMutation();
   // const { patientId } = useParams();
@@ -28,11 +27,71 @@ const CreatePrescription = () => {
     );
   };
   const onSubmit = async (data: any) => {
-    console.log(data);
+    // Step 1: Extract all medicine names (medicine-1, medicine-2, etc.)
+    const medicineEntries = Object.entries(data)
+      .filter(([key]) => key.startsWith("medicine-"))
+      .map(([key, value]) => ({
+        medicineId: key.split("-")[1], // Extract the number (1, 2, etc.)
+        name: value,
+      }));
+
+    // Step 2: For each medicine, find its dosage schedules
+    const medicines = medicineEntries.map(({ medicineId, name }) => {
+      // Find all fields that belong to this medicine's dosage schedules
+      const dosageFields = Object.entries(data).filter(([fieldName]) => {
+        // Field name format: dosageIndex-fieldType-medicineId (e.g., "1-duration-1")
+        const parts = fieldName.split("-");
+        return parts.length === 3 && parts[2] === medicineId;
+      });
+
+      // Group fields by dosage index (the first part of the field name)
+      const dosageGroups = dosageFields.reduce<
+        Record<string, Record<string, any>>
+      >((acc, [fieldName, value]) => {
+        const [dosageIndex, fieldType] = fieldName.split("-");
+
+        if (!acc[dosageIndex]) {
+          acc[dosageIndex] = {};
+        }
+
+        // Map field names to the desired structure
+        acc[dosageIndex][
+          fieldType === "doges"
+            ? "dosage"
+            : fieldType === "duration"
+              ? "day"
+              : fieldType
+        ] = value;
+
+        return acc;
+      }, {});
+
+      // Convert to array of dosage schedules
+      const DosageSchedule = Object.values(dosageGroups);
+
+      return {
+        medicineName: name,
+        DosageSchedule,
+      };
+    });
+
+    // Step 3: Combine with other form data
+    const transformedData = {
+      medicines,
+      content: data.content,
+      chiefComplaint: data["chief-complaint"],
+      onExaminations: data["on-examinations"],
+      diagnosis: data.diagnosis,
+      nxVisit: data.nxVisit,
+      investigation: data.investigation,
+    };
+
+    console.log(transformedData);
+    // Now you can send transformedData to your API
   };
 
   return (
-    <div className="custom-container mt-[30px]">
+    <Card className=" bg-[#f4f6f9] px-5 rounded-sm">
       <div className="p-5 bg-white">
         <div className="pb-[30px]">
           <img src={preManagementData?.data?.[0]?.headerImage} alt="" />
@@ -41,17 +100,15 @@ const CreatePrescription = () => {
           form={form}
           onSubmit={onSubmit}
           patient={patient}
-          handleAdviceChange={setAdviceContent}
           medicineInputCount={medicineInputCount}
           handleRemoveMedicineInput={handleRemoveMedicineInput}
           handleAddMedicineInput={handleAddMedicineInput}
-          handleAdviceInputChange={setAdviceInputContent}
         />
         <div className="pt-[30px]">
           <img src={preManagementData?.data?.[0]?.footerImage} alt="" />
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 

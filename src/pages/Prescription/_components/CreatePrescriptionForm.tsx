@@ -1,11 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// export default CreatePrescriptionForm;
+import { useState } from "react";
 import ReactSelectCompo from "./ReactSelectCompo";
-import Advice from "./Advice";
-import { Form } from "@/components/ui/form";
-import { Plus, Trash, X } from "lucide-react";
-import BaseInput from "@/components/shared/BaseInput";
-import BaseSelect from "@/components/shared/BaseSelect";
+import MedicineForm from "./MedicineForm";
+import { X } from "lucide-react";
 
 type OptionType = {
   value: string;
@@ -44,18 +41,13 @@ const medicineOptions: OptionType[] = [
 ];
 
 const dosageOptions = [
-  { name: "১+১+১", value: "১+১+১" },
-  { name: "১+১+০", value: "১+১+০" },
-  { name: "১+০+১", value: "১+০+১" },
-  { name: "০+১+১", value: "০+১+১" },
-  { name: "০+০+১", value: "০+০+১" },
-  { name: "১+০+০", value: "১+০+০" },
-  { name: "০+১+০", value: "০+১+০" },
+  { value: "১", label: "১" },
+  { value: "১/2", label: "১/2" },
 ];
 
 const timeOptions = [
-  { name: "খাবার আগে", value: "খাবার আগে" },
-  { name: "খাবার পরে", value: "খাবার পরে" },
+  { value: "খাবার আগে", label: "খাবার আগে" },
+  { value: "খাবার পরে", label: "খাবার পরে" },
 ];
 
 const CreatePrescriptionForm = ({
@@ -68,12 +60,28 @@ const CreatePrescriptionForm = ({
   handleAddMedicineInput,
   handleAdviceInputChange,
 }: any) => {
+  const [timingCounts, setTimingCounts] = useState<Record<string, number>>({});
+
   const handleAdviceSave = (value: string) => {
     handleAdviceChange(value);
   };
 
   const handleAdviceSaveInput = (value: string) => {
     handleAdviceInputChange(value);
+  };
+
+  const addTimingSet = (medicineId: string) => {
+    setTimingCounts((prev) => ({
+      ...prev,
+      [medicineId]: (prev[medicineId] || 0) + 1,
+    }));
+  };
+
+  const removeTimingSet = (medicineId: string) => {
+    setTimingCounts((prev) => ({
+      ...prev,
+      [medicineId]: Math.max((prev[medicineId] || 1) - 1, 1),
+    }));
   };
 
   return (
@@ -98,42 +106,32 @@ const CreatePrescriptionForm = ({
           </div>
         ))}
       </div>
-
       {/* Multi-Select Section */}
       <div>
         <div className="w-full grid grid-cols-2 gap-4">
-          <ReactSelectCompo
-            label="Sports"
-            name="sports"
-            options={sportsOptions}
-            control={form.control}
-            isMulti
-            showSelectedBox
-          />
-          <ReactSelectCompo
-            label="Foods"
-            name="foods"
-            options={foodOptions}
-            control={form.control}
-            isMulti
-            showSelectedBox
-          />
-          <ReactSelectCompo
-            label="Hobbies"
-            name="hobbies"
-            options={hobbyOptions}
-            control={form.control}
-            isMulti
-            showSelectedBox
-          />
-          <ReactSelectCompo
-            label="Languages"
-            name="languages"
-            options={languageOptions}
-            control={form.control}
-            isMulti
-            showSelectedBox
-          />
+          {[
+            "Chief-Complaint",
+            "On-Examinations",
+            "Diagnosis",
+            "Investigation",
+          ]?.map((label) => (
+            <ReactSelectCompo
+              label={label}
+              name={label.toLowerCase()}
+              options={
+                label === "Chief-Complaint"
+                  ? sportsOptions
+                  : label === "On-Examinations"
+                    ? foodOptions
+                    : label === "Diagnosis"
+                      ? hobbyOptions
+                      : languageOptions
+              }
+              control={form.control}
+              isMulti
+              showSelectedBox
+            />
+          ))}
         </div>
       </div>
 
@@ -145,113 +143,21 @@ const CreatePrescriptionForm = ({
 
       {/* Medicine Form Section */}
       <div>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 sm:space-y-6"
-          >
-            {medicineInputCount.map((item: any, idx: number) => (
-              <div
-                className="flex justify-between items-center gap-2"
-                key={idx}
-              >
-                <div className="grid grid-cols-17 gap-4 mb-4">
-                  <div className="grid grid-cols-13 col-span-13 justify-between gap-4 items-start">
-                    {["Medicine", "Dosage", "Day", "Time"].map((label, i) => (
-                      <div key={i} className={`flex flex-col gap-2 w-full ${label == "Medicine" ? "col-span-4" : "col-span-3"}`}>
-                        <label className="font-semibold text-xs">{label}</label>
-                        {label === "Medicine" && (
-                          <ReactSelectCompo
-                            name={`${label.toLowerCase()}${item.content}`}
-                            options={medicineOptions}
-                            control={form.control}
-                            showSelectedBox={false}
-                          />
-                        )}
-                        {label === "Dosage" && (
-                          <BaseSelect
-                            name={`${label.toLowerCase()}${item.content}`}
-                            options={dosageOptions}
-                            className="w-full text-sm"
-                          />
-                        )}
-                        {label === "Day" && (
-                          <BaseInput
-                            name={`${label.toLowerCase()}${item.content}`}
-                            placeholder={`Enter ${label}`}
-                            classname="w-full rounded-sm border border-gray-300 bg-[#FDFDFF] p-2 text-sm"
-                          />
-                        )}
-                        {label === "Time" && (
-                          <BaseSelect
-                            name={`${label.toLowerCase()}${item.content}`}
-                            options={timeOptions}
-                            className="w-full text-sm"
-                          />
-                        )}
-                        
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex flex-col justify-start items-start gap-2 col-span-4">
-                    <label className="font-semibold text-xs">Comment</label>
-                    <BaseInput
-                      name={`comment${item.content}`}
-                      placeholder="Ex: Take after meal"
-                      classname="w-full rounded-sm border border-gray-300 bg-[#FDFDFF] p-2"
-                    />
-                  </div>
-                </div>
-                {medicineInputCount.length - 1 !== idx && (
-                  <div
-                    onClick={() => handleRemoveMedicineInput(item.content)}
-                    className="contain-paint cursor-pointer w-[30px] h-[30px] bg-[#F44336] rounded-sm flex justify-center items-center"
-                  >
-                    <Trash className="h-[20px] w-[20px] text-white" />
-                  </div>
-                )}
-                {medicineInputCount.length - 1 === idx && (
-                  <div
-                    onClick={handleAddMedicineInput}
-                    className="contain-paint cursor-pointer"
-                  >
-                    <Plus className="bg-[#14400D] w-[30px] h-[30px] text-white rounded-sm" />
-                  </div>
-                )}
-              </div>
-            ))}
-
-            <div className="w-full flex-1 gap-2">
-              <label className="font-semibold text-xs w-full">Next Visit</label>
-              <BaseInput
-                name="nxVisit"
-                placeholder="Ex: 20 days"
-                classname="w-full rounded-sm border border-gray-300 bg-[#FDFDFF] p-2 flex-1"
-              />
-            </div>
-
-            <Advice
-              onSaveAdvice={handleAdviceSave}
-              handleAdviceSaveInput={handleAdviceSaveInput}
-              initialContent=""
-            />
-
-            <div className="flex justify-start items-start gap-4 max-w-sm">
-              <button
-                type="submit"
-                className="bg-brand font-semibold text-xs text-white px-5 py-2 rounded-sm"
-              >
-                Save
-              </button>
-              <button
-                type="button"
-                className="bg-[#FB160A] text-xs text-white px-5 py-2 rounded-sm"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </Form>
+        <MedicineForm
+          form={form}
+          onSubmit={onSubmit}
+          medicineInputCount={medicineInputCount}
+          timingCounts={timingCounts}
+          medicineOptions={medicineOptions}
+          dosageOptions={dosageOptions}
+          timeOptions={timeOptions}
+          addTimingSet={addTimingSet}
+          removeTimingSet={removeTimingSet}
+          handleRemoveMedicineInput={handleRemoveMedicineInput}
+          handleAddMedicineInput={handleAddMedicineInput}
+          handleAdviceSave={handleAdviceSave}
+          handleAdviceSaveInput={handleAdviceSaveInput}
+        />
       </div>
     </div>
   );
