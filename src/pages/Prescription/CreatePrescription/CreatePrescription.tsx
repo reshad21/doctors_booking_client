@@ -1,18 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import CreatePrescriptionForm from "../_components/CreatePrescriptionForm";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 import { Card } from "@/components/ui/card";
+import { useAppSelector } from "@/redux/hooks";
+import { useCreatePrescriptionMutation } from "@/redux/api/prescription/prescription";
 
 const CreatePrescription = () => {
   const { data: preManagementData } = useGetPreManagementQuery(undefined);
-  // const [createPrescription] = useCreatePrescriptionMutation();
-  // const { patientId } = useParams();
+  const [createPrescription] = useCreatePrescriptionMutation();
+  const { patientId } = useParams();
   const location = useLocation();
   const patient = location.state;
-  // const doctorId = useAppSelector((state) => state.admin.id);
+  const doctorId = useAppSelector((state) => state.admin);
   const [medicineInputCount, setMedicineInputCount] = useState([
     { content: 1 },
   ]);
@@ -74,9 +76,14 @@ const CreatePrescription = () => {
         DosageSchedule,
       };
     });
+    const advice = data?.advice
+      ?.map((name: string, index: number) => `${index + 1}. ${name}`)
+      .join("\n");
 
     // Step 3: Combine with other form data
     const transformedData = {
+      doctorId,
+      patientId,
       medicines,
       content: data.content,
       chiefComplaint: data["chief-complaint"],
@@ -84,9 +91,10 @@ const CreatePrescription = () => {
       diagnosis: data.diagnosis,
       nxVisit: data.nxVisit,
       investigation: data.investigation,
+      advice: advice,
     };
-
-    console.log(transformedData);
+    const res = await createPrescription(transformedData);
+    console.log(res);
     // Now you can send transformedData to your API
   };
 

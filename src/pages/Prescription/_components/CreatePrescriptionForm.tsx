@@ -3,6 +3,7 @@ import { useState } from "react";
 import ReactSelectCompo from "./ReactSelectCompo";
 import MedicineForm from "./MedicineForm";
 import { X } from "lucide-react";
+import { Form } from "@/components/ui/form";
 
 type OptionType = {
   value: string;
@@ -12,7 +13,11 @@ type OptionType = {
 // Options data
 const sportsOptions: OptionType[] = [
   { value: "cricket", label: "Cricket" },
-  { value: "football", label: "Football" },
+  {
+    value:
+      "football Football Football football Football Footballfootball Football Football football Football Football football Football Football football Football Footballfootball",
+    label: "Football",
+  },
   { value: "tennis", label: "Tennis" },
 ];
 
@@ -143,21 +148,52 @@ const CreatePrescriptionForm = ({
 
       {/* Medicine Form Section */}
       <div>
-        <MedicineForm
-          form={form}
-          onSubmit={onSubmit}
-          medicineInputCount={medicineInputCount}
-          timingCounts={timingCounts}
-          medicineOptions={medicineOptions}
-          dosageOptions={dosageOptions}
-          timeOptions={timeOptions}
-          addTimingSet={addTimingSet}
-          removeTimingSet={removeTimingSet}
-          handleRemoveMedicineInput={handleRemoveMedicineInput}
-          handleAddMedicineInput={handleAddMedicineInput}
-          handleAdviceSave={handleAdviceSave}
-          handleAdviceSaveInput={handleAdviceSaveInput}
-        />
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 sm:space-y-6"
+          >
+            <MedicineForm
+              form={form}
+              onSubmit={onSubmit}
+              medicineInputCount={medicineInputCount}
+              timingCounts={timingCounts}
+              medicineOptions={medicineOptions}
+              dosageOptions={dosageOptions}
+              timeOptions={timeOptions}
+              addTimingSet={addTimingSet}
+              removeTimingSet={removeTimingSet}
+              handleRemoveMedicineInput={handleRemoveMedicineInput}
+              handleAddMedicineInput={handleAddMedicineInput}
+              handleAdviceSave={handleAdviceSave}
+              handleAdviceSaveInput={handleAdviceSaveInput}
+            />
+
+            <ReactSelectCompo
+              label="Advice"
+              name={"advice"}
+              options={sportsOptions}
+              control={form.control}
+              isMulti
+              showSelectedBox
+            />
+            {/* Save / Cancel */}
+            <div className="flex justify-start items-start gap-4 max-w-sm">
+              <button
+                type="submit"
+                className="bg-brand font-semibold text-xs text-white px-5 py-2 rounded-sm"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                className="bg-[#FB160A] text-xs text-white px-5 py-2 rounded-sm"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </Form>
       </div>
     </div>
   );

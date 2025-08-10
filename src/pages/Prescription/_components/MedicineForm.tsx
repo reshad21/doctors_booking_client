@@ -1,14 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card } from "@/components/ui/card";
-import { Form } from "@/components/ui/form";
 import ReactSelectCompo from "./ReactSelectCompo";
 import BaseInput from "@/components/shared/BaseInput";
 import { Plus, X } from "lucide-react";
-import Advice from "./Advice";
 
 const MedicineForm = ({
   form,
-  onSubmit,
   medicineInputCount,
   timingCounts,
   medicineOptions,
@@ -18,20 +15,13 @@ const MedicineForm = ({
   removeTimingSet,
   handleRemoveMedicineInput,
   handleAddMedicineInput,
-  handleAdviceSave,
-  handleAdviceSaveInput,
 }: any) => {
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4 sm:space-y-6"
-      >
-        {medicineInputCount.map((item: any, idx: number) => {
+    <div>
+      {medicineInputCount.map((item: any, idx: number) => {
           if (!timingCounts[item.content]) {
             timingCounts[item.content] = 1;
           }
-
           return (
             <Card className="p-2 rounded-md" key={idx}>
               <div className="p-2 relative">
@@ -154,31 +144,7 @@ const MedicineForm = ({
             classname="w-full rounded-sm border border-gray-300 bg-[#FDFDFF] p-2 flex-1"
           />
         </div>
-
-        {/* Advice */}
-        <Advice
-          onSaveAdvice={handleAdviceSave}
-          handleAdviceSaveInput={handleAdviceSaveInput}
-          initialContent=""
-        />
-
-        {/* Save / Cancel */}
-        <div className="flex justify-start items-start gap-4 max-w-sm">
-          <button
-            type="submit"
-            className="bg-brand font-semibold text-xs text-white px-5 py-2 rounded-sm"
-          >
-            Save
-          </button>
-          <button
-            type="button"
-            className="bg-[#FB160A] text-xs text-white px-5 py-2 rounded-sm"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </Form>
+    </div>
   );
 };
 

@@ -100,7 +100,7 @@ const ReactSelectCompo = ({
                       key={item.value}
                       className="px-2 py-1 text-xs bg-blue-100 rounded"
                     >
-                      {item.label}
+                      {item.value}
                     </span>
                   ))}
                 </div>
