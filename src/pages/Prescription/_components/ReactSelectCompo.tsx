@@ -2,6 +2,7 @@
 import Select from "react-select";
 import { Controller } from "react-hook-form";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 type OptionType = {
   value: string;
@@ -17,6 +18,7 @@ interface ReactSelectCompoProps {
   className?: string;
   showSelectedBox?: boolean;
   onChange?: (selected: OptionType | OptionType[] | null) => void;
+  onCreateOption?: (inputValue: string) => void;
 }
 
 const ReactSelectCompo = ({
@@ -28,8 +30,10 @@ const ReactSelectCompo = ({
   className,
   showSelectedBox = true,
   onChange,
+  onCreateOption,
 }: ReactSelectCompoProps) => {
-  const [localSelected, setLocalSelected] = useState<OptionType[]>([]);
+  // Remove localSelected state, always use field.value for selected
+  const [inputValue, setInputValue] = useState("");
 
   return (
     <div className={`flex flex-col space-y-2 ${className}`}>
@@ -39,25 +43,41 @@ const ReactSelectCompo = ({
         control={control}
         render={({ field }) => (
           <>
-          
             <Select
               options={options}
               isMulti={isMulti}
               value={options.filter((option) =>
                 isMulti
-                  ? field.value?.includes(option.value)
+                  ? (field.value || []).includes(option.value)
                   : field.value === option.value
               )}
+              onInputChange={setInputValue}
+              inputValue={inputValue}
+              noOptionsMessage={() =>
+                inputValue && onCreateOption ? (
+                  <Button
+                    className="w-full"
+                    type="button"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      onCreateOption(inputValue);
+                      setInputValue("");
+                    }}
+                  >
+                    Save "{inputValue}"
+                  </Button>
+                ) : (
+                  "No options"
+                )
+              }
               onChange={(selected) => {
                 if (isMulti) {
                   const values =
                     (selected as OptionType[])?.map((item) => item.value) || [];
                   field.onChange(values);
-                  setLocalSelected((selected as OptionType[]) || []);
                 } else {
                   const value = (selected as OptionType)?.value || "";
                   field.onChange(value);
-                  setLocalSelected(selected ? [selected as OptionType] : []);
                 }
                 if (onChange) {
                   if (isMulti) {
@@ -72,45 +92,50 @@ const ReactSelectCompo = ({
               styles={{
                 control: (provided) => ({
                   ...provided,
-                  padding: "5px 10px", 
-                  minHeight: "40px", 
+                  padding: "5px 10px",
+                  minHeight: "40px",
                 }),
                 valueContainer: (provided) => ({
                   ...provided,
-                  padding: 0, 
+                  padding: 0,
                 }),
                 input: (provided) => ({
                   ...provided,
-                  padding: 0, 
+                  padding: 0,
                   margin: 0,
                 }),
                 multiValue: (provided) => ({
                   ...provided,
-                  marginRight: "4px", 
+                  marginRight: "4px",
                   marginBottom: "4px",
                 }),
               }}
             />
-            {showSelectedBox && localSelected.length > 0 && (
-              <div className="mt-2 p-2 rounded bg-gray-50">
-                <span className="text-sm font-medium">Selected:</span>
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {localSelected.map((item) => (
-                    <span
-                      key={item.value}
-                      className="px-2 py-1 text-xs bg-blue-100 rounded"
-                    >
-                      {item.value}
-                    </span>
-                  ))}
+            {showSelectedBox &&
+              isMulti &&
+              Array.isArray(field.value) &&
+              field.value.length > 0 && (
+                <div className="mt-2 p-2 rounded bg-gray-50">
+                  <span className="text-sm font-medium">Selected:</span>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {field.value.map((val: string) => {
+                      const opt = options.find((o) => o.value === val);
+                      return (
+                        <span
+                          key={val}
+                          className="px-2 py-1 text-xs bg-blue-100 rounded"
+                        >
+                          {opt ? opt.label : val}
+                        </span>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </>
         )}
       />
     </div>
   );
 };
-
 export default ReactSelectCompo;

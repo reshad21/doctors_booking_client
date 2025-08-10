@@ -7,6 +7,7 @@ import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagemen
 import { Card } from "@/components/ui/card";
 import { useAppSelector } from "@/redux/hooks";
 import { useCreatePrescriptionMutation } from "@/redux/api/prescription/prescription";
+import toast from "react-hot-toast";
 
 const CreatePrescription = () => {
   const { data: preManagementData } = useGetPreManagementQuery(undefined);
@@ -14,7 +15,7 @@ const CreatePrescription = () => {
   const { patientId } = useParams();
   const location = useLocation();
   const patient = location.state;
-  const doctorId = useAppSelector((state) => state.admin);
+  const doctorId = useAppSelector((state) => state.admin?.id);
   const [medicineInputCount, setMedicineInputCount] = useState([
     { content: 1 },
   ]);
@@ -29,6 +30,8 @@ const CreatePrescription = () => {
     );
   };
   const onSubmit = async (data: any) => {
+    console.log(data);
+
     // Step 1: Extract all medicine names (medicine-1, medicine-2, etc.)
     const medicineEntries = Object.entries(data)
       .filter(([key]) => key.startsWith("medicine-"))
@@ -55,7 +58,6 @@ const CreatePrescription = () => {
         if (!acc[dosageIndex]) {
           acc[dosageIndex] = {};
         }
-
         // Map field names to the desired structure
         acc[dosageIndex][
           fieldType === "doges"
@@ -80,9 +82,11 @@ const CreatePrescription = () => {
       ?.map((name: string, index: number) => `${index + 1}. ${name}`)
       .join("\n");
 
+    console.log(doctorId);
+
     // Step 3: Combine with other form data
     const transformedData = {
-      doctorId,
+      doctorId: doctorId,
       patientId,
       medicines,
       content: data.content,
@@ -93,9 +97,48 @@ const CreatePrescription = () => {
       investigation: data.investigation,
       advice: advice,
     };
-    const res = await createPrescription(transformedData);
-    console.log(res);
-    // Now you can send transformedData to your API
+    const res = (await createPrescription(transformedData)) as any;
+    console.log(res?.data);
+    if (res?.data?.message) {
+      toast.success(res?.data?.message);
+      form.reset();
+    } else {
+      toast.error(res?.error?.data?.message || "Something went wrong");
+    }
+  };
+
+  // State to hold dynamic options for each field
+  const [dynamicOptions, setDynamicOptions] = useState<
+    { [key: string]: { value: string; label: string }[] }
+  >({
+    "chief-complaint": [],
+    "on-examinations": [],
+    diagnosis: [],
+    investigation: [],
+  });
+
+  // Handler to save new select options (for all fields)
+  const handleSaveNewOption = (inputValue: string, label: string) => {
+    toast.success(`Saved new ${label}: ${inputValue}`);
+    const fieldName = label.toLowerCase();
+    // Add to form value
+    const prev = form.getValues(fieldName) || [];
+    form.setValue(fieldName, [...prev, inputValue]);
+    // Add to dynamic options for the select
+    setDynamicOptions((prevOptions) => ({
+      ...prevOptions,
+      [fieldName]: [
+        ...prevOptions[fieldName],
+        { value: inputValue, label: inputValue },
+      ],
+    }));
+  };
+
+  // Handler for advice field
+  const handleSaveAdvice = (inputValue: string) => {
+    toast.success(`Saved new Advice: ${inputValue}`);
+    const prev = form.getValues("advice") || [];
+    form.setValue("advice", [...prev, inputValue]);
   };
 
   return (
@@ -111,6 +154,9 @@ const CreatePrescription = () => {
           medicineInputCount={medicineInputCount}
           handleRemoveMedicineInput={handleRemoveMedicineInput}
           handleAddMedicineInput={handleAddMedicineInput}
+          handleAdviceInputChange={handleSaveNewOption}
+          handleAdviceChange={handleSaveAdvice}
+          dynamicOptions={dynamicOptions}
         />
         <div className="pt-[30px]">
           <img src={preManagementData?.data?.[0]?.footerImage} alt="" />

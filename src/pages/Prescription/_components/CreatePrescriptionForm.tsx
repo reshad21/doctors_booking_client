@@ -64,6 +64,7 @@ const CreatePrescriptionForm = ({
   handleRemoveMedicineInput,
   handleAddMedicineInput,
   handleAdviceInputChange,
+  dynamicOptions = {},
 }: any) => {
   const [timingCounts, setTimingCounts] = useState<Record<string, number>>({});
 
@@ -71,8 +72,8 @@ const CreatePrescriptionForm = ({
     handleAdviceChange(value);
   };
 
-  const handleAdviceSaveInput = (value: string) => {
-    handleAdviceInputChange(value);
+  const handleAdviceSaveInput = (value: string, label: string) => {
+    handleAdviceInputChange(value, label);
   };
 
   const addTimingSet = (medicineId: string) => {
@@ -119,24 +120,36 @@ const CreatePrescriptionForm = ({
             "On-Examinations",
             "Diagnosis",
             "Investigation",
-          ]?.map((label) => (
-            <ReactSelectCompo
-              label={label}
-              name={label.toLowerCase()}
-              options={
-                label === "Chief-Complaint"
-                  ? sportsOptions
-                  : label === "On-Examinations"
-                    ? foodOptions
-                    : label === "Diagnosis"
-                      ? hobbyOptions
-                      : languageOptions
-              }
-              control={form.control}
-              isMulti
-              showSelectedBox
-            />
-          ))}
+          ].map((label) => {
+            const fieldName = label.toLowerCase();
+            const staticOptions =
+              label === "Chief-Complaint"
+                ? sportsOptions
+                : label === "On-Examinations"
+                  ? foodOptions
+                  : label === "Diagnosis"
+                    ? hobbyOptions
+                    : languageOptions;
+            const mergedOptions = [
+              ...staticOptions,
+              ...(dynamicOptions[fieldName] || []),
+            ];
+            return (
+              <ReactSelectCompo
+                key={label}
+                label={label}
+                name={fieldName}
+                options={mergedOptions}
+                control={form.control}
+                isMulti
+                showSelectedBox
+                onCreateOption={(inputValue) =>
+                  handleAdviceSaveInput &&
+                  handleAdviceSaveInput(inputValue, label)
+                }
+              />
+            );
+          })}
         </div>
       </div>
 
@@ -176,6 +189,9 @@ const CreatePrescriptionForm = ({
               control={form.control}
               isMulti
               showSelectedBox
+              onCreateOption={(inputValue) =>
+                handleAdviceSave && handleAdviceSave(inputValue)
+              }
             />
             {/* Save / Cancel */}
             <div className="flex justify-start items-start gap-4 max-w-sm">
