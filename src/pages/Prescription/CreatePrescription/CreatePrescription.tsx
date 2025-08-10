@@ -108,9 +108,9 @@ const CreatePrescription = () => {
   };
 
   // State to hold dynamic options for each field
-  const [dynamicOptions, setDynamicOptions] = useState<
-    { [key: string]: { value: string; label: string }[] }
-  >({
+  const [dynamicOptions, setDynamicOptions] = useState<{
+    [key: string]: { value: string; label: string }[];
+  }>({
     "chief-complaint": [],
     "on-examinations": [],
     diagnosis: [],

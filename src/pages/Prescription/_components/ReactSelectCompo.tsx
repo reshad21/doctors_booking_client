@@ -56,7 +56,7 @@ const ReactSelectCompo = ({
               noOptionsMessage={() =>
                 inputValue && onCreateOption ? (
                   <Button
-                    className="w-full"
+                    className="w-full bg-brand"
                     type="button"
                     onMouseDown={(e) => {
                       e.preventDefault();
@@ -64,7 +64,7 @@ const ReactSelectCompo = ({
                       setInputValue("");
                     }}
                   >
-                    Save "{inputValue}"
+                    Save "{inputValue && inputValue.slice(0,15)}..."
                   </Button>
                 ) : (
                   "No options"
