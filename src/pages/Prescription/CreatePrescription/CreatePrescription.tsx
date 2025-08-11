@@ -90,8 +90,6 @@ const CreatePrescription = () => {
       ?.map((name: string, index: number) => `${index + 1}. ${name}`)
       .join("\n");
 
-    console.log(doctorId);
-
     // Step 3: Combine with other form data
     const transformedData = {
       doctorId: doctorId,

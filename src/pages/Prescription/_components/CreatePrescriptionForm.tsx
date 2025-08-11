@@ -10,39 +10,18 @@ import {
   useGetInvestigationQuery,
   useGetOnExaminationsQuery,
 } from "@/redux/api/manualData/manualData";
+import { dosageOptions, timeOptions } from "./CreateFn";
+import { useGetAdviceQuery } from "@/redux/api/advice/advice";
 
 type OptionType = {
   value: string;
   label: string;
 };
-
-// Options data
-const sportsOptions: OptionType[] = [
-  { value: "cricket", label: "Cricket" },
-  {
-    value:
-      "football Football Football football Football Footballfootball Football Football football Football Football football Football Football football Football Footballfootball",
-    label: "Football",
-  },
-  { value: "tennis", label: "Tennis" },
-];
-
 const medicineOptions: OptionType[] = [
   { value: "paracetamol", label: "Paracetamol" },
   { value: "ibuprofen", label: "Ibuprofen" },
   { value: "amoxicillin", label: "Amoxicillin" },
 ];
-
-const dosageOptions = [
-  { value: "১", label: "১" },
-  { value: "১/2", label: "১/2" },
-];
-
-const timeOptions = [
-  { value: "খাবার আগে", label: "খাবার আগে" },
-  { value: "খাবার পরে", label: "খাবার পরে" },
-];
-
 const CreatePrescriptionForm = ({
   form,
   onSubmit,
@@ -59,6 +38,7 @@ const CreatePrescriptionForm = ({
   const { data: Investigations } = useGetInvestigationQuery(undefined);
   const { data: diagnosis } = useGetDiagnosisQuery(undefined);
   const { data: chiefComplaint } = useGetChiefComplaintQuery(undefined);
+  const { data: advice } = useGetAdviceQuery(undefined);
 
   const handleAdviceSave = (value: string) => {
     handleAdviceChange(value);
@@ -97,6 +77,12 @@ const CreatePrescriptionForm = ({
     value: item.value,
     label: item.title,
   }));
+  const adviceOptions = advice?.data?.map((item: any) => ({
+    value: item.value,
+    label: item.title,
+  }));
+  console.log(chiefComplaint);
+  
   return (
     <div className="flex flex-col gap-8 p-4">
       {/* Patient Info Section */}
@@ -192,7 +178,7 @@ const CreatePrescriptionForm = ({
             <ReactSelectCompo
               label="Advice"
               name={"advice"}
-              options={sportsOptions}
+              options={adviceOptions || []}
               control={form.control}
               isMulti
               showSelectedBox

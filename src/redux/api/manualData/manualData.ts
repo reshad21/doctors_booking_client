@@ -60,7 +60,7 @@ const onExaminationsApi = baseApi.injectEndpoints({
     }),
     getChiefComplaint: builder.query({
       query: (data) => ({
-        url: `/get-chiefComplaints/create-chiefComplaint`,
+        url: `/chief-complaint/get-chiefComplaints`,
         method: "GET",
         body: data,
       }),
@@ -70,12 +70,12 @@ const onExaminationsApi = baseApi.injectEndpoints({
 });
 
 export const {
-    useCreateOnExaminationsMutation,
-    useGetOnExaminationsQuery,
-    useCreateInvestigationMutation,
-    useGetInvestigationQuery,
-    useCreateDiagnosisMutation,
-    useGetDiagnosisQuery,
-    useCreateChiefComplaintMutation,
-    useGetChiefComplaintQuery
+  useCreateOnExaminationsMutation,
+  useGetOnExaminationsQuery,
+  useCreateInvestigationMutation,
+  useGetInvestigationQuery,
+  useCreateDiagnosisMutation,
+  useGetDiagnosisQuery,
+  useCreateChiefComplaintMutation,
+  useGetChiefComplaintQuery,
 } = onExaminationsApi;

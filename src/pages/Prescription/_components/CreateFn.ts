@@ -24,3 +24,24 @@ export const CreateAdviceFn = async (inputValue: any, rtkFn: any) => {
     toast.error(res?.error?.data?.message || "Something Went Wrong");
   }
 };
+
+export const dosageOptions = [
+  { value: "1+1+1", label: "1+1+1" },
+  { value: "1+1+0", label: "1+1+0" },
+  { value: "1+0+1", label: "1+0+1" },
+  { value: "0+1+1", label: "0+1+1" },
+  { value: "0+0+1", label: "0+0+1" },
+  { value: "1+0+0", label: "1+0+0" },
+  { value: "0+1+0", label: "0+1+0" },
+  { value: "1/2 + 1/2 + 1/2", label: "1/2 + 1/2 + 1/2" },
+  { value: "1/2 + 1/2 + 0", label: "1/2 + 1/2 + 0" },
+  { value: "1/2 + 0 + 1/2", label: "1/2 + 0 + 1/2" },
+  { value: "0 + 1/2 + 1/2", label: "0 + 1/2 + 1/2" },
+  { value: "0 + 0 + 1/2", label: "0 + 0 + 1/2" },
+  { value: "1/2 + 0 + 0", label: "1/2 + 0 + 0" },
+  { value: "0 + 1/2 + 0", label: "0 + 1/2 + 0" },
+];
+export const timeOptions = [
+  { value: "খাবার আগে", label: "খাবার আগে" },
+  { value: "খাবার পরে", label: "খাবার পরে" },
+];
