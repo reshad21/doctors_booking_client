@@ -2,7 +2,7 @@ import type { Prescription } from "./prescription.types";
 
 export type VisitStatus = "VISITED" | "NOT_VISITED";
 
-export type PatientStatus = "ACTIVE" | "INACTIVE";
+export type PatientStatus = "NEW" | "OLD" | "REPORT";
 
 export interface Patient {
   id: string;

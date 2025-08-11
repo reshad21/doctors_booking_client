@@ -99,6 +99,28 @@ const CustomModal: React.FC<CustomModalProps> = ({
       </AlertDialogTrigger>
 
       <AlertDialogContent className="max-h-[90vh] overflow-hidden">
+        <AlertDialogCancel asChild>
+          <button
+            type="button"
+            className="absolute right-4 top-4 text-muted-foreground transition hover:text-foreground"
+            aria-label="Close"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </AlertDialogCancel>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           {description && (
@@ -174,7 +196,11 @@ const CustomModal: React.FC<CustomModalProps> = ({
 
                 <div className="flex justify-end space-x-4 pt-4 pb-2">
                   <AlertDialogCancel asChild>
-                    <Button variant="outline" type="button" className="cursor-pointer">
+                    <Button
+                      variant="outline"
+                      type="button"
+                      className="cursor-pointer"
+                    >
                       Close
                     </Button>
                   </AlertDialogCancel>
@@ -188,7 +214,11 @@ const CustomModal: React.FC<CustomModalProps> = ({
                 {children}
                 <div className="flex justify-end space-x-4 pt-4 pb-2">
                   <AlertDialogCancel asChild>
-                    <Button variant="outline" className="cursor-pointer" type="button">
+                    <Button
+                      variant="outline"
+                      className="cursor-pointer"
+                      type="button"
+                    >
                       Close
                     </Button>
                   </AlertDialogCancel>

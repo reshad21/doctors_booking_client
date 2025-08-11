@@ -40,7 +40,21 @@ const prescriptionApi = baseApi.injectEndpoints({
         };
       },
     }),
+    getExtraAdvice: builder.query({
+      query: () => {
+        return {
+          url: `prescription/exceptional-advice`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
-export const { useCreatePrescriptionMutation,useGetPerceptionByPatientIdQuery,useUpdatePrescriptionMutation,useCreateExtraAdviceMutation} = prescriptionApi;
+export const {
+  useCreatePrescriptionMutation,
+  useGetPerceptionByPatientIdQuery,
+  useUpdatePrescriptionMutation,
+  useCreateExtraAdviceMutation,
+  useGetExtraAdviceQuery
+} = prescriptionApi;

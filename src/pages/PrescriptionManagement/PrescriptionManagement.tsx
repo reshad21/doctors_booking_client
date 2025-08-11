@@ -8,11 +8,19 @@ import {
 import { useState } from "react";
 import toast from "react-hot-toast";
 import ConfirmAlert from "@/components/shared/ConfirmAlert";
-import { useCreateAdviceMutation } from "@/redux/api/advice/advice";
+import {
+  useCreateAdviceMutation,
+  useGetAdviceQuery,
+} from "@/redux/api/advice/advice";
+import AdviceTable from "./_components/AdviceTable";
+import LoadingSpinner from "@/loading/LoadingSpinner";
 
 const PrescriptionManagement = () => {
   const { data: preManagementData, refetch } =
     useGetPreManagementQuery(undefined);
+  const { data: adviceData, isLoading: isAdviceLoading } = useGetAdviceQuery(
+    {}
+  );
   const [deletePreManagement] = useDeletePreManagementMutation();
   const [createPreManagement] = useCreatePreManagementMutation();
   const [createAdvice] = useCreateAdviceMutation();
@@ -23,6 +31,8 @@ const PrescriptionManagement = () => {
   const [articleModalOpen, setArticleModalOpen] = useState(false);
 
   const hasPrescription = preManagementData?.data?.length > 0;
+
+  if (isAdviceLoading) return <LoadingSpinner />;
 
   const handlePrescriptionSubmit = async (
     data: Record<string, any>,
@@ -58,9 +68,11 @@ const PrescriptionManagement = () => {
       helpers.close();
     } else {
       toast.error("Failed to create advice");
-      console.log("Error creating advice:", res?.error)
+      console.log("Error creating advice:", res?.error);
     }
   };
+
+  console.log(adviceData, "adviceData");
 
   return (
     <div className="custom-container">
@@ -88,7 +100,10 @@ const PrescriptionManagement = () => {
               setOpen={setViewPrescriptionModalOpen}
               title="Uploaded Prescription"
               description="You can only delete the uploaded prescription."
-              buttonProperty={{ type: "create", text: "Uploaded Prescription" }}
+              buttonProperty={{
+                type: "create",
+                text: "Uploaded Prescription",
+              }}
               hideForm
             >
               {preManagementData?.data?.map((item: any) => (
@@ -125,9 +140,23 @@ const PrescriptionManagement = () => {
             description="Fill the form to create a new advice"
             input={[{ label: "Title", name: "title", type: "text" }]}
             richTextEditor={{ name: "content", label: "Content" }}
+            select={[
+              {
+                label: "Status",
+                name: "status",
+                type: "select",
+                options: [
+                  { name: "Active", val: "ACTIVE" },
+                  { name: "Inactive", val: "INACTIVE" },
+                ],
+              },
+            ]}
             buttonProperty={{ type: "create", text: "Patient Advice" }}
             handleFormSubmit={handleAdviceSubmit}
           />
+        </div>
+        <div className="rounded-b-sm overflow-hidden shadow-sm">
+          <AdviceTable advices={adviceData?.data} />
         </div>
       </div>
     </div>
