@@ -8,8 +8,21 @@ import { Card } from "@/components/ui/card";
 import { useAppSelector } from "@/redux/hooks";
 import { useCreatePrescriptionMutation } from "@/redux/api/prescription/prescription";
 import toast from "react-hot-toast";
+import {
+  useCreateChiefComplaintMutation,
+  useCreateDiagnosisMutation,
+  useCreateInvestigationMutation,
+  useCreateOnExaminationsMutation,
+} from "@/redux/api/manualData/manualData";
+import { useCreateAdviceMutation } from "@/redux/api/advice/advice";
+import { CreateAdviceFn, CreateFn } from "../_components/CreateFn";
 
 const CreatePrescription = () => {
+  const [createOnExamination] = useCreateOnExaminationsMutation();
+  const [createInvestigation] = useCreateInvestigationMutation();
+  const [createDiagnosis] = useCreateDiagnosisMutation();
+  const [createComplain] = useCreateChiefComplaintMutation();
+  const [createAdvice] = useCreateAdviceMutation();
   const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const [createPrescription] = useCreatePrescriptionMutation();
   const { patientId } = useParams();
@@ -30,8 +43,6 @@ const CreatePrescription = () => {
     );
   };
   const onSubmit = async (data: any) => {
-    console.log(data);
-
     // Step 1: Extract all medicine names (medicine-1, medicine-2, etc.)
     const medicineEntries = Object.entries(data)
       .filter(([key]) => key.startsWith("medicine-"))
@@ -39,7 +50,6 @@ const CreatePrescription = () => {
         medicineId: key.split("-")[1], // Extract the number (1, 2, etc.)
         name: value,
       }));
-
     // Step 2: For each medicine, find its dosage schedules
     const medicines = medicineEntries.map(({ medicineId, name }) => {
       // Find all fields that belong to this medicine's dosage schedules
@@ -48,7 +58,6 @@ const CreatePrescription = () => {
         const parts = fieldName.split("-");
         return parts.length === 3 && parts[2] === medicineId;
       });
-
       // Group fields by dosage index (the first part of the field name)
       const dosageGroups = dosageFields.reduce<
         Record<string, Record<string, any>>
@@ -72,7 +81,6 @@ const CreatePrescription = () => {
 
       // Convert to array of dosage schedules
       const DosageSchedule = Object.values(dosageGroups);
-
       return {
         medicineName: name,
         DosageSchedule,
@@ -118,8 +126,20 @@ const CreatePrescription = () => {
   });
 
   // Handler to save new select options (for all fields)
-  const handleSaveNewOption = (inputValue: string, label: string) => {
-    toast.success(`Saved new ${label}: ${inputValue}`);
+  const handleSaveNewOption = async (inputValue: string, label: string) => {
+    if (label == "Chief-Complaint") {
+      await CreateFn(inputValue, createComplain);
+    }
+    if (label == "On-Examinations") {
+      await CreateFn(inputValue, createOnExamination);
+    }
+    if (label == "Diagnosis") {
+      await CreateFn(inputValue, createDiagnosis);
+    }
+    if (label == "Investigation") {
+      await CreateFn(inputValue, createInvestigation);
+    }
+
     const fieldName = label.toLowerCase();
     // Add to form value
     const prev = form.getValues(fieldName) || [];
@@ -136,7 +156,7 @@ const CreatePrescription = () => {
 
   // Handler for advice field
   const handleSaveAdvice = (inputValue: string) => {
-    toast.success(`Saved new Advice: ${inputValue}`);
+    CreateAdviceFn(inputValue, createAdvice);
     const prev = form.getValues("advice") || [];
     form.setValue("advice", [...prev, inputValue]);
   };

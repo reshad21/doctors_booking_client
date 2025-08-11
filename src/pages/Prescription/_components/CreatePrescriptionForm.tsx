@@ -4,6 +4,12 @@ import ReactSelectCompo from "./ReactSelectCompo";
 import MedicineForm from "./MedicineForm";
 import { X } from "lucide-react";
 import { Form } from "@/components/ui/form";
+import {
+  useGetChiefComplaintQuery,
+  useGetDiagnosisQuery,
+  useGetInvestigationQuery,
+  useGetOnExaminationsQuery,
+} from "@/redux/api/manualData/manualData";
 
 type OptionType = {
   value: string;
@@ -19,24 +25,6 @@ const sportsOptions: OptionType[] = [
     label: "Football",
   },
   { value: "tennis", label: "Tennis" },
-];
-
-const foodOptions: OptionType[] = [
-  { value: "pizza", label: "Pizza" },
-  { value: "burger", label: "Burger" },
-  { value: "pasta", label: "Pasta" },
-];
-
-const hobbyOptions: OptionType[] = [
-  { value: "reading", label: "Reading" },
-  { value: "gaming", label: "Gaming" },
-  { value: "traveling", label: "Traveling" },
-];
-
-const languageOptions: OptionType[] = [
-  { value: "english", label: "English" },
-  { value: "spanish", label: "Spanish" },
-  { value: "bengali", label: "Bengali" },
 ];
 
 const medicineOptions: OptionType[] = [
@@ -67,6 +55,10 @@ const CreatePrescriptionForm = ({
   dynamicOptions = {},
 }: any) => {
   const [timingCounts, setTimingCounts] = useState<Record<string, number>>({});
+  const { data: onExaminations } = useGetOnExaminationsQuery(undefined);
+  const { data: Investigations } = useGetInvestigationQuery(undefined);
+  const { data: diagnosis } = useGetDiagnosisQuery(undefined);
+  const { data: chiefComplaint } = useGetChiefComplaintQuery(undefined);
 
   const handleAdviceSave = (value: string) => {
     handleAdviceChange(value);
@@ -89,7 +81,22 @@ const CreatePrescriptionForm = ({
       [medicineId]: Math.max((prev[medicineId] || 1) - 1, 1),
     }));
   };
-
+  const onExaminationOptions = onExaminations?.data?.map((item: any) => ({
+    value: item.value,
+    label: item.title,
+  }));
+  const investigationOptions = Investigations?.data?.map((item: any) => ({
+    value: item.value,
+    label: item.title,
+  }));
+  const diagnosisOptions = diagnosis?.data?.map((item: any) => ({
+    value: item.value,
+    label: item.title,
+  }));
+  const chiefComplaintOptions = chiefComplaint?.data?.map((item: any) => ({
+    value: item.value,
+    label: item.title,
+  }));
   return (
     <div className="flex flex-col gap-8 p-4">
       {/* Patient Info Section */}
@@ -124,12 +131,12 @@ const CreatePrescriptionForm = ({
             const fieldName = label.toLowerCase();
             const staticOptions =
               label === "Chief-Complaint"
-                ? sportsOptions
+                ? (chiefComplaintOptions || [])
                 : label === "On-Examinations"
-                  ? foodOptions
+                  ? onExaminationOptions || []
                   : label === "Diagnosis"
-                    ? hobbyOptions
-                    : languageOptions;
+                    ? diagnosisOptions || []
+                    : investigationOptions || [];
             const mergedOptions = [
               ...staticOptions,
               ...(dynamicOptions[fieldName] || []),
