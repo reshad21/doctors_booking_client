@@ -39,7 +39,7 @@ const AppointmentManagement = () => {
   }, [searchInput]);
 
   const today = new Date().toISOString().split("T")[0];
-  
+
   const { data: patientsData, isLoading } = useGetPatientQuery({
     page,
     limit,
@@ -91,14 +91,14 @@ const AppointmentManagement = () => {
       doctorId,
     })) as any;
 
-    console.log(res, "create patient response");
 
     if (res?.data?.success) {
       const response = await sendSingleMessage({
         number: data?.phoneNumber,
-        message: "Mr. Shifat, your booking with Dr. Mahabur Rahman has been confirmed.",
+        message:
+          "Mr. Shifat, your booking with Dr. Mahabur Rahman has been confirmed.",
       });
-console.log(response);
+
 
       helpers.reset();
       helpers.close();

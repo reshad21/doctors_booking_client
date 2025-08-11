@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import PatientHeaderSelect from "./_components/PatientHeaderSelect";
 import PatientTable from "./_components/PaitentTable";
 import ExportDropdown from "@/components/shared/ExportDropdown";
+import LoadingSpinner from "@/loading/LoadingSpinner";
 
 const Patient = () => {
   const [deletePatient] = useDeletePatientMutation();
@@ -43,7 +44,7 @@ const Patient = () => {
     }),
   });
 
-  if (isLoading || isChamberLoading) return <div>Loading</div>;
+  if (isLoading || isChamberLoading) return <LoadingSpinner />;
 
   return (
     <div className="custom-container">

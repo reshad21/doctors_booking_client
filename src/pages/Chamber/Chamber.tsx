@@ -35,6 +35,7 @@ const Chamber = () => {
     { label: "Report", name: "reportFee", type: "text" },
     { label: "Start Time", name: "startTime", type: "time" },
     { label: "End Time", name: "endTime", type: "time" },
+    { label: "Day", name: "day", type: "days" },
   ];
 
   const selectFields = [
@@ -86,7 +87,7 @@ const Chamber = () => {
               buttonProperty={{ type: "create", text: "Add New Chamber" }}
             />
           </div>
-          {/* <BaseInput name="search" label="Search" placeholder="search" type="text" /> */}
+          
           <div className="flex items-center justify-center pr-4 gap-x-2">
             <span className="text-sm">Search:</span>
             <Input
