@@ -4,57 +4,24 @@ import ReactSelectCompo from "./ReactSelectCompo";
 import MedicineForm from "./MedicineForm";
 import { X } from "lucide-react";
 import { Form } from "@/components/ui/form";
+import {
+  useGetChiefComplaintQuery,
+  useGetDiagnosisQuery,
+  useGetInvestigationQuery,
+  useGetOnExaminationsQuery,
+} from "@/redux/api/manualData/manualData";
+import { dosageOptions, timeOptions } from "./CreateFn";
+import { useGetAdviceQuery } from "@/redux/api/advice/advice";
 
 type OptionType = {
   value: string;
   label: string;
 };
-
-// Options data
-const sportsOptions: OptionType[] = [
-  { value: "cricket", label: "Cricket" },
-  {
-    value:
-      "football Football Football football Football Footballfootball Football Football football Football Football football Football Football football Football Footballfootball",
-    label: "Football",
-  },
-  { value: "tennis", label: "Tennis" },
-];
-
-const foodOptions: OptionType[] = [
-  { value: "pizza", label: "Pizza" },
-  { value: "burger", label: "Burger" },
-  { value: "pasta", label: "Pasta" },
-];
-
-const hobbyOptions: OptionType[] = [
-  { value: "reading", label: "Reading" },
-  { value: "gaming", label: "Gaming" },
-  { value: "traveling", label: "Traveling" },
-];
-
-const languageOptions: OptionType[] = [
-  { value: "english", label: "English" },
-  { value: "spanish", label: "Spanish" },
-  { value: "bengali", label: "Bengali" },
-];
-
 const medicineOptions: OptionType[] = [
   { value: "paracetamol", label: "Paracetamol" },
   { value: "ibuprofen", label: "Ibuprofen" },
   { value: "amoxicillin", label: "Amoxicillin" },
 ];
-
-const dosageOptions = [
-  { value: "১", label: "১" },
-  { value: "১/2", label: "১/2" },
-];
-
-const timeOptions = [
-  { value: "খাবার আগে", label: "খাবার আগে" },
-  { value: "খাবার পরে", label: "খাবার পরে" },
-];
-
 const CreatePrescriptionForm = ({
   form,
   onSubmit,
@@ -64,15 +31,21 @@ const CreatePrescriptionForm = ({
   handleRemoveMedicineInput,
   handleAddMedicineInput,
   handleAdviceInputChange,
+  dynamicOptions = {},
 }: any) => {
   const [timingCounts, setTimingCounts] = useState<Record<string, number>>({});
+  const { data: onExaminations } = useGetOnExaminationsQuery(undefined);
+  const { data: Investigations } = useGetInvestigationQuery(undefined);
+  const { data: diagnosis } = useGetDiagnosisQuery(undefined);
+  const { data: chiefComplaint } = useGetChiefComplaintQuery(undefined);
+  const { data: advice } = useGetAdviceQuery(undefined);
 
   const handleAdviceSave = (value: string) => {
     handleAdviceChange(value);
   };
 
-  const handleAdviceSaveInput = (value: string) => {
-    handleAdviceInputChange(value);
+  const handleAdviceSaveInput = (value: string, label: string) => {
+    handleAdviceInputChange(value, label);
   };
 
   const addTimingSet = (medicineId: string) => {
@@ -88,7 +61,28 @@ const CreatePrescriptionForm = ({
       [medicineId]: Math.max((prev[medicineId] || 1) - 1, 1),
     }));
   };
-
+  const onExaminationOptions = onExaminations?.data?.map((item: any) => ({
+    value: item.value,
+    label: item.title,
+  }));
+  const investigationOptions = Investigations?.data?.map((item: any) => ({
+    value: item.value,
+    label: item.title,
+  }));
+  const diagnosisOptions = diagnosis?.data?.map((item: any) => ({
+    value: item.value,
+    label: item.title,
+  }));
+  const chiefComplaintOptions = chiefComplaint?.data?.map((item: any) => ({
+    value: item.value,
+    label: item.title,
+  }));
+  const adviceOptions = advice?.data?.map((item: any) => ({
+    value: item.value,
+    label: item.title,
+  }));
+  console.log(chiefComplaint);
+  
   return (
     <div className="flex flex-col gap-8 p-4">
       {/* Patient Info Section */}
@@ -119,24 +113,36 @@ const CreatePrescriptionForm = ({
             "On-Examinations",
             "Diagnosis",
             "Investigation",
-          ]?.map((label) => (
-            <ReactSelectCompo
-              label={label}
-              name={label.toLowerCase()}
-              options={
-                label === "Chief-Complaint"
-                  ? sportsOptions
-                  : label === "On-Examinations"
-                    ? foodOptions
-                    : label === "Diagnosis"
-                      ? hobbyOptions
-                      : languageOptions
-              }
-              control={form.control}
-              isMulti
-              showSelectedBox
-            />
-          ))}
+          ].map((label) => {
+            const fieldName = label.toLowerCase();
+            const staticOptions =
+              label === "Chief-Complaint"
+                ? (chiefComplaintOptions || [])
+                : label === "On-Examinations"
+                  ? onExaminationOptions || []
+                  : label === "Diagnosis"
+                    ? diagnosisOptions || []
+                    : investigationOptions || [];
+            const mergedOptions = [
+              ...staticOptions,
+              ...(dynamicOptions[fieldName] || []),
+            ];
+            return (
+              <ReactSelectCompo
+                key={label}
+                label={label}
+                name={fieldName}
+                options={mergedOptions}
+                control={form.control}
+                isMulti
+                showSelectedBox
+                onCreateOption={(inputValue) =>
+                  handleAdviceSaveInput &&
+                  handleAdviceSaveInput(inputValue, label)
+                }
+              />
+            );
+          })}
         </div>
       </div>
 
@@ -172,10 +178,13 @@ const CreatePrescriptionForm = ({
             <ReactSelectCompo
               label="Advice"
               name={"advice"}
-              options={sportsOptions}
+              options={adviceOptions || []}
               control={form.control}
               isMulti
               showSelectedBox
+              onCreateOption={(inputValue) =>
+                handleAdviceSave && handleAdviceSave(inputValue)
+              }
             />
             {/* Save / Cancel */}
             <div className="flex justify-start items-start gap-4 max-w-sm">

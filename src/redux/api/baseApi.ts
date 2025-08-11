@@ -34,7 +34,8 @@ export const baseApi = createApi({
     "message",
     "visit",
     "patient-summary",
-    "advice"
+    "advice",
+    "manualData"
   ],
   endpoints: () => ({}),
 });
