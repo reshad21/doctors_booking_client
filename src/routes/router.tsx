@@ -8,6 +8,7 @@ import Notice from "@/pages/Notice/Notice";
 import Patient from "@/pages/Patient/Patient";
 import CreatePrescription from "@/pages/Prescription/CreatePrescription/CreatePrescription";
 import Prescription from "@/pages/Prescription/Prescription";
+import UpdatePrescription from "@/pages/Prescription/UpdatePrescription/UpdatePrescription";
 import ViewPrescription from "@/pages/Prescription/ViewPrescription/ViewPrescription";
 import PrescriptionManagement from "@/pages/PrescriptionManagement/PrescriptionManagement";
 import ServiceManagement from "@/pages/ServiceManagement/ServiceManagement";
@@ -59,7 +60,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/dashboard/update-prescription",
-        element: ""
+        element: <UpdatePrescription />
       },
       {
         path: "/dashboard/chamber",
