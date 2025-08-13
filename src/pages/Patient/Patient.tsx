@@ -10,6 +10,8 @@ import PatientHeaderSelect from "./_components/PatientHeaderSelect";
 import PatientTable from "./_components/PaitentTable";
 import ExportDropdown from "@/components/shared/ExportDropdown";
 import LoadingSpinner from "@/loading/LoadingSpinner";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { Info } from "lucide-react";
 
 const Patient = () => {
   const [deletePatient] = useDeletePatientMutation();
@@ -48,7 +50,7 @@ const Patient = () => {
 
   return (
     <div className="custom-container">
-      <div className="w-full">
+      <div className="w-full min-h-screen">
         <div className="mb-4">
           <PatientHeaderSelect
             chambersData={chambersData?.data}
@@ -82,19 +84,31 @@ const Patient = () => {
         </div>
         {/* Table Section */}
         <div className="rounded-b-sm overflow-hidden shadow-sm">
-          <PatientTable
-            patientsData={patientsData?.data?.data}
-            deletePatient={deletePatient}
-          />
+          {patientsData?.data?.data && patientsData.data.data.length > 0 ? (
+            <PatientTable
+              patientsData={patientsData.data.data}
+              deletePatient={deletePatient}
+            />
+          ) : (
+            <EmptyState
+              icon={<Info className="w-full h-full" />}
+              title="No patients booked yet"
+              description="Get started by booking your first patient appointment. You can manage all patient information and appointments from the appointment management."
+              size="sm"
+            />
+          )}
         </div>
         {/* Pagination Section */}
-        <div className="mt-4">
-          <Pagination
-            active={patientsData?.data?.meta?.currentPage || 1}
-            totalPages={patientsData?.data?.meta?.totalPages || 1}
-            onPageChange={setPage}
-          />
-        </div>
+        {patientsData?.data?.data?.length > 0 &&
+          patientsData?.data?.meta?.totalPages > 1 && (
+            <div className="mt-4">
+              <Pagination
+                active={patientsData.data.meta.currentPage || 1}
+                totalPages={patientsData.data.meta.totalPages || 1}
+                onPageChange={setPage}
+              />
+            </div>
+          )}
       </div>
     </div>
   );

@@ -24,6 +24,7 @@ import RoutesModal from "./_components/RoutesModal";
 import formatDateToReadable from "@/utils/formateDateToReveal";
 import UpdateStaff from "./_components/UpdateStaff";
 import ExportDropdown from "@/components/shared/ExportDropdown";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 const StaffManagement = () => {
   const { data: staffData } = useGetStaffQuery(undefined);
@@ -32,7 +33,7 @@ const StaffManagement = () => {
   const [createStaff] = useCreateStaffMutation();
   const doctorId = useAppSelector((state) => state.admin.id);
 
-  console.log(doctorId, "doctorId")
+  console.log(doctorId, "doctorId");
 
   const handleFormSubmit = async (
     data: Record<string, any>,
@@ -99,15 +100,8 @@ const StaffManagement = () => {
         </div>
 
         {/* Table Section */}
-        <div className="rounded-b-sm overflow-hidden shadow-sm">
-          {staffData?.data?.length == 0 ? (
-            <div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
-              <div className="flex flex-col justify-center items-center text-yellow-900">
-                <Info />
-                <span>Staff not created yet!</span>
-              </div>
-            </div>
-          ) : (
+        <div className="rounded-b-sm overflow-hidden shadow-sm w-full">
+          {staffData?.data?.length > 0 ? (
             <Table className="no-border">
               <TableHeader className="no-border">
                 <TableRow className="bg-[#f7f7f7] no-border">
@@ -123,7 +117,7 @@ const StaffManagement = () => {
                   ].map((header, ind) => (
                     <TableHead
                       key={ind}
-                      className={`${ind == 7 && "text-center"}`}
+                      className={`${ind === 7 ? "text-center" : ""}`}
                     >
                       {header}
                     </TableHead>
@@ -131,7 +125,7 @@ const StaffManagement = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {staffData?.data?.map((member: Staff, index: number) => (
+                {staffData.data.map((member: Staff, index: number) => (
                   <TableRow
                     key={member.id}
                     className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
@@ -141,7 +135,7 @@ const StaffManagement = () => {
                       <div className="w-10 h-10 rounded-full overflow-hidden">
                         <img
                           src={member.image}
-                          alt=""
+                          alt={member.name}
                           className="w-full h-full object-cover"
                         />
                       </div>
@@ -167,7 +161,7 @@ const StaffManagement = () => {
                     <TableCell>
                       <div className="flex items-center justify-center gap-2 h-full">
                         <RoutesModal routesAccess={member?.routeAccess ?? []} />
-                        <div className=" hover:bg-green-50 no-border">
+                        <div className="hover:bg-green-50 no-border">
                           <UpdateStaff staff={member} />
                         </div>
                         <div>
@@ -183,6 +177,13 @@ const StaffManagement = () => {
                 ))}
               </TableBody>
             </Table>
+          ) : (
+            <EmptyState
+              icon={<Info className="w-full h-full" />}
+              title="No staff found"
+              description="Staff has not been added yet. Start by creating new staff members."
+              size="sm"
+            />
           )}
         </div>
       </div>

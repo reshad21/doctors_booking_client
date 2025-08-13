@@ -10,6 +10,8 @@ import {
 import ChamberTable from "./ChamberTable";
 import { convertTo12HourFormat } from "@/utils/TweleveHoursFormat";
 import { Input } from "@/components/ui/input";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { Info } from "lucide-react";
 
 const Chamber = () => {
   const [deleteChamber] = useDeleteChamberMutation();
@@ -18,7 +20,6 @@ const Chamber = () => {
   const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const { data: chamberData } = useGetChambersQuery({ searchTerm });
-
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -30,12 +31,12 @@ const Chamber = () => {
   const chamberInputFields = [
     { label: "Name", name: "name", type: "text" },
     { label: "Address", name: "address", type: "text" },
-    { label: "Old Patient", name: "oldPatientFee", type: "text" },
-    { label: "New Patient", name: "newPatientFee", type: "text" },
-    { label: "Report", name: "reportFee", type: "text" },
+    { label: "Old Patient", name: "oldPatientFee", type: "number" },
+    { label: "New Patient", name: "newPatientFee", type: "number" },
+    { label: "Report", name: "reportFee", type: "number" },
     { label: "Start Time", name: "startTime", type: "time" },
     { label: "End Time", name: "endTime", type: "time" },
-    { label: "Day", name: "day", type: "days" },
+    { label: "Day", name: "day", type: "text" },
   ];
 
   const selectFields = [
@@ -55,6 +56,9 @@ const Chamber = () => {
   ) => {
     const formattedData = {
       ...data,
+      oldPatientFee: String(data.oldPatientFee),
+      newPatientFee: String(data.newPatientFee),
+      reportFee: String(data.reportFee),
       startTime: convertTo12HourFormat(data.startTime),
       endTime: convertTo12HourFormat(data.endTime),
     };
@@ -87,7 +91,7 @@ const Chamber = () => {
               buttonProperty={{ type: "create", text: "Add New Chamber" }}
             />
           </div>
-          
+
           <div className="flex items-center justify-center pr-4 gap-x-2">
             <span className="text-sm">Search:</span>
             <Input
@@ -101,10 +105,19 @@ const Chamber = () => {
 
         {/* Table Section */}
         <div className="rounded-b-sm overflow-hidden shadow-sm">
-          <ChamberTable
-            chambersData={chamberData?.data}
-            deleteChamber={deleteChamber}
-          />
+          {chamberData?.data && chamberData?.data?.length > 0 ? (
+            <ChamberTable
+              chambersData={chamberData?.data}
+              deleteChamber={deleteChamber}
+            />
+          ) : (
+            <EmptyState
+              icon={<Info className="w-full h-full" />}
+              title="Chamber in not created yet!"
+              description="Get started by creating your first chamber"
+              size="sm"
+            />
+          )}
         </div>
       </div>
     </div>

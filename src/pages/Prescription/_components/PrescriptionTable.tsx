@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Eye, Info, Plus } from "lucide-react";
+import { Eye, Plus } from "lucide-react";
 import type { Patient } from "@/types/patient.types";
 import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
@@ -36,17 +36,6 @@ const PrescriptionTable = ({
       console.error();
     }
   };
-
-  if (!patients?.data?.data?.length) {
-    return (
-      <div className="flex justify-center items-center min-h-[91vh] font-semibold text-xs">
-        <div className="flex flex-col justify-center space-y-2 items-center text-yellow-900">
-          <Info />
-          <span>No prescription yet!</span>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="">

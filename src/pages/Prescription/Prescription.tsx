@@ -1,9 +1,10 @@
 import { useGetPatientQuery } from "@/redux/api/patient/patient";
-import { Search } from "lucide-react";
+import { Info, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import ExportDropdown from "@/components/shared/ExportDropdown";
 import { useState } from "react";
 import PrescriptionTable from "./_components/PrescriptionTable";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 const Prescription = () => {
   const [page, setPage] = useState(1);
@@ -44,12 +45,21 @@ const Prescription = () => {
             </div>
           </div>
         </div>
-        <PrescriptionTable
-          patients={patients}
-          active={patients?.data?.meta?.currentPage || 1}
-          totalPages={patients?.data?.meta?.totalPages || 1}
-          onPageChange={setPage}
-        />
+        {patients?.data?.data?.length > 0 ? (
+          <PrescriptionTable
+            patients={patients.data.data}
+            active={patients.data.meta.currentPage || 1}
+            totalPages={patients.data.meta.totalPages || 1}
+            onPageChange={setPage}
+          />
+        ) : (
+          <EmptyState
+            icon={<Info className="w-full h-full" />}
+            title="No prescriptions found"
+            description="There are no patient prescriptions available. Add new prescriptions to get started."
+            size="sm"
+          />
+        )}
       </div>
     </div>
   );

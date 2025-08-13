@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Info, SquarePen } from "lucide-react";
+import { SquarePen } from "lucide-react";
 import ConfirmAlert from "@/components/shared/ConfirmAlert";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
@@ -51,16 +51,6 @@ const ChamberTable = ({ chambersData, deleteChamber }: ChamberTableProps) => {
     }
   };
 
-  if (!chambersData?.length) {
-    return (
-      <div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
-        <div className="flex flex-col justify-center space-y-2 items-center text-yellow-900">
-          <Info />
-          <span>Chamber not created yet!</span>
-        </div>
-      </div>
-    );
-  }
   return (
     <div>
       <Table className="no-border">
