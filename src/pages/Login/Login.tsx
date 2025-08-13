@@ -33,6 +33,8 @@ const Login = () => {
 
   const onSubmit = async (data: LoginSchemaType) => {
     const res = (await login(data)) as any;
+
+    console.log(res, 'res')
     if (res?.error) {
       return toast.error(res?.error?.data?.message);
     }
