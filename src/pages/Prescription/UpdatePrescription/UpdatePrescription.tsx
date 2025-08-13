@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import CreatePrescriptionForm from "../_components/CreatePrescriptionForm";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 import { Card } from "@/components/ui/card";
-import { useAppSelector } from "@/redux/hooks";
 import {
-  useCreatePrescriptionMutation,
   useGetPerceptionBIdQuery,
+  useUpdatePrescriptionMutation,
 } from "@/redux/api/prescription/prescription";
 import toast from "react-hot-toast";
 import {
@@ -18,7 +17,10 @@ import {
   useCreateOnExaminationsMutation,
 } from "@/redux/api/manualData/manualData";
 import { useCreateAdviceMutation } from "@/redux/api/advice/advice";
-import { CreateAdviceFn, CreateFn } from "../_components/CreateFn";
+import {
+  CreateAdviceFn,
+  CreateFn,
+} from "../_components/CreateFn";
 
 const UpdatePrescription = () => {
   const [createOnExamination] = useCreateOnExaminationsMutation();
@@ -27,25 +29,40 @@ const UpdatePrescription = () => {
   const [createComplain] = useCreateChiefComplaintMutation();
   const [createAdvice] = useCreateAdviceMutation();
   const { data: preManagementData } = useGetPreManagementQuery(undefined);
-  const [createPrescription] = useCreatePrescriptionMutation();
+  const [updatePrescription] = useUpdatePrescriptionMutation();
   const { prescriptionId } = useParams();
   const { data: prescription } = useGetPerceptionBIdQuery({
     prescriptionId: prescriptionId,
   });
-  const doctorId = useAppSelector((state) => state.admin?.id);
-  const prescriptionData = prescription?.data || {};
-  const [medicineInputCount, setMedicineInputCount] = useState(
-    prescriptionData.medicines?.map((med: any, idx: any) => ({
-      content: idx + 1,
-      DosageSchedule: med.DosageSchedule,
-    }))
+  // const doctorId = useAppSelector((state) => state.admin?.id);
+  const prescriptionData = useMemo(
+    () => prescription?.data || {},
+    [prescription]
   );
 
-  const form = useForm({
-    defaultValues: {}, // start empty
-  });
+  const [medicineInputCount, setMedicineInputCount] = useState<
+    Array<{ content: number; DosageSchedule: any[] }>
+  >([]);
 
-  // Effect to reset form when backend data changes
+  // Always update medicineInputCount when prescriptionData.medicines changes
+  useEffect(() => {
+    if (
+      prescriptionData.medicines &&
+      Array.isArray(prescriptionData.medicines)
+    ) {
+      setMedicineInputCount(
+        prescriptionData.medicines.map((med: any, idx: any) => ({
+          content: idx + 1,
+          DosageSchedule: med.DosageSchedule,
+        }))
+      );
+    }
+  }, [prescriptionData.medicines]);
+  const form = useForm<any>({
+    defaultValues: {},
+  });
+  console.log(prescriptionData);
+
   useEffect(() => {
     if (prescriptionData && Object.keys(prescriptionData).length > 0) {
       form.reset({
@@ -108,7 +125,7 @@ const UpdatePrescription = () => {
         ) || {}),
       });
     }
-  });
+  }, [form, prescriptionData]);
 
   const handleAddMedicineInput = () => {
     setMedicineInputCount((prev: any) => [
@@ -129,39 +146,20 @@ const UpdatePrescription = () => {
         medicineId: key.split("-")[1], // Extract the number (1, 2, etc.)
         name: value,
       }));
-    // Step 2: For each medicine, find its dosage schedules
+
+    // Step 2: For each medicine, collect only currently visible dosages (ignore previous array/IDs)
     const medicines = medicineEntries?.map(({ medicineId, name }) => {
-      // Find all fields that belong to this medicine's dosage schedules
-      const dosageFields = Object.entries(data).filter(([fieldName]) => {
-        // Field name format: dosageIndex-fieldType-medicineId (e.g., "1-duration-1")
-        const parts = fieldName.split("-");
-        return parts.length === 3 && parts[2] === medicineId;
-      });
-      // Group fields by dosage index (the first part of the field name)
-      const dosageGroups = dosageFields.reduce<
-        Record<string, Record<string, any>>
-      >((acc, [fieldName, value]) => {
-        const [dosageIndex, fieldType] = fieldName.split("-");
-
-        if (!acc[dosageIndex]) {
-          acc[dosageIndex] = {};
+      const dosageCount = form.getValues()["timingCounts"]?.[medicineId] || 1;
+      const DosageSchedule = [];
+      for (let i = 1; i <= dosageCount; i++) {
+        const dosage = data[`${i}-dosage-${medicineId}`];
+        const day = data[`${i}-duration-${medicineId}`];
+        const time = data[`${i}-time-${medicineId}`];
+        const comment = data[`${i}-comment-${medicineId}`];
+        if (dosage && day && time) {
+          DosageSchedule.push({ dosage, day, time, comment });
         }
-        // Map field names to the desired structure
-        acc[dosageIndex][
-          fieldType === "doges"
-            ? "dosage"
-            : fieldType === "duration"
-              ? "day"
-              : fieldType
-        ] = value;
-
-        return acc;
-      }, {});
-
-      // Convert to array of dosage schedules, filter out removed/empty ones
-      const DosageSchedule = Object.values(dosageGroups).filter(
-        (ds) => ds.dosage && ds.day && ds.time // require all main fields
-      );
+      }
       return {
         medicineName: name,
         DosageSchedule,
@@ -173,9 +171,8 @@ const UpdatePrescription = () => {
 
     // Step 3: Combine with other form data
     const transformedData = {
-      doctorId: doctorId,
-      patientId: "",
-      medicines,
+      id: prescriptionId,
+      medicines: Array.isArray(medicines) ? medicines : [],
       content: data.content,
       chiefComplaint: data["chief-complaint"],
       onExaminations: data["on-examinations"],
@@ -184,10 +181,10 @@ const UpdatePrescription = () => {
       investigation: data.investigation,
       advice: advice,
     };
-    console.log(transformedData);
+console.log(transformedData);
 
-    const res = (await createPrescription(transformedData)) as any;
-    console.log(res?.data);
+    const res = (await updatePrescription(transformedData)) as any;
+    console.log(res);
     if (res?.data?.message) {
       toast.success(res?.data?.message);
       form.reset();

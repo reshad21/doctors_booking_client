@@ -60,3 +60,19 @@ export const timeOptions = [
   { value: "খাবার আগে", label: "খাবার আগে" },
   { value: "খাবার পরে", label: "খাবার পরে" },
 ];
+
+export type FormValues = {
+  nxVisit?: string;
+  advice?: string[];
+  "chief-complaint"?: string[];
+  "on-examinations"?: string[];
+  diagnosis?: string[];
+  investigation?: string[];
+  content?: string;
+  // Dynamic medicine fields (these will be handled separately)
+  [key: `medicine-${number}`]: string;
+  [key: `${number}-dosage-${number}`]: string;
+  [key: `${number}-duration-${number}`]: string;
+  [key: `${number}-time-${number}`]: string;
+  [key: `${number}-comment-${number}`]: string;
+};

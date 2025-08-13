@@ -75,18 +75,25 @@ const CreatePrescriptionForm = ({
             ? med.DosageSchedule[i]
             : {};
         form.setValue(`${idx}-duration-${med.content}`, ds.day || "");
-        form.setValue(`${idx}-doges-${med.content}`, ds.dosage || "");
+        form.setValue(`${idx}-dosage-${med.content}`, ds.dosage || "");
         form.setValue(`${idx}-time-${med.content}`, ds.time || "");
         form.setValue(`${idx}-comment-${med.content}`, ds.comment || "");
       }
     });
   };
 
-  // Sync on mount and whenever medicineInputCount or timingCounts changes
   useEffect(() => {
-    syncAllTimingSetValues();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [medicineInputCount, timingCounts]);
+    // If this is update mode (medicineInputCount has DosageSchedule), sync values
+    if (
+      medicineInputCount &&
+      medicineInputCount.some(
+        (item: any) =>
+          Array.isArray(item.DosageSchedule) && item.DosageSchedule.length > 0
+      )
+    ) {
+      syncAllTimingSetValues();
+    }
+  }, []);
 
   const addTimingSet = (medicineId: string) => {
     setTimingCounts((prev) => ({
@@ -102,7 +109,7 @@ const CreatePrescriptionForm = ({
       // Unregister the last timing set fields for this medicine
       if (currentCount > 1) {
         const idx = currentCount; // 1-based
-        ["duration", "doges", "time", "comment"]?.forEach((field) => {
+        ["duration", "dosage", "time", "comment"]?.forEach((field) => {
           form.unregister(`${idx}-${field}-${medicineId}`);
         });
       }
@@ -112,12 +119,14 @@ const CreatePrescriptionForm = ({
       };
     });
   };
-  const onExaminationOptions = InputOptions(onExaminations,"onExaminations") || []
-  const investigationOptions = InputOptions(investigations,"investigations") || [] 
-  const diagnosisOptions = InputOptions(diagnosis,"diagnosis") || [] 
-  const chiefComplaintOptions = InputOptions(chiefComplaint,"chiefComplaint") || [] 
-  const adviceOptions = InputOptions(advice,"advice") || [] 
-  
+  const onExaminationOptions =
+    InputOptions(onExaminations, "onExaminations") || [];
+  const investigationOptions =
+    InputOptions(investigations, "investigations") || [];
+  const diagnosisOptions = InputOptions(diagnosis, "diagnosis") || [];
+  const chiefComplaintOptions =
+    InputOptions(chiefComplaint, "chiefComplaint") || [];
+  const adviceOptions = InputOptions(advice, "advice") || [];
 
   return (
     <div className="flex flex-col gap-8 p-4">

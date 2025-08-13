@@ -45,7 +45,7 @@ const MedicineForm = ({
                       className="grid grid-cols-4 justify-between items-center gap-2 mt-4"
                       key={`${item.content}-${count}`}
                     >
-                      {["Duration", "Doges", "Time", "Comment"].map(
+                      {["Duration", "Dosage", "Time", "Comment"].map(
                         (label: string) => {
                           const fieldName = `${count}-${label.toLowerCase()}-${item.content}`;
                           return (
@@ -60,7 +60,7 @@ const MedicineForm = ({
                                   classname="w-full rounded-sm border border-gray-300 bg-[#FDFDFF] p-2 "
                                 />
                               )}
-                              {label === "Doges" && (
+                              {label === "Dosage" && (
                                 <ReactSelectCompo
                                   name={fieldName}
                                   options={dosageOptions}
