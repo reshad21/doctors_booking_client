@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Eye, Info, Plus } from "lucide-react";
+import { Eye, Plus } from "lucide-react";
 import type { Patient } from "@/types/patient.types";
 import CustomModal from "@/components/shared/CustomModal";
 import { useState } from "react";
@@ -37,19 +37,8 @@ const PrescriptionTable = ({
     }
   };
 
-  if (!patients?.data?.data?.length) {
-    return (
-      <div className="flex justify-center items-center min-h-[91vh] font-semibold text-xs">
-        <div className="flex flex-col justify-center space-y-2 items-center text-yellow-900">
-          <Info />
-          <span>No prescription yet!</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="">
+    <>
       <div className="rounded-b-sm overflow-hidden shadow-sm w-full">
         <Table className="no-border">
           <TableHeader className="no-border">
@@ -75,7 +64,7 @@ const PrescriptionTable = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {patients?.data?.data?.map((patient: Patient, index: number) => (
+            {patients?.map((patient: Patient, index: number) => (
               <TableRow
                 key={patient.id}
                 className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
@@ -174,7 +163,7 @@ const PrescriptionTable = ({
           onPageChange={onPageChange}
         />
       </div>
-    </div>
+    </>
   );
 };
 

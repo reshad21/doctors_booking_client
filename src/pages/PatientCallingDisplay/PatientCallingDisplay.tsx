@@ -203,7 +203,7 @@ export default function PatientCallingDisplay() {
                 {upcomingOutdoorPatients.length > 0 ? (
                   <div className="flex flex-wrap items-center justify-center gap-4">
                     {upcomingOutdoorPatients
-                      .slice(0, 5) // Show first 5 upcoming patients
+                      .slice(0, 10) // Show first 5 upcoming patients
                       .map((patient) => {
                         const originalIndex =
                           patientIndexMap.get(patient.id) ?? 0;

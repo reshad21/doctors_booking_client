@@ -24,6 +24,21 @@ export const CreateAdviceFn = async (inputValue: any, rtkFn: any) => {
     toast.error(res?.error?.data?.message || "Something Went Wrong");
   }
 };
+export const InputOptions = (data: any, type: any) => {
+  if (type !== "advice") {
+    const options = data?.data?.map((item: any) => ({
+      value: item.value,
+      label: item.title,
+    }));
+    return options
+  } else {
+    const options = data?.data?.map((item: any) => ({
+      value: item.content,
+      label: item.title,
+    }));
+    return options
+  }
+};
 
 export const dosageOptions = [
   { value: "1+1+1", label: "1+1+1" },
@@ -45,3 +60,19 @@ export const timeOptions = [
   { value: "খাবার আগে", label: "খাবার আগে" },
   { value: "খাবার পরে", label: "খাবার পরে" },
 ];
+
+export type FormValues = {
+  nxVisit?: string;
+  advice?: string[];
+  "chief-complaint"?: string[];
+  "on-examinations"?: string[];
+  diagnosis?: string[];
+  investigation?: string[];
+  content?: string;
+  // Dynamic medicine fields (these will be handled separately)
+  [key: `medicine-${number}`]: string;
+  [key: `${number}-dosage-${number}`]: string;
+  [key: `${number}-duration-${number}`]: string;
+  [key: `${number}-time-${number}`]: string;
+  [key: `${number}-comment-${number}`]: string;
+};

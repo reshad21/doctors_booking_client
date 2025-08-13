@@ -102,7 +102,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
         <AlertDialogCancel asChild>
           <button
             type="button"
-            className="absolute right-4 top-4 text-muted-foreground transition hover:text-foreground"
+            className="absolute right-4 cursor-pointer top-4 text-muted-foreground transition hover:text-foreground"
             aria-label="Close"
           >
             <svg

@@ -26,6 +26,7 @@ import { useState } from "react";
 import type { WatchVideoTypes } from "./watchVideotypes";
 import { getISODateMonthYear } from "@/utils/getISODateMonthYear";
 import { UpdateWatchVideoModal } from "./UpdateWatchVideoModal";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 const WatchVideo = () => {
   const { data: watchVideoData } = useGetWatchVideoQuery(undefined);
@@ -107,15 +108,8 @@ const WatchVideo = () => {
         </div>
 
         {/* Table Section */}
-        <div className="rounded-lg overflow-hidden shadow-sm">
-          {watchVideoData?.data?.length == 0 ? (
-            <div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
-              <div className="flex flex-col justify-center items-center text-yellow-900">
-                <Info />
-                <span> Video not created yet!</span>
-              </div>
-            </div>
-          ) : (
+        <div className="overflow-hidden shadow-sm w-full">
+          {watchVideoData?.data?.length > 0 ? (
             <div className="overflow-x-auto shadow-sm">
               <Table className="no-border">
                 <TableHeader className="no-border">
@@ -124,7 +118,7 @@ const WatchVideo = () => {
                       (header, ind) => (
                         <TableHead
                           key={ind}
-                          className={`${ind == 7 && "text-center"} pl-4`}
+                          className={`${ind === 7 ? "text-center" : ""} pl-4`}
                         >
                           {header}
                         </TableHead>
@@ -133,7 +127,7 @@ const WatchVideo = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {watchVideoData?.data?.map(
+                  {watchVideoData.data.map(
                     (video: WatchVideoTypes, index: number) => (
                       <TableRow
                         key={video.id}
@@ -145,14 +139,12 @@ const WatchVideo = () => {
                         <TableCell className="text-[#5C727D]">
                           {video.title}
                         </TableCell>
-
                         <TableCell className="text-[#5C727D]">
                           {video.videoFile.slice(0, 20)}...
                         </TableCell>
                         <TableCell className="text-[#5C727D]">
                           {getISODateMonthYear(video.createdAt)}
                         </TableCell>
-
                         <TableCell>
                           <Switch
                             checked={video.status === "ACTIVE"}
@@ -163,15 +155,14 @@ const WatchVideo = () => {
                           />
                         </TableCell>
                         <TableCell className="text-center">
-                          <div className="flex items-center justify-center gap-2 ">
-                            <div className=" hover:bg-green-50 no-border cursor-pointer">
+                          <div className="flex items-center justify-center gap-2">
+                            <div className="hover:bg-green-50 no-border cursor-pointer">
                               <SquarePen
                                 onClick={() => handleUpdateClick(video)}
                                 className="h-5 w-5 text-[#14400D]"
                               />
                             </div>
-
-                            <div className="">
+                            <div>
                               <ConfirmAlert
                                 id={video?.id}
                                 onDeleted={deleteWatchVideo}
@@ -186,6 +177,13 @@ const WatchVideo = () => {
                 </TableBody>
               </Table>
             </div>
+          ) : (
+            <EmptyState
+              icon={<Info className="w-full h-full" />}
+              title="No videos found"
+              description="No watch videos have been created yet. Add a new video to get started."
+              size="sm"
+            />
           )}
         </div>
       </div>

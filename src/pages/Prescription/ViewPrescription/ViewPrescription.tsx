@@ -6,13 +6,13 @@ import { Link, useParams } from "react-router-dom";
 import { useRef } from "react";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 import TipTapView from "./TipTapView";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 const ViewPrescription = () => {
   const { patientId } = useParams();
   const { data: perceptions } = useGetPerceptionByPatientIdQuery(patientId);
-    const { data: preManagementData } = useGetPreManagementQuery(undefined);
+  const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const printRefs = useRef<(HTMLDivElement | null)[]>([]);
-  
 
   const setPrintRef = (el: HTMLDivElement | null, index: number) => {
     printRefs.current[index] = el;
@@ -213,14 +213,14 @@ const ViewPrescription = () => {
 
   return (
     <div>
-      {
-        perceptions?.data?.length == 0 && (<div className="flex  justify-center items-center min-h-[85vh]">
-        <div className="flex flex-col items-center justify-center gap-2">
-         <Info />
-          <span className="font-semibold text-xs">No perceptions Found</span>
-        </div>
-        </div>)
-      }
+      {perceptions?.data?.length == 0 && (
+        <EmptyState
+          icon={<Info className="w-full h-full" />}
+          title="No Prescription is Found"
+          description="There are currently no prescription to display. Add prescription to get started."
+          size="md"
+        />
+      )}
       {perceptions?.data?.map((medic: any, index: number) => (
         <div className="m-5" key={medic.id || index}>
           <div className="flex justify-start items-center gap-2 pb-2">
@@ -232,7 +232,7 @@ const ViewPrescription = () => {
               <span>Print</span>
             </button>
             <Link
-              to={"/dashboard/update-prescription"}
+              to={`/dashboard/update-prescription/${medic.id}`}
               state={{ perception: medic }}
               className="flex justify-center items-center gap-2 bg-[#47C363] text-white py-1 px-3 rounded-sm"
             >
@@ -269,61 +269,74 @@ const ViewPrescription = () => {
                   {" "}
                   {/* or use a custom height if needed */}
                   <div className="flex h-full">
-
-
                     <div className="flex flex-col items-start justify-start w-1/3 border-r-2 border-gray-800 gap-5 mt-5">
                       <div className="ps-4 overflow-y-auto">
-                      <h3 className="font-bold text-xs">ChiefComplaint</h3>
-                      <ul className="space-y-2">
-                        {medic?.chiefComplaint?.map((item: any, idx: number) => (
-                          <li key={idx} className="flex items-start text-sm">
-                            <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
-                            <span className="text-xs">
-                              {item.description}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                        <h3 className="font-bold text-xs">ChiefComplaint</h3>
+                        <ul className="space-y-2">
+                          {medic?.chiefComplaint?.map(
+                            (item: any, idx: number) => (
+                              <li
+                                key={idx}
+                                className="flex items-start text-sm"
+                              >
+                                <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
+                                <span className="text-xs">
+                                  {item.description}
+                                </span>
+                              </li>
+                            )
+                          )}
+                        </ul>
+                      </div>
                       <div className="ps-4 overflow-y-auto">
-                      <h3 className="font-bold text-xs">On examinations</h3>
-                      <ul className="space-y-2">
-                        {medic?.onExaminations?.map((item: any, idx: number) => (
-                          <li key={idx} className="flex items-start text-sm">
-                            <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
-                            <span className="text-xs">
-                              {item.description}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="ps-4 overflow-y-auto">
-                      <h3 className="font-bold text-xs">Diagnosis</h3>
-                      <ul className="space-y-2">
-                        {medic?.diagnosis?.map((item: any, idx: number) => (
-                          <li key={idx} className="flex items-start text-sm">
-                            <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
-                            <span className="text-xs">
-                              {item.description}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="ps-4 overflow-y-auto">
-                      <h3 className="font-bold text-xs">Investigation</h3>
-                      <ul className="space-y-2">
-                        {medic?.investigation?.map((item: any, idx: number) => (
-                          <li key={idx} className="flex items-start text-sm">
-                            <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
-                            <span className="text-xs">
-                              {item.description}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                        <h3 className="font-bold text-xs">On examinations</h3>
+                        <ul className="space-y-2">
+                          {medic?.onExaminations?.map(
+                            (item: any, idx: number) => (
+                              <li
+                                key={idx}
+                                className="flex items-start text-sm"
+                              >
+                                <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
+                                <span className="text-xs">
+                                  {item.description}
+                                </span>
+                              </li>
+                            )
+                          )}
+                        </ul>
+                      </div>
+                      <div className="ps-4 overflow-y-auto">
+                        <h3 className="font-bold text-xs">Diagnosis</h3>
+                        <ul className="space-y-2">
+                          {medic?.diagnosis?.map((item: any, idx: number) => (
+                            <li key={idx} className="flex items-start text-sm">
+                              <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
+                              <span className="text-xs">
+                                {item.description}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="ps-4 overflow-y-auto">
+                        <h3 className="font-bold text-xs">Investigation</h3>
+                        <ul className="space-y-2">
+                          {medic?.investigation?.map(
+                            (item: any, idx: number) => (
+                              <li
+                                key={idx}
+                                className="flex items-start text-sm"
+                              >
+                                <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
+                                <span className="text-xs">
+                                  {item.description}
+                                </span>
+                              </li>
+                            )
+                          )}
+                        </ul>
+                      </div>
                     </div>
 
                     <div className="flex-1 flex flex-col justify-between items-start px-2 py-4 h-full overflow-y-auto w-full">
@@ -346,17 +359,20 @@ const ViewPrescription = () => {
                           </div>
                         ))}
                       </div>
-                    <div>
-                      <span className="font-semibold text-xs">Advice</span>
-                      <span className="ps-2">
-                        <TipTapView content={medic?.advice}  className="[&_p]:my-1 [&>p]:leading-tight text-xs"/>
-                      </span>
-                    </div>
+                      <div>
+                        <span className="font-semibold text-xs">Advice</span>
+                        <span className="ps-2">
+                          <TipTapView
+                            content={medic?.advice}
+                            className="[&_p]:my-1 [&>p]:leading-tight text-xs"
+                          />
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-                       
+
               <img src={preManagementData?.data?.[0]?.footerImage} alt="" />
             </div>
           </div>

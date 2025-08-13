@@ -46,11 +46,14 @@ const ReactSelectCompo = ({
             <Select
               options={options}
               isMulti={isMulti}
-              value={options.filter((option) =>
+              value={
                 isMulti
-                  ? (field.value || []).includes(option.value)
-                  : field.value === option.value
-              )}
+                  ? options.filter((option) =>
+                      (field.value || []).includes(option.value)
+                    )
+                  : options.find((option) => field.value === option.value) ||
+                    null
+              }
               onInputChange={setInputValue}
               inputValue={inputValue}
               noOptionsMessage={() =>
@@ -64,27 +67,24 @@ const ReactSelectCompo = ({
                       setInputValue("");
                     }}
                   >
-                    Save "{inputValue && inputValue.slice(0,15)}..."
+                    Save "{inputValue && inputValue.slice(0, 15)}..."
                   </Button>
                 ) : (
                   "No options"
                 )
               }
-              onChange={(selected) => {
+              onChange={(selected: any) => {
                 if (isMulti) {
-                  const values =
-                    (selected as OptionType[])?.map((item) => item.value) || [];
+                  const values = Array.isArray(selected)
+                    ? selected.map((item: OptionType) => item.value)
+                    : [];
                   field.onChange(values);
+                  if (onChange) onChange(selected);
                 } else {
-                  const value = (selected as OptionType)?.value || "";
+                  const value = selected ? (selected as OptionType).value : "";
                   field.onChange(value);
-                }
-                if (onChange) {
-                  if (isMulti) {
-                    onChange(Array.isArray(selected) ? [...selected] : []);
-                  } else {
+                  if (onChange)
                     onChange(selected ? (selected as OptionType) : null);
-                  }
                 }
               }}
               className="basic-multi-select"

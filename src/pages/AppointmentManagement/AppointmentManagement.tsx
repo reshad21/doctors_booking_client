@@ -16,6 +16,9 @@ import { Input } from "@/components/ui/input";
 import { createPatientInputs } from "@/constant/appointment-table.constant";
 import ExportDropdown from "@/components/shared/ExportDropdown";
 import AppointmentTable from "./_components/AppointementTable";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { Info } from "lucide-react";
+import LoadingSpinner from "@/loading/LoadingSpinner";
 
 const AppointmentManagement = () => {
   const [deletePatient] = useDeletePatientMutation();
@@ -40,7 +43,7 @@ const AppointmentManagement = () => {
   }, [searchInput]);
 
   const today = new Date().toISOString().split("T")[0];
-  
+
   const { data: patientsData, isLoading } = useGetPatientQuery({
     page,
     limit,
@@ -52,7 +55,7 @@ const AppointmentManagement = () => {
     orderBy: JSON.stringify({ createdAt: "desc" }),
   });
 
-  if (isLoading) return <div>Loading</div>;
+  if (isLoading) return <LoadingSpinner />;
 
   const selectFields = [
     {
@@ -89,6 +92,9 @@ const AppointmentManagement = () => {
   ) => {
     const res = (await createPatient({
       ...data,
+      phoneNumber: String(data.phoneNumber),
+      age: String(data.age),
+      weight: String(data.weight),
       doctorId,
     })) as any;
     if (res?.data?.success) {
@@ -158,19 +164,31 @@ const AppointmentManagement = () => {
         </div>
         {/* Table Section */}
         <div className="rounded-b-sm overflow-hidden shadow-sm">
-          <AppointmentTable
-            patientsData={patientsData?.data?.data}
-            deletePatient={deletePatient}
-          />
+          {patientsData?.data?.data && patientsData?.data?.data?.length > 0 ? (
+            <AppointmentTable
+              patientsData={patientsData?.data?.data}
+              deletePatient={deletePatient}
+            />
+          ) : (
+            <EmptyState
+              icon={<Info className="w-full h-full" />}
+              title="No patients booked yet"
+              description="Get started by booking your first patient appointment. You can manage all patient information and appointments from here."
+              size="sm"
+            />
+          )}
         </div>
         {/* Pagination Section */}
-        <div className="mt-4">
-          <Pagination
-            active={patientsData?.data?.meta?.currentPage || 1}
-            totalPages={patientsData?.data?.meta?.totalPages || 1}
-            onPageChange={setPage}
-          />
-        </div>
+        {patientsData?.data?.data?.length > 0 &&
+          patientsData?.data?.meta?.totalPages > 1 && (
+            <div className="mt-4">
+              <Pagination
+                active={patientsData.data.meta.currentPage || 1}
+                totalPages={patientsData.data.meta.totalPages || 1}
+                onPageChange={setPage}
+              />
+            </div>
+          )}
       </div>
     </div>
   );

@@ -136,7 +136,7 @@ export default function ServiceManagement() {
     },
   ];
 
-  if (isChamberLoading) return <div>Loading</div>;
+  if (isChamberLoading) return <LoadingSpinner />;
 
   const chamberOptions = (chambersData?.data || []).map((chamber: Chamber) => ({
     name: chamber.name,
@@ -251,6 +251,7 @@ import type { Chamber } from "@/types/chamber.types";
 import { FormProvider, useForm } from "react-hook-form";
 import BaseInput from "@/components/shared/BaseInput";
 import { useRef, useState } from "react";
+import LoadingSpinner from "@/loading/LoadingSpinner";
 
 interface HistoryCardProps {
   title: string;

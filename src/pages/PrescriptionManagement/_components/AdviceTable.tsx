@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
-import { Info, SquarePen } from "lucide-react";
+import { SquarePen } from "lucide-react";
 import { useState } from "react";
 import type { Advice } from "@/types/advice.types";
 import { getParagraphCount } from "@/utils/getParagraphCount";
@@ -29,16 +29,6 @@ const AdviceTable = ({ advices }: any) => {
     setUpdateModalOpen(true);
   };
 
-  if (!advices?.length) {
-    return (
-      <div className="flex justify-center items-center min-h-[91vh] font-semibold text-xs">
-        <div className="flex flex-col justify-center space-y-2 items-center text-yellow-900">
-          <Info />
-          <span>No Advice yet!</span>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="">

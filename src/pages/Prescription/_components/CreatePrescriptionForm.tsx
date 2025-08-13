@@ -10,7 +10,7 @@ import {
   useGetInvestigationQuery,
   useGetOnExaminationsQuery,
 } from "@/redux/api/manualData/manualData";
-import { dosageOptions, timeOptions } from "./CreateFn";
+import { dosageOptions, InputOptions, timeOptions } from "./CreateFn";
 import { useGetAdviceQuery } from "@/redux/api/advice/advice";
 
 type OptionType = {
@@ -22,6 +22,7 @@ const medicineOptions: OptionType[] = [
   { value: "ibuprofen", label: "Ibuprofen" },
   { value: "amoxicillin", label: "Amoxicillin" },
 ];
+import { useEffect } from "react";
 const CreatePrescriptionForm = ({
   form,
   onSubmit,
@@ -34,8 +35,23 @@ const CreatePrescriptionForm = ({
   dynamicOptions = {},
 }: any) => {
   const [timingCounts, setTimingCounts] = useState<Record<string, number>>({});
+
+  // Initialize timingCounts from medicineInputCount (for update mode)
+  useEffect(() => {
+    if (medicineInputCount && medicineInputCount.length > 0) {
+      const initialCounts: Record<string, number> = {};
+      medicineInputCount?.forEach((item: any) => {
+        if (item.DosageSchedule && Array.isArray(item.DosageSchedule)) {
+          initialCounts[item.content] = item.DosageSchedule.length;
+        } else {
+          initialCounts[item.content] = 1;
+        }
+      });
+      setTimingCounts(initialCounts);
+    }
+  }, [medicineInputCount]);
   const { data: onExaminations } = useGetOnExaminationsQuery(undefined);
-  const { data: Investigations } = useGetInvestigationQuery(undefined);
+  const { data: investigations } = useGetInvestigationQuery(undefined);
   const { data: diagnosis } = useGetDiagnosisQuery(undefined);
   const { data: chiefComplaint } = useGetChiefComplaintQuery(undefined);
   const { data: advice } = useGetAdviceQuery(undefined);
@@ -48,6 +64,37 @@ const CreatePrescriptionForm = ({
     handleAdviceInputChange(value, label);
   };
 
+  // Sync all visible timing set values with the form state
+  const syncAllTimingSetValues = () => {
+    medicineInputCount?.forEach((med: any) => {
+      const count = timingCounts[med.content] || 1;
+      for (let i = 0; i < count; i++) {
+        const idx = i + 1;
+        const ds =
+          med.DosageSchedule && med.DosageSchedule[i]
+            ? med.DosageSchedule[i]
+            : {};
+        form.setValue(`${idx}-duration-${med.content}`, ds.day || "");
+        form.setValue(`${idx}-dosage-${med.content}`, ds.dosage || "");
+        form.setValue(`${idx}-time-${med.content}`, ds.time || "");
+        form.setValue(`${idx}-comment-${med.content}`, ds.comment || "");
+      }
+    });
+  };
+
+  useEffect(() => {
+    // If this is update mode (medicineInputCount has DosageSchedule), sync values
+    if (
+      medicineInputCount &&
+      medicineInputCount.some(
+        (item: any) =>
+          Array.isArray(item.DosageSchedule) && item.DosageSchedule.length > 0
+      )
+    ) {
+      syncAllTimingSetValues();
+    }
+  }, []);
+
   const addTimingSet = (medicineId: string) => {
     setTimingCounts((prev) => ({
       ...prev,
@@ -56,33 +103,31 @@ const CreatePrescriptionForm = ({
   };
 
   const removeTimingSet = (medicineId: string) => {
-    setTimingCounts((prev) => ({
-      ...prev,
-      [medicineId]: Math.max((prev[medicineId] || 1) - 1, 1),
-    }));
+    setTimingCounts((prev) => {
+      const currentCount = prev[medicineId] || 1;
+      const newCount = Math.max(currentCount - 1, 1);
+      // Unregister the last timing set fields for this medicine
+      if (currentCount > 1) {
+        const idx = currentCount; // 1-based
+        ["duration", "dosage", "time", "comment"]?.forEach((field) => {
+          form.unregister(`${idx}-${field}-${medicineId}`);
+        });
+      }
+      return {
+        ...prev,
+        [medicineId]: newCount,
+      };
+    });
   };
-  const onExaminationOptions = onExaminations?.data?.map((item: any) => ({
-    value: item.value,
-    label: item.title,
-  }));
-  const investigationOptions = Investigations?.data?.map((item: any) => ({
-    value: item.value,
-    label: item.title,
-  }));
-  const diagnosisOptions = diagnosis?.data?.map((item: any) => ({
-    value: item.value,
-    label: item.title,
-  }));
-  const chiefComplaintOptions = chiefComplaint?.data?.map((item: any) => ({
-    value: item.value,
-    label: item.title,
-  }));
-  const adviceOptions = advice?.data?.map((item: any) => ({
-    value: item.value,
-    label: item.title,
-  }));
-  console.log(chiefComplaint);
-  
+  const onExaminationOptions =
+    InputOptions(onExaminations, "onExaminations") || [];
+  const investigationOptions =
+    InputOptions(investigations, "investigations") || [];
+  const diagnosisOptions = InputOptions(diagnosis, "diagnosis") || [];
+  const chiefComplaintOptions =
+    InputOptions(chiefComplaint, "chiefComplaint") || [];
+  const adviceOptions = InputOptions(advice, "advice") || [];
+
   return (
     <div className="flex flex-col gap-8 p-4">
       {/* Patient Info Section */}
@@ -117,7 +162,7 @@ const CreatePrescriptionForm = ({
             const fieldName = label.toLowerCase();
             const staticOptions =
               label === "Chief-Complaint"
-                ? (chiefComplaintOptions || [])
+                ? chiefComplaintOptions || []
                 : label === "On-Examinations"
                   ? onExaminationOptions || []
                   : label === "Diagnosis"
