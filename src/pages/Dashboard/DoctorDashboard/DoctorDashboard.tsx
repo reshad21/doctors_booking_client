@@ -6,6 +6,7 @@ import StatCard from "../_component/StatCard";
 import { useGetPatientQuery } from "@/redux/api/patient/patient";
 import TodayAppointments from "../_component/TodayAppointment";
 import { useAppSelector } from "@/redux/hooks";
+import LoadingSpinner from "@/loading/LoadingSpinner";
 
 const DoctorDashboard = () => {
   const today = new Date().toISOString().split("T")[0];
@@ -29,7 +30,7 @@ const DoctorDashboard = () => {
       status: patient.visitStatus || "Unknown",
     })) || [];
 
-  if (isPatientSummaryLoading || isPatientLoading) return <div>Loading...</div>;
+  if (isPatientSummaryLoading || isPatientLoading) return <LoadingSpinner />;
 
   return (
     <div>
