@@ -32,6 +32,8 @@ const StaffManagement = () => {
   const [createStaff] = useCreateStaffMutation();
   const doctorId = useAppSelector((state) => state.admin.id);
 
+  console.log(doctorId, "doctorId")
+
   const handleFormSubmit = async (
     data: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
