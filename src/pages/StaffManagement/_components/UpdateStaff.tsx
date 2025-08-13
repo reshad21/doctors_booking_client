@@ -41,7 +41,6 @@ const UpdateStaff = ({ staff }: { staff: Staff }) => {
     }
   };
 
-  console.log(staff, "staff");
   return (
     <div>
       <CustomModal

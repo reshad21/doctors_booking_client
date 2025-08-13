@@ -14,6 +14,8 @@ import {
 } from "@/redux/api/advice/advice";
 import AdviceTable from "./_components/AdviceTable";
 import LoadingSpinner from "@/loading/LoadingSpinner";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { Info } from "lucide-react";
 
 const PrescriptionManagement = () => {
   const { data: preManagementData, refetch } =
@@ -72,14 +74,12 @@ const PrescriptionManagement = () => {
     }
   };
 
-  console.log(adviceData, "adviceData");
-
   return (
     <div className="custom-container">
       <div className="w-full">
         <div className="flex items-center justify-between" />
 
-        <div className="flex flex-col md:flex-row items-center gap-4 py-4 px-4 bg-white rounded">
+        <div className="flex flex-col md:flex-row items-center gap-4 py-4 px-4 bg-white rounded mb-4">
           {/* Prescription Modal */}
           {!hasPrescription ? (
             <CustomModal
@@ -155,8 +155,17 @@ const PrescriptionManagement = () => {
             handleFormSubmit={handleAdviceSubmit}
           />
         </div>
-        <div className="rounded-b-sm overflow-hidden shadow-sm">
-          <AdviceTable advices={adviceData?.data} />
+        <div className="rounded-b-sm overflow-hidden shadow-sm w-full">
+          {adviceData?.data?.length > 0 ? (
+            <AdviceTable advices={adviceData.data} />
+          ) : (
+            <EmptyState
+              icon={<Info className="w-full h-full" />}
+              title="No advices found"
+              description="There are currently no advices added. Add new advice to get started."
+              size="sm"
+            />
+          )}
         </div>
       </div>
     </div>

@@ -17,7 +17,7 @@ import { HandelLogout } from "@/lib/HandelLogout";
 
 import type { sideNavMenu as SideNavMenuType } from "@/context/Routes-sideNav";
 
-type SideNavMenuItem = typeof SideNavMenuType[number];
+type SideNavMenuItem = (typeof SideNavMenuType)[number];
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   sideNavMenu: SideNavMenuItem[];
@@ -25,7 +25,7 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 
 export function AppSidebar({ sideNavMenu, ...props }: AppSidebarProps) {
   const location = useLocation();
- const navigate = useNavigate();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const doctor = useAppSelector((state) => state.admin);
   return (
@@ -36,18 +36,19 @@ export function AppSidebar({ sideNavMenu, ...props }: AppSidebarProps) {
           <div className="flex items-center space-x-3">
             <Avatar className="w-12 h-12">
               {doctor?.profilePhoto != "N/A" && (
-                        <AvatarImage
-                          src={doctor?.profilePhoto}
-                          alt={doctor?.name}
-                        />
-                      )}
-                      {doctor?.profilePhoto == "N/A" && (
-                        <AvatarImage
-                          src="/images/doctorprofile.png?height=48&width=48"
-                          alt={doctor?.name}
-                        />
-                      )}
-              <AvatarFallback>{doctor?.name?.slice(0,1)}</AvatarFallback>
+                <AvatarImage
+                  src={doctor?.profilePhoto}
+                  alt={doctor?.name}
+                  className="object-cover"
+                />
+              )}
+              {doctor?.profilePhoto == "N/A" && (
+                <AvatarImage
+                  src="/images/doctorprofile.png?height=48&width=48"
+                  alt={doctor?.name}
+                />
+              )}
+              <AvatarFallback>{doctor?.name?.slice(0, 1)}</AvatarFallback>
             </Avatar>
             <div>
               <h3 className="font-semibold text-sm">{doctor?.name}</h3>
@@ -93,7 +94,10 @@ export function AppSidebar({ sideNavMenu, ...props }: AppSidebarProps) {
             );
           })}
         </SidebarMenu>
-        <div className="px-5 text-sm flex justify-start items-center gap-2 cursor-pointer" onClick={() => HandelLogout(navigate, dispatch)}>
+        <div
+          className="px-5 text-sm flex justify-start items-center gap-2 cursor-pointer"
+          onClick={() => HandelLogout(navigate, dispatch)}
+        >
           <LogOutIcon className="size-4" />
           Log-out
         </div>

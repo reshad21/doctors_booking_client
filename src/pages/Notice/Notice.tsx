@@ -18,7 +18,8 @@ import {
 import Pagination from "@/components/shared/Pagination";
 import Actions from "./_components/Actions";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Info, Search } from "lucide-react";
+import { EmptyState } from "@/components/shared/EmptyState";
 const createPatientInputs = [
   { label: "Write your message", name: "message", type: "text" },
 ];
@@ -33,8 +34,6 @@ const Notice = () => {
     limit,
     searchTerm,
   });
-console.log(displayNotice);
-console.log(searchTerm);
 
   const [sendMultipleMsg] = useSendMultipleMessageMutation();
   const handleFormSubmit = async (
@@ -61,7 +60,7 @@ console.log(searchTerm);
     <div className="custom-container">
       <div className="w-full">
         {/* Header Section */}
-        <div className="flex items-center justify-between mb-6 w-full bg-white px-4 py-4">
+        <div className="flex items-center justify-between mb-4 w-full bg-white px-4 py-4">
           <div className="flex justify-between items-center gap-3 w-full">
             <div className="flex justify-start items-center gap-2">
               <DisplayNotice />
@@ -94,48 +93,64 @@ console.log(searchTerm);
 
         {/* Table Section */}
         <div className="rounded-b-sm overflow-hidden shadow-sm w-full">
-          <Table className="no-border">
-            <TableHeader className="no-border">
-              <TableRow className="bg-[#f7f7f7] no-border">
-                {["SL", "Sms status", "Status", "Action"].map((header, ind) => (
-                  <TableHead
-                    key={ind}
-                    className={`${ind == 7 && "text-center"} pl-4`}
-                  >
-                    {header}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {displayNotice?.data?.map((notice: any, index: number) => (
-                <TableRow
-                  key={notice.id}
-                  className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
-                >
-                  <TableCell className="font-medium pl-4">{index + 1}</TableCell>
-                  <TableCell className="text-[#5C727D] max-w-xs break-words whitespace-normal">
-                    {notice.description || "N/A"}
-                  </TableCell>
-
-                  <Actions
-                    id={notice?.id}
-                    description={notice.description}
-                    status={notice.status}
-                  />
+          {displayNotice?.data?.length > 0 ? (
+            <Table className="no-border">
+              <TableHeader className="no-border">
+                <TableRow className="bg-[#f7f7f7] no-border">
+                  {["SL", "Sms status", "Status", "Action"].map(
+                    (header, ind) => (
+                      <TableHead
+                        key={ind}
+                        className={`${ind == 7 && "text-center"} pl-4`}
+                      >
+                        {header}
+                      </TableHead>
+                    )
+                  )}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {displayNotice.data.map((notice: any, index: number) => (
+                  <TableRow
+                    key={notice.id}
+                    className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
+                  >
+                    <TableCell className="font-medium pl-4">
+                      {index + 1}
+                    </TableCell>
+                    <TableCell className="text-[#5C727D] max-w-xs break-words whitespace-normal">
+                      {notice.description || "N/A"}
+                    </TableCell>
+                    <Actions
+                      id={notice?.id}
+                      description={notice.description}
+                      status={notice.status}
+                    />
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <EmptyState
+              icon={<Info className="w-full h-full" />}
+              title="No notice records found"
+              description="There are currently no notices to display. Add a new notice to get started."
+              size="sm"
+            />
+          )}
         </div>
+
         {/* Pagination Section */}
-        <div className="mt-4">
-          <Pagination
-            active={displayNotice?.data?.meta?.currentPage || 1}
-            totalPages={displayNotice?.data?.meta?.totalPages || 1}
-            onPageChange={setPage}
-          />
-        </div>
+        {displayNotice?.data?.data?.length > 0 &&
+          displayNotice?.data?.meta?.totalPages > 1 && (
+            <div className="mt-4">
+              <Pagination
+                active={displayNotice.data.meta.currentPage || 1}
+                totalPages={displayNotice.data.meta.totalPages || 1}
+                onPageChange={setPage}
+              />
+            </div>
+          )}
       </div>
     </div>
   );

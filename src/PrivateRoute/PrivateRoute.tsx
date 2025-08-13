@@ -20,9 +20,7 @@ const [isLoading, setIsLoading] = useState(true);
   const routeAccess = useAppSelector((state) => state.routes.permissions);
   // const isLoadingPermissions = !routeAccess || routeAccess.length === 0;
   const isLoadingPermissions = false;
-  console.log(isLoadingPermissions);
   
-
   useEffect(() => {
     if (!token) {
       navigate("/login", { replace: true });

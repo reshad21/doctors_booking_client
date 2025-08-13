@@ -17,7 +17,7 @@ interface BaseInputProps {
   title?: string;
   placeholder?: string;
   classname?: string;
-  label?:string;
+  label?: string;
   icon?: React.ReactNode;
   type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
 }
@@ -29,7 +29,7 @@ const BaseInput = ({
   classname,
   icon,
   label,
-  type ,
+  type,
 }: BaseInputProps) => {
   const { control } = useFormContext();
 
@@ -49,11 +49,24 @@ const BaseInput = ({
                   {icon}
                 </div>
               )}
-              <label htmlFor="">{label}</label>
+              {label && <label>{label}</label>}
               <Input
                 {...field}
                 type={type}
                 placeholder={placeholder || "Text"}
+                onChange={(e) => {
+                  if (type === "number") {
+                    const val = e.target.value;
+                    field.onChange(val === "" ? "" : Number(val));
+                  } else {
+                    field.onChange(e.target.value);
+                  }
+                }}
+                value={
+                  type === "number" && field.value === 0
+                    ? field.value
+                    : (field.value ?? "")
+                }
                 className={cn(
                   icon ? "pl-10" : "",
                   "border-[#A0B19E] rounded-[4px] h-12 border text-[#5F597480]",

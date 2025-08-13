@@ -39,12 +39,13 @@ const Login = () => {
     const token = res?.data?.data?.accessToken;
     dispatch(setUserToken({ token: token }));
     const decoded = decodeToken(token);
-
+    console.log(decoded,"decoded");
+    
     dispatch(setAdminDecodeData(decoded));
     toast.success("Doctor Logged In!");
     navigate("/dashboard");
      // Force a page reload to ensure fresh permission state
-    window.location.reload();
+    // window.location.reload();
   };
 
   return (
