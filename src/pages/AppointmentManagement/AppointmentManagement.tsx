@@ -18,6 +18,7 @@ import ExportDropdown from "@/components/shared/ExportDropdown";
 import AppointmentTable from "./_components/AppointementTable";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Info } from "lucide-react";
+import LoadingSpinner from "@/loading/LoadingSpinner";
 
 const AppointmentManagement = () => {
   const [deletePatient] = useDeletePatientMutation();
@@ -53,7 +54,7 @@ const AppointmentManagement = () => {
     orderBy: JSON.stringify({ createdAt: "desc" }),
   });
 
-  if (isLoading) return <div>Loading</div>;
+  if (isLoading) return <LoadingSpinner />;
 
   const selectFields = [
     {
