@@ -16,6 +16,8 @@ const Prescription = () => {
     searchTerm,
   });
 
+  console.log(patients, "patients")
+
   return (
     <div className="custom-container">
       <div className="grid grid-cols-1 w-full">
@@ -45,10 +47,10 @@ const Prescription = () => {
             </div>
           </div>
         </div>
-        {patients?.data?.data?.length > 0 ? (
+        {patients?.data?.data && patients?.data?.data?.length > 0 ? (
           <PrescriptionTable
-            patients={patients.data.data}
-            active={patients.data.meta.currentPage || 1}
+            patients={patients?.data?.data}
+            active={patients?.data?.meta?.currentPage || 1}
             totalPages={patients.data.meta.totalPages || 1}
             onPageChange={setPage}
           />

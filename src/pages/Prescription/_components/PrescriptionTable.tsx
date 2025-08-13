@@ -64,7 +64,7 @@ const PrescriptionTable = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {patients?.data?.data?.map((patient: Patient, index: number) => (
+            {patients?.map((patient: Patient, index: number) => (
               <TableRow
                 key={patient.id}
                 className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
@@ -101,14 +101,6 @@ const PrescriptionTable = ({
                   )}
                 </TableCell>
                 <TableCell>
-                  {/* <Switch
-                    checked={
-                      patient.visitStatus !==
-                      ("NOT_VISITED" as typeof patient.visitStatus)
-                    }
-                    className="data-[state=checked]:bg-green-600"
-                  /> */}
-
                   <span className="border rounded text-xs bg-[#14400D] text-white p-1 capitalize focus:outline-none">
                     {{
                       VISITED: "Visited",

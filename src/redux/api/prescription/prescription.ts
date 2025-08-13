@@ -40,6 +40,14 @@ const prescriptionApi = baseApi.injectEndpoints({
         };
       },
     }),
+    getPerceptionBId: builder.query({
+      query: ({prescriptionId}) => {
+        return {
+          url: `/prescription/single/${prescriptionId}`,
+          method: "GET",
+        };
+      },
+    }),
     getExtraAdvice: builder.query({
       query: () => {
         return {
@@ -54,6 +62,7 @@ const prescriptionApi = baseApi.injectEndpoints({
 export const {
   useCreatePrescriptionMutation,
   useGetPerceptionByPatientIdQuery,
+  useGetPerceptionBIdQuery,
   useUpdatePrescriptionMutation,
   useCreateExtraAdviceMutation,
   useGetExtraAdviceQuery

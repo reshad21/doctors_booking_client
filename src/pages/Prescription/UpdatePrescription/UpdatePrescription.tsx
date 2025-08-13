@@ -1,296 +1,266 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import prHead from "@/assets/pr-head.png";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useUpdatePrescriptionMutation } from "@/redux/api/prescription/prescription";
+import { useParams } from "react-router-dom";
+import CreatePrescriptionForm from "../_components/CreatePrescriptionForm";
+import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
+import { Card } from "@/components/ui/card";
+import {
+  useGetPerceptionBIdQuery,
+  useUpdatePrescriptionMutation,
+} from "@/redux/api/prescription/prescription";
 import toast from "react-hot-toast";
-import UpdatePrescriptionForm from "./_components/UpdatePrescriptionForm";
-import { useLocation, useNavigate } from "react-router-dom";
+import {
+  useCreateChiefComplaintMutation,
+  useCreateDiagnosisMutation,
+  useCreateInvestigationMutation,
+  useCreateOnExaminationsMutation,
+} from "@/redux/api/manualData/manualData";
+import { useCreateAdviceMutation } from "@/redux/api/advice/advice";
+import {
+  CreateAdviceFn,
+  CreateFn,
+} from "../_components/CreateFn";
 
 const UpdatePrescription = () => {
+  const [createOnExamination] = useCreateOnExaminationsMutation();
+  const [createInvestigation] = useCreateInvestigationMutation();
+  const [createDiagnosis] = useCreateDiagnosisMutation();
+  const [createComplain] = useCreateChiefComplaintMutation();
+  const [createAdvice] = useCreateAdviceMutation();
+  const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const [updatePrescription] = useUpdatePrescriptionMutation();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { perception } = location.state || {};
-  const [adviceContent, setAdviceContent] = useState("");
-    const [adviceInputContent, setAdviceInputContent] = useState("");
-  const [testInputCount, setTestInputCount] = useState([{ content: 1 }]);
-  const [chiefComplaint, setChiefComplaint] = useState([{ content: 1 }]);
-  const [onExaminations, setOnExaminations] = useState([{ content: 1 }]);
-  const [investigation, setInvestigation] = useState([{ content: 1 }]);
-  const [diagnosis, setDiagnosis] = useState([{ content: 1 }]);
-  const [medicineInputCount, setMedicineInputCount] = useState([
-    { content: 1 },
-  ]);
-  const form = useForm();
+  const { prescriptionId } = useParams();
+  const { data: prescription } = useGetPerceptionBIdQuery({
+    prescriptionId: prescriptionId,
+  });
+  // const doctorId = useAppSelector((state) => state.admin?.id);
+  const prescriptionData = useMemo(
+    () => prescription?.data || {},
+    [prescription]
+  );
+
+  const [medicineInputCount, setMedicineInputCount] = useState<
+    Array<{ content: number; DosageSchedule: any[] }>
+  >([]);
+
+  // Always update medicineInputCount when prescriptionData.medicines changes
+  useEffect(() => {
+    if (
+      prescriptionData.medicines &&
+      Array.isArray(prescriptionData.medicines)
+    ) {
+      setMedicineInputCount(
+        prescriptionData.medicines.map((med: any, idx: any) => ({
+          content: idx + 1,
+          DosageSchedule: med.DosageSchedule,
+        }))
+      );
+    }
+  }, [prescriptionData.medicines]);
+  const form = useForm<any>({
+    defaultValues: {},
+  });
+  console.log(prescriptionData);
 
   useEffect(() => {
-    if (perception) {
-      setMedicineInputCount(
-        perception.medicines?.map((_: any, index: number) => ({
-          content: index + 1,
-        })) || [{ content: 1 }]
-      );
-      setTestInputCount(
-        perception.tests?.map((_: any, index: number) => ({
-          content: index + 1,
-        })) || [{ content: 1 }]
-      );
-      setChiefComplaint(
-        perception.chiefComplaint?.map((_: any, index: number) => ({
-          content: index + 1,
-        })) || [{ content: 1 }]
-      );
+    if (prescriptionData && Object.keys(prescriptionData).length > 0) {
+      form.reset({
+        nxVisit: prescriptionData.nextVisit,
+        advice: prescriptionData.advice
+          ? prescriptionData.advice
+              ?.split("\n")
+              ?.map((item: any) => item.replace(/^\d+\.\s*/, ""))
+          : [],
+        "chief-complaint": prescriptionData.chiefComplaint?.map(
+          (c: any) => c.description
+        ),
+        "on-examinations": prescriptionData.onExaminations?.map(
+          (e: any) => e.description
+        ),
+        diagnosis: prescriptionData?.diagnosis?.map((d: any) => d.description),
+        investigation: prescriptionData?.investigation?.map(
+          (i: any) => i.description
+        ),
+        ...(prescriptionData?.medicines?.reduce(
+          (
+            acc: Record<string, any>,
+            med: {
+              medicineName: string;
+              DosageSchedule: Array<{
+                dosage: string;
+                day: string;
+                time: string;
+                comment: string;
+              }>;
+            },
+            medIndex: number
+          ) => {
+            acc[`medicine-${medIndex + 1}`] = med.medicineName;
 
-      setOnExaminations(
-        perception.onExaminations?.map((_: any, index: number) => ({
-          content: index + 1,
-        })) || [{ content: 1 }]
-      );
-      setInvestigation(
-        perception.investigation?.map((_: any, index: number) => ({
-          content: index + 1,
-        })) || [{ content: 1 }]
-      );
-      setDiagnosis(
-        perception.diagnosis?.map((_: any, index: number) => ({
-          content: index + 1,
-        })) || [{ content: 1 }]
-      );
+            med.DosageSchedule.forEach(
+              (
+                schedule: {
+                  dosage: string;
+                  day: string;
+                  time: string;
+                  comment: string;
+                },
+                scheduleIndex: number
+              ) => {
+                acc[`${scheduleIndex + 1}-dosage-${medIndex + 1}`] =
+                  schedule.dosage;
+                acc[`${scheduleIndex + 1}-duration-${medIndex + 1}`] =
+                  schedule.day;
+                acc[`${scheduleIndex + 1}-time-${medIndex + 1}`] =
+                  schedule.time;
+                acc[`${scheduleIndex + 1}-comment-${medIndex + 1}`] =
+                  schedule.comment;
+              }
+            );
 
-      const defaultValues: Record<string, any> = {
-        name: perception.patient?.name,
-        age: perception.patient?.age,
-        weight: perception.patient?.weight,
-        advice: perception.advice,
-        nxVisit: perception.nextVisit,
-        date: perception?.createdAt.split("T")[0],
-      };
-
-      perception.medicines?.forEach((item: any, index: number) => {
-        const key = index + 1;
-        defaultValues[`medicine${key}`] = item.medicineName;
-        defaultValues[`dosage${key}`] = item.dosage;
-        defaultValues[`day${key}`] = item.day;
-        defaultValues[`time${key}`] = item.time;
-        defaultValues[`comment${key}`] = item.comment;
+            return acc;
+          },
+          {}
+        ) || {}),
       });
-
-      perception.tests?.forEach((item: any, index: number) => {
-        defaultValues[`test${index + 1}`] = item.description;
-      });
-      perception.chiefComplaint?.forEach((item: any, index: number) => {
-        defaultValues[`chiefComplaint${index + 1}`] = item.description;
-      });
-      perception.diagnosis?.forEach((item: any, index: number) => {
-        defaultValues[`diagnosis${index + 1}`] = item.description;
-      });
-      perception.investigation?.forEach((item: any, index: number) => {
-        defaultValues[`investigation${index + 1}`] = item.description;
-      });
-      perception.onExaminations?.forEach((item: any, index: number) => {
-        defaultValues[`onExaminations${index + 1}`] = item.description;
-      });
-
-      form.reset(defaultValues);
     }
-  }, [perception, form]);
+  }, [form, prescriptionData]);
 
-  const handleAddTestInput = () => {
-    setTestInputCount((prev) => [...prev, { content: prev.length + 1 }]);
-  };
-
-  const handleRemoveTestInput = (contentToDelete: number) => {
-    setTestInputCount((prev) =>
-      prev.filter((item) => item.content !== contentToDelete)
-    );
-  };
-  const handleAddChiefComplaint = () => {
-    setChiefComplaint((prev) => [...prev, { content: prev.length + 1 }]);
-  };
-
-  const handleRemoveChiefComplaint = (contentToDelete: number) => {
-    setChiefComplaint((prev) =>
-      prev.filter((item) => item.content !== contentToDelete)
-    );
-  };
-  const handleAddOnExaminations = () => {
-    setOnExaminations((prev) => [...prev, { content: prev.length + 1 }]);
-  };
-  const handleRemoveOnExaminations = (contentToDelete: number) => {
-    setOnExaminations((prev) =>
-      prev.filter((item) => item.content !== contentToDelete)
-    );
-  };
-  const handleAddInvestigation = () => {
-    setInvestigation((prev) => [...prev, { content: prev.length + 1 }]);
-  };
-
-  const handleRemoveInvestigation = (contentToDelete: number) => {
-    setInvestigation((prev) =>
-      prev.filter((item) => item.content !== contentToDelete)
-    );
-  };
-  const handleAddDiagnosis = () => {
-    setDiagnosis((prev) => [...prev, { content: prev.length + 1 }]);
-  };
-
-  const handleRemoveDiagnosis = (contentToDelete: number) => {
-    setDiagnosis((prev) =>
-      prev.filter((item) => item.content !== contentToDelete)
-    );
-  };
   const handleAddMedicineInput = () => {
-    setMedicineInputCount((prev) => [...prev, { content: prev.length + 1 }]);
+    setMedicineInputCount((prev: any) => [
+      ...prev,
+      { content: prev.length + 1, DosageSchedule: [] },
+    ]);
   };
   const handleRemoveMedicineInput = (contentToDelete: number) => {
-    setMedicineInputCount((prev) =>
-      prev.filter((item) => item.content !== contentToDelete)
+    setMedicineInputCount((prev: any) =>
+      prev.filter((item: any) => item.content !== contentToDelete)
     );
   };
-
   const onSubmit = async (data: any) => {
-    const medicineArray = medicineInputCount.map((item) => {
-      const key = item.content;
+    // Step 1: Extract all medicine names (medicine-1, medicine-2, etc.)
+    const medicineEntries = Object.entries(data)
+      ?.filter(([key]) => key.startsWith("medicine-"))
+      ?.map(([key, value]) => ({
+        medicineId: key.split("-")[1], // Extract the number (1, 2, etc.)
+        name: value,
+      }));
+
+    // Step 2: For each medicine, collect only currently visible dosages (ignore previous array/IDs)
+    const medicines = medicineEntries?.map(({ medicineId, name }) => {
+      const dosageCount = form.getValues()["timingCounts"]?.[medicineId] || 1;
+      const DosageSchedule = [];
+      for (let i = 1; i <= dosageCount; i++) {
+        const dosage = data[`${i}-dosage-${medicineId}`];
+        const day = data[`${i}-duration-${medicineId}`];
+        const time = data[`${i}-time-${medicineId}`];
+        const comment = data[`${i}-comment-${medicineId}`];
+        if (dosage && day && time) {
+          DosageSchedule.push({ dosage, day, time, comment });
+        }
+      }
       return {
-        medicineName: data[`medicine${key}`],
-        dosage: data[`dosage${key}`],
-        day: data[`day${key}`],
-        time: data[`time${key}`],
-        comment: data[`comment${key}`],
+        medicineName: name,
+        DosageSchedule,
       };
     });
+    const advice = data?.advice
+      ?.map((name: string, index: number) => `${index + 1}. ${name}`)
+      .join("\n");
 
-    const testsArray = [];
-    let testIndex = 1;
-    while (data[`test${testIndex}`]) {
-      testsArray.push({
-        description: data[`test${testIndex}`],
-      });
-      testIndex++;
-    }
-
-    const chiefComplaintArray = [];
-    let chiefComplaintIndex = 1;
-    while (data[`chiefComplaint${chiefComplaintIndex}`]) {
-      chiefComplaintArray.push({
-        description: data[`chiefComplaint${chiefComplaintIndex}`],
-      });
-      chiefComplaintIndex++;
-    }
-    const diagnosisArray: any[] = [];
-    let diagnosisIndex = 1;
-    while (data[`diagnosis${diagnosisIndex}`]) {
-      diagnosisArray.push({
-        description: data[`diagnosis${diagnosisIndex}`],
-      });
-      diagnosisIndex++;
-    }
-    const onExaminationsArray: any[] = [];
-    let onExaminationsIndex = 1;
-    while (data[`onExaminations${onExaminationsIndex}`]) {
-      onExaminationsArray.push({
-        description: data[`onExaminations${onExaminationsIndex}`],
-      });
-      onExaminationsIndex++;
-    }
-    const investigationArray: any[] = [];
-    let investigationIndex = 1;
-    while (data[`investigation${investigationIndex}`]) {
-      investigationArray.push({
-        description: data[`investigation${investigationIndex}`],
-      });
-      investigationIndex++;
-    }
-
-    const cleanedData = { ...data };
-    medicineInputCount.forEach((item) => {
-      const key = item.content;
-      delete cleanedData[`medicine${key}`];
-      delete cleanedData[`dosage${key}`];
-      delete cleanedData[`day${key}`];
-      delete cleanedData[`time${key}`];
-      delete cleanedData[`comment${key}`];
-    });
-
-    for (let i = 1; i < testIndex; i++) {
-      delete cleanedData[`test${i}`];
-    }
-    for (let i = 1; i < chiefComplaintIndex; i++) {
-      delete cleanedData[`chiefComplaint${i}`];
-    }
-    for (let i = 1; i < onExaminationsIndex; i++) {
-      delete cleanedData[`onExaminations${i}`];
-    }
-    for (let i = 1; i < diagnosisIndex; i++) {
-      delete cleanedData[`diagnosis${i}`];
-    }
-    for (let i = 1; i < investigationIndex; i++) {
-      delete cleanedData[`investigation${i}`];
-    }
-    const prescriptionData = {
-      id:perception?.id,
-      name: cleanedData.name,
-      advice: `${adviceContent} ${adviceInputContent}`,
-      nextVisit: cleanedData.nxVisit,
-      medicines: medicineArray,
-      tests: testsArray,
-      chiefComplaint: chiefComplaintArray,
-      onExaminations: onExaminationsArray,
-      diagnosis: diagnosisArray,
-      investigation: investigationArray,
+    // Step 3: Combine with other form data
+    const transformedData = {
+      id: prescriptionId,
+      medicines: Array.isArray(medicines) ? medicines : [],
+      content: data.content,
+      chiefComplaint: data["chief-complaint"],
+      onExaminations: data["on-examinations"],
+      diagnosis: data.diagnosis,
+      nxVisit: data.nxVisit,
+      investigation: data.investigation,
+      advice: advice,
     };
+console.log(transformedData);
 
-    const res = (await updatePrescription(prescriptionData)) as any;
+    const res = (await updatePrescription(transformedData)) as any;
     console.log(res);
-    
-    if (res?.data?.success) {
+    if (res?.data?.message) {
       toast.success(res?.data?.message);
-      navigate(`/dashboard/view-prescription/${perception?.patientId}`);
       form.reset();
     } else {
-      toast.error(res?.error?.data?.message);
+      toast.error(res?.error?.data?.message || "Something went wrong");
     }
+  };
+
+  // State to hold dynamic options for each field
+  const [dynamicOptions, setDynamicOptions] = useState<{
+    [key: string]: { value: string; label: string }[];
+  }>({
+    "chief-complaint": [],
+    "on-examinations": [],
+    diagnosis: [],
+    investigation: [],
+  });
+
+  // Handler to save new select options (for all fields)
+  const handleSaveNewOption = async (inputValue: string, label: string) => {
+    if (label == "Chief-Complaint") {
+      await CreateFn(inputValue, createComplain);
+    }
+    if (label == "On-Examinations") {
+      await CreateFn(inputValue, createOnExamination);
+    }
+    if (label == "Diagnosis") {
+      await CreateFn(inputValue, createDiagnosis);
+    }
+    if (label == "Investigation") {
+      await CreateFn(inputValue, createInvestigation);
+    }
+
+    const fieldName = label.toLowerCase();
+    // Add to form value
+    const prev = form.getValues(fieldName as any) || [];
+    form.setValue(fieldName as any, [...prev, inputValue]);
+    // Add to dynamic options for the select
+    setDynamicOptions((prevOptions) => ({
+      ...prevOptions,
+      [fieldName]: [
+        ...prevOptions[fieldName],
+        { value: inputValue, label: inputValue },
+      ],
+    }));
+  };
+
+  // Handler for advice field
+  const handleSaveAdvice = (inputValue: string) => {
+    CreateAdviceFn(inputValue, createAdvice);
+    const prev = form.getValues("advice") || [];
+    form.setValue("advice", [...prev, inputValue]);
   };
 
   return (
-    <div className="custom-container mt-[30px]">
+    <Card className=" bg-[#f4f6f9] px-5 rounded-sm">
       <div className="p-5 bg-white">
         <div className="pb-[30px]">
-          <img src={prHead} alt="" />
+          <img src={preManagementData?.data?.[0]?.headerImage} alt="" />
         </div>
-        <UpdatePrescriptionForm
+        <CreatePrescriptionForm
           form={form}
           onSubmit={onSubmit}
-          testInputCount={testInputCount}
+          patient={""}
           medicineInputCount={medicineInputCount}
-          handleRemoveTestInput={handleRemoveTestInput}
           handleRemoveMedicineInput={handleRemoveMedicineInput}
           handleAddMedicineInput={handleAddMedicineInput}
-          handleAddTestInput={handleAddTestInput}
-          patientId={perception?.patientId}
-          patient={perception?.patient}
-          handleRemoveChiefComplaint={handleRemoveChiefComplaint}
-          handleAddChiefComplaint={handleAddChiefComplaint}
-          chiefComplaint={chiefComplaint}
-          onExaminations={onExaminations}
-          investigation={investigation}
-          diagnosis={diagnosis}
-          handleRemoveOnExaminations={handleRemoveOnExaminations}
-          handleAddOnExaminations={handleAddOnExaminations}
-          handleAddInvestigation={handleAddInvestigation}
-          handleRemoveInvestigation={handleRemoveInvestigation}
-          handleRemoveDiagnosis={handleRemoveDiagnosis}
-          handleAddDiagnosis={handleAddDiagnosis}
-          advice={perception?.advice}
-          handleAdviceInputChange={setAdviceInputContent}
-          handleAdviceChange={setAdviceContent}
+          handleAdviceInputChange={handleSaveNewOption}
+          handleAdviceChange={handleSaveAdvice}
+          dynamicOptions={dynamicOptions}
         />
         <div className="pt-[30px]">
-          <img src={prHead} alt="" />
+          <img src={preManagementData?.data?.[0]?.footerImage} alt="" />
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 

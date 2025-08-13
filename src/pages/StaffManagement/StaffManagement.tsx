@@ -130,7 +130,7 @@ const StaffManagement = () => {
                     key={member.id}
                     className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
                   >
-                    <TableCell className="font-medium">{index + 1}</TableCell>
+                    <TableCell className="font-medium pl-4">{index + 1}</TableCell>
                     <TableCell>
                       <div className="w-10 h-10 rounded-full overflow-hidden">
                         <img

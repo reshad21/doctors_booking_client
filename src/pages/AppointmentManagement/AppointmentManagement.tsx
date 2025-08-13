@@ -27,6 +27,7 @@ const AppointmentManagement = () => {
   const { data: chambersData } = useGetChambersQuery({});
   const [modalOpen, setModalOpen] = useState(false);
   const doctorId = useAppSelector((state) => state.admin.id);
+  const doctorName = useAppSelector((state) => state.admin.name);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [searchInput, setSearchInput] = useState("");
@@ -96,17 +97,13 @@ const AppointmentManagement = () => {
       weight: String(data.weight),
       doctorId,
     })) as any;
-
     if (res?.data?.success) {
       const response = await sendSingleMessage({
         number: data?.phoneNumber,
-        message:
-          "Mr. Shifat, your booking with Dr. Mahabur Rahman has been confirmed.",
+        message: `${data?.name}, your booking with Dr. ${doctorName} has been confirmed.`,
       });
-
       helpers.reset();
       helpers.close();
-
       if (response?.data?.data?.success_message) {
         toast.success(
           `${res?.data?.message} & ${response?.data?.data?.success_message}`

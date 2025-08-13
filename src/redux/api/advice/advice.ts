@@ -19,12 +19,7 @@ const adviceApi = baseApi.injectEndpoints({
       providesTags: ["advice"],
     }),
 
-    // getChamberById: builder.query({
-    //   query: (id: string) => ({
-    //     url: `/chamber/${id}`,
-    //   }),
-    //   providesTags: ["chamber"],
-    // }),
+    // 
 
     updateAdvice: builder.mutation({
       query: ({ id, data }) => ({
