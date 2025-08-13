@@ -60,7 +60,7 @@ const Notice = () => {
     <div className="custom-container">
       <div className="w-full">
         {/* Header Section */}
-        <div className="flex items-center justify-between mb-6 w-full bg-white px-4 py-4">
+        <div className="flex items-center justify-between mb-4 w-full bg-white px-4 py-4">
           <div className="flex justify-between items-center gap-3 w-full">
             <div className="flex justify-start items-center gap-2">
               <DisplayNotice />
