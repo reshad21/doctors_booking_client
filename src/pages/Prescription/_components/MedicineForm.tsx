@@ -18,7 +18,7 @@ const MedicineForm = ({
 }: any) => {
   return (
     <div>
-      {medicineInputCount.map((item: any, idx: number) => {
+      {medicineInputCount?.map((item: any, idx: number) => {
         // Do not mutate timingCounts here; it is managed by parent
         return (
           <Card className="p-2 rounded-md" key={idx}>
@@ -36,7 +36,7 @@ const MedicineForm = ({
               </div>
 
               {/* Timing Sets (Dynamic) */}
-              {Array.from({ length: timingCounts[item.content] }).map(
+              {Array.from({ length: timingCounts[item.content] })?.map(
                 (_, idx) => {
                   // Always use sequential field names: 1, 2, 3, ...
                   const count = idx + 1;

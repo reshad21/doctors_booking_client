@@ -232,7 +232,7 @@ const ViewPrescription = () => {
               <span>Print</span>
             </button>
             <Link
-              to={"/dashboard/update-prescription"}
+              to={`/dashboard/update-prescription/${medic.id}`}
               state={{ perception: medic }}
               className="flex justify-center items-center gap-2 bg-[#47C363] text-white py-1 px-3 rounded-sm"
             >

@@ -10,7 +10,7 @@ import {
   useGetInvestigationQuery,
   useGetOnExaminationsQuery,
 } from "@/redux/api/manualData/manualData";
-import { dosageOptions, timeOptions } from "./CreateFn";
+import { dosageOptions, InputOptions, timeOptions } from "./CreateFn";
 import { useGetAdviceQuery } from "@/redux/api/advice/advice";
 
 type OptionType = {
@@ -40,7 +40,7 @@ const CreatePrescriptionForm = ({
   useEffect(() => {
     if (medicineInputCount && medicineInputCount.length > 0) {
       const initialCounts: Record<string, number> = {};
-      medicineInputCount.forEach((item: any) => {
+      medicineInputCount?.forEach((item: any) => {
         if (item.DosageSchedule && Array.isArray(item.DosageSchedule)) {
           initialCounts[item.content] = item.DosageSchedule.length;
         } else {
@@ -51,7 +51,7 @@ const CreatePrescriptionForm = ({
     }
   }, [medicineInputCount]);
   const { data: onExaminations } = useGetOnExaminationsQuery(undefined);
-  const { data: Investigations } = useGetInvestigationQuery(undefined);
+  const { data: investigations } = useGetInvestigationQuery(undefined);
   const { data: diagnosis } = useGetDiagnosisQuery(undefined);
   const { data: chiefComplaint } = useGetChiefComplaintQuery(undefined);
   const { data: advice } = useGetAdviceQuery(undefined);
@@ -66,7 +66,7 @@ const CreatePrescriptionForm = ({
 
   // Sync all visible timing set values with the form state
   const syncAllTimingSetValues = () => {
-    medicineInputCount.forEach((med: any) => {
+    medicineInputCount?.forEach((med: any) => {
       const count = timingCounts[med.content] || 1;
       for (let i = 0; i < count; i++) {
         const idx = i + 1;
@@ -102,7 +102,7 @@ const CreatePrescriptionForm = ({
       // Unregister the last timing set fields for this medicine
       if (currentCount > 1) {
         const idx = currentCount; // 1-based
-        ["duration", "doges", "time", "comment"].forEach((field) => {
+        ["duration", "doges", "time", "comment"]?.forEach((field) => {
           form.unregister(`${idx}-${field}-${medicineId}`);
         });
       }
@@ -112,27 +112,12 @@ const CreatePrescriptionForm = ({
       };
     });
   };
-  const onExaminationOptions = onExaminations?.data?.map((item: any) => ({
-    value: item.value,
-    label: item.title,
-  }));
-  const investigationOptions = Investigations?.data?.map((item: any) => ({
-    value: item.value,
-    label: item.title,
-  }));
-  const diagnosisOptions = diagnosis?.data?.map((item: any) => ({
-    value: item.value,
-    label: item.title,
-  }));
-  const chiefComplaintOptions = chiefComplaint?.data?.map((item: any) => ({
-    value: item.value,
-    label: item.title,
-  }));
-  const adviceOptions = advice?.data?.map((item: any) => ({
-    value: item.value,
-    label: item.title,
-  }));
-  console.log(chiefComplaint);
+  const onExaminationOptions = InputOptions(onExaminations,"onExaminations") || []
+  const investigationOptions = InputOptions(investigations,"investigations") || [] 
+  const diagnosisOptions = InputOptions(diagnosis,"diagnosis") || [] 
+  const chiefComplaintOptions = InputOptions(chiefComplaint,"chiefComplaint") || [] 
+  const adviceOptions = InputOptions(advice,"advice") || [] 
+  
 
   return (
     <div className="flex flex-col gap-8 p-4">

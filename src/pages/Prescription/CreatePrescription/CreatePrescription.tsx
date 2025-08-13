@@ -29,6 +29,8 @@ const CreatePrescription = () => {
   const location = useLocation();
   const patient = location.state;
   const doctorId = useAppSelector((state) => state.admin?.id);
+  console.log(doctorId);
+  
   const [medicineInputCount, setMedicineInputCount] = useState([
     { content: 1 },
   ]);
@@ -43,6 +45,8 @@ const CreatePrescription = () => {
     );
   };
   const onSubmit = async (data: any) => {
+    console.log(data);
+    
     // Step 1: Extract all medicine names (medicine-1, medicine-2, etc.)
     const medicineEntries = Object.entries(data)
       .filter(([key]) => key.startsWith("medicine-"))
@@ -104,6 +108,8 @@ const CreatePrescription = () => {
       advice: advice,
     };
     const res = (await createPrescription(transformedData)) as any;
+    console.log(res);
+    
     console.log(res?.data);
     if (res?.data?.message) {
       toast.success(res?.data?.message);

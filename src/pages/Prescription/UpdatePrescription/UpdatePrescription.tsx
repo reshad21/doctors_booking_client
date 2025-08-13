@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import CreatePrescriptionForm from "../_components/CreatePrescriptionForm";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 import { Card } from "@/components/ui/card";
 import { useAppSelector } from "@/redux/hooks";
-import { useCreatePrescriptionMutation } from "@/redux/api/prescription/prescription";
+import {
+  useCreatePrescriptionMutation,
+  useGetPerceptionBIdQuery,
+} from "@/redux/api/prescription/prescription";
 import toast from "react-hot-toast";
 import {
   useCreateChiefComplaintMutation,
@@ -25,109 +28,109 @@ const UpdatePrescription = () => {
   const [createAdvice] = useCreateAdviceMutation();
   const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const [createPrescription] = useCreatePrescriptionMutation();
-  const { patientId } = useParams();
-  const location = useLocation();
-  const patient = location.state;
+  const { prescriptionId } = useParams();
+  const { data: prescription } = useGetPerceptionBIdQuery({
+    prescriptionId: prescriptionId,
+  });
   const doctorId = useAppSelector((state) => state.admin?.id);
-  const prescriptionData = {
-    advice:
-      "1. football Footballotball Football football Football Footballfootball 2.",
-    nextVisit: "20 day",
-    medicines: [
-      {
-        medicineName: "paracetamol",
-        DosageSchedule: [
-          {
-            dosage: "১ + 1 + 1",
-            day: "7",
-            time: "খাবার আগে",
-            comment: "Soluta cupiditate ve",
-          },
-          {
-            dosage: "১ + 1 + 1",
-            day: "5",
-            time: "খাবার আগে",
-            comment: "jkjk",
-          },
-        ],
-      },
-    ],
-    chiefComplaint: [{ description: "CHef" }],
-    diagnosis: [{ description: "Diagonise" }],
-    investigation: [{ description: "Second test" }],
-    onExaminations: [{ description: "dsdsa" }],
-    patient: { name: "Asif Khan", age: "20", gender: "MALE", weight: "70" },
-  };
-
+  const prescriptionData = prescription?.data || {};
   const [medicineInputCount, setMedicineInputCount] = useState(
-    prescriptionData.medicines.map((med, idx) => ({
+    prescriptionData.medicines?.map((med: any, idx: any) => ({
       content: idx + 1,
       DosageSchedule: med.DosageSchedule,
     }))
   );
 
   const form = useForm({
-    defaultValues: {
-      // For text inputs
-      nxVisit: prescriptionData.nextVisit,
-      advice: prescriptionData.advice
-        ? prescriptionData.advice
-            .split("\n")
-            .map((item) => item.replace(/^\d+\.\s*/, ""))
-        : [],
+    defaultValues: {}, // start empty
+  });
 
-      // For multi-selects
-      "chief-complaint": prescriptionData.chiefComplaint.map(
-        (c) => c.description
-      ),
-      "on-examinations": prescriptionData.onExaminations.map(
-        (e) => e.description
-      ),
-      diagnosis: prescriptionData.diagnosis.map((d) => d.description),
-      investigation: prescriptionData.investigation.map((i) => i.description),
+  // Effect to reset form when backend data changes
+  useEffect(() => {
+    if (prescriptionData && Object.keys(prescriptionData).length > 0) {
+      form.reset({
+        nxVisit: prescriptionData.nextVisit,
+        advice: prescriptionData.advice
+          ? prescriptionData.advice
+              ?.split("\n")
+              ?.map((item: any) => item.replace(/^\d+\.\s*/, ""))
+          : [],
+        "chief-complaint": prescriptionData.chiefComplaint?.map(
+          (c: any) => c.description
+        ),
+        "on-examinations": prescriptionData.onExaminations?.map(
+          (e: any) => e.description
+        ),
+        diagnosis: prescriptionData?.diagnosis?.map((d: any) => d.description),
+        investigation: prescriptionData?.investigation?.map(
+          (i: any) => i.description
+        ),
+        ...(prescriptionData?.medicines?.reduce(
+          (
+            acc: Record<string, any>,
+            med: {
+              medicineName: string;
+              DosageSchedule: Array<{
+                dosage: string;
+                day: string;
+                time: string;
+                comment: string;
+              }>;
+            },
+            medIndex: number
+          ) => {
+            acc[`medicine-${medIndex + 1}`] = med.medicineName;
 
-      // For medicines (dynamic keys)
-      ...prescriptionData.medicines.reduce<Record<string, any>>(
-        (acc, med, medIndex) => {
-          acc[`medicine-${medIndex + 1}`] = med.medicineName;
+            med.DosageSchedule.forEach(
+              (
+                schedule: {
+                  dosage: string;
+                  day: string;
+                  time: string;
+                  comment: string;
+                },
+                scheduleIndex: number
+              ) => {
+                acc[`${scheduleIndex + 1}-dosage-${medIndex + 1}`] =
+                  schedule.dosage;
+                acc[`${scheduleIndex + 1}-duration-${medIndex + 1}`] =
+                  schedule.day;
+                acc[`${scheduleIndex + 1}-time-${medIndex + 1}`] =
+                  schedule.time;
+                acc[`${scheduleIndex + 1}-comment-${medIndex + 1}`] =
+                  schedule.comment;
+              }
+            );
 
-          med.DosageSchedule.forEach((schedule, scheduleIndex) => {
-            acc[`${scheduleIndex + 1}-dosage-${medIndex + 1}`] =
-              schedule.dosage;
-            acc[`${scheduleIndex + 1}-duration-${medIndex + 1}`] = schedule.day;
-            acc[`${scheduleIndex + 1}-time-${medIndex + 1}`] = schedule.time;
-            acc[`${scheduleIndex + 1}-comment-${medIndex + 1}`] =
-              schedule.comment;
-          });
-
-          return acc;
-        },
-        {}
-      ),
-    },
+            return acc;
+          },
+          {}
+        ) || {}),
+      });
+    }
   });
 
   const handleAddMedicineInput = () => {
-    setMedicineInputCount((prev) => [
+    setMedicineInputCount((prev: any) => [
       ...prev,
       { content: prev.length + 1, DosageSchedule: [] },
     ]);
   };
   const handleRemoveMedicineInput = (contentToDelete: number) => {
-    setMedicineInputCount((prev) =>
-      prev.filter((item) => item.content !== contentToDelete)
+    setMedicineInputCount((prev: any) =>
+      prev.filter((item: any) => item.content !== contentToDelete)
     );
   };
   const onSubmit = async (data: any) => {
     // Step 1: Extract all medicine names (medicine-1, medicine-2, etc.)
     const medicineEntries = Object.entries(data)
-      .filter(([key]) => key.startsWith("medicine-"))
-      .map(([key, value]) => ({
+      ?.filter(([key]) => key.startsWith("medicine-"))
+      ?.map(([key, value]) => ({
         medicineId: key.split("-")[1], // Extract the number (1, 2, etc.)
         name: value,
       }));
     // Step 2: For each medicine, find its dosage schedules
-    const medicines = medicineEntries.map(({ medicineId, name }) => {
+    const medicines = medicineEntries?.map(({ medicineId, name }) => {
       // Find all fields that belong to this medicine's dosage schedules
       const dosageFields = Object.entries(data).filter(([fieldName]) => {
         // Field name format: dosageIndex-fieldType-medicineId (e.g., "1-duration-1")
@@ -171,7 +174,7 @@ const UpdatePrescription = () => {
     // Step 3: Combine with other form data
     const transformedData = {
       doctorId: doctorId,
-      patientId,
+      patientId: "",
       medicines,
       content: data.content,
       chiefComplaint: data["chief-complaint"],
@@ -248,7 +251,7 @@ const UpdatePrescription = () => {
         <CreatePrescriptionForm
           form={form}
           onSubmit={onSubmit}
-          patient={patient}
+          patient={""}
           medicineInputCount={medicineInputCount}
           handleRemoveMedicineInput={handleRemoveMedicineInput}
           handleAddMedicineInput={handleAddMedicineInput}

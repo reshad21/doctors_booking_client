@@ -59,7 +59,7 @@ const router = createBrowserRouter([
         element: <ViewPrescription />
       },
       {
-        path: "/dashboard/update-prescription",
+        path: "/dashboard/update-prescription/:prescriptionId",
         element: <UpdatePrescription />
       },
       {

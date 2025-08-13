@@ -45,7 +45,7 @@ const Login = () => {
     toast.success("Doctor Logged In!");
     navigate("/dashboard");
      // Force a page reload to ensure fresh permission state
-    window.location.reload();
+    // window.location.reload();
   };
 
   return (
