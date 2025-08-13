@@ -19,7 +19,7 @@ const Prescription = () => {
   return (
     <div className="custom-container">
       <div className="grid grid-cols-1 w-full">
-        <div className="flex items-center justify-between p-4 bg-white ">
+        <div className="flex items-center justify-between p-4 bg-white mb-4">
           <ExportDropdown
             data={patients?.data?.data || []}
             columns={[
@@ -35,7 +35,7 @@ const Prescription = () => {
             <span className="text-gray-600 text-sm">Search:</span>
             <div className="relative">
               <Input
-                type="text"
+                type="text rounded"
                 placeholder="Phone..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}

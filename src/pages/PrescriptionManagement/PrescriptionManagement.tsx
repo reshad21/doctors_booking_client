@@ -79,7 +79,7 @@ const PrescriptionManagement = () => {
       <div className="w-full">
         <div className="flex items-center justify-between" />
 
-        <div className="flex flex-col md:flex-row items-center gap-4 py-4 px-4 bg-white rounded">
+        <div className="flex flex-col md:flex-row items-center gap-4 py-4 px-4 bg-white rounded mb-4">
           {/* Prescription Modal */}
           {!hasPrescription ? (
             <CustomModal

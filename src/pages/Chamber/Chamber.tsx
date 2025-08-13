@@ -78,7 +78,7 @@ const Chamber = () => {
     <div className="custom-container">
       <div className="w-full">
         {/* Header Section */}
-        <div className="flex items-center justify-between mb- bg-white py-[18px] pl-4">
+        <div className="flex items-center justify-between mb- bg-white py-[18px] pl-4 mb-4">
           <div className="flex items-center gap-3">
             <CustomModal
               open={modalOpen}

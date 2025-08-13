@@ -12,6 +12,8 @@ import {
 } from "@/redux/api/admin/admin";
 import toast from "react-hot-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAppDispatch } from "@/redux/hooks";
+import { setAdminDecodeData } from "@/redux/api/features/adminSlice";
 
 interface FormData {
   name: string;
@@ -23,6 +25,7 @@ const UpdateProfile = () => {
   const [imagePreview, setImagePreview] = useState<string>(
     adminDataFromApi?.data?.image
   );
+  const dispatch = useAppDispatch();
 
   const {
     register,
@@ -34,9 +37,11 @@ const UpdateProfile = () => {
       name: adminDataFromApi?.data?.name,
     },
   });
+
   useEffect(() => {
     reset({ name: adminDataFromApi?.data?.name });
   }, [reset, adminDataFromApi?.data?.name]);
+
   // Handle image preview
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -60,12 +65,22 @@ const UpdateProfile = () => {
     }
 
     const res = (await updateDoctor(formData)) as any;
+    console.log(res, "res");
 
     if (res?.error?.data?.message) {
       toast.error(res.error.data.message);
     } else {
       toast.success(res?.data?.message || "Success!");
       reset();
+
+      dispatch(
+        setAdminDecodeData({
+          ...adminDataFromApi,
+          name: res?.data?.data?.name,
+          profilePhoto:
+            res?.data?.data?.image || adminDataFromApi?.profilePhoto,
+        })
+      );
     }
   };
 

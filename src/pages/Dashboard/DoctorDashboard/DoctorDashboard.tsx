@@ -18,9 +18,9 @@ const DoctorDashboard = () => {
       }),
       limit: 1000,
     });
-const doctor = useAppSelector((state) => state.admin);
-// console.log(doctor, "doctor");
-// console.log(patientApiData, "Patient api data");
+  const doctor = useAppSelector((state) => state.admin);
+  // console.log(doctor, "doctor");
+  // console.log(patientApiData, "Patient api data");
   const appointmentData =
     patientApiData?.data?.data?.map((patient: any, index: number) => ({
       sn: index + 1,
@@ -39,14 +39,14 @@ const doctor = useAppSelector((state) => state.admin);
           <div className="flex items-center space-x-4">
             <Avatar className="w-16 h-16">
               <AvatarImage
-                // src="/placeholder.svg?height=64&width=64"
                 src={doctor?.profilePhoto}
                 alt={doctor?.name}
+                className="object-cover"
               />
-              <AvatarFallback>{doctor?.name.slice(0,1)}</AvatarFallback>
+              <AvatarFallback>{doctor?.name.slice(0, 1)}</AvatarFallback>
             </Avatar>
             <div>
-               <h2 className="text-2xl font-bold text-gray-800">
+              <h2 className="text-2xl font-bold text-gray-800">
                 Welcome To {doctor?.name}
               </h2>
               <p className="text-gray-600">Have a nice day at work</p>
@@ -90,10 +90,7 @@ const doctor = useAppSelector((state) => state.admin);
           />
         </div>
 
-
-            <TodayAppointments appointments={appointmentData} />
-
-
+        <TodayAppointments appointments={appointmentData} />
       </main>
     </div>
   );

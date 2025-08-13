@@ -38,7 +38,7 @@ const PrescriptionTable = ({
   };
 
   return (
-    <div className="">
+    <>
       <div className="rounded-b-sm overflow-hidden shadow-sm w-full">
         <Table className="no-border">
           <TableHeader className="no-border">
@@ -171,7 +171,7 @@ const PrescriptionTable = ({
           onPageChange={onPageChange}
         />
       </div>
-    </div>
+    </>
   );
 };
 

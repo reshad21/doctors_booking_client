@@ -27,7 +27,6 @@ const adminSlice = createSlice({
   initialState,
   reducers: {
     setAdminDecodeData: (_state, action: PayloadAction<DecodedToken>) => {
-      console.log(action.payload, "Admin decoded token");
       return action.payload;
     },
 
