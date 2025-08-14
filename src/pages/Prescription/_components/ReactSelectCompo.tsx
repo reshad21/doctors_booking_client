@@ -73,7 +73,7 @@ const ReactSelectCompo = ({
                   "No options"
                 )
               }
-              onChange={(selected) => {
+              onChange={(selected:any) => {
                 if (isMulti) {
                   const values = Array.isArray(selected)
                     ? selected.map((item: OptionType) => item.value)
