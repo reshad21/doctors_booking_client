@@ -16,6 +16,7 @@ import { getCurrentDateTime } from "@/utils/getCurrentDateTime";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronRight } from "lucide-react";
 import { useAppSelector } from "@/redux/hooks";
+import NoticeFooter from "./_components/NoticeFooter";
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -332,27 +333,7 @@ export default function PatientCallingDisplay() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#042F16] py-3 px-6 text-white text-center text-lg border-t border-gray-300 overflow-hidden">
-        <div className="relative w-full overflow-hidden">
-          <p className="marquee whitespace-nowrap">
-            A. F. M. Helal Uddin Medical Application. Now You Can Make Online
-            Appointment From Here.
-          </p>
-        </div>
-        <style>
-          {`
-            .marquee {
-              display: inline-block;
-              padding-left: 100%;
-              animation: scroll-left 15s linear infinite;
-            }
-            @keyframes scroll-left {
-              0% { transform: translateX(0%); }
-              100% { transform: translateX(-100%); }
-            }
-          `}
-        </style>
-      </footer>
+      <NoticeFooter />
     </div>
   );
 }

@@ -12,6 +12,11 @@ import { convertTo12HourFormat } from "@/utils/TweleveHoursFormat";
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Info } from "lucide-react";
+import { chamberSchema } from "@/validation/chamber.validation";
+import {
+  chamberInputFields,
+  selectFields,
+} from "@/constant/chamber-table.constant";
 
 const Chamber = () => {
   const [deleteChamber] = useDeleteChamberMutation();
@@ -27,28 +32,6 @@ const Chamber = () => {
     }, 500);
     return () => clearTimeout(handler);
   }, [searchInput]);
-
-  const chamberInputFields = [
-    { label: "Name", name: "name", type: "text" },
-    { label: "Address", name: "address", type: "text" },
-    { label: "Old Patient", name: "oldPatientFee", type: "number" },
-    { label: "New Patient", name: "newPatientFee", type: "number" },
-    { label: "Report", name: "reportFee", type: "number" },
-    { label: "Start Time", name: "startTime", type: "time" },
-    { label: "End Time", name: "endTime", type: "time" },
-    { label: "Day", name: "day", type: "text" },
-  ];
-
-  const selectFields = [
-    {
-      label: "Status",
-      name: "status",
-      options: [
-        { name: "Active", val: "ACTIVE" },
-        { name: "Inactive", val: "INACTIVE" },
-      ],
-    },
-  ];
 
   const handleFormSubmit = async (
     data: Record<string, any>,
@@ -89,6 +72,7 @@ const Chamber = () => {
               input={chamberInputFields}
               select={selectFields}
               buttonProperty={{ type: "create", text: "Add New Chamber" }}
+              validationSchema={chamberSchema}
             />
           </div>
 

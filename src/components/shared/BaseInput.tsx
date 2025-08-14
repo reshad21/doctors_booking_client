@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { cn } from "@/lib/utils";
@@ -11,6 +12,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import type React from "react";
+import { useRef, useEffect } from "react";
 
 interface BaseInputProps {
   name: string;
@@ -32,6 +34,25 @@ const BaseInput = ({
   type,
 }: BaseInputProps) => {
   const { control } = useFormContext();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const input = inputRef.current;
+    if (!input || type !== "number") return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+    };
+
+    input.addEventListener("wheel", handleWheel, { passive: false });
+    // Uncomment the next line if you also want to disable arrow key changes
+    // input.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      input.removeEventListener("wheel", handleWheel);
+      // input.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [type]);
 
   return (
     <FormField
@@ -39,8 +60,8 @@ const BaseInput = ({
       name={name}
       render={({ field }) => (
         <FormItem>
-          {title && (
-            <FormLabel className="text-[#5A5A5A] text-sm">{title}</FormLabel>
+          {label && (
+            <FormLabel>{label}</FormLabel>
           )}
           <FormControl>
             <div className="relative">
@@ -49,9 +70,9 @@ const BaseInput = ({
                   {icon}
                 </div>
               )}
-              {label && <label>{label}</label>}
               <Input
                 {...field}
+                ref={inputRef}
                 type={type}
                 placeholder={placeholder || "Text"}
                 onChange={(e) => {

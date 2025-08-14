@@ -44,6 +44,12 @@ const DoctorDashboard = () => {
                 alt={doctor?.name}
                 className="object-cover"
               />
+              {doctor?.profilePhoto == "N/A" && (
+                <AvatarImage
+                  src="/images/doctorprofile.png?height=48&width=48"
+                  alt={doctor?.name}
+                />
+              )}
               <AvatarFallback>{doctor?.name.slice(0, 1)}</AvatarFallback>
             </Avatar>
             <div>
