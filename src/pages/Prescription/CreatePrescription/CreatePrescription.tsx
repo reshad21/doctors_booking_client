@@ -39,11 +39,6 @@ const CreatePrescription = () => {
   const handleAddMedicineInput = () => {
     setMedicineInputCount((prev) => [...prev, { content: prev.length + 1 }]);
   };
-  // const handleRemoveMedicineInput = (contentToDelete: number) => {
-  //   setMedicineInputCount((prev) =>
-  //     prev.filter((item) => item.content !== contentToDelete)
-  //   );
-  // };
   const handleRemoveMedicineInput = (contentToDelete: number) => {
   setMedicineInputCount((prev) =>
     prev.filter((item) => item.content !== contentToDelete)
@@ -122,7 +117,7 @@ const CreatePrescription = () => {
       advice: advice,
     };
     const res = (await createPrescription(transformedData)) as any;
-    console.log(res);
+    console.log(transformedData);
     
     console.log(res?.data);
     if (res?.data?.message) {
