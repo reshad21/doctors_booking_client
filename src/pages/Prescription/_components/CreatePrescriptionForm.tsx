@@ -23,6 +23,7 @@ const CreatePrescriptionForm = ({
   handleAdviceInputChange,
   setMedicineInputCount,
   dynamicOptions = {},
+  type
 }: any) => {
   const [timingCounts, setTimingCounts] = useState<Record<string, number>>({});
   const { data: onExaminations } = useGetOnExaminationsQuery(undefined);
@@ -151,6 +152,7 @@ const CreatePrescriptionForm = ({
             timingCounts={timingCounts}
             dosageOptions={dosageOptions}
             timeOptions={timeOptions}
+            type={type}
             addTimingSet={(id: string) =>
               setTimingCounts((prev) => ({
                 ...prev,

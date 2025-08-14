@@ -14,12 +14,14 @@ const MedicineForm = ({
   removeTimingSet,
   handleAddMedicineInput,
   handleRemoveMedicineInput,
+  type,
 }: any) => {
   const medicineOptions = [
     { value: "paracetamol", label: "Paracetamol" },
     { value: "ibuprofen", label: "Ibuprofen" },
     { value: "amoxicillin", label: "Amoxicillin" },
   ];
+  console.log(type);
 
   return (
     <div>
@@ -101,13 +103,15 @@ const MedicineForm = ({
                 >
                   + Add Timing Set
                 </button>
-                <button
-                  type="button"
-                  onClick={() => removeTimingSet(item.content)}
-                  className="text-xs bg-red-500 text-white px-2 py-1 rounded"
-                >
-                  - Remove Timing Set
-                </button>
+                {type === "create" && (
+                  <button
+                    type="button"
+                    onClick={() => removeTimingSet(item.content)}
+                    className="text-xs bg-red-500 text-white px-2 py-1 rounded"
+                  >
+                    - Remove Timing Set
+                  </button>
+                )}
               </div>
 
               {/* Remove Medicine */}

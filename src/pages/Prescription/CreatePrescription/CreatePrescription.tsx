@@ -99,9 +99,9 @@ const CreatePrescription = () => {
         DosageSchedule,
       };
     });
-    const advice = data?.advice
-      ?.map((name: string, index: number) => `${index + 1}. ${name}`)
-      .join("\n");
+    // const advice = data?.advice
+    //   ?.map((name: string, index: number) => `${index + 1}. ${name}`)
+    //   .join("\n");
 
     // Step 3: Combine with other form data
     const transformedData = {
@@ -114,7 +114,7 @@ const CreatePrescription = () => {
       diagnosis: data.diagnosis,
       nxVisit: data.nxVisit,
       investigation: data.investigation,
-      advice: advice,
+      advice: data?.advice,
     };
     const res = (await createPrescription(transformedData)) as any;
     console.log(transformedData);
@@ -190,6 +190,7 @@ const CreatePrescription = () => {
           handleAdviceInputChange={handleSaveNewOption}
           handleAdviceChange={handleSaveAdvice}
           dynamicOptions={dynamicOptions}
+          type="create"
         />
         <div className="pt-[30px]">
           <img src={preManagementData?.data?.[0]?.footerImage} alt="" />

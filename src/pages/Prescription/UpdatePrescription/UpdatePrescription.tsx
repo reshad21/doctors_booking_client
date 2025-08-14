@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CreatePrescriptionForm from "../_components/CreatePrescriptionForm";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 import { Card } from "@/components/ui/card";
@@ -28,6 +28,7 @@ const UpdatePrescription = () => {
   const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const [updatePrescription] = useUpdatePrescriptionMutation();
   const { prescriptionId } = useParams();
+  const navigate = useNavigate()
   const { data: prescription } = useGetPerceptionBIdQuery({
     prescriptionId: prescriptionId,
   });
@@ -58,17 +59,14 @@ const UpdatePrescription = () => {
   const form = useForm<any>({
     defaultValues: {},
   });
-  console.log(prescriptionData);
 
   useEffect(() => {
     if (prescriptionData && Object.keys(prescriptionData).length > 0) {
       form.reset({
         nxVisit: prescriptionData.nextVisit,
-        advice: prescriptionData.advice
-          ? prescriptionData.advice
-              ?.split("\n")
-              ?.map((item: any) => item.replace(/^\d+\.\s*/, ""))
-          : [],
+        advice:  prescriptionData.advice?.map(
+          (c: any) => c.description
+        ),
         "chief-complaint": prescriptionData.chiefComplaint?.map(
           (c: any) => c.description
         ),
@@ -186,19 +184,19 @@ const onSubmit = async(data: any) => {
   const transformedData = {
     id: prescriptionId,
     nextVisit: data.nxVisit || "",
-    advice:  "",
+    advice:  Array.isArray(data.advice) ? data.advice : [],
     chiefComplaint: Array.isArray(data["chief-complaint"]) ? data["chief-complaint"] : [],
     onExaminations: Array.isArray(data["on-examinations"]) ? data["on-examinations"] : [],
     investigation: Array.isArray(data.investigation) ? data.investigation : [],
     diagnosis: Array.isArray(data.diagnosis) ? data.diagnosis : [],
     medicines,
   };
-  console.log(transformedData,"payload");
   
    const res = (await updatePrescription(transformedData)) as any;
     console.log(res);
     if (res?.data?.message) {
       toast.success(res?.data?.message);
+      navigate(`/dashboard/view-prescription/${prescriptionData?.patient?.id}`);
       form.reset();
     } else {
       toast.error(res?.error?.data?.message || "Something went wrong");
@@ -259,7 +257,7 @@ const onSubmit = async(data: any) => {
         <CreatePrescriptionForm
           form={form}
           onSubmit={onSubmit}
-          patient={""}
+          patient={prescriptionData?.patient}
           medicineInputCount={medicineInputCount}
           handleRemoveMedicineInput={handleRemoveMedicineInput}
           handleAddMedicineInput={handleAddMedicineInput}

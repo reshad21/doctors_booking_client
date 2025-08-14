@@ -5,14 +5,12 @@ import { Edit, Info, Printer } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useRef } from "react";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
-import TipTapView from "./TipTapView";
 
 const ViewPrescription = () => {
   const { patientId } = useParams();
   const { data: perceptions } = useGetPerceptionByPatientIdQuery(patientId);
-    const { data: preManagementData } = useGetPreManagementQuery(undefined);
+  const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const printRefs = useRef<(HTMLDivElement | null)[]>([]);
-  
 
   const setPrintRef = (el: HTMLDivElement | null, index: number) => {
     printRefs.current[index] = el;
@@ -213,14 +211,14 @@ const ViewPrescription = () => {
 
   return (
     <div>
-      {
-        perceptions?.data?.length == 0 && (<div className="flex  justify-center items-center min-h-[85vh]">
-        <div className="flex flex-col items-center justify-center gap-2">
-         <Info />
-          <span className="font-semibold text-xs">No perceptions Found</span>
+      {perceptions?.data?.length == 0 && (
+        <div className="flex  justify-center items-center min-h-[85vh]">
+          <div className="flex flex-col items-center justify-center gap-2">
+            <Info />
+            <span className="font-semibold text-xs">No perceptions Found</span>
+          </div>
         </div>
-        </div>)
-      }
+      )}
       {perceptions?.data?.map((medic: any, index: number) => (
         <div className="m-5" key={medic.id || index}>
           <div className="flex justify-start items-center gap-2 pb-2">
@@ -269,94 +267,137 @@ const ViewPrescription = () => {
                   {" "}
                   {/* or use a custom height if needed */}
                   <div className="flex h-full">
-
-
-                    <div className="flex flex-col items-start justify-start w-1/3 border-r-2 border-gray-800 gap-5 mt-5">
+                    <div className="flex flex-col items-start justify-start w-1/3 border-r-2 border-gray-800 gap-2 mt-5">
                       <div className="ps-4 overflow-y-auto">
-                      <h3 className="font-bold text-xs">ChiefComplaint</h3>
-                      <ul className="space-y-2">
-                        {medic?.chiefComplaint?.map((item: any, idx: number) => (
-                          <li key={idx} className="flex items-start text-sm">
-                            <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
-                            <span className="text-xs">
-                              {item.description}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                        <h3 className="font-bold text-xs">ChiefComplaint</h3>
+                        <ul className="">
+                          {medic?.chiefComplaint?.map(
+                            (item: any, idx: number) => (
+                              <li
+                                key={idx}
+                                className="flex items-start text-sm ps-2"
+                              >
+                                <span className="w-1 h-1 bg-gray-800 rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
+                                <span className="text-xs text-gray-800">
+                                  {item.description}
+                                </span>
+                              </li>
+                            )
+                          )}
+                        </ul>
+                      </div>
                       <div className="ps-4 overflow-y-auto">
-                      <h3 className="font-bold text-xs">On examinations</h3>
-                      <ul className="space-y-2">
-                        {medic?.onExaminations?.map((item: any, idx: number) => (
-                          <li key={idx} className="flex items-start text-sm">
-                            <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
-                            <span className="text-xs">
-                              {item.description}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="ps-4 overflow-y-auto">
-                      <h3 className="font-bold text-xs">Diagnosis</h3>
-                      <ul className="space-y-2">
-                        {medic?.diagnosis?.map((item: any, idx: number) => (
-                          <li key={idx} className="flex items-start text-sm">
-                            <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
-                            <span className="text-xs">
-                              {item.description}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="ps-4 overflow-y-auto">
-                      <h3 className="font-bold text-xs">Investigation</h3>
-                      <ul className="space-y-2">
-                        {medic?.investigation?.map((item: any, idx: number) => (
-                          <li key={idx} className="flex items-start text-sm">
-                            <span className="w-2 h-2 bg-black rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
-                            <span className="text-xs">
-                              {item.description}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                        <h3 className="font-bold text-xs">On examinations</h3>
+                        <ul className="">
+                          {medic?.onExaminations?.map(
+                            (item: any, idx: number) => (
+                              <li
+                                key={idx}
+                                className="flex items-start text-sm ps-2"
+                              >
+                                <span className="w-1 h-1 bg-gray-800 rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
+                                <span className="text-xs text-gray-800">
+                                  {item.description}
+                                </span>
+                              </li>
+                            )
+                          )}
+                        </ul>
+                      </div>
+                      <div className="ps-4">
+                        <h3 className="font-bold text-xs">Diagnosis</h3>
+                        <ul className="">
+                          {medic?.diagnosis?.map((item: any, idx: number) => (
+                            <li key={idx} className="flex items-start text-sm ps-2">
+                              <span className="w-1 h-1 bg-gray-800 rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
+                              <span className="text-xs text-gray-800">
+                                {item.description}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="ps-4 overflow-y-auto">
+                        <h3 className="font-bold text-xs">Investigation</h3>
+                        <ul className="">
+                          {medic?.investigation?.map(
+                            (item: any, idx: number) => (
+                              <li
+                                key={idx}
+                                className="flex items-start text-sm ps-2"
+                              >
+                                <span className="w-1 h-1 bg-gray-800 rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
+                                <span className="text-xs text-gray-800">
+                                  {item.description}
+                                </span>
+                              </li>
+                            )
+                          )}
+                        </ul>
+                      </div>
                     </div>
 
                     <div className="flex-1 flex flex-col justify-between items-start px-2 py-4 h-full overflow-y-auto w-full">
                       <div className="space-y-4">
-                        {medic?.medicines?.map((med: any, medIndex: number) => (
-                          <div key={medIndex}>
-                            <div className="text-sm flex justify-between my-1 items-center gap-10">
-                              <p className="text-sm font-semibold">
+                        {medic?.medicines?.map((med: any, medIndex: number) => {
+                          console.log(med, "this is ");
+
+                          return (
+                            // <div key={medIndex}>
+                            //   <div className="text-sm flex justify-between my-1 items-center gap-10">
+                            //     <p className="text-sm font-semibold">
+                            //       {medIndex + 1}. {med.medicineName}
+                            //     </p>
+                            //     <p>{med.dosage}</p>
+                            //     <p>{med.day}</p>
+                            //     <p>{med.time}</p>
+                            //   </div>
+                            //   {med.comment && (
+                            //     <p className="text-xs text-gray-600 ml-4 mt-1">
+                            //       {med.comment}
+                            //     </p>
+                            //   )}
+                            // </div>
+                            <div className=" line-clamp-1">
+                              <span className="font-semibold text-xs">
                                 {medIndex + 1}. {med.medicineName}
-                              </p>
-                              <p>{med.dosage}</p>
-                              <p>{med.day}</p>
-                              <p>{med.time}</p>
+                              </span>
+                              {medic?.medicines?.map((med: any) => (
+                                <div>
+                                  {med?.DosageSchedule?.map((item: any) => (
+                                    <div className="flex justify-between items-start w-full text-xs ps-14 gap-10">
+                                      <div className="flex gap-2 items-start justify-start ">
+                                        <div>{item?.dosage}</div>
+                                        <span>....................</span>
+                                        <span>{item?.time}</span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              ))}
                             </div>
-                            {med.comment && (
-                              <p className="text-xs text-gray-600 ml-4 mt-1">
-                                {med.comment}
-                              </p>
-                            )}
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
-                    <div>
-                      <span className="font-semibold text-xs">Advice</span>
-                      <span className="ps-2">
-                        <TipTapView content={medic?.advice}  className="[&_p]:my-1 [&>p]:leading-tight text-xs"/>
-                      </span>
-                    </div>
+                      <div>
+                        <span className="font-semibold text-xs">Advice</span>
+                        <div className="ps-5">
+                          {medic?.advice?.map((item: any, inx: any) => {
+                            return (
+                              <div className="flex items-start justify-start gap-1 text-xs text-gray-700">
+                                <span>
+                                  {inx + 1}. {item?.description}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-                       
+
               <img src={preManagementData?.data?.[0]?.footerImage} alt="" />
             </div>
           </div>
