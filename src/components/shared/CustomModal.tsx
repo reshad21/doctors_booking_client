@@ -18,6 +18,8 @@ import { FormField } from "../ui/form";
 import { ScrollArea } from "../ui/scroll-area";
 import { Label } from "@radix-ui/react-label";
 import TipTapEditor from "./TiptapEditor";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ZodSchema } from "zod";
 
 type FieldConfig = {
   label: string;
@@ -50,6 +52,7 @@ interface CustomModalProps {
     name: string;
     label: string;
   };
+  validationSchema?: ZodSchema<any>;
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({
@@ -66,8 +69,12 @@ const CustomModal: React.FC<CustomModalProps> = ({
   hideForm = false,
   children,
   richTextEditor,
+  validationSchema,
 }) => {
-  const formMethods = useForm<Record<string, any>>({ defaultValues });
+  const formMethods = useForm<Record<string, any>>({
+    defaultValues,
+    resolver: validationSchema ? zodResolver(validationSchema as any) : undefined,
+  });
 
   useEffect(() => {
     if (defaultValues && Object.keys(defaultValues).length > 0) {

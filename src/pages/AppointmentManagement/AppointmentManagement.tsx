@@ -19,6 +19,7 @@ import AppointmentTable from "./_components/AppointementTable";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Info } from "lucide-react";
 import LoadingSpinner from "@/loading/LoadingSpinner";
+import { z } from "zod";
 
 const AppointmentManagement = () => {
   const [deletePatient] = useDeletePatientMutation();
@@ -43,6 +44,17 @@ const AppointmentManagement = () => {
   }, [searchInput]);
 
   const today = new Date().toISOString().split("T")[0];
+
+  const patientSchema = z.object({
+    name: z.string().min(1, "Name is required"),
+    phoneNumber: z.number().min(10, "Phone number is required"),
+    email: z.string().optional(),
+    age: z.number().min(1, "Age is required"),
+    weight: z.number().min(1, "Weight is required"),
+    gender: z.enum(["MALE", "FEMALE", "OTHER"]),
+    chamberId: z.string().min(1, "Chamber is required"),
+    status: z.enum(["NEW", "OLD", "REPORT"]),
+  });
 
   const { data: patientsData, isLoading } = useGetPatientQuery({
     page,
@@ -153,6 +165,7 @@ const AppointmentManagement = () => {
               input={createPatientInputs}
               select={selectFields}
               buttonProperty={{ type: "create", text: "Add New Patient" }}
+              validationSchema={patientSchema}
             />
           </div>
           <Input

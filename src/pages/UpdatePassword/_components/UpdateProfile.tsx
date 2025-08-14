@@ -84,6 +84,8 @@ const UpdateProfile = () => {
     }
   };
 
+  console.log(imagePreview);
+
   return (
     <Card className="w-full bg-white shadow-lg border border-gray-200 rounded-2xl">
       <CardHeader className="pb-2 border-b border-gray-100">
@@ -106,16 +108,16 @@ const UpdateProfile = () => {
             </Label>
             <div className="relative">
               <div className="relative w-32 h-32 bg-gray-100 rounded-lg overflow-hidden border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors">
-                {imagePreview ? (
+                {imagePreview === "N/A" ? (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <User className="w-12 h-12 text-gray-400" />
+                  </div>
+                ) : (
                   <img
                     src={imagePreview || "/placeholder.svg"}
                     alt="Profile preview"
                     className="w-full h-full object-cover"
                   />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <User className="w-12 h-12 text-gray-400" />
-                  </div>
                 )}
                 <label
                   htmlFor="image"

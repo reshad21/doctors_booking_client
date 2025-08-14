@@ -118,9 +118,20 @@ const Notice = () => {
                     <TableCell className="font-medium pl-4">
                       {index + 1}
                     </TableCell>
-                    <TableCell className="text-[#5C727D] max-w-xs break-words whitespace-normal">
-                      {notice.description || "N/A"}
+                    <TableCell
+                      className="text-[#5C727D] max-w-xs break-words whitespace-normal"
+                      title={notice.description} // Full text on hover
+                    >
+                      {notice.description
+                        ? notice.description.split(" ").length > 24
+                          ? notice.description
+                              .split(" ")
+                              .slice(0, 24)
+                              .join(" ") + "......"
+                          : notice.description
+                        : "N/A"}
                     </TableCell>
+
                     <Actions
                       id={notice?.id}
                       description={notice.description}
