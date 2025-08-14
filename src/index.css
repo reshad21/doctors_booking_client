@@ -214,9 +214,14 @@ html {
   }
 }
 
+html,
+body {
+  @apply h-full;
+}
+
 @layer utilities {
   .custom-container {
-    @apply p-[30px] h-[100vh] flex justify-center items-start bg-[#f4f6f9];
+    @apply p-[30px] min-h-screen flex justify-center items-start bg-[#f4f6f9];
   }
   .no-border {
     @apply border-0;
@@ -224,4 +229,15 @@ html {
   .no-padding {
     @apply p-0;
   }
+}
+
+/* global.css or tailwind.css */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
 }

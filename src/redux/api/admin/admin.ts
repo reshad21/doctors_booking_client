@@ -9,17 +9,19 @@ const adminApi = baseApi.injectEndpoints({
           method: "GET",
         };
       },
+      providesTags: ["admin"],
     }),
     updateDoctor: builder.mutation({
       query: (payload) => {
         return {
-            url: "/auth/update-doctor",
-            method: "PATCH",
-            body: payload,
-          }
+          url: "/auth/update-doctor",
+          method: "PATCH",
+          body: payload,
+        };
       },
+      invalidatesTags: ["admin"],
     }),
   }),
 });
 
-export const { useGetAdminByTokenQuery, useUpdateDoctorMutation} = adminApi;
+export const { useGetAdminByTokenQuery, useUpdateDoctorMutation } = adminApi;

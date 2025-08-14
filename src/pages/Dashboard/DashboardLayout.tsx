@@ -23,6 +23,7 @@ import { setPermissions } from "@/redux/api/features/permissionSlice";
 import { useEffect, useMemo } from "react";
 import type { PermissionItem } from "@/redux/api/features/permissionSlice";
 import { HandelLogout } from "@/lib/HandelLogout";
+
 export default function DashboardLayout() {
   const { data: adminDataFromApi, isLoading } = useGetAdminByTokenQuery({});
   const dispatch = useAppDispatch();
@@ -66,18 +67,19 @@ export default function DashboardLayout() {
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="text-white  ">
+                <Button variant="ghost" className="text-white cursor-pointer">
                   <div className="flex items-center space-x-1 ">
                     <Avatar className="w-6 h-6">
                       {doctor?.profilePhoto != "N/A" && (
                         <AvatarImage
                           src={doctor?.profilePhoto}
                           alt={doctor?.name}
+                          className="object-cover"
                         />
                       )}
                       {doctor?.profilePhoto == "N/A" && (
                         <AvatarImage
-                          src="https://github.com/shadcn.png"
+                          src="/images/doctorprofile.png?height=48&width=48"
                           alt={doctor?.name}
                         />
                       )}
@@ -88,17 +90,23 @@ export default function DashboardLayout() {
                   </div>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 border-none">
-                <DropdownMenuItem>
+              <DropdownMenuContent
+                align="end"
+                className="w-48 border-none cursor-pointer"
+              >
+                <DropdownMenuItem className="cursor-pointer">
                   <User className="w-4 h-4 mr-2" />
                   Update Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
                   <KeyRound className="w-4 h-4 mr-2" />
                   Change Password
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600" onClick={() => HandelLogout(navigate, dispatch)}>
+                <DropdownMenuItem
+                  className="text-red-600 cursor-pointer"
+                  onClick={() => HandelLogout(navigate, dispatch)}
+                >
                   <LogOut className="w-4 h-4 mr-2" />
                   Logout
                 </DropdownMenuItem>

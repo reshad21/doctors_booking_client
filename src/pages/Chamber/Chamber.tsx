@@ -10,6 +10,13 @@ import {
 import ChamberTable from "./ChamberTable";
 import { convertTo12HourFormat } from "@/utils/TweleveHoursFormat";
 import { Input } from "@/components/ui/input";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { Info } from "lucide-react";
+import { chamberSchema } from "@/validation/chamber.validation";
+import {
+  chamberInputFields,
+  selectFields,
+} from "@/constant/chamber-table.constant";
 
 const Chamber = () => {
   const [deleteChamber] = useDeleteChamberMutation();
@@ -19,7 +26,6 @@ const Chamber = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { data: chamberData } = useGetChambersQuery({ searchTerm });
 
-
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchTerm(searchInput);
@@ -27,33 +33,15 @@ const Chamber = () => {
     return () => clearTimeout(handler);
   }, [searchInput]);
 
-  const chamberInputFields = [
-    { label: "Name", name: "name", type: "text" },
-    { label: "Address", name: "address", type: "text" },
-    { label: "Old Patient", name: "oldPatientFee", type: "text" },
-    { label: "New Patient", name: "newPatientFee", type: "text" },
-    { label: "Report", name: "reportFee", type: "text" },
-    { label: "Start Time", name: "startTime", type: "time" },
-    { label: "End Time", name: "endTime", type: "time" },
-  ];
-
-  const selectFields = [
-    {
-      label: "Status",
-      name: "status",
-      options: [
-        { name: "Active", val: "ACTIVE" },
-        { name: "Inactive", val: "INACTIVE" },
-      ],
-    },
-  ];
-
   const handleFormSubmit = async (
     data: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
   ) => {
     const formattedData = {
       ...data,
+      oldPatientFee: String(data.oldPatientFee),
+      newPatientFee: String(data.newPatientFee),
+      reportFee: String(data.reportFee),
       startTime: convertTo12HourFormat(data.startTime),
       endTime: convertTo12HourFormat(data.endTime),
     };
@@ -73,7 +61,7 @@ const Chamber = () => {
     <div className="custom-container">
       <div className="w-full">
         {/* Header Section */}
-        <div className="flex items-center justify-between mb- bg-white py-[18px] pl-4">
+        <div className="flex items-center justify-between mb- bg-white py-[18px] pl-4 mb-4">
           <div className="flex items-center gap-3">
             <CustomModal
               open={modalOpen}
@@ -84,9 +72,10 @@ const Chamber = () => {
               input={chamberInputFields}
               select={selectFields}
               buttonProperty={{ type: "create", text: "Add New Chamber" }}
+              validationSchema={chamberSchema}
             />
           </div>
-          {/* <BaseInput name="search" label="Search" placeholder="search" type="text" /> */}
+
           <div className="flex items-center justify-center pr-4 gap-x-2">
             <span className="text-sm">Search:</span>
             <Input
@@ -100,10 +89,19 @@ const Chamber = () => {
 
         {/* Table Section */}
         <div className="rounded-b-sm overflow-hidden shadow-sm">
-          <ChamberTable
-            chambersData={chamberData?.data}
-            deleteChamber={deleteChamber}
-          />
+          {chamberData?.data && chamberData?.data?.length > 0 ? (
+            <ChamberTable
+              chambersData={chamberData?.data}
+              deleteChamber={deleteChamber}
+            />
+          ) : (
+            <EmptyState
+              icon={<Info className="w-full h-full" />}
+              title="Chamber in not created yet!"
+              description="Get started by creating your first chamber"
+              size="sm"
+            />
+          )}
         </div>
       </div>
     </div>

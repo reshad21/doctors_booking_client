@@ -5,6 +5,7 @@ import { Edit, Info, Printer } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useRef } from "react";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 const ViewPrescription = () => {
   const { patientId } = useParams();
@@ -212,12 +213,12 @@ const ViewPrescription = () => {
   return (
     <div>
       {perceptions?.data?.length == 0 && (
-        <div className="flex  justify-center items-center min-h-[85vh]">
-          <div className="flex flex-col items-center justify-center gap-2">
-            <Info />
-            <span className="font-semibold text-xs">No perceptions Found</span>
-          </div>
-        </div>
+        <EmptyState
+          icon={<Info className="w-full h-full" />}
+          title="No Prescription is Found"
+          description="There are currently no prescription to display. Add prescription to get started."
+          size="md"
+        />
       )}
       {perceptions?.data?.map((medic: any, index: number) => (
         <div className="m-5" key={medic.id || index}>
@@ -343,21 +344,6 @@ const ViewPrescription = () => {
                           console.log(med, "this is ");
 
                           return (
-                            // <div key={medIndex}>
-                            //   <div className="text-sm flex justify-between my-1 items-center gap-10">
-                            //     <p className="text-sm font-semibold">
-                            //       {medIndex + 1}. {med.medicineName}
-                            //     </p>
-                            //     <p>{med.dosage}</p>
-                            //     <p>{med.day}</p>
-                            //     <p>{med.time}</p>
-                            //   </div>
-                            //   {med.comment && (
-                            //     <p className="text-xs text-gray-600 ml-4 mt-1">
-                            //       {med.comment}
-                            //     </p>
-                            //   )}
-                            // </div>
                             <div className=" line-clamp-1">
                               <span className="font-semibold text-xs">
                                 {medIndex + 1}. {med.medicineName}

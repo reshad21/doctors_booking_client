@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Info, SquarePen } from "lucide-react";
+import { SquarePen } from "lucide-react";
 import ConfirmAlert from "@/components/shared/ConfirmAlert";
 import type { Patient } from "@/types/patient.types";
 import { Badge } from "@/components/ui/badge";
@@ -53,17 +53,6 @@ const AppointmentTable = ({
       console.error("Failed to update visit status", error);
     }
   };
-
-  if (!patientsData?.length) {
-    return (
-      <div className="flex justify-center items-center h-[80vh] font-semibold text-xs">
-        <div className="flex flex-col justify-center space-y-2 items-center text-yellow-900">
-          <Info />
-          <span>No Patient booked yet!</span>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div>
