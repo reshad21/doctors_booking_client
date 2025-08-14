@@ -26,7 +26,7 @@ interface BaseInputProps {
 
 const BaseInput = ({
   name,
-  title,
+  title: _title,
   placeholder,
   classname,
   icon,
@@ -60,9 +60,7 @@ const BaseInput = ({
       name={name}
       render={({ field }) => (
         <FormItem>
-          {label && (
-            <FormLabel>{label}</FormLabel>
-          )}
+          {label && <FormLabel>{label}</FormLabel>}
           <FormControl>
             <div className="relative">
               {icon && (
