@@ -32,6 +32,7 @@ const CreatePrescriptionForm = ({
   handleRemoveMedicineInput,
   handleAddMedicineInput,
   handleAdviceInputChange,
+  setMedicineInputCount,
   dynamicOptions = {},
 }: any) => {
   const [timingCounts, setTimingCounts] = useState<Record<string, number>>({});
@@ -218,6 +219,7 @@ const CreatePrescriptionForm = ({
               handleAddMedicineInput={handleAddMedicineInput}
               handleAdviceSave={handleAdviceSave}
               handleAdviceSaveInput={handleAdviceSaveInput}
+              setMedicineInputCount={setMedicineInputCount}
             />
 
             <ReactSelectCompo

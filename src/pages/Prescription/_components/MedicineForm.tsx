@@ -13,7 +13,7 @@ const MedicineForm = ({
   timeOptions,
   addTimingSet,
   removeTimingSet,
-  handleRemoveMedicineInput,
+  setMedicineInputCount,
   handleAddMedicineInput,
 }: any) => {
   return (
@@ -112,15 +112,30 @@ const MedicineForm = ({
                       - Remove Timing Set
                     </button>
                   </div>
-
-                  {medicineInputCount.length - 1 !== idx && (
+                  {
                     <div
-                      onClick={() => handleRemoveMedicineInput(item.content)}
+                      onClick={() => {
+                        setMedicineInputCount((prev: any) =>
+                          prev.filter(
+                            (med: any) => med.content !== item.content
+                          )
+                        );
+                        const allKeys = Object.keys(form.getValues());
+                        allKeys.forEach((key) => {
+                          if (
+                            key.endsWith(`-${item.content}`) || 
+                            key.startsWith(`${item.content}-`) 
+                          ) {
+                            form.unregister(key);
+                          }
+                        });
+                      }}
                       className="contain-paint cursor-pointer bg-[#F44336] rounded-full flex justify-center items-center absolute -top-4 -right-4"
                     >
                       <X className="text-white size-5" />
                     </div>
-                  )}
+                  }
+
                   {medicineInputCount.length - 1 === idx && (
                     <div
                       onClick={handleAddMedicineInput}

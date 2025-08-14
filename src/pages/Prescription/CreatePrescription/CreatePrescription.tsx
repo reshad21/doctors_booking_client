@@ -39,11 +39,25 @@ const CreatePrescription = () => {
   const handleAddMedicineInput = () => {
     setMedicineInputCount((prev) => [...prev, { content: prev.length + 1 }]);
   };
+  // const handleRemoveMedicineInput = (contentToDelete: number) => {
+  //   setMedicineInputCount((prev) =>
+  //     prev.filter((item) => item.content !== contentToDelete)
+  //   );
+  // };
   const handleRemoveMedicineInput = (contentToDelete: number) => {
-    setMedicineInputCount((prev) =>
-      prev.filter((item) => item.content !== contentToDelete)
-    );
-  };
+  setMedicineInputCount((prev) =>
+    prev.filter((item) => item.content !== contentToDelete)
+  );
+  // Remove all related fields from form state
+  const timingCount = form.getValues()["timingCounts"]?.[contentToDelete] || 1;
+  for (let i = 1; i <= timingCount; i++) {
+    form.unregister(`${i}-duration-${contentToDelete}`);
+    form.unregister(`${i}-dosage-${contentToDelete}`);
+    form.unregister(`${i}-time-${contentToDelete}`);
+    form.unregister(`${i}-comment-${contentToDelete}`);
+  }
+  form.unregister(`medicine-${contentToDelete}`);
+};
   const onSubmit = async (data: any) => {
     console.log(data);
     

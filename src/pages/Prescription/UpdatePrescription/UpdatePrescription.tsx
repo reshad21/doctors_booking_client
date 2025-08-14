@@ -184,7 +184,7 @@ const onSubmit = async(data: any) => {
 
   // Now build final payload
   const transformedData = {
-    // id: prescriptionId,
+    id: prescriptionId,
     nextVisit: data.nxVisit || "",
     advice:  "",
     chiefComplaint: Array.isArray(data["chief-complaint"]) ? data["chief-complaint"] : [],
@@ -266,6 +266,7 @@ const onSubmit = async(data: any) => {
           handleAdviceInputChange={handleSaveNewOption}
           handleAdviceChange={handleSaveAdvice}
           dynamicOptions={dynamicOptions}
+          setMedicineInputCount={setMedicineInputCount}
         />
         <div className="pt-[30px]">
           <img src={preManagementData?.data?.[0]?.footerImage} alt="" />
