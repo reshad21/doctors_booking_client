@@ -30,7 +30,7 @@ export default function PatientCallingDisplay() {
   const { data: patientApiData } = useGetPatientQuery({
     limit: 1000,
     filter: JSON.stringify({ createdAt: today }),
-    orderBy: JSON.stringify({ createdAt: "desc" }),
+    orderBy: JSON.stringify({ createdAt: "asc" }),
   });
 
   const patients: Patient[] = patientApiData?.data?.data || [];

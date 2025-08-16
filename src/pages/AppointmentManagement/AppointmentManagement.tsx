@@ -64,7 +64,7 @@ const AppointmentManagement = () => {
       chamberId: headerSelect.chamber || undefined,
       createdAt: headerSelect.date || today,
     }),
-    orderBy: JSON.stringify({ createdAt: "desc" }),
+    orderBy: JSON.stringify({ createdAt: "asc" }),
   });
 
   if (isLoading) return <LoadingSpinner />;
