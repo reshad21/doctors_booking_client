@@ -37,11 +37,16 @@ const UpdatePrescription = () => {
     () => prescription?.data || {},
     [prescription]
   );
+console.log(prescriptionData);
 
-  const [medicineInputCount, setMedicineInputCount] = useState<
-    Array<{ content: number; DosageSchedule: any[] }>
-  >([]);
-
+  // const [medicineInputCount, setMedicineInputCount] = useState<
+  //   Array<{ content: number; DosageSchedule: any[] }>
+  // >([]);
+const [medicineInputCount, setMedicineInputCount] = useState(
+  prescriptionData.medicines && prescriptionData.medicines.length >= 0
+    ? prescriptionData.medicines.map((med: any, idx: number) => ({ content: idx + 1, DosageSchedule: med.DosageSchedule }))
+    : [{ content: 1, DosageSchedule: [] }] // Show one input if empty
+);
   // Always update medicineInputCount when prescriptionData.medicines changes
   useEffect(() => {
     if (

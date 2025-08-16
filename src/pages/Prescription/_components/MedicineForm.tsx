@@ -21,11 +21,17 @@ const MedicineForm = ({
     { value: "ibuprofen", label: "Ibuprofen" },
     { value: "amoxicillin", label: "Amoxicillin" },
   ];
-  console.log(type);
+  let dynamicMedicineCount = medicineInputCount;
+  if (dynamicMedicineCount && dynamicMedicineCount.length == 0) {
+    dynamicMedicineCount = [
+      ...dynamicMedicineCount,
+      { medicineName: "", DosageSchedule: [] },
+    ];
+  }
 
   return (
     <div>
-      {medicineInputCount?.map((item: any, idx: number) => (
+      {dynamicMedicineCount?.map((item: any, idx: number) => (
         <Card className="p-2 rounded-md mb-5" key={item.content}>
           <div className="p-2 relative">
             <div className="flex justify-between items-center gap-2 w-full">

@@ -99,15 +99,12 @@ const CreatePrescription = () => {
         DosageSchedule,
       };
     });
-    // const advice = data?.advice
-    //   ?.map((name: string, index: number) => `${index + 1}. ${name}`)
-    //   .join("\n");
 
     // Step 3: Combine with other form data
     const transformedData = {
       doctorId: doctorId,
       patientId,
-      medicines,
+      medicines: medicines[0].medicineName ? medicines : [],
       content: data.content,
       chiefComplaint: data["chief-complaint"],
       onExaminations: data["on-examinations"],
