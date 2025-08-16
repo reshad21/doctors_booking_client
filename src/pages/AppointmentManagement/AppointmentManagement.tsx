@@ -62,7 +62,9 @@ const AppointmentManagement = () => {
     searchTerm,
     filter: JSON.stringify({
       chamberId: headerSelect.chamber || undefined,
-      createdAt: headerSelect.date || today,
+      ...(searchTerm
+        ? {} // when searching, don't apply date filter
+        : { createdAt: headerSelect.date || today }),
     }),
     orderBy: JSON.stringify({ createdAt: "asc" }),
   });
