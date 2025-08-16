@@ -24,6 +24,7 @@ export default function PatientCallingDisplay() {
   const currentSerial = useAppSelector((state) => state.serial.currentSerial);
   const calledSerials = useAppSelector((state) => state.serial.calledSerials);
   const endedSerials = useAppSelector((state) => state.serial.endedSerials);
+  const doctor = useAppSelector((state) => state.admin);
 
   const { data: onlyActiveVideo } = useGetOnlyActiveVideoQuery(undefined);
   const { data: patientApiData } = useGetPatientQuery({
@@ -147,7 +148,9 @@ export default function PatientCallingDisplay() {
           <div className="h-0.5 w-16 bg-gray-300" />
           <div className="flex items-center mx-4">
             <div className="w-2 h-2 rounded-full bg-gray-300 mr-2" />
-            <h1 className="text-2xl font-bold">Patient Calling Display</h1>
+            {doctor.name && (
+              <h1 className="text-2xl font-bold">Dr. {doctor.name}</h1>
+            )}
             <div className="w-2 h-2 rounded-full bg-gray-300 ml-2" />
           </div>
           <div className="h-0.5 w-16 bg-gray-300" />
