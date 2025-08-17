@@ -17,6 +17,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronRight } from "lucide-react";
 import { useAppSelector } from "@/redux/hooks";
 import NoticeFooter from "./_components/NoticeFooter";
+import { useEffect } from "react";
+import { socket } from "@/socket/socket";
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -27,7 +29,7 @@ export default function PatientCallingDisplay() {
   const doctor = useAppSelector((state) => state.admin);
 
   const { data: onlyActiveVideo } = useGetOnlyActiveVideoQuery(undefined);
-  const { data: patientApiData } = useGetPatientQuery({
+  const { data: patientApiData, refetch } = useGetPatientQuery({
     limit: 1000,
     filter: JSON.stringify({ createdAt: today }),
     orderBy: JSON.stringify({ createdAt: "asc" }),
@@ -122,6 +124,17 @@ export default function PatientCallingDisplay() {
   const upcomingReportPatients = filteredReportPatients.filter(
     (p) => !visibleReportPatients.some((vp) => vp.id === p.id)
   );
+
+  useEffect(() => {
+    socket.on("patient:created", (newPatient) => {
+      console.log("New patient received via socket:", newPatient);
+      refetch(); // Trigger RTK Query to fetch updated patient list
+    });
+
+    return () => {
+      socket.off("patient:created");
+    };
+  }, [refetch]);
 
   // Video URL embed helper
   const convertToEmbedUrl = (url: string) => {

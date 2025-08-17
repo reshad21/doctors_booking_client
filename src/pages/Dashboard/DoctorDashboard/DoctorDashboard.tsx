@@ -87,6 +87,16 @@ const DoctorDashboard = () => {
           />
 
           <StatCard
+            title="Today's Pending Appointment"
+            value={patientSummaryData?.data?.todaysPendingPatients || 0}
+            icon={Users}
+            gradientFrom="from-orange-500"
+            gradientTo="to-orange-600"
+            bgIconColor="bg-orange-400"
+            subtitleColor="text-orange-100"
+          />
+{/* 
+          <StatCard
             title="Monthly Visited Appointment"
             value={patientSummaryData?.data?.monthlyPatients || 0}
             icon={Users}
@@ -94,7 +104,7 @@ const DoctorDashboard = () => {
             gradientTo="to-orange-600"
             bgIconColor="bg-orange-400"
             subtitleColor="text-orange-100"
-          />
+          /> */}
         </div>
 
         <TodayAppointments appointments={appointmentData} />
