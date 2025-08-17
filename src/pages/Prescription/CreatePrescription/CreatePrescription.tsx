@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CreatePrescriptionForm from "../_components/CreatePrescriptionForm";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 import { useAppSelector } from "@/redux/hooks";
@@ -30,7 +30,7 @@ const CreatePrescription = () => {
   const location = useLocation();
   const patient = location.state;
   const doctorId = useAppSelector((state) => state.admin?.id);
-  console.log(doctorId);
+  const navigate = useNavigate()
 
   const [medicineInputCount, setMedicineInputCount] = useState([
     { content: 1 },
@@ -40,6 +40,7 @@ const CreatePrescription = () => {
   const handleAddMedicineInput = () => {
     setMedicineInputCount((prev) => [...prev, { content: prev.length + 1 }]);
   };
+
   const handleRemoveMedicineInput = (contentToDelete: number) => {
     setMedicineInputCount((prev) =>
       prev.filter((item) => item.content !== contentToDelete)
@@ -55,9 +56,9 @@ const CreatePrescription = () => {
     }
     form.unregister(`medicine-${contentToDelete}`);
   };
-  const onSubmit = async (data: any) => {
-    console.log(data);
 
+
+  const onSubmit = async (data: any) => {
     // Step 1: Extract all medicine names (medicine-1, medicine-2, etc.)
     const medicineEntries = Object.entries(data)
       .filter(([key]) => key.startsWith("medicine-"))
@@ -116,11 +117,11 @@ const CreatePrescription = () => {
       advice: data?.advice,
     };
     const res = (await createPrescription(transformedData)) as any;
-    console.log(transformedData);
+  
 
-    console.log(res?.data);
     if (res?.data?.message) {
       toast.success(res?.data?.message);
+      navigate(`/dashboard/view-prescription/${patientId}`)
       form.reset();
     } else {
       toast.error(res?.error?.data?.message || "Something went wrong");

@@ -64,7 +64,7 @@ const CreatePrescriptionForm = ({
         }
       });
     }
-  }, [medicineInputCount, form, timingCounts]);
+  }, [medicineInputCount, form]);
 
   const onExaminationOptions =
     InputOptions(onExaminations, "onExaminations") || [];
