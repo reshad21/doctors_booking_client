@@ -9,11 +9,8 @@ import {
 } from "@/components/ui/table";
 import { Eye, Plus } from "lucide-react";
 import type { Patient } from "@/types/patient.types";
-import CustomModal from "@/components/shared/CustomModal";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import Pagination from "@/components/shared/Pagination";
-import { Badge } from "@/components/ui/badge";
 
 const PrescriptionTable = ({
   patients,
@@ -21,22 +18,6 @@ const PrescriptionTable = ({
   totalPages,
   onPageChange,
 }: any) => {
-  const [modalOpen, setModalOpen] = useState(false);
-  const handleFormSubmit = async (
-    data: Record<string, unknown>,
-    helpers: { reset: () => void; close: () => void }
-  ) => {
-    const res = true;
-
-    if (res) {
-      helpers.reset();
-      helpers.close();
-      console.log(data);
-    } else {
-      console.error();
-    }
-  };
-
   return (
     <>
       <div className="rounded-b-sm overflow-hidden shadow-sm w-full">
@@ -45,18 +26,15 @@ const PrescriptionTable = ({
             <TableRow className="bg-[#f7f7f7] no-border">
               {[
                 "SN",
-                "Token",
                 "Patient Name",
                 "Phone",
                 "Prescription",
                 "Patient Status",
-                "Payment",
-                "Visited",
                 "Action",
               ].map((header, ind) => (
                 <TableHead
                   key={ind}
-                  className={`${ind == 7 && "text-center"} pl-4`}
+                  className={`${ind === 4 && "text-center"} ${ind === 5 && "text-center"} pl-4`}
                 >
                   {header}
                 </TableHead>
@@ -70,7 +48,6 @@ const PrescriptionTable = ({
                 className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
               >
                 <TableCell className="font-medium pl-4">{index + 1}</TableCell>
-                <TableCell className="text-[#5C727D]">{patient.name}</TableCell>
                 <TableCell className="text-[#5C727D]">
                   {patient.name || "N/A"}
                 </TableCell>
@@ -78,76 +55,32 @@ const PrescriptionTable = ({
                   {patient.phoneNumber}
                 </TableCell>
                 <TableCell className="text-white space-x-2">
-                  <Link
-                    to={`/dashboard/create-prescription/${patient?.id}`}
-                    state={{
-                      patient: { name: patient.name, age: patient.age },
-                    }}
-                    className="bg-brand flex justify-center items-center gap-2 rounded-sm cursor-pointer"
-                  >
-                    <Plus />
-                    <span>Add</span>
-                  </Link>
+                  <div className="flex items-center justify-center min-h-[2.5rem]">
+                    <span className="text-[#5C727D]">-</span>
+                  </div>
                 </TableCell>
-                <TableCell className="text-[#5C727D] space-x-2">
-                  {patient.status || "N/A"}
+                <TableCell className="text-[#5C727D] text-center px-4">
+                  <div className="flex items-center justify-center min-h-[2.5rem]">
+                    {patient.status || "N/A"}
+                  </div>
                 </TableCell>
-                <TableCell className="text-[#5C727D] space-x-2">
-                  {" "}
-                  {patient.visitStatus === "VISITED" ? (
-                    <Badge className="bg-[#14400D] rounded">Offline Paid</Badge>
-                  ) : (
-                    <Badge className="bg-red-400 rounded">Unpaid</Badge>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <span className="border rounded text-xs bg-[#14400D] text-white p-1 capitalize focus:outline-none">
-                    {{
-                      VISITED: "Visited",
-                      NOT_VISITED: "Not Visited",
-                    }[patient?.visitStatus ?? ""] || "N/A"}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center justify-center gap-2 h-full">
+                <TableCell className="text-center px-4">
+                  <div className="flex items-center justify-center gap-2 min-h-[2.5rem]">
                     <Link
                       to={`/dashboard/view-prescription/${patient.id}`}
-                      className=" hover:bg-green-50 no-border "
+                      className="p-2 rounded-lg transition-all duration-200 hover:scale-110"
                     >
                       <Eye className="h-5 w-5 text-[#14400D]" />
                     </Link>
-                    <div className=" hover:bg-green-50 no-border">
-                      <CustomModal
-                        open={modalOpen}
-                        setOpen={setModalOpen}
-                        title="Create User"
-                        description="Fill in the form below."
-                        handleFormSubmit={handleFormSubmit}
-                        input={[
-                          { label: "Full Name", name: "name" },
-                          { label: "Email", name: "email" },
-                          { label: "Phone", name: "phone" },
-                          { label: "Password", name: "password" },
-                        ]}
-                        select={[
-                          {
-                            label: "Role",
-                            name: "role",
-                            options: [
-                              { name: "Admin", val: "admin" },
-                              { name: "User", val: "user" },
-                            ],
-                          },
-                        ]}
-                        buttonProperty={{
-                          text: "Submit",
-                          className: "bg-brand text-white px-4 py-2 rounded",
-                        }}
-                      />
-                    </div>
-                    <div>
-                      {/* <ConfirmAlert id={patient?.id} onDeleted={deleteStaff} person={"Staff"} /> */}
-                    </div>
+                    <Link
+                      to={`/dashboard/create-prescription/${patient?.id}`}
+                      state={{
+                        patient: { name: patient.name, age: patient.age },
+                      }}
+                      className="bg-brand inline-flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium text-white shadow-sm border border-transparent hover:opacity-90 hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-1"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </Link>
                   </div>
                 </TableCell>
               </TableRow>
