@@ -28,7 +28,6 @@ const MedicineForm = ({
       { medicineName: "", DosageSchedule: [] },
     ];
   }
-
   return (
     <div>
       {dynamicMedicineCount?.map((item: any, idx: number) => (
