@@ -4,7 +4,6 @@ import toast from "react-hot-toast";
 export const CreateFn = async (inputValue: any, rtkFn: any) => {
   const res = (await rtkFn({
     value: inputValue,
-    title: inputValue && inputValue?.slice(0, 10),
   })) as any;
   if (res?.data?.message) {
     toast.success(res?.data?.message);
@@ -12,6 +11,7 @@ export const CreateFn = async (inputValue: any, rtkFn: any) => {
     toast.error(res?.error?.data?.message || "Something Went Wrong");
   }
 };
+
 export const CreateAdviceFn = async (inputValue: any, rtkFn: any) => {
   const res = (await rtkFn({
     content: inputValue,
@@ -24,19 +24,20 @@ export const CreateAdviceFn = async (inputValue: any, rtkFn: any) => {
     toast.error(res?.error?.data?.message || "Something Went Wrong");
   }
 };
+
 export const InputOptions = (data: any, type: any) => {
   if (type !== "advice") {
     const options = data?.data?.map((item: any) => ({
       value: item.value,
-      label: item.title,
+      label: item.value,
     }));
-    return options
+    return options;
   } else {
     const options = data?.data?.map((item: any) => ({
       value: item.content,
       label: item.title,
     }));
-    return options
+    return options;
   }
 };
 
@@ -56,6 +57,7 @@ export const dosageOptions = [
   { value: "1/2 + 0 + 0", label: "1/2 + 0 + 0" },
   { value: "0 + 1/2 + 0", label: "0 + 1/2 + 0" },
 ];
+
 export const timeOptions = [
   { value: "খাবার আগে", label: "খাবার আগে" },
   { value: "খাবার পরে", label: "খাবার পরে" },

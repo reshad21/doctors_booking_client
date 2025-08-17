@@ -1,3 +1,5 @@
+"use client";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import ReactSelectCompo from "./ReactSelectCompo";
@@ -11,6 +13,8 @@ import {
   useGetOnExaminationsQuery,
 } from "@/redux/api/manualData/manualData";
 import { useGetAdviceQuery } from "@/redux/api/advice/advice";
+import { Badge } from "@/components/ui/badge";
+import BaseInput from "@/components/shared/BaseInput";
 
 const CreatePrescriptionForm = ({
   form,
@@ -23,7 +27,7 @@ const CreatePrescriptionForm = ({
   handleAdviceInputChange,
   setMedicineInputCount,
   dynamicOptions = {},
-  type
+  type,
 }: any) => {
   const [timingCounts, setTimingCounts] = useState<Record<string, number>>({});
   const { data: onExaminations } = useGetOnExaminationsQuery(undefined);
@@ -31,6 +35,7 @@ const CreatePrescriptionForm = ({
   const { data: diagnosis } = useGetDiagnosisQuery(undefined);
   const { data: chiefComplaint } = useGetChiefComplaintQuery(undefined);
   const { data: advice } = useGetAdviceQuery(undefined);
+
   // Sync timingCounts whenever medicineInputCount changes
   useEffect(() => {
     if (medicineInputCount && medicineInputCount.length > 0) {
@@ -59,7 +64,7 @@ const CreatePrescriptionForm = ({
         }
       });
     }
-  }, [medicineInputCount]);
+  }, [medicineInputCount, form, timingCounts]);
 
   const onExaminationOptions =
     InputOptions(onExaminations, "onExaminations") || [];
@@ -71,131 +76,183 @@ const CreatePrescriptionForm = ({
   const adviceOptions = InputOptions(advice, "advice") || [];
 
   return (
-    <div className="flex flex-col gap-8 p-4">
-      {/* Patient Info Section */}
-      <div className="flex justify-between items-center w-full">
-        {["name", "age", "date", "Id"].map((item) => (
-          <div className="w-[48%] sm:w-[22%] min-w-[150px]" key={item}>
-            <div className="flex items-center gap-2">
-              <label className="font-semibold text-xs">{item}</label>
-              <span className="border-b border-dashed w-full">
-                {item === "name" && patient?.patient?.name}
-                {item === "age" && patient?.patient?.age}
-                {item === "date" && "2323"}
-                {item === "Id" && (
-                  <span className="text-[10px] bg-green-600 text-green-100 p-1 rounded-md">
-                    generating
+    <div className="max-w-6xl mx-auto space-y-8">
+      <div className="p-2">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-2 h-6 bg-blue-500 rounded-full"></div>
+          <h3 className="text-xl font-semibold text-gray-900">
+            Patient Information
+          </h3>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {[
+            {
+              key: "name",
+              label: "Patient Name",
+              value: patient?.patient?.name,
+            },
+            { key: "age", label: "Age", value: patient?.patient?.age },
+            {
+              key: "date",
+              label: "Date",
+              value: new Date().toLocaleDateString(),
+            },
+            { key: "Id", label: "Prescription ID", value: null },
+          ].map((item) => (
+            <div key={item.key} className="space-y-2">
+              <label className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+                {item.label}
+              </label>
+              <div className="min-h-[40px] flex items-center">
+                {item.value ? (
+                  <span className="text-lg font-semibold text-gray-900">
+                    {item.value}
                   </span>
+                ) : (
+                  <Badge
+                    variant="outline"
+                    className="text-xs font-medium text-blue-600 border-blue-200 bg-blue-50"
+                  >
+                    Auto-generating
+                  </Badge>
                 )}
-              </span>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
-      {/* Multi-Select Section */}
-      <div>
-        <div className="w-full grid grid-cols-2 gap-4">
+      <div className="p-2">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-2 h-6 bg-green-500 rounded-full"></div>
+          <h3 className="text-xl font-semibold text-gray-900">
+            Clinical Assessment
+          </h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
           {[
-            "Chief-Complaint",
-            "On-Examinations",
-            "Diagnosis",
-            "Investigation",
-          ].map((label) => {
-            const fieldName = label.toLowerCase();
-            const staticOptions =
-              label === "Chief-Complaint"
-                ? chiefComplaintOptions
-                : label === "On-Examinations"
-                  ? onExaminationOptions
-                  : label === "Diagnosis"
-                    ? diagnosisOptions
-                    : investigationOptions;
+            {
+              key: "Chief-Complaint",
+              label: "Chief Complaint",
+              options: chiefComplaintOptions,
+            },
+            {
+              key: "On-Examinations",
+              label: "On Examinations",
+              options: onExaminationOptions,
+            },
+            { key: "Diagnosis", label: "Diagnosis", options: diagnosisOptions },
+            {
+              key: "Investigation",
+              label: "Investigation",
+              options: investigationOptions,
+            },
+          ].map((field) => {
+            const fieldName = field.key.toLowerCase();
             const mergedOptions = [
-              ...staticOptions,
+              ...field.options,
               ...(dynamicOptions[fieldName] || []),
-            ];
+            ].filter(
+              (option, index, self) =>
+                index === self.findIndex((o) => o.value === option.value)
+            );
 
             return (
-              <ReactSelectCompo
-                key={label}
-                label={label}
-                name={fieldName}
-                options={mergedOptions}
-                control={form.control}
-                isMulti
-                showSelectedBox
-                onCreateOption={(inputValue) =>
-                  handleAdviceInputChange(inputValue, label)
-                }
-              />
+              <div key={field.key} className="space-y-3">
+                <ReactSelectCompo
+                  label={field.label}
+                  name={fieldName}
+                  options={mergedOptions}
+                  control={form.control}
+                  isMulti
+                  showSelectedBox
+                  onCreateOption={(inputValue) =>
+                    handleAdviceInputChange(inputValue, field.key)
+                  }
+                />
+              </div>
             );
           })}
         </div>
       </div>
 
-      <div className="flex items-center justify-center gap-4">
-        <hr className="text-gray-400 w-[50%]" />
-        <div className="text-gray-400">✕</div>
-        <hr className="text-gray-400 w-[50%]" />
+      <div className="p-2">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-2 h-6 bg-purple-500 rounded-full"></div>
+          <h3 className="text-xl font-semibold text-gray-900">
+            Medication Details
+          </h3>
+        </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <MedicineForm
+              form={form}
+              medicineInputCount={medicineInputCount}
+              timingCounts={timingCounts}
+              dosageOptions={dosageOptions}
+              timeOptions={timeOptions}
+              type={type}
+              addTimingSet={(id: string) =>
+                setTimingCounts((prev) => ({
+                  ...prev,
+                  [id]: (prev[id] || 1) + 1,
+                }))
+              }
+              removeTimingSet={(id: string) =>
+                setTimingCounts((prev) => ({
+                  ...prev,
+                  [id]: Math.max((prev[id] || 1) - 1, 1),
+                }))
+              }
+              handleAddMedicineInput={handleAddMedicineInput}
+              handleRemoveMedicineInput={handleRemoveMedicineInput}
+              setMedicineInputCount={setMedicineInputCount}
+            />
+
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-2 h-5 bg-yellow-500 rounded-full"></div>
+                <h4 className="text-lg font-semibold text-gray-900">
+                  Next Visit
+                </h4>
+              </div>
+              <BaseInput
+                name="nxVisit"
+                placeholder="Enter Next Visit up details"
+                type="text"
+                classname="p-3 rounded-md bg-[#fdfdff] border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-2 h-5 bg-orange-500 rounded-full"></div>
+                <h4 className="text-lg font-semibold text-gray-900">
+                  Patient Advice
+                </h4>
+              </div>
+              <ReactSelectCompo
+                label=""
+                name="advice"
+                options={adviceOptions || []}
+                control={form.control}
+                isMulti
+                showSelectedBox
+                onCreateOption={(inputValue) => handleAdviceChange(inputValue)}
+              />
+            </div>
+
+            <div className="flex justify-end items-center gap-4  border-gray-200">
+              <button
+                type="submit"
+                className="px-10 py-3 text-sm cursor-pointer font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200"
+              >
+                Save Prescription
+              </button>
+            </div>
+          </form>
+        </Form>
       </div>
-
-      {/* Medicine Form Section */}
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4 sm:space-y-6"
-        >
-          <MedicineForm
-            form={form}
-            medicineInputCount={medicineInputCount}
-            timingCounts={timingCounts}
-            dosageOptions={dosageOptions}
-            timeOptions={timeOptions}
-            type={type}
-            addTimingSet={(id: string) =>
-              setTimingCounts((prev) => ({
-                ...prev,
-                [id]: (prev[id] || 1) + 1,
-              }))
-            }
-            removeTimingSet={(id: string) =>
-              setTimingCounts((prev) => ({
-                ...prev,
-                [id]: Math.max((prev[id] || 1) - 1, 1),
-              }))
-            }
-            handleAddMedicineInput={handleAddMedicineInput}
-            handleRemoveMedicineInput={handleRemoveMedicineInput}
-            setMedicineInputCount={setMedicineInputCount}
-          />
-
-          <ReactSelectCompo
-            label="Advice"
-            name="advice"
-            options={adviceOptions || []}
-            control={form.control}
-            isMulti
-            showSelectedBox
-            onCreateOption={(inputValue) => handleAdviceChange(inputValue)}
-          />
-
-          <div className="flex justify-start items-start gap-4 max-w-sm">
-            <button
-              type="submit"
-              className="bg-brand font-semibold text-xs text-white px-5 py-2 rounded-sm"
-            >
-              Save
-            </button>
-            <button
-              type="button"
-              className="bg-[#FB160A] text-xs text-white px-5 py-2 rounded-sm"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </Form>
     </div>
   );
 };

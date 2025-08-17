@@ -1,10 +1,11 @@
+"use client";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useParams } from "react-router-dom";
 import CreatePrescriptionForm from "../_components/CreatePrescriptionForm";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
-import { Card } from "@/components/ui/card";
 import { useAppSelector } from "@/redux/hooks";
 import { useCreatePrescriptionMutation } from "@/redux/api/prescription/prescription";
 import toast from "react-hot-toast";
@@ -30,7 +31,7 @@ const CreatePrescription = () => {
   const patient = location.state;
   const doctorId = useAppSelector((state) => state.admin?.id);
   console.log(doctorId);
-  
+
   const [medicineInputCount, setMedicineInputCount] = useState([
     { content: 1 },
   ]);
@@ -40,22 +41,23 @@ const CreatePrescription = () => {
     setMedicineInputCount((prev) => [...prev, { content: prev.length + 1 }]);
   };
   const handleRemoveMedicineInput = (contentToDelete: number) => {
-  setMedicineInputCount((prev) =>
-    prev.filter((item) => item.content !== contentToDelete)
-  );
-  // Remove all related fields from form state
-  const timingCount = form.getValues()["timingCounts"]?.[contentToDelete] || 1;
-  for (let i = 1; i <= timingCount; i++) {
-    form.unregister(`${i}-duration-${contentToDelete}`);
-    form.unregister(`${i}-dosage-${contentToDelete}`);
-    form.unregister(`${i}-time-${contentToDelete}`);
-    form.unregister(`${i}-comment-${contentToDelete}`);
-  }
-  form.unregister(`medicine-${contentToDelete}`);
-};
+    setMedicineInputCount((prev) =>
+      prev.filter((item) => item.content !== contentToDelete)
+    );
+    // Remove all related fields from form state
+    const timingCount =
+      form.getValues()["timingCounts"]?.[contentToDelete] || 1;
+    for (let i = 1; i <= timingCount; i++) {
+      form.unregister(`${i}-duration-${contentToDelete}`);
+      form.unregister(`${i}-dosage-${contentToDelete}`);
+      form.unregister(`${i}-time-${contentToDelete}`);
+      form.unregister(`${i}-comment-${contentToDelete}`);
+    }
+    form.unregister(`medicine-${contentToDelete}`);
+  };
   const onSubmit = async (data: any) => {
     console.log(data);
-    
+
     // Step 1: Extract all medicine names (medicine-1, medicine-2, etc.)
     const medicineEntries = Object.entries(data)
       .filter(([key]) => key.startsWith("medicine-"))
@@ -115,7 +117,7 @@ const CreatePrescription = () => {
     };
     const res = (await createPrescription(transformedData)) as any;
     console.log(transformedData);
-    
+
     console.log(res?.data);
     if (res?.data?.message) {
       toast.success(res?.data?.message);
@@ -172,28 +174,54 @@ const CreatePrescription = () => {
   };
 
   return (
-    <Card className=" bg-[#f4f6f9] px-5 rounded-sm">
-      <div className="p-5 bg-white">
-        <div className="pb-[30px]">
-          <img src={preManagementData?.data?.[0]?.headerImage} alt="" />
-        </div>
-        <CreatePrescriptionForm
-          form={form}
-          onSubmit={onSubmit}
-          patient={patient}
-          medicineInputCount={medicineInputCount}
-          handleRemoveMedicineInput={handleRemoveMedicineInput}
-          handleAddMedicineInput={handleAddMedicineInput}
-          handleAdviceInputChange={handleSaveNewOption}
-          handleAdviceChange={handleSaveAdvice}
-          dynamicOptions={dynamicOptions}
-          type="create"
-        />
-        <div className="pt-[30px]">
-          <img src={preManagementData?.data?.[0]?.footerImage} alt="" />
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-6">
+        <div className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+          <div className="bg-white border-b border-gray-200 px-6 py-4">
+            <div className="flex items-center justify-center">
+              {preManagementData?.data?.[0]?.headerImage && (
+                <img
+                  src={
+                    preManagementData.data[0].headerImage || "/placeholder.svg"
+                  }
+                  alt="Clinic Header"
+                  className="object-contain"
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="p-6">
+            <CreatePrescriptionForm
+              form={form}
+              onSubmit={onSubmit}
+              patient={patient}
+              medicineInputCount={medicineInputCount}
+              handleRemoveMedicineInput={handleRemoveMedicineInput}
+              handleAddMedicineInput={handleAddMedicineInput}
+              handleAdviceInputChange={handleSaveNewOption}
+              handleAdviceChange={handleSaveAdvice}
+              dynamicOptions={dynamicOptions}
+              type="create"
+            />
+          </div>
+
+          <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
+            <div className="flex items-center justify-center">
+              {preManagementData?.data?.[0]?.footerImage && (
+                <img
+                  src={
+                    preManagementData.data[0].footerImage || "/placeholder.svg"
+                  }
+                  alt="Clinic Footer"
+                  className="object-contain opacity-70"
+                />
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 
