@@ -34,7 +34,7 @@ const PrescriptionManagement = () => {
 
   const hasPrescription = preManagementData?.data?.length > 0;
 
-  console.log(adviceData, "preManagementData")
+  console.log(preManagementData, "preManagementData")
 
   if (isAdviceLoading) return <LoadingSpinner />;
 

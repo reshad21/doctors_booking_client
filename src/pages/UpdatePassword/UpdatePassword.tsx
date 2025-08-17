@@ -174,7 +174,7 @@ const UpdatePassword = () => {
         </Card>
 
         {/* Update Profile Component */}
-          <UpdateProfile />
+        <UpdateProfile />
       </div>
     </div>
   );

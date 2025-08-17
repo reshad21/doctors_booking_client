@@ -1,24 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import CustomModal from "@/components/shared/CustomModal";
+import {
+  createNoticeInputs,
+  selectNoticeFields,
+} from "@/constant/notice.constant";
 import { useDisplayNoticeMutation } from "@/redux/api/message/message";
+import { displayNoticeSchema } from "@/validation/notice.validation";
 import { useState } from "react";
 import toast from "react-hot-toast";
-const createPatientInputs = [
-  { label: "Display notice ", name: "description", type: "text" },
-];
-const selectFields = [
-  {
-    label: "Status",
-    name: "status",
-    options: [
-      { name: "ACTIVE", val: "ACTIVE" },
-      { name: "INACTIVE", val: "INACTIVE" },
-    ],
-  },
-];
+
 const DisplayNotice = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [createDisplayNotice] = useDisplayNoticeMutation();
+
   const handleFormSubmit = async (
     data: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
@@ -41,17 +35,19 @@ const DisplayNotice = () => {
       toast.error("Something went wrong");
     }
   };
+
   return (
     <div>
       <CustomModal
         open={modalOpen}
         setOpen={setModalOpen}
-        title="Create Patient"
+        title="Create Notice"
         description="Fill in the form below."
         handleFormSubmit={handleFormSubmit}
-        input={createPatientInputs}
-        select={selectFields}
+        input={createNoticeInputs}
+        select={selectNoticeFields}
         buttonProperty={{ type: "create", text: "Add Display notice" }}
+        validationSchema={displayNoticeSchema}
       />
     </div>
   );

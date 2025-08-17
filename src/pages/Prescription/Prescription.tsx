@@ -7,6 +7,7 @@ import PrescriptionTable from "./_components/PrescriptionTable";
 import { EmptyState } from "@/components/shared/EmptyState";
 
 const Prescription = () => {
+  const today = new Date().toISOString().split("T")[0];
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [limit] = useState(10);
@@ -14,9 +15,11 @@ const Prescription = () => {
     page,
     limit,
     searchTerm,
+    filter: JSON.stringify({
+      ...(searchTerm ? {} : { createdAt: today }),
+    }),
+    orderBy: JSON.stringify({ createdAt: "asc" }),
   });
-
-  console.log(patients, "patients")
 
   return (
     <div className="custom-container">
