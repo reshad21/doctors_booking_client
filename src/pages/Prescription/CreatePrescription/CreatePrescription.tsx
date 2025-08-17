@@ -40,10 +40,19 @@ const CreatePrescription = () => {
     setMedicineInputCount((prev) => [...prev, { content: prev.length + 1 }]);
   };
   const handleRemoveMedicineInput = (contentToDelete: number) => {
-    setMedicineInputCount((prev) =>
-      prev.filter((item) => item.content !== contentToDelete)
-    );
-  };
+  setMedicineInputCount((prev) =>
+    prev.filter((item) => item.content !== contentToDelete)
+  );
+  // Remove all related fields from form state
+  const timingCount = form.getValues()["timingCounts"]?.[contentToDelete] || 1;
+  for (let i = 1; i <= timingCount; i++) {
+    form.unregister(`${i}-duration-${contentToDelete}`);
+    form.unregister(`${i}-dosage-${contentToDelete}`);
+    form.unregister(`${i}-time-${contentToDelete}`);
+    form.unregister(`${i}-comment-${contentToDelete}`);
+  }
+  form.unregister(`medicine-${contentToDelete}`);
+};
   const onSubmit = async (data: any) => {
     console.log(data);
     
@@ -90,25 +99,22 @@ const CreatePrescription = () => {
         DosageSchedule,
       };
     });
-    const advice = data?.advice
-      ?.map((name: string, index: number) => `${index + 1}. ${name}`)
-      .join("\n");
 
     // Step 3: Combine with other form data
     const transformedData = {
       doctorId: doctorId,
       patientId,
-      medicines,
+      medicines: medicines[0].medicineName ? medicines : [],
       content: data.content,
       chiefComplaint: data["chief-complaint"],
       onExaminations: data["on-examinations"],
       diagnosis: data.diagnosis,
       nxVisit: data.nxVisit,
       investigation: data.investigation,
-      advice: advice,
+      advice: data?.advice,
     };
     const res = (await createPrescription(transformedData)) as any;
-    console.log(res);
+    console.log(transformedData);
     
     console.log(res?.data);
     if (res?.data?.message) {
@@ -181,6 +187,7 @@ const CreatePrescription = () => {
           handleAdviceInputChange={handleSaveNewOption}
           handleAdviceChange={handleSaveAdvice}
           dynamicOptions={dynamicOptions}
+          type="create"
         />
         <div className="pt-[30px]">
           <img src={preManagementData?.data?.[0]?.footerImage} alt="" />

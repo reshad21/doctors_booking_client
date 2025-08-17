@@ -34,6 +34,8 @@ const PrescriptionManagement = () => {
 
   const hasPrescription = preManagementData?.data?.length > 0;
 
+  console.log(preManagementData, "preManagementData")
+
   if (isAdviceLoading) return <LoadingSpinner />;
 
   const handlePrescriptionSubmit = async (
