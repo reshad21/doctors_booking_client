@@ -17,6 +17,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronRight } from "lucide-react";
 import { useAppSelector } from "@/redux/hooks";
 import NoticeFooter from "./_components/NoticeFooter";
+import { useEffect } from "react";
+import { socket } from "@/socket/socket";
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -24,12 +26,13 @@ export default function PatientCallingDisplay() {
   const currentSerial = useAppSelector((state) => state.serial.currentSerial);
   const calledSerials = useAppSelector((state) => state.serial.calledSerials);
   const endedSerials = useAppSelector((state) => state.serial.endedSerials);
+  const doctor = useAppSelector((state) => state.admin);
 
   const { data: onlyActiveVideo } = useGetOnlyActiveVideoQuery(undefined);
-  const { data: patientApiData } = useGetPatientQuery({
+  const { data: patientApiData, refetch } = useGetPatientQuery({
     limit: 1000,
     filter: JSON.stringify({ createdAt: today }),
-    orderBy: JSON.stringify({ createdAt: "desc" }),
+    orderBy: JSON.stringify({ createdAt: "asc" }),
   });
 
   const patients: Patient[] = patientApiData?.data?.data || [];
@@ -122,6 +125,17 @@ export default function PatientCallingDisplay() {
     (p) => !visibleReportPatients.some((vp) => vp.id === p.id)
   );
 
+  useEffect(() => {
+    socket.on("patient:created", (newPatient) => {
+      console.log("New patient received via socket:", newPatient);
+      refetch(); // Trigger RTK Query to fetch updated patient list
+    });
+
+    return () => {
+      socket.off("patient:created");
+    };
+  }, [refetch]);
+
   // Video URL embed helper
   const convertToEmbedUrl = (url: string) => {
     let videoId = "";
@@ -147,7 +161,9 @@ export default function PatientCallingDisplay() {
           <div className="h-0.5 w-16 bg-gray-300" />
           <div className="flex items-center mx-4">
             <div className="w-2 h-2 rounded-full bg-gray-300 mr-2" />
-            <h1 className="text-2xl font-bold">Patient Calling Display</h1>
+            {doctor.name && (
+              <h1 className="text-2xl font-bold">{doctor.name}</h1>
+            )}
             <div className="w-2 h-2 rounded-full bg-gray-300 ml-2" />
           </div>
           <div className="h-0.5 w-16 bg-gray-300" />

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CreatePrescriptionForm from "../_components/CreatePrescriptionForm";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 import { Card } from "@/components/ui/card";
@@ -17,10 +17,7 @@ import {
   useCreateOnExaminationsMutation,
 } from "@/redux/api/manualData/manualData";
 import { useCreateAdviceMutation } from "@/redux/api/advice/advice";
-import {
-  CreateAdviceFn,
-  CreateFn,
-} from "../_components/CreateFn";
+import { CreateAdviceFn, CreateFn } from "../_components/CreateFn";
 
 const UpdatePrescription = () => {
   const [createOnExamination] = useCreateOnExaminationsMutation();
@@ -31,6 +28,7 @@ const UpdatePrescription = () => {
   const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const [updatePrescription] = useUpdatePrescriptionMutation();
   const { prescriptionId } = useParams();
+  const navigate = useNavigate()
   const { data: prescription } = useGetPerceptionBIdQuery({
     prescriptionId: prescriptionId,
   });
@@ -39,11 +37,16 @@ const UpdatePrescription = () => {
     () => prescription?.data || {},
     [prescription]
   );
+console.log(prescriptionData);
 
-  const [medicineInputCount, setMedicineInputCount] = useState<
-    Array<{ content: number; DosageSchedule: any[] }>
-  >([]);
-
+  // const [medicineInputCount, setMedicineInputCount] = useState<
+  //   Array<{ content: number; DosageSchedule: any[] }>
+  // >([]);
+const [medicineInputCount, setMedicineInputCount] = useState(
+  prescriptionData.medicines && prescriptionData.medicines.length >= 0
+    ? prescriptionData.medicines.map((med: any, idx: number) => ({ content: idx + 1, DosageSchedule: med.DosageSchedule }))
+    : [{ content: 1, DosageSchedule: [] }] // Show one input if empty
+);
   // Always update medicineInputCount when prescriptionData.medicines changes
   useEffect(() => {
     if (
@@ -61,17 +64,14 @@ const UpdatePrescription = () => {
   const form = useForm<any>({
     defaultValues: {},
   });
-  console.log(prescriptionData);
 
   useEffect(() => {
     if (prescriptionData && Object.keys(prescriptionData).length > 0) {
       form.reset({
         nxVisit: prescriptionData.nextVisit,
-        advice: prescriptionData.advice
-          ? prescriptionData.advice
-              ?.split("\n")
-              ?.map((item: any) => item.replace(/^\d+\.\s*/, ""))
-          : [],
+        advice:  prescriptionData.advice?.map(
+          (c: any) => c.description
+        ),
         "chief-complaint": prescriptionData.chiefComplaint?.map(
           (c: any) => c.description
         ),
@@ -138,62 +138,76 @@ const UpdatePrescription = () => {
       prev.filter((item: any) => item.content !== contentToDelete)
     );
   };
-  const onSubmit = async (data: any) => {
-    // Step 1: Extract all medicine names (medicine-1, medicine-2, etc.)
-    const medicineEntries = Object.entries(data)
-      ?.filter(([key]) => key.startsWith("medicine-"))
-      ?.map(([key, value]) => ({
-        medicineId: key.split("-")[1], // Extract the number (1, 2, etc.)
-        name: value,
-      }));
 
-    // Step 2: For each medicine, collect only currently visible dosages (ignore previous array/IDs)
-    const medicines = medicineEntries?.map(({ medicineId, name }) => {
-      const dosageCount = form.getValues()["timingCounts"]?.[medicineId] || 1;
-      const DosageSchedule = [];
-      for (let i = 1; i <= dosageCount; i++) {
-        const dosage = data[`${i}-dosage-${medicineId}`];
-        const day = data[`${i}-duration-${medicineId}`];
-        const time = data[`${i}-time-${medicineId}`];
-        const comment = data[`${i}-comment-${medicineId}`];
-        if (dosage && day && time) {
-          DosageSchedule.push({ dosage, day, time, comment });
-        }
-      }
-      return {
-        medicineName: name,
-        DosageSchedule,
-      };
+const onSubmit = async(data: any) => {
+  const medicines: any[] = [];
+  // Loop through each medicine
+  Object.keys(data)
+    .filter((key) => key.startsWith("medicine-"))
+    .forEach((medicineKey) => {
+      const medicineIndex = medicineKey.split("-")[1]; // e.g. "1" in "medicine-1"
+      const medicineName = data[medicineKey];
+      if (!medicineName) return;
+
+      // Find all schedule indexes for this medicine
+      const scheduleIndexes = [
+        ...new Set(
+          Object.keys(data)
+            .filter((k) => k.endsWith(`-${medicineIndex}`)) // match medicine index at end
+            .map((k) => k.split("-")[0]) // get schedule index (first part)
+        ),
+      ].sort((a, b) => Number(a) - Number(b));
+
+      // Build dosage schedules
+      const schedules = scheduleIndexes
+        .map((idx) => {
+          const dosage = data[`${idx}-dosage-${medicineIndex}`];
+          const day = data[`${idx}-duration-${medicineIndex}`];
+          const time = data[`${idx}-time-${medicineIndex}`];
+          const comment = data[`${idx}-comment-${medicineIndex}`];
+
+          // Skip completely empty schedule rows
+          if (!dosage && !day && !time && !comment) return null;
+
+          return {
+            id: crypto.randomUUID(),
+            dosage: dosage || "",
+            day: day || "",
+            time: time || "",
+            comment: comment || "",
+          };
+        })
+        .filter(Boolean);
+
+      medicines.push({
+        medicineName,
+        DosageSchedule: schedules,
+      });
     });
-    const advice = data?.advice
-      ?.map((name: string, index: number) => `${index + 1}. ${name}`)
-      .join("\n");
 
-    // Step 3: Combine with other form data
-    const transformedData = {
-      id: prescriptionId,
-      medicines: Array.isArray(medicines) ? medicines : [],
-      content: data.content,
-      chiefComplaint: data["chief-complaint"],
-      onExaminations: data["on-examinations"],
-      diagnosis: data.diagnosis,
-      nxVisit: data.nxVisit,
-      investigation: data.investigation,
-      advice: advice,
-    };
-console.log(transformedData);
-
-    const res = (await updatePrescription(transformedData)) as any;
+  // Now build final payload
+  const transformedData = {
+    id: prescriptionId,
+    nextVisit: data.nxVisit || "",
+    advice:  Array.isArray(data.advice) ? data.advice : [],
+    chiefComplaint: Array.isArray(data["chief-complaint"]) ? data["chief-complaint"] : [],
+    onExaminations: Array.isArray(data["on-examinations"]) ? data["on-examinations"] : [],
+    investigation: Array.isArray(data.investigation) ? data.investigation : [],
+    diagnosis: Array.isArray(data.diagnosis) ? data.diagnosis : [],
+    medicines,
+  };
+  
+   const res = (await updatePrescription(transformedData)) as any;
     console.log(res);
     if (res?.data?.message) {
       toast.success(res?.data?.message);
+      navigate(`/dashboard/view-prescription/${prescriptionData?.patient?.id}`);
       form.reset();
     } else {
       toast.error(res?.error?.data?.message || "Something went wrong");
     }
-  };
 
-  // State to hold dynamic options for each field
+};
   const [dynamicOptions, setDynamicOptions] = useState<{
     [key: string]: { value: string; label: string }[];
   }>({
@@ -248,13 +262,14 @@ console.log(transformedData);
         <CreatePrescriptionForm
           form={form}
           onSubmit={onSubmit}
-          patient={""}
+          patient={prescriptionData?.patient}
           medicineInputCount={medicineInputCount}
           handleRemoveMedicineInput={handleRemoveMedicineInput}
           handleAddMedicineInput={handleAddMedicineInput}
           handleAdviceInputChange={handleSaveNewOption}
           handleAdviceChange={handleSaveAdvice}
           dynamicOptions={dynamicOptions}
+          setMedicineInputCount={setMedicineInputCount}
         />
         <div className="pt-[30px]">
           <img src={preManagementData?.data?.[0]?.footerImage} alt="" />

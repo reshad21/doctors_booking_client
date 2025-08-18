@@ -16,6 +16,7 @@ import adminReducer from "./api/features/adminSlice";
 import { permissionReducer } from "./api/features/permissionSlice";
 import { serialReducer } from "./api/features/serialSlice";
 import { authCacheMiddleware } from "@/middleware/authMiddleware";
+import { setupListeners } from "@reduxjs/toolkit/query";
 
 const persistAuthConfig = {
   key: "userInfo",
@@ -65,6 +66,9 @@ export const store = configureStore({
       .concat(baseApi.middleware)
       .concat(authCacheMiddleware),
 });
+
+// 👇 add this so RTK Query syncs cache across tabs
+setupListeners(store.dispatch);
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
