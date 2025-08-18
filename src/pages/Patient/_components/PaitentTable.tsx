@@ -1,5 +1,3 @@
-"use client"
-
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Eye } from "lucide-react"
 import ConfirmAlert from "@/components/shared/ConfirmAlert"

@@ -39,17 +39,19 @@ const CreatePrescriptionForm = ({
   // Sync timingCounts whenever medicineInputCount changes
   useEffect(() => {
     if (medicineInputCount && medicineInputCount.length > 0) {
-      const newTimingCounts: Record<string, number> = { ...timingCounts };
-      medicineInputCount.forEach((item: any) => {
-        if (!(item.content in newTimingCounts)) {
-          newTimingCounts[item.content] = item.DosageSchedule?.length || 1;
-        }
+      setTimingCounts((prev) => {
+        const newTimingCounts: Record<string, number> = { ...prev };
+        medicineInputCount.forEach((item: any) => {
+          if (!(item.content in newTimingCounts)) {
+            newTimingCounts[item.content] = item.DosageSchedule?.length || 1;
+          }
+        });
+        return newTimingCounts;
       });
-      setTimingCounts(newTimingCounts);
 
-      // Preserve existing values, only set default if undefined
+      // Preserve existing values
       medicineInputCount.forEach((med: any) => {
-        const count = newTimingCounts[med.content];
+        const count = med.DosageSchedule?.length || 1;
         for (let i = 0; i < count; i++) {
           const idx = i + 1;
           const ds = med.DosageSchedule?.[i] || {};

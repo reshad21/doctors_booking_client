@@ -66,6 +66,19 @@ const onExaminationsApi = baseApi.injectEndpoints({
       }),
       providesTags: ["manualData"],
     }),
+    getMedicinesList: builder.query({
+      query: ({ page, limit, searchTerm, filter, orderBy }) => ({
+        url: `/medicines/get-medicines`,
+        params: {
+          page,
+          limit,
+          searchTerm,
+          filter,
+          orderBy,
+        },
+      }),
+      providesTags: ["manualData"],
+    }),
   }),
 });
 
@@ -78,4 +91,5 @@ export const {
   useGetDiagnosisQuery,
   useCreateChiefComplaintMutation,
   useGetChiefComplaintQuery,
+  useGetMedicinesListQuery,
 } = onExaminationsApi;
