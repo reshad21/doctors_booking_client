@@ -111,7 +111,6 @@ const StaffManagement = () => {
                     "Staff Name",
                     "Email",
                     "JoinDate",
-                    "Phone Number",
                     "Status",
                     "Action",
                   ].map((header, ind) => (
@@ -130,7 +129,9 @@ const StaffManagement = () => {
                     key={member.id}
                     className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
                   >
-                    <TableCell className="font-medium pl-4">{index + 1}</TableCell>
+                    <TableCell className="font-medium pl-4">
+                      {index + 1}
+                    </TableCell>
                     <TableCell>
                       <div className="w-10 h-10 rounded-full overflow-hidden">
                         <img
@@ -141,16 +142,18 @@ const StaffManagement = () => {
                       </div>
                     </TableCell>
                     <TableCell className="text-[#5C727D]">
-                      {member.name}
+                      <div className="flex flex-col">
+                        <span>{member.name || "N/A"}</span>
+                        <span className="text-xs text-gray-500">
+                          {member.phone}
+                        </span>
+                      </div>
                     </TableCell>
                     <TableCell className="text-[#5C727D]">
                       {member.email}
                     </TableCell>
                     <TableCell className="text-[#5C727D]">
                       {formatDateToReadable(member.createdAt)}
-                    </TableCell>
-                    <TableCell className="text-[#5C727D]">
-                      {member.phone}
                     </TableCell>
                     <TableCell>
                       <Switch

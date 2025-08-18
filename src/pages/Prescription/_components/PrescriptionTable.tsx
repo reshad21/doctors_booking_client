@@ -27,14 +27,13 @@ const PrescriptionTable = ({
               {[
                 "SN",
                 "Patient Name",
-                "Phone",
                 "Prescription",
                 "Patient Status",
                 "Action",
               ].map((header, ind) => (
                 <TableHead
                   key={ind}
-                  className={`${ind === 4 && "text-center"} ${ind === 5 && "text-center"} pl-4`}
+                  className={`${ind === 0 && "text-center"} ${ind === 4 && "text-center"} pl-4`}
                 >
                   {header}
                 </TableHead>
@@ -47,15 +46,19 @@ const PrescriptionTable = ({
                 key={patient.id}
                 className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
               >
-                <TableCell className="font-medium pl-4">{index + 1}</TableCell>
-                <TableCell className="text-[#5C727D]">
-                  {patient.name || "N/A"}
+                <TableCell className="font-medium text-center">
+                  {index + 1}
                 </TableCell>
-                <TableCell className="text-[#5C727D] space-x-2">
-                  {patient.phoneNumber}
+                <TableCell className="text-[#5C727D] pl-4">
+                  <div className="flex flex-col">
+                    <span>{patient.name || "N/A"}</span>
+                    <span className="text-xs text-gray-500">
+                      {patient.phoneNumber}
+                    </span>
+                  </div>
                 </TableCell>
                 <TableCell className="text-white space-x-2">
-                  <div className="flex items-center justify-center min-h-[2.5rem]">
+                  <div className="min-h-[2.5rem] items-center flex">
                     <span className="text-[#5C727D]">-</span>
                   </div>
                 </TableCell>
