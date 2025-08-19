@@ -49,6 +49,8 @@ const Patient = () => {
 
   if (isLoading || isChamberLoading) return <LoadingSpinner />;
 
+  console.log(patientsData, 'patientsData')
+
   return (
     <div className="custom-container">
       <div className="w-full min-h-screen">

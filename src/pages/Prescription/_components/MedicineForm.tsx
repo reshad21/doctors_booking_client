@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import ReactSelectCompo from "./ReactSelectCompo";
 import BaseInput from "@/components/shared/BaseInput";
 import { Plus, X } from "lucide-react";
+import DurationInput from "./DurationInput";
+import { useGetMedicinesListQuery } from "@/redux/api/manualData/manualData";
 
 const MedicineForm = ({
   form,
@@ -18,11 +20,34 @@ const MedicineForm = ({
   handleRemoveMedicineInput,
   type,
 }: any) => {
-  const medicineOptions = [
-    { value: "paracetamol", label: "Paracetamol" },
-    { value: "ibuprofen", label: "Ibuprofen" },
-    { value: "amoxicillin", label: "Amoxicillin" },
-  ];
+  const { data: medicineData, isLoading } = useGetMedicinesListQuery({
+    limit: 100,
+  });
+
+  if (isLoading) return <p>isLoading...</p>;
+  console.log(medicineData, "medicineData");
+  // const medicineOptions = [
+  //   { value: "paracetamol", label: "Paracetamol" },
+  //   { value: "ibuprofen", label: "Ibuprofen" },
+  //   { value: "amoxicillin", label: "Amoxicillin" },
+  // ];
+
+  const medicineOptions =
+    medicineData?.data?.data.map((med: any) => ({
+      value: med.brandName,
+      label: (
+        <div className="flex flex-col">
+          <span className="font-medium">
+            {med.brandName} | {med.strength}{" "}
+            <span className="text-xs text-gray-500">
+              ({med.dosageDescription})
+            </span>
+          </span>
+          <span className="text-xs text-gray-500">{med.genericName}</span>
+        </div>
+      ),
+    })) || [];
+
   let dynamicMedicineCount = medicineInputCount;
   if (dynamicMedicineCount && dynamicMedicineCount.length == 0) {
     dynamicMedicineCount = [
@@ -30,6 +55,7 @@ const MedicineForm = ({
       { medicineName: "", DosageSchedule: [] },
     ];
   }
+
   return (
     <div className="space-y-6">
       {dynamicMedicineCount?.map((item: any, _idx: number) => (
@@ -85,7 +111,7 @@ const MedicineForm = ({
                       className="grid grid-cols-1 md:grid-cols-4 gap-3 p-3 bg-gray-50 rounded-md"
                       key={`${item.content}-${count}`}
                     >
-                      {["Duration", "Dosage", "Time", "Comment"].map(
+                      {["Dosage", "Duration", "Time", "Comment"].map(
                         (label) => {
                           const fieldName = `${count}-${label.toLowerCase()}-${item.content}`;
                           return (
@@ -93,19 +119,17 @@ const MedicineForm = ({
                               <label className="text-xs font-medium text-gray-600">
                                 {label}
                               </label>
-                              {label === "Duration" && (
-                                <BaseInput
-                                  name={fieldName}
-                                  placeholder="Ex: 7 days"
-                                  classname="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                />
-                              )}
                               {label === "Dosage" && (
                                 <ReactSelectCompo
                                   name={fieldName}
                                   options={dosageOptions}
                                   control={form.control}
                                   showSelectedBox={false}
+                                />
+                              )}
+                              {label === "Duration" && (
+                                <DurationInput
+                                  name={`${count}-duration-${item.content}`}
                                 />
                               )}
                               {label === "Time" && (

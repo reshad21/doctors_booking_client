@@ -62,7 +62,6 @@ const AppointmentTable = ({
             {[
               "SN",
               "Patient Name",
-              "Phone",
               "Patient Status",
               "Payment",
               "Visited",
@@ -85,11 +84,13 @@ const AppointmentTable = ({
               className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
             >
               <TableCell className="font-medium pl-4">{index + 1}</TableCell>
-              <TableCell className="text-[#5C727D]">
-                {patient.name || "N/A"}
-              </TableCell>
-              <TableCell className="text-[#5C727D] space-x-2">
-                {patient.phoneNumber}
+              <TableCell>
+                <div className="flex flex-col">
+                  <span className="font-medium">{patient.name || "N/A"}</span>
+                  <span className="text-xs text-[#5C727D]">
+                    {patient.phoneNumber}
+                  </span>
+                </div>
               </TableCell>
               <TableCell className="text-[#5C727D] capitalize space-x-2">
                 {patient.status ? patient.status.toLowerCase() : "N/A"}

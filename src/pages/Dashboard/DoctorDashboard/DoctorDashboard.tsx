@@ -86,8 +86,11 @@ const DoctorDashboard = () => {
             subtitleColor="text-orange-100"
           />
           <StatCard
-            title="Total Visited Appointment's"
-            value={patientSummaryData?.data?.totalPatients || 0}
+            title="Today's Total Appointment's"
+            value={
+              patientSummaryData?.data?.todaysPendingPatients +
+                patientSummaryData?.data?.todaysPatients || 0
+            }
             icon={Users}
             gradientFrom="from-blue-500"
             gradientTo="to-blue-600"
