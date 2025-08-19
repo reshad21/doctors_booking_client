@@ -141,10 +141,10 @@ const StaffManagement = () => {
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="text-[#5C727D]">
+                    <TableCell>
                       <div className="flex flex-col">
                         <span>{member.name || "N/A"}</span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-[#5C727D]">
                           {member.phone}
                         </span>
                       </div>

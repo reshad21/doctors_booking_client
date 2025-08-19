@@ -84,10 +84,10 @@ const AppointmentTable = ({
               className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
             >
               <TableCell className="font-medium pl-4">{index + 1}</TableCell>
-              <TableCell className="text-[#5C727D]">
+              <TableCell>
                 <div className="flex flex-col">
-                  <span>{patient.name || "N/A"}</span>
-                  <span className="text-xs text-gray-500">
+                  <span className="font-medium">{patient.name || "N/A"}</span>
+                  <span className="text-xs text-[#5C727D]">
                     {patient.phoneNumber}
                   </span>
                 </div>

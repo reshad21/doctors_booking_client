@@ -215,12 +215,12 @@ const CreatePrescriptionForm = ({
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-2 h-5 bg-yellow-500 rounded-full"></div>
                 <h4 className="text-lg font-semibold text-gray-900">
-                  Next Visit
+                  Follow Up
                 </h4>
               </div>
               <BaseInput
                 name="nxVisit"
-                placeholder="Enter Next Visit up details"
+                placeholder="Enter Follow up details"
                 type="text"
                 classname="p-3 rounded-md bg-[#fdfdff] border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />

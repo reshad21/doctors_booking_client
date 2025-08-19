@@ -16,6 +16,7 @@ const ViewPrescription = () => {
   const setPrintRef = (el: HTMLDivElement | null, index: number) => {
     printRefs.current[index] = el;
   };
+  console.log(perceptions, "prescriptionData");
 
   const handlePrint = (prescriptionData: any) => {
     const printWindow = window.open("", "", "width=800,height=600");
@@ -37,29 +38,33 @@ const ViewPrescription = () => {
     // Generate medicines list HTML
     const medicinesList =
       prescriptionData?.medicines
-        ?.map(
-          (med: any, medIndex: number) => `
-      <div class="print-medicine-item">
-        <div class="print-medicine-details">
-        <span class="print-medicine-header">
-          ${medIndex + 1}. ${med.medicineName}
+        ?.map((med: any, medIndex: number) => {
+          // Generate dosage schedules for this medicine
+          const dosageSchedules =
+            med?.DosageSchedule?.map(
+              (schedule: any) => `
+      <div class="print-dosage-schedule">
+        <span>${schedule.dosage}</span>
+        <span>....................</span>
+        <span>
+          ${schedule.time}
+          ${schedule.comment ? `<span style="font-size: 8px; font-weight: normal; color: #666; margin-left: 2px;">(${schedule.comment})</span>` : ""}
         </span>
-          <span>${med.dosage}</span>
-          <span>${med.day}</span>
-          <span>${med.time}</span>
-        </div>
-        ${
-          med.comment
-            ? `
-          <p class="print-medicine-comment">
-            ${med.comment}
-          </p>
-        `
-            : ""
-        }
       </div>
     `
-        )
+            ).join("") || "";
+
+          return `
+      <div class="print-medicine-item">
+        <div class="print-medicine-header">
+          ${medIndex + 1}. ${med.medicineName}
+        </div>
+        <div class="print-dosage-schedules" style="margin-left: 4mm; font-size: 9px;">
+          ${dosageSchedules}
+        </div>
+      </div>
+    `;
+        })
         .join("") || "";
 
     printWindow.document.write(`
@@ -209,8 +214,6 @@ const ViewPrescription = () => {
       printWindow.close();
     }, 500);
   };
-
-  console.log(perceptions, "per");
 
   return (
     <div>
@@ -366,23 +369,32 @@ const ViewPrescription = () => {
                           console.log(med, "this is ");
 
                           return (
-                            <div className=" line-clamp-1">
+                            <div key={medIndex} className="line-clamp-1">
                               <span className="font-semibold text-xs">
                                 {medIndex + 1}. {med.medicineName}
                               </span>
-                              {medic?.medicines?.map((med: any) => (
-                                <div>
-                                  {med?.DosageSchedule?.map((item: any) => (
-                                    <div className="flex justify-between items-start w-full text-xs ps-14 gap-10">
-                                      <div className="flex gap-2 items-start justify-start ">
-                                        <div>{item?.dosage}</div>
-                                        <span>....................</span>
-                                        <span>{item?.time}</span>
-                                      </div>
+                              {med?.DosageSchedule?.map(
+                                (item: any, scheduleIndex: number) => (
+                                  <div
+                                    key={scheduleIndex}
+                                    className="flex justify-between items-start w-full text-xs ps-14 gap-10"
+                                  >
+                                    <div className="flex gap-2 items-start justify-start">
+                                      <div>{item?.dosage}</div>
+                                      <span>....................</span>
+                                      <span>
+                                        {item?.time}
+                                        {/* Access comment from the DosageSchedule item, not from med */}
+                                        {item?.comment && (
+                                          <span className="text-[10px] font-normal text-gray-600 ml-1">
+                                            ({item.comment})
+                                          </span>
+                                        )}
+                                      </span>
                                     </div>
-                                  ))}
-                                </div>
-                              ))}
+                                  </div>
+                                )
+                              )}
                             </div>
                           );
                         })}

@@ -76,10 +76,10 @@ const PrescriptionTable = ({
                   <TableCell className="font-medium text-center">
                     {index + 1}
                   </TableCell>
-                  <TableCell className="text-[#5C727D] pl-4">
+                  <TableCell className="pl-4">
                     <div className="flex flex-col">
                       <span>{patient.name || "N/A"}</span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-[#5C727D]">
                         {patient.phoneNumber}
                       </span>
                     </div>
