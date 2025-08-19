@@ -78,7 +78,7 @@ const PrescriptionTable = ({
                   </TableCell>
                   <TableCell className="pl-4">
                     <div className="flex flex-col">
-                      <span>{patient.name || "N/A"}</span>
+                      <span className="font-medium">{patient.name || "N/A"}</span>
                       <span className="text-xs text-[#5C727D]">
                         {patient.phoneNumber}
                       </span>

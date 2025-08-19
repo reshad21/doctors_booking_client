@@ -72,7 +72,7 @@ const PatientTable = ({ patientsData, deletePatient }: PatientTableProps) => {
               <TableCell className="font-medium pl-4">{index + 1}</TableCell>
               <TableCell>
                 <div className="flex flex-col">
-                  <span>{patient.name || "N/A"}</span>
+                  <span className="font-medium">{patient.name || "N/A"}</span>
                   <span className="text-xs text-[#5C727D]">
                     {patient.phoneNumber}
                   </span>
