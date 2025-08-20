@@ -3,6 +3,7 @@
 "use client";
 
 import ReactSelectCompo from "./ReactSelectCompo";
+import MedicineSelect from "./MedicineSelect.tsx"; // Import the new optimized component
 import BaseInput from "@/components/shared/BaseInput";
 import { Plus, X } from "lucide-react";
 import DurationInput from "./DurationInput";
@@ -20,27 +21,12 @@ const MedicineForm = ({
   handleRemoveMedicineInput,
   type,
 }: any) => {
+  // Fetch all medicines at once - this will be handled efficiently by the MedicineSelect component
   const { data: medicineData, isLoading } = useGetMedicinesListQuery({
-    limit: 100,
+    limit: 50000, // Increase limit or remove it to get all medicines
   });
 
-  if (isLoading) return <p>isLoading...</p>;
-
-  const medicineOptions =
-    medicineData?.data?.data.map((med: any) => ({
-      value: med.brandName,
-      label: (
-        <div className="flex flex-col">
-          <span className="font-medium">
-            {med.brandName} | {med.strength}{" "}
-            <span className="text-xs text-gray-500">
-              ({med.dosageDescription})
-            </span>
-          </span>
-          <span className="text-xs text-gray-500">{med.genericName}</span>
-        </div>
-      ),
-    })) || [];
+  const medicines = medicineData?.data?.data || [];
 
   let dynamicMedicineCount = medicineInputCount;
   if (dynamicMedicineCount && dynamicMedicineCount.length == 0) {
@@ -80,17 +66,14 @@ const MedicineForm = ({
           )}
 
           <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Medicine Name
-              </label>
-              <ReactSelectCompo
-                name={`medicine-${item.content}`}
-                options={medicineOptions}
-                control={form.control}
-                showSelectedBox={false}
-              />
-            </div>
+            {/* Use the optimized MedicineSelect component */}
+            <MedicineSelect
+              name={`medicine-${item.content}`}
+              control={form.control}
+              medicines={medicines}
+              isLoading={isLoading}
+              placeholder="Search medicine by name, generic name, or strength..."
+            />
 
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700">
