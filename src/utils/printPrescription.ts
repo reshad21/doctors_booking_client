@@ -30,16 +30,14 @@ export const printPrescription = (
           med?.DosageSchedule?.map(
             (schedule: any) => `
       <div class="print-dosage-schedule">
-        <span>${schedule.dosage}</span>
-        <span>....................</span>
-        <span>
-          ${schedule.time}
-          ${
-            schedule.comment
-              ? `<span class="print-comment">(${schedule.comment})</span>`
-              : ""
-          }
-        </span>
+        <div class="print-dosage-row">
+          <span class="print-dosage">${schedule.dosage || ""}</span>
+          <span class="print-day">${schedule.day || ""}</span>
+          <span class="print-time">${schedule.time || ""}</span>
+          <span class="print-comment-inline">
+            ${schedule.comment ? `${schedule.comment}` : ""}
+          </span>
+        </div>
       </div>
     `
           ).join("") || "";
@@ -171,15 +169,34 @@ export const printPrescription = (
           }
 
           .print-dosage-schedule {
-            display: flex;
-            gap: 5mm;
-            font-size: 10pt;
             margin-bottom: 1mm;
           }
 
-          .print-comment {
+          .print-dosage-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 6mm;
+            font-size: 10pt;
+          }
+
+          .print-dosage {
+            min-width: 15mm;
+          }
+
+          .print-day {
+            min-width: 15mm;
+          }
+
+          .print-time {
+            min-width: 18mm;
+          }
+
+          .print-comment-inline {
             font-size: 8pt;
             color: #666;
+            margin-left: 2mm;
+            flex: 1;
+            max-width: 55mm;
           }
 
           .print-advice-section ul {

@@ -25,12 +25,6 @@ const MedicineForm = ({
   });
 
   if (isLoading) return <p>isLoading...</p>;
-  console.log(medicineData, "medicineData");
-  // const medicineOptions = [
-  //   { value: "paracetamol", label: "Paracetamol" },
-  //   { value: "ibuprofen", label: "Ibuprofen" },
-  //   { value: "amoxicillin", label: "Amoxicillin" },
-  // ];
 
   const medicineOptions =
     medicineData?.data?.data.map((med: any) => ({
