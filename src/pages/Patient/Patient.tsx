@@ -44,9 +44,12 @@ const Patient = () => {
       startDate: headerSelect.startDate || undefined,
       endDate: headerSelect.endDate || undefined,
     }),
+    orderBy: JSON.stringify({ createdAt: "desc" }),
   });
 
   if (isLoading || isChamberLoading) return <LoadingSpinner />;
+
+  console.log(patientsData, 'patientsData')
 
   return (
     <div className="custom-container">

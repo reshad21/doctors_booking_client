@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import ReactSelectCompo from "./ReactSelectCompo";
+import MedicineSelect from "./MedicineSelect.tsx"; // Import the new optimized component
 import BaseInput from "@/components/shared/BaseInput";
 import { Plus, X } from "lucide-react";
+import DurationInput from "./DurationInput";
+import { useGetMedicinesListQuery } from "@/redux/api/manualData/manualData";
 
 const MedicineForm = ({
   form,
@@ -18,11 +21,13 @@ const MedicineForm = ({
   handleRemoveMedicineInput,
   type,
 }: any) => {
-  const medicineOptions = [
-    { value: "paracetamol", label: "Paracetamol" },
-    { value: "ibuprofen", label: "Ibuprofen" },
-    { value: "amoxicillin", label: "Amoxicillin" },
-  ];
+  // Fetch all medicines at once - this will be handled efficiently by the MedicineSelect component
+  const { data: medicineData, isLoading } = useGetMedicinesListQuery({
+    limit: 50000, // Increase limit or remove it to get all medicines
+  });
+
+  const medicines = medicineData?.data?.data || [];
+
   let dynamicMedicineCount = medicineInputCount;
   if (dynamicMedicineCount && dynamicMedicineCount.length == 0) {
     dynamicMedicineCount = [
@@ -30,6 +35,7 @@ const MedicineForm = ({
       { medicineName: "", DosageSchedule: [] },
     ];
   }
+
   return (
     <div className="space-y-6">
       {dynamicMedicineCount?.map((item: any, _idx: number) => (
@@ -60,17 +66,14 @@ const MedicineForm = ({
           )}
 
           <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Medicine Name
-              </label>
-              <ReactSelectCompo
-                name={`medicine-${item.content}`}
-                options={medicineOptions}
-                control={form.control}
-                showSelectedBox={false}
-              />
-            </div>
+            {/* Use the optimized MedicineSelect component */}
+            <MedicineSelect
+              name={`medicine-${item.content}`}
+              control={form.control}
+              medicines={medicines}
+              isLoading={isLoading}
+              placeholder="Search medicine by name, generic name, or strength..."
+            />
 
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700">
@@ -85,7 +88,7 @@ const MedicineForm = ({
                       className="grid grid-cols-1 md:grid-cols-4 gap-3 p-3 bg-gray-50 rounded-md"
                       key={`${item.content}-${count}`}
                     >
-                      {["Duration", "Dosage", "Time", "Comment"].map(
+                      {["Dosage", "Duration", "Time", "Comment"].map(
                         (label) => {
                           const fieldName = `${count}-${label.toLowerCase()}-${item.content}`;
                           return (
@@ -93,19 +96,17 @@ const MedicineForm = ({
                               <label className="text-xs font-medium text-gray-600">
                                 {label}
                               </label>
-                              {label === "Duration" && (
-                                <BaseInput
-                                  name={fieldName}
-                                  placeholder="Ex: 7 days"
-                                  classname="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                />
-                              )}
                               {label === "Dosage" && (
                                 <ReactSelectCompo
                                   name={fieldName}
                                   options={dosageOptions}
                                   control={form.control}
                                   showSelectedBox={false}
+                                />
+                              )}
+                              {label === "Duration" && (
+                                <DurationInput
+                                  name={`${count}-duration-${item.content}`}
                                 />
                               )}
                               {label === "Time" && (

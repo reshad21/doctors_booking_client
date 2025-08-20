@@ -18,6 +18,7 @@ import {
 } from "@/redux/api/manualData/manualData";
 import { useCreateAdviceMutation } from "@/redux/api/advice/advice";
 import { CreateAdviceFn, CreateFn } from "../_components/CreateFn";
+import { ChevronLeft } from "lucide-react";
 
 const UpdatePrescription = () => {
   const [createOnExamination] = useCreateOnExaminationsMutation();
@@ -28,7 +29,7 @@ const UpdatePrescription = () => {
   const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const [updatePrescription] = useUpdatePrescriptionMutation();
   const { prescriptionId } = useParams();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { data: prescription } = useGetPerceptionBIdQuery({
     prescriptionId: prescriptionId,
   });
@@ -37,16 +38,19 @@ const UpdatePrescription = () => {
     () => prescription?.data || {},
     [prescription]
   );
-console.log(prescriptionData);
+  console.log(prescriptionData);
 
   // const [medicineInputCount, setMedicineInputCount] = useState<
   //   Array<{ content: number; DosageSchedule: any[] }>
   // >([]);
-const [medicineInputCount, setMedicineInputCount] = useState(
-  prescriptionData.medicines && prescriptionData.medicines.length >= 0
-    ? prescriptionData.medicines.map((med: any, idx: number) => ({ content: idx + 1, DosageSchedule: med.DosageSchedule }))
-    : [{ content: 1, DosageSchedule: [] }] // Show one input if empty
-);
+  const [medicineInputCount, setMedicineInputCount] = useState(
+    prescriptionData.medicines && prescriptionData.medicines.length >= 0
+      ? prescriptionData.medicines.map((med: any, idx: number) => ({
+          content: idx + 1,
+          DosageSchedule: med.DosageSchedule,
+        }))
+      : [{ content: 1, DosageSchedule: [] }] // Show one input if empty
+  );
   // Always update medicineInputCount when prescriptionData.medicines changes
   useEffect(() => {
     if (
@@ -69,9 +73,7 @@ const [medicineInputCount, setMedicineInputCount] = useState(
     if (prescriptionData && Object.keys(prescriptionData).length > 0) {
       form.reset({
         nxVisit: prescriptionData.nextVisit,
-        advice:  prescriptionData.advice?.map(
-          (c: any) => c.description
-        ),
+        advice: prescriptionData.advice?.map((c: any) => c.description),
         "chief-complaint": prescriptionData.chiefComplaint?.map(
           (c: any) => c.description
         ),
@@ -139,65 +141,71 @@ const [medicineInputCount, setMedicineInputCount] = useState(
     );
   };
 
-const onSubmit = async(data: any) => {
-  const medicines: any[] = [];
-  // Loop through each medicine
-  Object.keys(data)
-    .filter((key) => key.startsWith("medicine-"))
-    .forEach((medicineKey) => {
-      const medicineIndex = medicineKey.split("-")[1]; // e.g. "1" in "medicine-1"
-      const medicineName = data[medicineKey];
-      if (!medicineName) return;
+  const onSubmit = async (data: any) => {
+    const medicines: any[] = [];
+    // Loop through each medicine
+    Object.keys(data)
+      .filter((key) => key.startsWith("medicine-"))
+      .forEach((medicineKey) => {
+        const medicineIndex = medicineKey.split("-")[1]; // e.g. "1" in "medicine-1"
+        const medicineName = data[medicineKey];
+        if (!medicineName) return;
 
-      // Find all schedule indexes for this medicine
-      const scheduleIndexes = [
-        ...new Set(
-          Object.keys(data)
-            .filter((k) => k.endsWith(`-${medicineIndex}`)) // match medicine index at end
-            .map((k) => k.split("-")[0]) // get schedule index (first part)
-        ),
-      ].sort((a, b) => Number(a) - Number(b));
+        // Find all schedule indexes for this medicine
+        const scheduleIndexes = [
+          ...new Set(
+            Object.keys(data)
+              .filter((k) => k.endsWith(`-${medicineIndex}`)) // match medicine index at end
+              .map((k) => k.split("-")[0]) // get schedule index (first part)
+          ),
+        ].sort((a, b) => Number(a) - Number(b));
 
-      // Build dosage schedules
-      const schedules = scheduleIndexes
-        .map((idx) => {
-          const dosage = data[`${idx}-dosage-${medicineIndex}`];
-          const day = data[`${idx}-duration-${medicineIndex}`];
-          const time = data[`${idx}-time-${medicineIndex}`];
-          const comment = data[`${idx}-comment-${medicineIndex}`];
+        // Build dosage schedules
+        const schedules = scheduleIndexes
+          .map((idx) => {
+            const dosage = data[`${idx}-dosage-${medicineIndex}`];
+            const day = data[`${idx}-duration-${medicineIndex}`];
+            const time = data[`${idx}-time-${medicineIndex}`];
+            const comment = data[`${idx}-comment-${medicineIndex}`];
 
-          // Skip completely empty schedule rows
-          if (!dosage && !day && !time && !comment) return null;
+            // Skip completely empty schedule rows
+            if (!dosage && !day && !time && !comment) return null;
 
-          return {
-            id: crypto.randomUUID(),
-            dosage: dosage || "",
-            day: day || "",
-            time: time || "",
-            comment: comment || "",
-          };
-        })
-        .filter(Boolean);
+            return {
+              id: crypto.randomUUID(),
+              dosage: dosage || "",
+              day: day || "",
+              time: time || "",
+              comment: comment || "",
+            };
+          })
+          .filter(Boolean);
 
-      medicines.push({
-        medicineName,
-        DosageSchedule: schedules,
+        medicines.push({
+          medicineName,
+          DosageSchedule: schedules,
+        });
       });
-    });
 
-  // Now build final payload
-  const transformedData = {
-    id: prescriptionId,
-    nextVisit: data.nxVisit || "",
-    advice:  Array.isArray(data.advice) ? data.advice : [],
-    chiefComplaint: Array.isArray(data["chief-complaint"]) ? data["chief-complaint"] : [],
-    onExaminations: Array.isArray(data["on-examinations"]) ? data["on-examinations"] : [],
-    investigation: Array.isArray(data.investigation) ? data.investigation : [],
-    diagnosis: Array.isArray(data.diagnosis) ? data.diagnosis : [],
-    medicines,
-  };
-  
-   const res = (await updatePrescription(transformedData)) as any;
+    // Now build final payload
+    const transformedData = {
+      id: prescriptionId,
+      nextVisit: data.nxVisit || "",
+      advice: Array.isArray(data.advice) ? data.advice : [],
+      chiefComplaint: Array.isArray(data["chief-complaint"])
+        ? data["chief-complaint"]
+        : [],
+      onExaminations: Array.isArray(data["on-examinations"])
+        ? data["on-examinations"]
+        : [],
+      investigation: Array.isArray(data.investigation)
+        ? data.investigation
+        : [],
+      diagnosis: Array.isArray(data.diagnosis) ? data.diagnosis : [],
+      medicines,
+    };
+
+    const res = (await updatePrescription(transformedData)) as any;
     console.log(res);
     if (res?.data?.message) {
       toast.success(res?.data?.message);
@@ -206,8 +214,7 @@ const onSubmit = async(data: any) => {
     } else {
       toast.error(res?.error?.data?.message || "Something went wrong");
     }
-
-};
+  };
   const [dynamicOptions, setDynamicOptions] = useState<{
     [key: string]: { value: string; label: string }[];
   }>({
@@ -253,8 +260,23 @@ const onSubmit = async(data: any) => {
     form.setValue("advice", [...prev, inputValue]);
   };
 
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
   return (
-    <Card className=" bg-[#f4f6f9] px-5 rounded-sm">
+    <Card className="bg-[#f4f6f9] px-5 rounded-sm">
+      {/* Back Button - Inside the card */}
+      <div className="p-3 pb-0">
+        <button
+          onClick={handleGoBack}
+          className="flex items-center cursor-pointer gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+        >
+          <ChevronLeft className="size-4" />
+          Back
+        </button>
+      </div>
+
       <div className="p-5 bg-white">
         <div className="pb-[30px]">
           <img src={preManagementData?.data?.[0]?.headerImage} alt="" />

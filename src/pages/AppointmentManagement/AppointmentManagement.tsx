@@ -19,7 +19,7 @@ import AppointmentTable from "./_components/AppointementTable";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Info } from "lucide-react";
 import LoadingSpinner from "@/loading/LoadingSpinner";
-import { z } from "zod";
+import { patientSchema } from "@/validation/appointment.validation";
 
 const AppointmentManagement = () => {
   const [deletePatient] = useDeletePatientMutation();
@@ -45,37 +45,13 @@ const AppointmentManagement = () => {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const patientSchema = z.object({
-    name: z.string().min(1, "Name is required"),
-    phoneNumber: z
-      .string()
-      .length(11, "Phone number must be exactly 11 digits")
-      .refine((val) => /^\d+$/.test(val), {
-        message: "Phone number must contain only digits",
-      }),
-    email: z.string().optional(),
-    age: z.number().min(1, "Age is required"),
-    // weight: z.number().optional(),
-    weight: z
-      .string()
-      .optional()
-      .refine((val) => val === "" || !isNaN(Number(val)), {
-        message: "Weight must be a number",
-      }),
-    gender: z.enum(["MALE", "FEMALE", "OTHER"]),
-    chamberId: z.string().min(1, "Chamber is required"),
-    status: z.enum(["NEW", "OLD", "REPORT"]),
-  });
-
   const { data: patientsData, isLoading } = useGetPatientQuery({
     page,
     limit,
     searchTerm,
     filter: JSON.stringify({
       chamberId: headerSelect.chamber || undefined,
-      ...(searchTerm
-        ? {} // when searching, don't apply date filter
-        : { createdAt: headerSelect.date || today }),
+      ...(searchTerm ? {} : { createdAt: headerSelect.date || today }),
     }),
     orderBy: JSON.stringify({ createdAt: "asc" }),
   });
@@ -117,9 +93,8 @@ const AppointmentManagement = () => {
   ) => {
     const res = (await createPatient({
       ...data,
-      phoneNumber: String(data.phoneNumber),
       age: String(data.age),
-      weight: String(data.weight),
+      weight: data.weight ? String(data.weight) : undefined,
       doctorId,
     })) as any;
     if (res?.data?.success) {

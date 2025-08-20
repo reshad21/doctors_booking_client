@@ -39,17 +39,19 @@ const CreatePrescriptionForm = ({
   // Sync timingCounts whenever medicineInputCount changes
   useEffect(() => {
     if (medicineInputCount && medicineInputCount.length > 0) {
-      const newTimingCounts: Record<string, number> = { ...timingCounts };
-      medicineInputCount.forEach((item: any) => {
-        if (!(item.content in newTimingCounts)) {
-          newTimingCounts[item.content] = item.DosageSchedule?.length || 1;
-        }
+      setTimingCounts((prev) => {
+        const newTimingCounts: Record<string, number> = { ...prev };
+        medicineInputCount.forEach((item: any) => {
+          if (!(item.content in newTimingCounts)) {
+            newTimingCounts[item.content] = item.DosageSchedule?.length || 1;
+          }
+        });
+        return newTimingCounts;
       });
-      setTimingCounts(newTimingCounts);
 
-      // Preserve existing values, only set default if undefined
+      // Preserve existing values
       medicineInputCount.forEach((med: any) => {
-        const count = newTimingCounts[med.content];
+        const count = med.DosageSchedule?.length || 1;
         for (let i = 0; i < count; i++) {
           const idx = i + 1;
           const ds = med.DosageSchedule?.[i] || {};
@@ -213,12 +215,12 @@ const CreatePrescriptionForm = ({
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-2 h-5 bg-yellow-500 rounded-full"></div>
                 <h4 className="text-lg font-semibold text-gray-900">
-                  Next Visit
+                  Follow Up
                 </h4>
               </div>
               <BaseInput
                 name="nxVisit"
-                placeholder="Enter Next Visit up details"
+                placeholder="Enter Follow up details"
                 type="text"
                 classname="p-3 rounded-md bg-[#fdfdff] border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
