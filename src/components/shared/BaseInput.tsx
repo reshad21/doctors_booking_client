@@ -45,12 +45,8 @@ const BaseInput = ({
     };
 
     input.addEventListener("wheel", handleWheel, { passive: false });
-    // Uncomment the next line if you also want to disable arrow key changes
-    // input.addEventListener("keydown", handleKeyDown);
-
     return () => {
       input.removeEventListener("wheel", handleWheel);
-      // input.removeEventListener("keydown", handleKeyDown);
     };
   }, [type]);
 
@@ -73,12 +69,41 @@ const BaseInput = ({
                 ref={inputRef}
                 type={type}
                 placeholder={placeholder || "Text"}
+                maxLength={name === "phoneNumber" ? 11 : undefined}
                 onChange={(e) => {
-                  if (type === "number") {
+                  let value = e.target.value;
+                  
+                  // Special handling for phone number field
+                  if (name === "phoneNumber") {
+                    // Remove any non-digit characters
+                    value = value.replace(/\D/g, "");
+                    // Limit to 11 digits
+                    if (value.length > 11) {
+                      value = value.slice(0, 11);
+                    }
+                    field.onChange(value);
+                  } else if (type === "number") {
                     const val = e.target.value;
                     field.onChange(val === "" ? "" : Number(val));
                   } else {
-                    field.onChange(e.target.value);
+                    field.onChange(value);
+                  }
+                }}
+                onKeyPress={(e) => {
+                  // For phone number field, only allow digits
+                  if (name === "phoneNumber") {
+                    if (!/\d/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }
+                }}
+                onPaste={(e) => {
+                  // Handle paste events for phone number
+                  if (name === "phoneNumber") {
+                    e.preventDefault();
+                    const pastedText = e.clipboardData.getData('text');
+                    const digitsOnly = pastedText.replace(/\D/g, "").slice(0, 11);
+                    field.onChange(digitsOnly);
                   }
                 }}
                 value={
