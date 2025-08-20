@@ -47,10 +47,21 @@ const AppointmentManagement = () => {
 
   const patientSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    phoneNumber: z.number().min(10, "Phone number is required"),
+    phoneNumber: z
+      .string()
+      .length(11, "Phone number must be exactly 11 digits")
+      .refine((val) => /^\d+$/.test(val), {
+        message: "Phone number must contain only digits",
+      }),
     email: z.string().optional(),
     age: z.number().min(1, "Age is required"),
-    weight: z.number().min(1, "Weight is required"),
+    // weight: z.number().optional(),
+    weight: z
+      .string()
+      .optional()
+      .refine((val) => val === "" || !isNaN(Number(val)), {
+        message: "Weight must be a number",
+      }),
     gender: z.enum(["MALE", "FEMALE", "OTHER"]),
     chamberId: z.string().min(1, "Chamber is required"),
     status: z.enum(["NEW", "OLD", "REPORT"]),
