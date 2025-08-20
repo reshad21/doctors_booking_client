@@ -88,6 +88,7 @@ const DurationInput = ({
         <option value="সপ্তাহ">সপ্তাহ</option>
         <option value="মাস">মাস</option>
         <option value="বছর">বছর</option>
+        <option value="চলবে">চলবে</option>
       </select>
 
       {/* Hidden input for RHF */}
