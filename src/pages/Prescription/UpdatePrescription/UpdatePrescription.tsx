@@ -40,17 +40,16 @@ const UpdatePrescription = () => {
   );
   console.log(prescriptionData);
 
-  // const [medicineInputCount, setMedicineInputCount] = useState<
-  //   Array<{ content: number; DosageSchedule: any[] }>
-  // >([]);
+
   const [medicineInputCount, setMedicineInputCount] = useState(
     prescriptionData.medicines && prescriptionData.medicines.length >= 0
       ? prescriptionData.medicines.map((med: any, idx: number) => ({
-          content: idx + 1,
-          DosageSchedule: med.DosageSchedule,
-        }))
-      : [{ content: 1, DosageSchedule: [] }] // Show one input if empty
+        content: idx + 1,
+        DosageSchedule: med.DosageSchedule,
+      }))
+      : [{ content: 1, DosageSchedule: [] }]
   );
+
   // Always update medicineInputCount when prescriptionData.medicines changes
   useEffect(() => {
     if (
@@ -65,6 +64,8 @@ const UpdatePrescription = () => {
       );
     }
   }, [prescriptionData.medicines]);
+
+
   const form = useForm<any>({
     defaultValues: {},
   });
@@ -147,7 +148,7 @@ const UpdatePrescription = () => {
     Object.keys(data)
       .filter((key) => key.startsWith("medicine-"))
       .forEach((medicineKey) => {
-        const medicineIndex = medicineKey.split("-")[1]; // e.g. "1" in "medicine-1"
+        const medicineIndex = medicineKey.split("-")[1];
         const medicineName = data[medicineKey];
         if (!medicineName) return;
 
@@ -284,7 +285,7 @@ const UpdatePrescription = () => {
         <CreatePrescriptionForm
           form={form}
           onSubmit={onSubmit}
-          patient={prescriptionData?.patient}
+          patient={prescriptionData}
           medicineInputCount={medicineInputCount}
           handleRemoveMedicineInput={handleRemoveMedicineInput}
           handleAddMedicineInput={handleAddMedicineInput}
