@@ -10,7 +10,12 @@ const prescriptionApi = baseApi.injectEndpoints({
           body: prescriptionData,
         };
       },
-      invalidatesTags: ["prescription"],
+      invalidatesTags: (_result, _error, arg) => [
+        "prescription",
+        "patient",
+        { type: "prescription", id: arg.patientId },
+        { type: "patient", id: arg.patientId },
+      ],
     }),
     createExtraAdvice: builder.mutation({
       query: (adviceData) => {
