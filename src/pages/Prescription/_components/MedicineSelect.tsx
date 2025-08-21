@@ -74,7 +74,7 @@ const MedicineSelect = ({
         : `${med.brandName} ${med.strength}`;
       
       return {
-        value: med.brandName,
+        value: displayName,
         label: (
           <div className="flex flex-col py-1">
             <span className="font-medium text-sm">

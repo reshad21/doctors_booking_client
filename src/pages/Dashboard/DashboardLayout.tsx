@@ -59,7 +59,7 @@ export default function DashboardLayout() {
           <SidebarTrigger className="-ml-1" />
 
           <div className="flex items-center text-white">
-            <Link to={"/"}>
+            <Link to="/" target="_blank" rel="noopener noreferrer">
               <Button variant="ghost" className="cursor-pointer">
                 <Home className="w-4 h-4" />
                 <span>Home</span>
