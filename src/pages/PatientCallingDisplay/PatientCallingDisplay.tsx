@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useGetOnlyActiveVideoQuery } from "@/redux/api/watchVideoApi/watchVideoApi";
+import { useGetWatchVideoQuery } from "@/redux/api/watchVideoApi/watchVideoApi";
 import { useGetPatientQuery } from "@/redux/api/patient/patient";
 import {
   Table,
@@ -17,8 +17,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronRight } from "lucide-react";
 import { useAppSelector } from "@/redux/hooks";
 import NoticeFooter from "./_components/NoticeFooter";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { socket } from "@/socket/socket";
+import VideoPlayer from "./_components/VideoPlayer";
+
+declare global {
+  interface Window {
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -28,7 +36,7 @@ export default function PatientCallingDisplay() {
   const endedSerials = useAppSelector((state) => state.serial.endedSerials);
   const doctor = useAppSelector((state) => state.admin);
 
-  const { data: onlyActiveVideo } = useGetOnlyActiveVideoQuery(undefined);
+  const { data: videoData } = useGetWatchVideoQuery({});
   const { data: patientApiData, refetch } = useGetPatientQuery({
     limit: 1000,
     filter: JSON.stringify({ createdAt: today }),
@@ -38,6 +46,10 @@ export default function PatientCallingDisplay() {
   const patients: Patient[] = patientApiData?.data?.data || [];
   const outdoorPatients = patients.filter((p) => p?.status !== "REPORT");
   const reportPatients = patients.filter((p) => p?.status === "REPORT");
+  const activeVideos = useMemo(
+    () => videoData?.data?.filter((v: any) => v.status === "ACTIVE") || [],
+    [videoData]
+  );
 
   // Filter ended patients out once
   const filteredOutdoorPatients = outdoorPatients.filter(
@@ -59,15 +71,12 @@ export default function PatientCallingDisplay() {
   // If less than 10, pull more from upcoming non-ended patients
   if (visibleOutdoorPatients.length < 10) {
     const remainingNeeded = 10 - visibleOutdoorPatients.length;
-
-    // upcoming candidates from original outdoorPatients, excluding ended and already visible
     const upcomingCandidates = outdoorPatients.filter(
       (p) =>
         !endedSerials.includes(p.id) &&
         !visibleOutdoorPatients.some((vp) => vp.id === p.id) &&
         outdoorPatients.indexOf(p) > outdoorStart + 9
     );
-
     visibleOutdoorPatients = visibleOutdoorPatients.concat(
       upcomingCandidates.slice(0, remainingNeeded)
     );
@@ -76,7 +85,7 @@ export default function PatientCallingDisplay() {
   // Map patient id to original index in outdoorPatients for stable serial numbers
   const patientIndexMap = new Map(outdoorPatients.map((p, idx) => [p.id, idx]));
 
-  // FIXED: Get upcoming outdoor patients that are NOT in the visible table
+  // Get upcoming outdoor patients that are NOT in the visible table
   const upcomingOutdoorPatients = filteredOutdoorPatients.filter(
     (p) => !visibleOutdoorPatients.some((vp) => vp.id === p.id)
   );
@@ -101,15 +110,12 @@ export default function PatientCallingDisplay() {
   // If less than 5, pull more from upcoming non-ended report patients
   if (visibleReportPatients.length < 5) {
     const remainingNeeded = 5 - visibleReportPatients.length;
-
-    // upcoming candidates from original reportPatients, excluding ended and already visible
     const upcomingCandidates = reportPatients.filter(
       (p) =>
         !endedSerials.includes(p.id) &&
         !visibleReportPatients.some((vp) => vp.id === p.id) &&
         reportPatients.indexOf(p) > reportStart + 4
     );
-
     visibleReportPatients = visibleReportPatients.concat(
       upcomingCandidates.slice(0, remainingNeeded)
     );
@@ -125,33 +131,17 @@ export default function PatientCallingDisplay() {
     (p) => !visibleReportPatients.some((vp) => vp.id === p.id)
   );
 
+  // Socket listener for new patients
   useEffect(() => {
     socket.on("patient:created", (newPatient) => {
       console.log("New patient received via socket:", newPatient);
-      refetch(); // Trigger RTK Query to fetch updated patient list
+      refetch();
     });
 
     return () => {
       socket.off("patient:created");
     };
   }, [refetch]);
-
-  // Video URL embed helper
-  const convertToEmbedUrl = (url: string) => {
-    let videoId = "";
-    if (url.includes("youtu.be")) {
-      videoId = url.split("youtu.be/")[1].split("?")[0];
-    } else if (url.includes("watch?v=")) {
-      videoId = url.split("watch?v=")[1].split("&")[0];
-    }
-    return videoId
-      ? `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}`
-      : "";
-  };
-
-  const activeVideo = onlyActiveVideo?.data?.find(
-    (v: any) => v.status === "ACTIVE"
-  );
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-black">
@@ -219,27 +209,25 @@ export default function PatientCallingDisplay() {
               <CardContent className="p-2">
                 {upcomingOutdoorPatients.length > 0 ? (
                   <div className="flex flex-wrap items-center justify-center gap-4">
-                    {upcomingOutdoorPatients
-                      .slice(0, 10) // Show first 5 upcoming patients
-                      .map((patient) => {
-                        const originalIndex =
-                          patientIndexMap.get(patient.id) ?? 0;
-                        return (
-                          <div
-                            key={patient.id}
-                            className="flex items-center text-sm rounded"
-                          >
-                            <span className="text-gray-300">S N :</span>
-                            <ChevronRight
-                              size={16}
-                              className="text-green-400 mx-1"
-                            />
-                            <span className="font-medium">
-                              {originalIndex + 1}
-                            </span>
-                          </div>
-                        );
-                      })}
+                    {upcomingOutdoorPatients.slice(0, 10).map((patient) => {
+                      const originalIndex =
+                        patientIndexMap.get(patient.id) ?? 0;
+                      return (
+                        <div
+                          key={patient.id}
+                          className="flex items-center text-sm rounded"
+                        >
+                          <span className="text-gray-300">S N :</span>
+                          <ChevronRight
+                            size={16}
+                            className="text-green-400 mx-1"
+                          />
+                          <span className="font-medium">
+                            {originalIndex + 1}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="text-center text-gray-300 text-sm font-medium">
@@ -295,27 +283,25 @@ export default function PatientCallingDisplay() {
               <CardContent className="p-2">
                 {upcomingReportPatients.length > 0 ? (
                   <div className="flex flex-wrap items-center justify-center gap-4">
-                    {upcomingReportPatients
-                      .slice(0, 5) // Show first 5 upcoming report patients
-                      .map((patient) => {
-                        const originalIndex =
-                          reportPatientIndexMap.get(patient.id) ?? 0;
-                        return (
-                          <div
-                            key={patient.id}
-                            className="flex items-center text-sm rounded"
-                          >
-                            <span className="text-gray-300">S N :</span>
-                            <ChevronRight
-                              size={16}
-                              className="text-green-400 mx-1"
-                            />
-                            <span className="font-medium">
-                              {originalIndex + 1}
-                            </span>
-                          </div>
-                        );
-                      })}
+                    {upcomingReportPatients.slice(0, 5).map((patient) => {
+                      const originalIndex =
+                        reportPatientIndexMap.get(patient.id) ?? 0;
+                      return (
+                        <div
+                          key={patient.id}
+                          className="flex items-center text-sm rounded"
+                        >
+                          <span className="text-gray-300">S N :</span>
+                          <ChevronRight
+                            size={16}
+                            className="text-green-400 mx-1"
+                          />
+                          <span className="font-medium">
+                            {originalIndex + 1}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="text-center text-gray-300 text-sm font-medium">
@@ -328,23 +314,8 @@ export default function PatientCallingDisplay() {
         </div>
 
         {/* Right Section - Video */}
-        <div className="flex-1">
-          <div className="relative w-full h-full bg-black rounded overflow-hidden">
-            {activeVideo?.videoFile &&
-            convertToEmbedUrl(activeVideo.videoFile) ? (
-              <iframe
-                className="absolute inset-0 w-full h-full"
-                src={convertToEmbedUrl(activeVideo.videoFile)}
-                title="Active YouTube Video"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full text-white text-lg">
-                No active video yet
-              </div>
-            )}
-          </div>
+        <div className="relative w-full h-full bg-black rounded overflow-hidden">
+          <VideoPlayer videos={activeVideos} />
         </div>
       </main>
 
