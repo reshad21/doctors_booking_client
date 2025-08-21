@@ -33,11 +33,13 @@ const CreatePrescriptionForm = ({
   const [timingCounts, setTimingCounts] = useState<Record<string, number>>({});
   const [formError, setFormError] = useState<string>("");
 
-  const { data: onExaminations } = useGetOnExaminationsQuery(undefined);
-  const { data: investigations } = useGetInvestigationQuery(undefined);
-  const { data: diagnosis } = useGetDiagnosisQuery(undefined);
-  const { data: chiefComplaint } = useGetChiefComplaintQuery(undefined);
-  const { data: advice } = useGetAdviceQuery(undefined);
+  const { data: onExaminations } = useGetOnExaminationsQuery({});
+  const { data: investigations } = useGetInvestigationQuery({});
+  const { data: diagnosis } = useGetDiagnosisQuery({});
+  const { data: chiefComplaint } = useGetChiefComplaintQuery({});
+  const { data: advice } = useGetAdviceQuery({});
+
+  console.log(diagnosis, "diagnosis")
 
   // Validate unique medicines
   const validateUniqueMedicines = () => {

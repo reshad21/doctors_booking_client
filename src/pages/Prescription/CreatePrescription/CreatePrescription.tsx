@@ -34,7 +34,14 @@ const CreatePrescription = () => {
   const [medicineInputCount, setMedicineInputCount] = useState([
     { content: 1 },
   ]);
-  const form = useForm();
+  // Example: Suppose you have backendData with keys like '1-duration-1': '09 দিন'
+  // You should build defaultValues from backend data
+  // For demonstration, let's assume you have a variable backendData
+  // Replace this with your actual backend data mapping logic
+  const backendData = location.state?.backendData || {};
+  const form = useForm({
+    defaultValues: backendData
+  });
 
   const handleAddMedicineInput = () => {
     setMedicineInputCount((prev) => [...prev, { content: prev.length + 1 }]);
@@ -94,8 +101,11 @@ const CreatePrescription = () => {
         return acc;
       }, {});
 
-      // Convert to array of dosage schedules
-      const DosageSchedule = Object.values(dosageGroups);
+      // Convert to array of dosage schedules and filter out empty/invalid ones
+      let DosageSchedule = Object.values(dosageGroups);
+      DosageSchedule = DosageSchedule.filter(
+        (ds: any) => (ds.dosage && ds.day) || ds.day === "চলবে"
+      );
       return {
         medicineName: name,
         DosageSchedule,

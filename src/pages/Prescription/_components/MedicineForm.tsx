@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
 
 import ReactSelectCompo from "./ReactSelectCompo";
-import MedicineSelect from "./MedicineSelect.tsx";
 import BaseInput from "@/components/shared/BaseInput";
 import { Plus, X, AlertTriangle } from "lucide-react";
 import DurationInput from "./DurationInput";
-import { useGetMedicinesListQuery } from "@/redux/api/manualData/manualData";
 import { useEffect, useState } from "react";
+import MedicineSelect from "./MedicineSelect";
 
 const MedicineForm = ({
   form,
@@ -22,14 +20,6 @@ const MedicineForm = ({
   handleRemoveMedicineInput,
   type,
 }: any) => {
-  const { data: medicineData, isLoading } = useGetMedicinesListQuery({
-    limit: 50000,
-  });
-
-  const medicines = medicineData?.data?.data || [];
-  const [selectedMedicines, setSelectedMedicines] = useState<Set<string>>(
-    new Set()
-  );
   const [duplicateErrors, setDuplicateErrors] = useState<
     Record<string, string>
   >({});
@@ -43,14 +33,17 @@ const MedicineForm = ({
   }
 
   // Track selected medicines and validate duplicates
+  // Watch all medicine fields for changes
+  const medicineFieldNames = dynamicMedicineCount?.map((item: any) => `medicine-${item.content}`) || [];
+  const medicineFieldValues = form.watch(medicineFieldNames);
+
   useEffect(() => {
     const selected = new Set<string>();
     const errors: Record<string, string> = {};
 
-    // Collect all selections and check for duplicates
-    dynamicMedicineCount?.forEach((item: any) => {
-      const fieldName = `medicine-${item.content}`;
-      const selectedValue = form.getValues(fieldName);
+    dynamicMedicineCount?.forEach((item: any, idx: number) => {
+      // Use watched value for reactivity
+      const selectedValue = medicineFieldValues?.[idx];
 
       if (selectedValue) {
         const medicineValue = selectedValue.value || selectedValue;
@@ -66,10 +59,8 @@ const MedicineForm = ({
       }
     });
 
-    setSelectedMedicines(selected);
     setDuplicateErrors(errors);
 
-    // Set form errors for duplicate medicines
     dynamicMedicineCount?.forEach((item: any) => {
       const fieldName = `medicine-${item.content}`;
       if (errors[item.content]) {
@@ -81,134 +72,11 @@ const MedicineForm = ({
         form.clearErrors(fieldName);
       }
     });
-  }, [dynamicMedicineCount, form]);
-
-
-  // Filter medicines to exclude already selected ones (except for current field)
-  // Note: With 36k medicines, we'll let MedicineSelect handle filtering during search
-  // This reduces the initial processing load
-  const getFilteredMedicines = (currentItemContent: string) => {
-    // For large datasets, we'll pass all medicines and handle filtering in MedicineSelect
-    // during search to avoid processing 36k items upfront
-    if (medicines.length > 10000) {
-      return medicines;
-    }
-
-    const currentFieldName = `medicine-${currentItemContent}`;
-    const currentValue = form.getValues(currentFieldName);
-
-    return medicines.filter((medicine: any) => {
-      const abbreviatedForm = getAbbreviatedDosageForm(
-        medicine.dosageDescription
-      );
-      const displayName = abbreviatedForm
-        ? `${abbreviatedForm} ${medicine.brandName} ${medicine.strength}`
-        : `${medicine.brandName} ${medicine.strength}`;
-
-      // Always include the currently selected medicine for this field
-      if (currentValue) {
-        const currentMedicineValue = currentValue.value || currentValue;
-        if (currentMedicineValue === displayName) {
-          return true;
-        }
-      }
-
-      // Exclude medicines selected in other fields
-      return !selectedMedicines.has(displayName);
-    });
-  };
-
-  // Function to get abbreviated dosage form (moved here so it's accessible)
-  const getAbbreviatedDosageForm = (dosageDescription: string) => {
-    if (!dosageDescription) return "";
-
-    const dosageMap: { [key: string]: string } = {
-      tablet: "Tab.",
-      capsule: "Cap.",
-      syrup: "Syp.",
-      injection: "Inj.",
-      cream: "Cr.",
-      ointment: "Oint.",
-      drops: "Drp.",
-      suspension: "Susp.",
-      solution: "Sol.",
-      powder: "Pwd.",
-      gel: "Gel",
-      lotion: "Lot.",
-      spray: "Spr.",
-      inhaler: "Inh.",
-      suppository: "Supp.",
-      patch: "Patch",
-    };
-
-    const description = dosageDescription.toLowerCase();
-
-    // Find matching dosage form
-    for (const [key, abbreviation] of Object.entries(dosageMap)) {
-      if (description.includes(key)) {
-        return abbreviation;
-      }
-    }
-
-    // If no match found, return first word capitalized with period
-    const firstWord = dosageDescription.split(" ")[0];
-    return (
-      firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase() + "."
-    );
-  };
-
-
-  const handleMedicineChange = (value: any, itemContent: string) => {
-    const fieldName = `medicine-${itemContent}`;
-
-    form.clearErrors(fieldName);
-
-    // Set the new value
-    form.setValue(fieldName, value);
-
-    // For large datasets, validate immediately without waiting
-    if (medicines.length > 10000) {
-      // Immediate validation for better UX with large datasets
-      const allSelected = new Set<string>();
-
-      dynamicMedicineCount?.forEach((item: any) => {
-        const currentFieldName = `medicine-${item.content}`;
-        let fieldValue;
-
-        if (item.content === itemContent) {
-          fieldValue = value;
-        } else {
-          fieldValue = form.getValues(currentFieldName);
-        }
-
-        if (fieldValue) {
-          const medicineValue = fieldValue.value || fieldValue;
-          if (medicineValue && medicineValue.trim()) {
-            if (allSelected.has(medicineValue)) {
-              form.setError(currentFieldName, {
-                type: "manual",
-                message: `This medicine is already selected`,
-              });
-
-            } else {
-              allSelected.add(medicineValue);
-              form.clearErrors(currentFieldName);
-            }
-          }
-        }
-      });
-    } else {
-      // For smaller datasets, use the existing trigger mechanism
-      setTimeout(() => {
-        form.trigger(fieldName);
-      }, 0);
-    }
-  };
+  }, [dynamicMedicineCount, form, medicineFieldValues]);
 
   return (
     <div className="space-y-6">
       {dynamicMedicineCount?.map((item: any, _idx: number) => {
-        const filteredMedicines = getFilteredMedicines(item.content);
         const hasError = duplicateErrors[item.content];
 
         return (
@@ -245,15 +113,9 @@ const MedicineForm = ({
                 <MedicineSelect
                   name={`medicine-${item.content}`}
                   control={form.control}
-                  medicines={filteredMedicines}
-                  isLoading={isLoading}
                   placeholder="Search medicine by name, generic name, or strength..."
-                  onChange={(value: any) =>
-                    handleMedicineChange(value, item.content)
-                  }
                 />
 
-                {/* Show duplicate error message */}
                 {hasError && (
                   <div className="flex items-center gap-2 text-red-600 text-sm">
                     <AlertTriangle className="w-4 h-4" />

@@ -56,7 +56,9 @@ const router = createBrowserRouter([
       },
       {
         path: "/dashboard/view-prescription/:patientId",
-        element: <ViewPrescription />
+        element: (
+          <ViewPrescription key={window.location.pathname} />
+        )
       },
       {
         path: "/dashboard/update-prescription/:prescriptionId",
