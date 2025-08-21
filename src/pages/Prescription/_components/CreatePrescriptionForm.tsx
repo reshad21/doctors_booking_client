@@ -15,6 +15,7 @@ import {
 import { useGetAdviceQuery } from "@/redux/api/advice/advice";
 import { Badge } from "@/components/ui/badge";
 import BaseInput from "@/components/shared/BaseInput";
+import { AlertTriangle } from "lucide-react";
 
 const CreatePrescriptionForm = ({
   form,
@@ -30,11 +31,75 @@ const CreatePrescriptionForm = ({
   type,
 }: any) => {
   const [timingCounts, setTimingCounts] = useState<Record<string, number>>({});
+  const [formError, setFormError] = useState<string>("");
+
   const { data: onExaminations } = useGetOnExaminationsQuery(undefined);
   const { data: investigations } = useGetInvestigationQuery(undefined);
   const { data: diagnosis } = useGetDiagnosisQuery(undefined);
   const { data: chiefComplaint } = useGetChiefComplaintQuery(undefined);
   const { data: advice } = useGetAdviceQuery(undefined);
+
+  // Validate unique medicines
+  const validateUniqueMedicines = () => {
+    if (!medicineInputCount || medicineInputCount.length <= 1) {
+      return true;
+    }
+
+    const selectedMedicines = new Set<string>();
+    const duplicates: string[] = [];
+
+    medicineInputCount.forEach((item: any) => {
+      const fieldValue = form.getValues(`medicine-${item.content}`);
+      if (fieldValue) {
+        const medicineValue = fieldValue.value || fieldValue;
+        const medicineLabel = fieldValue.label || fieldValue;
+
+        if (medicineValue && medicineValue.trim()) {
+          if (selectedMedicines.has(medicineValue)) {
+            duplicates.push(medicineLabel);
+          } else {
+            selectedMedicines.add(medicineValue);
+          }
+        }
+      }
+    });
+
+    if (duplicates.length > 0) {
+      setFormError(
+        `Duplicate medicines found: ${duplicates.join(", ")}. Please select different medicines.`
+      );
+      return false;
+    } else {
+      setFormError("");
+      return true;
+    }
+  };
+
+
+  const handleSubmit = (data: any) => {
+    setFormError("");
+
+    if (!validateUniqueMedicines()) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    onSubmit(data);
+  };
+
+  const watchedMedicineFields =
+    medicineInputCount?.map((item: any) => `medicine-${item.content}`) || [];
+  form.watch(watchedMedicineFields);
+
+
+  useEffect(() => {
+    if (medicineInputCount && medicineInputCount.length > 1) {
+      setTimeout(() => {
+        validateUniqueMedicines();
+      }, 100);
+    } else {
+      setFormError("");
+    }
+  }, [medicineInputCount, form.watch(watchedMedicineFields)]);
 
   // Sync timingCounts whenever medicineInputCount changes
   useEffect(() => {
@@ -77,9 +142,19 @@ const CreatePrescriptionForm = ({
     InputOptions(chiefComplaint, "chiefComplaint") || [];
   const adviceOptions = InputOptions(advice, "advice") || [];
 
-
   return (
     <div className="max-w-6xl mx-auto space-y-8">
+      {/* Show form-level error for duplicate medicines */}
+      {formError && (
+        <div className="p-4 border border-red-300 rounded-lg bg-red-50">
+          <div className="flex items-center gap-2 text-red-700">
+            <AlertTriangle className="w-5 h-5" />
+            <span className="font-medium">Validation Error</span>
+          </div>
+          <p className="mt-1 text-sm text-red-600">{formError}</p>
+        </div>
+      )}
+
       <div className="p-2">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-2 h-6 bg-blue-500 rounded-full"></div>
@@ -187,7 +262,10 @@ const CreatePrescriptionForm = ({
           </h3>
         </div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-8"
+          >
             <MedicineForm
               form={form}
               medicineInputCount={medicineInputCount}
@@ -245,10 +323,15 @@ const CreatePrescriptionForm = ({
               />
             </div>
 
-            <div className="flex justify-end items-center gap-4  border-gray-200">
+            <div className="flex justify-end items-center gap-4 border-gray-200">
               <button
                 type="submit"
-                className="px-10 py-3 text-sm cursor-pointer font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200"
+                disabled={!!formError}
+                className={`px-10 py-3 text-sm cursor-pointer font-semibold text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 ${
+                  formError
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700 focus:ring-green-500"
+                }`}
               >
                 Save Prescription
               </button>

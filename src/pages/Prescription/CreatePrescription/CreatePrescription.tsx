@@ -15,7 +15,7 @@ import {
 } from "@/redux/api/manualData/manualData";
 import { useCreateAdviceMutation } from "@/redux/api/advice/advice";
 import { CreateAdviceFn, CreateFn } from "../_components/CreateFn";
-import { ChevronLeft } from "lucide-react";
+import BackButton from "@/components/shared/BackButton";
 
 const CreatePrescription = () => {
   const [createOnExamination] = useCreateOnExaminationsMutation();
@@ -56,9 +56,6 @@ const CreatePrescription = () => {
     form.unregister(`medicine-${contentToDelete}`);
   };
 
-  const handleGoBack = () => {
-    navigate(-1);
-  };
 
   const onSubmit = async (data: any) => {
     // Step 1: Extract all medicine names (medicine-1, medicine-2, etc.)
@@ -179,17 +176,9 @@ const CreatePrescription = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-6">
-        {/* Back Button - Outside the form */}
         <div className="mb-6">
-          <button
-            onClick={handleGoBack}
-            className="flex items-center cursor-pointer gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-          >
-            <ChevronLeft className="size-4" />
-            Back
-          </button>
+          <BackButton />
         </div>
-
         <div className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
           <div className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-center">
