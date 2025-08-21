@@ -9,7 +9,7 @@ import { printPrescription } from "@/utils/printPrescription";
 
 const ViewPrescription = () => {
   const { patientId } = useParams();
-  const { data: perceptions } = useGetPerceptionByPatientIdQuery(patientId);
+  const { data: prescriptions } = useGetPerceptionByPatientIdQuery(patientId);
   const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const printRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -17,11 +17,11 @@ const ViewPrescription = () => {
     printRefs.current[index] = el;
   };
 
-  console.log(perceptions, "perceptions");
+  console.log(prescriptions, "prescriptions");
 
   return (
     <div>
-      {perceptions?.data?.length === 0 && (
+      {prescriptions?.data?.length === 0 && (
         <EmptyState
           icon={<Info className="w-full h-full" />}
           title="No Prescription is Found"
@@ -30,7 +30,7 @@ const ViewPrescription = () => {
         />
       )}
 
-      {perceptions?.data?.map((medic: any, index: number) => (
+      {prescriptions?.data?.map((medic: any, index: number) => (
         <div className="m-5" key={medic.id || index}>
           <div className="flex justify-start items-center gap-2 pb-2">
             <button
