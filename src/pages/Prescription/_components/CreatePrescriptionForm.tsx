@@ -1,6 +1,6 @@
-"use client";
-
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useEffect, useState } from "react";
 import ReactSelectCompo from "./ReactSelectCompo";
 import MedicineForm from "./MedicineForm";
@@ -33,12 +33,11 @@ const CreatePrescriptionForm = ({
   const [timingCounts, setTimingCounts] = useState<Record<string, number>>({});
   const [formError, setFormError] = useState<string>("");
 
-  const { data: onExaminations } = useGetOnExaminationsQuery({});
-  const { data: investigations } = useGetInvestigationQuery({});
-  const { data: diagnosis } = useGetDiagnosisQuery({});
-  const { data: chiefComplaint } = useGetChiefComplaintQuery({});
+  const { data: onExaminations } = useGetOnExaminationsQuery({ limit: 200 });
+  const { data: investigations } = useGetInvestigationQuery({ limit: 200 });
+  const { data: diagnosis } = useGetDiagnosisQuery({ limit: 200 });
+  const { data: chiefComplaint } = useGetChiefComplaintQuery({ limit: 200 });
   const { data: advice } = useGetAdviceQuery({});
-
 
   // Validate unique medicines
   const validateUniqueMedicines = () => {
