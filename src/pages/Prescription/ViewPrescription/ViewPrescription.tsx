@@ -208,14 +208,14 @@ const ViewPrescription = () => {
                                           {item?.dosage || ""}
                                         </div>
                                         <div className="min-w-[50px]">
-                                          {item?.day || ""}
+                                          {item?.time || ""}
                                         </div>
                                         <div className="min-w-[50px]">
-                                          {item?.time || ""}
+                                          {item?.day || ""}
                                         </div>
                                         <div className="flex-1">
                                           {item?.comment && (
-                                            <span className="text-[9px] font-normal text-gray-500 ml-2">
+                                            <span className="text-[10px] font-normal text-gray-500 ml-2">
                                               {item.comment}
                                             </span>
                                           )}

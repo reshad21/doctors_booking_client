@@ -32,8 +32,8 @@ export const printPrescription = (
       <div class="print-dosage-schedule">
         <div class="print-dosage-row">
           <span class="print-dosage">${schedule.dosage || ""}</span>
-          <span class="print-day">${schedule.day || ""}</span>
           <span class="print-time">${schedule.time || ""}</span>
+          <span class="print-day">${schedule.day || ""}</span>
           <span class="print-comment-inline">
             ${schedule.comment ? `${schedule.comment}` : ""}
           </span>
