@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Input } from "@/components/ui/input";
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 import React from "react";
 
 type DurationUnit = "দিন" | "সপ্তাহ" | "মাস" | "বছর" | "চলবে";
@@ -17,12 +17,12 @@ const DurationInput = ({
   defaultUnit = "দিন",
   defaultValue,
 }: DurationInputProps) => {
-  const { register, setValue, watch } = useFormContext();
+  const { register, setValue } = useFormContext();
 
-  // Watch the form value instead of calling getValues repeatedly
-  const formValue = watch(name);
+  // ✅ Properly subscribe to form value changes
+  const formValue = useWatch({ name });
 
-  // ✅ Initialize with defaults only, don't parse formValue here
+  // Initialize defaults
   const { initialUnit, initialValue } = useMemo(() => {
     const unit: DurationUnit = defaultUnit;
     const val: string =
@@ -34,7 +34,6 @@ const DurationInput = ({
 
   const [unit, setUnit] = useState<DurationUnit>(initialUnit);
   const [value, setLocalValue] = useState<string>(initialValue);
-  const [isInitialized, setIsInitialized] = useState(false);
 
   // Bangla to English number mapping
   const banglaToEnglish: { [key: string]: string } = useMemo(
@@ -85,29 +84,24 @@ const DurationInput = ({
     []
   );
 
-  // Initialize from form value on first render only
+  // ✅ Sync local state with external form value (resets, editing, etc.)
   useEffect(() => {
-    if (!isInitialized && formValue !== undefined) {
-      if (typeof formValue === "string") {
-        if (formValue === "চলবে") {
-          setUnit("চলবে");
-          setLocalValue("");
-        } else if (formValue !== "") {
-          const match = formValue.match(/^([০-৯0-9]+)\s*(দিন|সপ্তাহ|মাস|বছর)$/);
-          if (match) {
-            setLocalValue(match[1]);
-            setUnit(match[2] as DurationUnit);
-          }
+    if (typeof formValue === "string") {
+      if (formValue === "চলবে") {
+        setUnit("চলবে");
+        setLocalValue("");
+      } else if (formValue !== "") {
+        const match = formValue.match(/^([০-৯0-9]+)\s*(দিন|সপ্তাহ|মাস|বছর)$/);
+        if (match) {
+          setLocalValue(match[1]);
+          setUnit(match[2] as DurationUnit);
         }
       }
-      setIsInitialized(true);
     }
-  }, [formValue, isInitialized]);
+  }, [formValue]);
 
-  // Update form when local state changes
+  // ✅ Update form when local state changes
   useEffect(() => {
-    if (!isInitialized) return;
-
     let newValue = "";
     if (unit === "চলবে") {
       newValue = "চলবে";
@@ -115,11 +109,10 @@ const DurationInput = ({
       newValue = `${value} ${unit}`;
     }
 
-    // Only update if the composed value is different from current form value
     if (formValue !== newValue) {
       setValue(name, newValue, { shouldValidate: true, shouldDirty: true });
     }
-  }, [value, unit, name, setValue, isInitialized]);
+  }, [value, unit]);
 
   return (
     <div

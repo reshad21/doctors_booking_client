@@ -39,8 +39,6 @@ const CreatePrescriptionForm = ({
   const { data: chiefComplaint } = useGetChiefComplaintQuery({ limit: 200 });
   const { data: advice } = useGetAdviceQuery({});
 
-  console.log(patient, "patient in update prescription")
-
   // Validate unique medicines
   const validateUniqueMedicines = () => {
     if (!medicineInputCount || medicineInputCount.length <= 1) {

@@ -38,6 +38,7 @@ const UpdatePrescription = () => {
     () => prescription?.data || {},
     [prescription]
   );
+
   console.log(prescriptionData);
 
   const [medicineInputCount, setMedicineInputCount] = useState(
@@ -97,8 +98,6 @@ const UpdatePrescription = () => {
             medIndex: number
           ) => {
             acc[`medicine-${medIndex + 1}`] = med.medicineName;
-
-            console.log(med, 'med in useEffect')
 
             med.DosageSchedule.forEach(
               (
