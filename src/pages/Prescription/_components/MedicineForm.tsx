@@ -20,6 +20,19 @@ const MedicineForm = ({
   handleRemoveMedicineInput,
   type,
 }: any) => {
+  console.log("MedicineForm props:", {
+    form,
+    medicineInputCount,
+    timingCounts,
+    dosageOptions,
+    timeOptions,
+    addTimingSet,
+    removeTimingSet,
+    handleAddMedicineInput,
+    handleRemoveMedicineInput,
+    type,
+  });
+
   const [duplicateErrors, setDuplicateErrors] = useState<
     Record<string, string>
   >({});
@@ -79,7 +92,9 @@ const MedicineForm = ({
     dynamicMedicineCount?.forEach((item: any) => {
       const fieldName = `medicine-${item.content}`;
       if (errors[item.content]) {
-        if (form.getFieldState(fieldName)?.error?.message !== errors[item.content]) {
+        if (
+          form.getFieldState(fieldName)?.error?.message !== errors[item.content]
+        ) {
           form.setError(fieldName, {
             type: "manual",
             message: errors[item.content],
@@ -91,8 +106,6 @@ const MedicineForm = ({
         }
       }
     });
-    // Only depend on medicineFieldValues and dynamicMedicineCount
-    // Do NOT include form in dependency array
   }, [dynamicMedicineCount, medicineFieldValues, form]);
 
   return (

@@ -39,6 +39,8 @@ const CreatePrescriptionForm = ({
   const { data: chiefComplaint } = useGetChiefComplaintQuery({ limit: 200 });
   const { data: advice } = useGetAdviceQuery({});
 
+  console.log(patient, "patient in update prescription")
+
   // Validate unique medicines
   const validateUniqueMedicines = () => {
     if (!medicineInputCount || medicineInputCount.length <= 1) {
@@ -118,14 +120,10 @@ const CreatePrescriptionForm = ({
         for (let i = 0; i < count; i++) {
           const idx = i + 1;
           const ds = med.DosageSchedule?.[i] || {};
-          if (form.getValues(`${idx}-duration-${med.content}`) === undefined)
-            form.setValue(`${idx}-duration-${med.content}`, ds.day || "");
-          if (form.getValues(`${idx}-dosage-${med.content}`) === undefined)
-            form.setValue(`${idx}-dosage-${med.content}`, ds.dosage || "");
-          if (form.getValues(`${idx}-time-${med.content}`) === undefined)
-            form.setValue(`${idx}-time-${med.content}`, ds.time || "");
-          if (form.getValues(`${idx}-comment-${med.content}`) === undefined)
-            form.setValue(`${idx}-comment-${med.content}`, ds.comment || "");
+          form.setValue(`${idx}-duration-${med.content}`, ds.day || "");
+          form.setValue(`${idx}-dosage-${med.content}`, ds.dosage || "");
+          form.setValue(`${idx}-time-${med.content}`, ds.time || "");
+          form.setValue(`${idx}-comment-${med.content}`, ds.comment || "");
         }
       });
     }

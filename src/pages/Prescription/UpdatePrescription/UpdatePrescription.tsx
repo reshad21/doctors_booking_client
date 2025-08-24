@@ -33,24 +33,22 @@ const UpdatePrescription = () => {
   const { data: prescription } = useGetPerceptionBIdQuery({
     prescriptionId: prescriptionId,
   });
-  // const doctorId = useAppSelector((state) => state.admin?.id);
+
   const prescriptionData = useMemo(
     () => prescription?.data || {},
     [prescription]
   );
   console.log(prescriptionData);
 
-
   const [medicineInputCount, setMedicineInputCount] = useState(
     prescriptionData.medicines && prescriptionData.medicines.length >= 0
       ? prescriptionData.medicines.map((med: any, idx: number) => ({
-        content: idx + 1,
-        DosageSchedule: med.DosageSchedule,
-      }))
+          content: idx + 1,
+          DosageSchedule: med.DosageSchedule,
+        }))
       : [{ content: 1, DosageSchedule: [] }]
   );
 
-  // Always update medicineInputCount when prescriptionData.medicines changes
   useEffect(() => {
     if (
       prescriptionData.medicines &&
@@ -64,7 +62,6 @@ const UpdatePrescription = () => {
       );
     }
   }, [prescriptionData.medicines]);
-
 
   const form = useForm<any>({
     defaultValues: {},
@@ -100,6 +97,8 @@ const UpdatePrescription = () => {
             medIndex: number
           ) => {
             acc[`medicine-${medIndex + 1}`] = med.medicineName;
+
+            console.log(med, 'med in useEffect')
 
             med.DosageSchedule.forEach(
               (
@@ -191,7 +190,7 @@ const UpdatePrescription = () => {
     // Now build final payload
     const transformedData = {
       id: prescriptionId,
-      nextVisit: data.nxVisit || "",
+      nextVisit: data.nextVisit || "",
       advice: Array.isArray(data.advice) ? data.advice : [],
       chiefComplaint: Array.isArray(data["chief-complaint"])
         ? data["chief-complaint"]
@@ -207,7 +206,7 @@ const UpdatePrescription = () => {
     };
 
     const res = (await updatePrescription(transformedData)) as any;
-    console.log(res);
+
     if (res?.data?.message) {
       toast.success(res?.data?.message);
       navigate(`/dashboard/view-prescription/${prescriptionData?.patient?.id}`);
@@ -216,6 +215,7 @@ const UpdatePrescription = () => {
       toast.error(res?.error?.data?.message || "Something went wrong");
     }
   };
+
   const [dynamicOptions, setDynamicOptions] = useState<{
     [key: string]: { value: string; label: string }[];
   }>({

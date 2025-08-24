@@ -65,7 +65,6 @@ const CreatePrescription = () => {
 
 
   const onSubmit = async (data: any) => {
-    // Step 1: Extract all medicine names (medicine-1, medicine-2, etc.)
     const medicineEntries = Object.entries(data)
       .filter(([key]) => key.startsWith("medicine-"))
       .map(([key, value]) => ({
@@ -125,7 +124,7 @@ const CreatePrescription = () => {
       investigation: data.investigation,
       advice: data?.advice,
     };
-    console.log(transformedData, "transformed Data");
+    
     const res = (await createPrescription(transformedData)) as any;
 
     if (res?.data?.message) {

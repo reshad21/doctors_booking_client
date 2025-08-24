@@ -25,7 +25,6 @@ const MedicineSelect = ({
   const [inputValue, setInputValue] = useState("");
   const [menuIsOpen, setMenuIsOpen] = useState(false);
 
-  // Fetch medicines from backend with search term
   const {
     data: medicineData,
     isLoading,
