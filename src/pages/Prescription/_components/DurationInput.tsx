@@ -1,11 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { useFormContext, useWatch } from "react-hook-form";
+import React from "react";
 
-type DurationUnit = "দিন" | "সপ্তাহ" | "মাস" | "বছর";
+type DurationUnit = "দিন" | "সপ্তাহ" | "মাস" | "বছর" | "চলবে";
 
 type DurationInputProps = {
-  name: string; // e.g. "1-duration-medicineId"
+  name: string;
   defaultUnit?: DurationUnit;
   defaultValue?: number;
 };
@@ -16,50 +18,101 @@ const DurationInput = ({
   defaultValue,
 }: DurationInputProps) => {
   const { register, setValue } = useFormContext();
-  const [value, setLocalValue] = useState(defaultValue || "");
-  const [unit, setUnit] = useState<DurationUnit>(defaultUnit);
+
+  // ✅ Properly subscribe to form value changes
+  const formValue = useWatch({ name });
+
+  // Initialize defaults
+  const { initialUnit, initialValue } = useMemo(() => {
+    const unit: DurationUnit = defaultUnit;
+    const val: string =
+      defaultValue !== undefined && defaultValue !== null
+        ? String(defaultValue)
+        : "";
+    return { initialUnit: unit, initialValue: val };
+  }, [defaultUnit, defaultValue]);
+
+  const [unit, setUnit] = useState<DurationUnit>(initialUnit);
+  const [value, setLocalValue] = useState<string>(initialValue);
 
   // Bangla to English number mapping
-  const banglaToEnglish: { [key: string]: string } = {
-    "০": "0",
-    "১": "1",
-    "২": "2",
-    "৩": "3",
-    "৪": "4",
-    "৫": "5",
-    "৬": "6",
-    "৭": "7",
-    "৮": "8",
-    "৯": "9",
-  };
-  // Convert Bangla numerals to English
-  const convertBanglaToEnglish = (text: string): string => {
-    return text.replace(/[০-৯]/g, (match) => banglaToEnglish[match] || match);
-  };
+  const banglaToEnglish: { [key: string]: string } = useMemo(
+    () => ({
+      "০": "0",
+      "১": "1",
+      "২": "2",
+      "৩": "3",
+      "৪": "4",
+      "৫": "5",
+      "৬": "6",
+      "৭": "7",
+      "৮": "8",
+      "৯": "9",
+    }),
+    []
+  );
+
+  const convertBanglaToEnglish = useCallback(
+    (text: string): string => {
+      return text.replace(/[০-৯]/g, (match) => banglaToEnglish[match] || match);
+    },
+    [banglaToEnglish]
+  );
 
   // Handle input change
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const inputValue = e.target.value;
+      const englishValue = convertBanglaToEnglish(inputValue);
 
-    // Convert to English for validation only
-    const englishValue = convertBanglaToEnglish(inputValue);
+      if (inputValue === "" || /^\d+$/.test(englishValue)) {
+        setLocalValue(inputValue);
+      }
+    },
+    [convertBanglaToEnglish]
+  );
 
-    // Validate that it's a valid number, but store the original input
-    if (inputValue === "" || /^\d+$/.test(englishValue)) {
-      setLocalValue(inputValue); // Store original input (Bangla or English)
-    }
-  };
+  // Handle unit change
+  const handleUnitChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const newUnit = e.target.value as DurationUnit;
+      setUnit(newUnit);
+      if (newUnit === "চলবে") {
+        setLocalValue("");
+      }
+    },
+    []
+  );
 
-  // Update RHF whenever local state changes
+  // ✅ Sync local state with external form value (resets, editing, etc.)
   useEffect(() => {
-    if (value && unit) {
-      // Store the original input (Bangla or English) with unit
-      setValue(name, `${value} ${unit}`, {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
+    if (typeof formValue === "string") {
+      if (formValue === "চলবে") {
+        setUnit("চলবে");
+        setLocalValue("");
+      } else if (formValue !== "") {
+        const match = formValue.match(/^([০-৯0-9]+)\s*(দিন|সপ্তাহ|মাস|বছর)$/);
+        if (match) {
+          setLocalValue(match[1]);
+          setUnit(match[2] as DurationUnit);
+        }
+      }
     }
-  }, [value, unit, name, setValue]);
+  }, [formValue]);
+
+  // ✅ Update form when local state changes
+  useEffect(() => {
+    let newValue = "";
+    if (unit === "চলবে") {
+      newValue = "চলবে";
+    } else if (value && unit) {
+      newValue = `${value} ${unit}`;
+    }
+
+    if (formValue !== newValue) {
+      setValue(name, newValue, { shouldValidate: true, shouldDirty: true });
+    }
+  }, [value, unit]);
 
   return (
     <div
@@ -70,18 +123,25 @@ const DurationInput = ({
         type="text"
         value={value}
         onChange={handleInputChange}
-        placeholder="৭"
+        placeholder={unit === "চলবে" ? "" : "৭"}
         onWheel={(e) => e.preventDefault()}
         className="focus:outline-none rounded-s-sm rounded-e-none border-none h-[50px]"
         inputMode="numeric"
         pattern="[০-৯0-9]*"
+        disabled={unit === "চলবে"}
+        style={{
+          backgroundColor: unit === "চলবে" ? "#f9fafb" : "white",
+          cursor: unit === "চলবে" ? "not-allowed" : "text",
+        }}
+        tabIndex={unit === "চলবে" ? -1 : 0}
+        readOnly={unit === "চলবে"}
       />
       <div
         style={{ width: "1px", height: "100%", backgroundColor: "#A0B19E" }}
       />
       <select
         value={unit}
-        onChange={(e) => setUnit(e.target.value as DurationUnit)}
+        onChange={handleUnitChange}
         className="focus-within:outline-none focus-visible:outline-none cursor-pointer px-2"
       >
         <option value="দিন">দিন</option>
@@ -97,4 +157,5 @@ const DurationInput = ({
   );
 };
 
-export default DurationInput;
+// ✅ Prevent re-renders unless props change
+export default React.memo(DurationInput);

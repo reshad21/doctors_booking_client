@@ -12,14 +12,14 @@ const adviceApi = baseApi.injectEndpoints({
     }),
 
     getAdvice: builder.query({
-      query: () => ({
+      query: ({ searchTerm, limit }) => ({
         url: `/advice/get-advice`,
-        // params: { searchTerm },
+        params: { searchTerm, limit },
       }),
       providesTags: ["advice"],
     }),
 
-    // 
+    //
 
     updateAdvice: builder.mutation({
       query: ({ id, data }) => ({
@@ -40,4 +40,9 @@ const adviceApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useCreateAdviceMutation, useGetAdviceQuery, useDeleteAdviceMutation, useUpdateAdviceMutation } = adviceApi;
+export const {
+  useCreateAdviceMutation,
+  useGetAdviceQuery,
+  useDeleteAdviceMutation,
+  useUpdateAdviceMutation,
+} = adviceApi;
