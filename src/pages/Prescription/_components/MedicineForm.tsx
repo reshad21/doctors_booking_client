@@ -5,7 +5,7 @@ import ReactSelectCompo from "./ReactSelectCompo";
 import BaseInput from "@/components/shared/BaseInput";
 import { Plus, X, AlertTriangle } from "lucide-react";
 import DurationInput from "./DurationInput";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import MedicineSelect from "./MedicineSelect";
 
 const MedicineForm = ({
@@ -32,9 +32,15 @@ const MedicineForm = ({
     ];
   }
 
-  // Track selected medicines and validate duplicates
+  // Memoize medicine field names to prevent unnecessary changes
+  const medicineFieldNames = useMemo(
+    () =>
+      dynamicMedicineCount?.map((item: any) => `medicine-${item.content}`) ||
+      [],
+    [dynamicMedicineCount]
+  );
+
   // Watch all medicine fields for changes
-  const medicineFieldNames = dynamicMedicineCount?.map((item: any) => `medicine-${item.content}`) || [];
   const medicineFieldValues = form.watch(medicineFieldNames);
 
   useEffect(() => {
@@ -42,13 +48,10 @@ const MedicineForm = ({
     const errors: Record<string, string> = {};
 
     dynamicMedicineCount?.forEach((item: any, idx: number) => {
-      // Use watched value for reactivity
       const selectedValue = medicineFieldValues?.[idx];
-
       if (selectedValue) {
         const medicineValue = selectedValue.value || selectedValue;
         const medicineLabel = selectedValue.label || selectedValue;
-
         if (medicineValue && medicineValue.trim()) {
           if (selected.has(medicineValue)) {
             errors[item.content] = `"${medicineLabel}" is already selected`;
@@ -59,20 +62,38 @@ const MedicineForm = ({
       }
     });
 
-    setDuplicateErrors(errors);
+    // Only update state if errors actually changed
+    setDuplicateErrors((prev) => {
+      const prevKeys = Object.keys(prev);
+      const newKeys = Object.keys(errors);
+      if (
+        prevKeys.length !== newKeys.length ||
+        prevKeys.some((k) => prev[k] !== errors[k])
+      ) {
+        return errors;
+      }
+      return prev;
+    });
 
+    // Only set/clear errors if changed
     dynamicMedicineCount?.forEach((item: any) => {
       const fieldName = `medicine-${item.content}`;
       if (errors[item.content]) {
-        form.setError(fieldName, {
-          type: "manual",
-          message: errors[item.content],
-        });
+        if (form.getFieldState(fieldName)?.error?.message !== errors[item.content]) {
+          form.setError(fieldName, {
+            type: "manual",
+            message: errors[item.content],
+          });
+        }
       } else {
-        form.clearErrors(fieldName);
+        if (form.getFieldState(fieldName)?.error) {
+          form.clearErrors(fieldName);
+        }
       }
     });
-  }, [dynamicMedicineCount, form, medicineFieldValues]);
+    // Only depend on medicineFieldValues and dynamicMedicineCount
+    // Do NOT include form in dependency array
+  }, [dynamicMedicineCount, medicineFieldValues, form]);
 
   return (
     <div className="space-y-6">

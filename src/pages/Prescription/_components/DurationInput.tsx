@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
+import React from "react";
 
 type DurationUnit = "দিন" | "সপ্তাহ" | "মাস" | "বছর" | "চলবে";
 
@@ -15,23 +16,32 @@ const DurationInput = ({
   defaultUnit = "দিন",
   defaultValue,
 }: DurationInputProps) => {
-  console.log(name, 'DurationInput rendered', defaultUnit, defaultValue)
   const { register, setValue, getValues } = useFormContext();
-  // If backend returns 'চলবে', show it accordingly
+
   const initial = getValues(name);
-  // Parse initial value if it is like '৭ দিন' or '7 দিন'
-  let initialUnit: DurationUnit = defaultUnit;
-  let initialValue: string = defaultValue !== undefined && defaultValue !== null ? String(defaultValue) : "";
-  if (typeof initial === "string" && initial !== "" && initial !== "চলবে") {
-    const match = initial.match(/^([০-৯0-9]+)\s*(দিন|সপ্তাহ|মাস|বছর)$/);
-    if (match) {
-      initialValue = match[1];
-      initialUnit = match[2] as DurationUnit;
+
+  // ✅ Memoize initial parsing so it doesn’t run on every render
+  const { initialUnit, initialValue } = useMemo(() => {
+    let unit: DurationUnit = defaultUnit;
+    let val: string =
+      defaultValue !== undefined && defaultValue !== null
+        ? String(defaultValue)
+        : "";
+
+    if (typeof initial === "string" && initial !== "" && initial !== "চলবে") {
+      const match = initial.match(/^([০-৯0-9]+)\s*(দিন|সপ্তাহ|মাস|বছর)$/);
+      if (match) {
+        val = match[1];
+        unit = match[2] as DurationUnit;
+      }
+    } else if (initial === "চলবে") {
+      unit = "চলবে";
+      val = "";
     }
-  } else if (initial === "চলবে") {
-    initialUnit = "চলবে";
-    initialValue = "";
-  }
+
+    return { initialUnit: unit, initialValue: val };
+  }, [initial, defaultUnit, defaultValue]);
+
   const [unit, setUnit] = useState<DurationUnit>(initialUnit);
   const [value, setLocalValue] = useState<string>(initialValue);
 
@@ -56,11 +66,8 @@ const DurationInput = ({
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-
-    // Convert to English for validation only
     const englishValue = convertBanglaToEnglish(inputValue);
 
-    // Validate that it's a valid number, but store the original input
     if (inputValue === "" || /^\d+$/.test(englishValue)) {
       setLocalValue(inputValue);
     }
@@ -75,33 +82,21 @@ const DurationInput = ({
     }
   };
 
-  // Update RHF whenever local state changes
+  // ✅ Update RHF only if value actually changed
   useEffect(() => {
-    if (unit === "চলবে") {
-      setValue(name, "চলবে", {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
-    } else if (value && unit) {
-      setValue(name, `${value} ${unit}`, {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
-    } else if (unit) {
-      setValue(name, "", {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
-    }
-  }, [value, unit, name, setValue]);
+    let newValue = "";
 
-  // If backend value changes to 'চলবে', update UI accordingly
-  useEffect(() => {
-    if (initial === "চলবে") {
-      setUnit("চলবে");
-      setLocalValue("");
+    if (unit === "চলবে") {
+      newValue = "চলবে";
+    } else if (value && unit) {
+      newValue = `${value} ${unit}`;
     }
-  }, [initial]);
+
+    const currentValue = getValues(name);
+    if (currentValue !== newValue) {
+      setValue(name, newValue, { shouldValidate: true, shouldDirty: true });
+    }
+  }, [value, unit, name, setValue, getValues]);
 
   return (
     <div
@@ -146,4 +141,5 @@ const DurationInput = ({
   );
 };
 
-export default DurationInput;
+// ✅ Prevent re-renders unless props change
+export default React.memo(DurationInput);

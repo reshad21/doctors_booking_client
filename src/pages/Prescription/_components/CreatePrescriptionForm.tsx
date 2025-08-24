@@ -39,7 +39,6 @@ const CreatePrescriptionForm = ({
   const { data: chiefComplaint } = useGetChiefComplaintQuery({});
   const { data: advice } = useGetAdviceQuery({});
 
-  console.log(diagnosis, "diagnosis")
 
   // Validate unique medicines
   const validateUniqueMedicines = () => {
@@ -77,7 +76,6 @@ const CreatePrescriptionForm = ({
     }
   };
 
-
   const handleSubmit = (data: any) => {
     setFormError("");
 
@@ -91,7 +89,6 @@ const CreatePrescriptionForm = ({
   const watchedMedicineFields =
     medicineInputCount?.map((item: any) => `medicine-${item.content}`) || [];
   form.watch(watchedMedicineFields);
-
 
   useEffect(() => {
     if (medicineInputCount && medicineInputCount.length > 1) {

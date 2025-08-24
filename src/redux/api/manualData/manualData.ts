@@ -10,6 +10,7 @@ const onExaminationsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["manualData"],
     }),
+
     createChiefComplaint: builder.mutation({
       query: (data) => ({
         url: `/chief-complaint/create-chiefComplaint`,
@@ -18,6 +19,7 @@ const onExaminationsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["manualData"],
     }),
+
     createInvestigation: builder.mutation({
       query: (data) => ({
         url: `/investigation/create-investigation`,
@@ -26,6 +28,7 @@ const onExaminationsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["manualData"],
     }),
+
     createDiagnosis: builder.mutation({
       query: (data) => ({
         url: `/diagnosis/create-diagnosis`,
@@ -34,38 +37,67 @@ const onExaminationsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["manualData"],
     }),
+
     getOnExaminations: builder.query({
-      query: (data) => ({
+      query: ({ page, limit, searchTerm, filter, orderBy }) => ({
         url: `/on-examination/get-onExaminations`,
         method: "GET",
-        body: data,
+        params: {
+          page,
+          limit,
+          searchTerm,
+          filter,
+          orderBy,
+        },
       }),
       providesTags: ["manualData"],
     }),
+
     getInvestigation: builder.query({
-      query: (data) => ({
+      query: ({ page, limit, searchTerm, filter, orderBy }) => ({
         url: `/investigation/get-investigations`,
         method: "GET",
-        body: data,
+        params: {
+          page,
+          limit,
+          searchTerm,
+          filter,
+          orderBy,
+        },
       }),
       providesTags: ["manualData"],
     }),
+
     getDiagnosis: builder.query({
-      query: (data) => ({
+      query: ({ page, limit, searchTerm, filter, orderBy }) => ({
         url: `/diagnosis/get-diagnoses`,
         method: "GET",
-        body: data,
+        params: {
+          page,
+          limit,
+          searchTerm,
+          filter,
+          orderBy,
+        },
       }),
       providesTags: ["manualData"],
     }),
+
     getChiefComplaint: builder.query({
-      query: (data) => ({
+      query: ({ page, limit, searchTerm, filter, orderBy }) => ({
         url: `/chief-complaint/get-chiefComplaints`,
         method: "GET",
-        body: data,
+        params: {
+          page,
+          limit,
+          searchTerm,
+          filter,
+          orderBy,
+        },
       }),
       providesTags: ["manualData"],
     }),
+    
     getMedicinesList: builder.query({
       query: ({ page, limit, searchTerm, filter, orderBy }) => ({
         url: `/medicines/get-medicines`,
