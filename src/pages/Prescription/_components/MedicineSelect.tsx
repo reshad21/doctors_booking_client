@@ -1,6 +1,5 @@
-"use client";
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useState, useMemo } from "react";
 import Select from "react-select";
 import { Controller } from "react-hook-form";

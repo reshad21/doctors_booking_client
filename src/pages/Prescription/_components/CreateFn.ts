@@ -57,22 +57,6 @@ export const dosageOptions = [
   { value: "১/২ + ০ + ০", label: "১/২ + ০ + ০" },
   { value: "০ + ১/২ + ০", label: "০ + ১/২ + ০" },
 ];
-// export const dosageOptions = [
-//   { value: "1+1+1", label: "১+১+১" },
-//   { value: "1+1+0", label: "১+১+০" },
-//   { value: "1+0+1", label: "১+০+১" },
-//   { value: "0+1+1", label: "০+১+১" },
-//   { value: "0+0+1", label: "০+০+১" },
-//   { value: "1+0+0", label: "১+০+০" },
-//   { value: "0+1+0", label: "০+১+০" },
-//   { value: "1/2 + 1/2 + 1/2", label: "১/২ + ১/২ + ১/২" },
-//   { value: "1/2 + 1/2 + 0", label: "১/২ + ১/২ + ০" },
-//   { value: "1/2 + 0 + 1/2", label: "১/২ + ০ + ১/২" },
-//   { value: "0 + 1/2 + 1/2", label: "০ + ১/২ + ১/২" },
-//   { value: "0 + 0 + 1/2", label: "০ + ০ + ১/২" },
-//   { value: "1/2 + 0 + 0", label: "১/২ + ০ + ০" },
-//   { value: "0 + 1/2 + 0", label: "০ + ১/২ + ০" },
-// ];
 
 export const timeOptions = [
   { value: "খাবার আগে", label: "খাবার আগে" },

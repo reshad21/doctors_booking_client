@@ -32,53 +32,62 @@ const CreatePrescription = () => {
   const navigate = useNavigate();
 
   const [medicineInputCount, setMedicineInputCount] = useState([
-    { content: 1 },
+    { 
+      content: Date.now().toString(),
+      medicineName: "", 
+      DosageSchedule: [{ day: "", dosage: "", time: "", comment: "" }]
+    },
   ]);
-  // Example: Suppose you have backendData with keys like '1-duration-1': '09 দিন'
-  // You should build defaultValues from backend data
-  // For demonstration, let's assume you have a variable backendData
-  // Replace this with your actual backend data mapping logic
+
   const backendData = location.state?.backendData || {};
   const form = useForm({
     defaultValues: backendData,
   });
 
+ 
   const handleAddMedicineInput = () => {
-    setMedicineInputCount((prev) => [...prev, { content: prev.length + 1 }]);
+    const newId = Date.now().toString();
+    setMedicineInputCount((prev) => [
+      ...prev,
+      { 
+        content: newId,
+        medicineName: "", 
+        DosageSchedule: [{ day: "", dosage: "", time: "", comment: "" }]
+      }
+    ]);
   };
 
-  const handleRemoveMedicineInput = (contentToDelete: number) => {
+  const handleRemoveMedicineInput = (contentToDelete: string) => {
     setMedicineInputCount((prev) =>
       prev.filter((item) => item.content !== contentToDelete)
     );
+    
     // Remove all related fields from form state
-    const timingCount =
-      form.getValues()["timingCounts"]?.[contentToDelete] || 1;
-    for (let i = 1; i <= timingCount; i++) {
-      form.unregister(`${i}-duration-${contentToDelete}`);
-      form.unregister(`${i}-dosage-${contentToDelete}`);
-      form.unregister(`${i}-time-${contentToDelete}`);
-      form.unregister(`${i}-comment-${contentToDelete}`);
-    }
-    form.unregister(`medicine-${contentToDelete}`);
+    const allFormValues = form.getValues();
+    Object.keys(allFormValues).forEach((key) => {
+      if (key.endsWith(`-${contentToDelete}`) || key === `medicine-${contentToDelete}`) {
+        form.unregister(key);
+      }
+    });
   };
 
   const onSubmit = async (data: any) => {
     const medicineEntries = Object.entries(data)
       .filter(([key]) => key.startsWith("medicine-"))
       .map(([key, value]) => ({
-        medicineId: key.split("-")[1], // Extract the number (1, 2, etc.)
+        medicineId: key.split("-")[1],
         name: value,
       }));
+
     // Step 2: For each medicine, find its dosage schedules
     const medicines = medicineEntries.map(({ medicineId, name }) => {
       // Find all fields that belong to this medicine's dosage schedules
       const dosageFields = Object.entries(data).filter(([fieldName]) => {
-        // Field name format: dosageIndex-fieldType-medicineId (e.g., "1-duration-1")
         const parts = fieldName.split("-");
         return parts.length === 3 && parts[2] === medicineId;
       });
-      // Group fields by dosage index (the first part of the field name)
+
+
       const dosageGroups = dosageFields.reduce<
         Record<string, Record<string, any>>
       >((acc, [fieldName, value]) => {
@@ -87,9 +96,9 @@ const CreatePrescription = () => {
         if (!acc[dosageIndex]) {
           acc[dosageIndex] = {};
         }
-        // Map field names to the desired structure
+        
         acc[dosageIndex][
-          fieldType === "doges"
+          fieldType === "dosage"
             ? "dosage"
             : fieldType === "duration"
               ? "day"
@@ -104,6 +113,7 @@ const CreatePrescription = () => {
       DosageSchedule = DosageSchedule.filter(
         (ds: any) => (ds.dosage && ds.day) || ds.day === "চলবে"
       );
+      
       return {
         medicineName: name,
         DosageSchedule,
@@ -114,7 +124,7 @@ const CreatePrescription = () => {
     const transformedData = {
       doctorId: doctorId,
       patientId,
-      medicines: medicines[0].medicineName ? medicines : [],
+      medicines: medicines.filter(m => m.medicineName), // Filter out empty medicines
       content: data.content,
       chiefComplaint: data["chief-complaint"],
       onExaminations: data["on-examinations"],
@@ -124,16 +134,19 @@ const CreatePrescription = () => {
       advice: data?.advice,
     };
 
-    console.log(transformedData);
+    try {
+      const res = (await createPrescription(transformedData)) as any;
 
-    const res = (await createPrescription(transformedData)) as any;
-
-    if (res?.data?.message) {
-      toast.success(res?.data?.message);
-      navigate(`/dashboard/view-prescription/${patientId}`);
-      form.reset();
-    } else {
-      toast.error(res?.error?.data?.message || "Something went wrong");
+      if (res?.data?.message) {
+        toast.success(res?.data?.message);
+        navigate(`/dashboard/view-prescription/${patientId}`);
+        form.reset();
+      } else {
+        toast.error(res?.error?.data?.message || "Something went wrong");
+      }
+    } catch (error) {
+      toast.error("An error occurred while creating the prescription");
+      console.error("Prescription creation error:", error);
     }
   };
 
@@ -149,38 +162,48 @@ const CreatePrescription = () => {
 
   // Handler to save new select options (for all fields)
   const handleSaveNewOption = async (inputValue: string, label: string) => {
-    if (label == "Chief-Complaint") {
-      await CreateFn(inputValue, createComplain);
-    }
-    if (label == "On-Examinations") {
-      await CreateFn(inputValue, createOnExamination);
-    }
-    if (label == "Diagnosis") {
-      await CreateFn(inputValue, createDiagnosis);
-    }
-    if (label == "Investigation") {
-      await CreateFn(inputValue, createInvestigation);
-    }
+    try {
+      if (label === "Chief-Complaint") {
+        await CreateFn(inputValue, createComplain);
+      }
+      if (label === "On-Examinations") {
+        await CreateFn(inputValue, createOnExamination);
+      }
+      if (label === "Diagnosis") {
+        await CreateFn(inputValue, createDiagnosis);
+      }
+      if (label === "Investigation") {
+        await CreateFn(inputValue, createInvestigation);
+      }
 
-    const fieldName = label.toLowerCase();
-    // Add to form value
-    const prev = form.getValues(fieldName) || [];
-    form.setValue(fieldName, [...prev, inputValue]);
-    // Add to dynamic options for the select
-    setDynamicOptions((prevOptions) => ({
-      ...prevOptions,
-      [fieldName]: [
-        ...prevOptions[fieldName],
-        { value: inputValue, label: inputValue },
-      ],
-    }));
+      const fieldName = label.toLowerCase();
+      // Add to form value
+      const prev = form.getValues(fieldName) || [];
+      form.setValue(fieldName, [...prev, inputValue]);
+      // Add to dynamic options for the select
+      setDynamicOptions((prevOptions) => ({
+        ...prevOptions,
+        [fieldName]: [
+          ...prevOptions[fieldName],
+          { value: inputValue, label: inputValue },
+        ],
+      }));
+    } catch (error) {
+      toast.error("Failed to save new option");
+      console.error("Error saving new option:", error);
+    }
   };
 
   // Handler for advice field
-  const handleSaveAdvice = (inputValue: string) => {
-    CreateAdviceFn(inputValue, createAdvice);
-    const prev = form.getValues("advice") || [];
-    form.setValue("advice", [...prev, inputValue]);
+  const handleSaveAdvice = async (inputValue: string) => {
+    try {
+      await CreateAdviceFn(inputValue, createAdvice);
+      const prev = form.getValues("advice") || [];
+      form.setValue("advice", [...prev, inputValue]);
+    } catch (error) {
+      toast.error("Failed to save advice");
+      console.error("Error saving advice:", error);
+    }
   };
 
   return (
@@ -214,6 +237,7 @@ const CreatePrescription = () => {
               handleAddMedicineInput={handleAddMedicineInput}
               handleAdviceInputChange={handleSaveNewOption}
               handleAdviceChange={handleSaveAdvice}
+              setMedicineInputCount={setMedicineInputCount}
               dynamicOptions={dynamicOptions}
               type="create"
             />
