@@ -57,6 +57,9 @@ const prescriptionApi = baseApi.injectEndpoints({
           method: "GET",
         };
       },
+      providesTags: (_result, _error, { prescriptionId }) => [
+        { type: "prescription", id: prescriptionId },
+      ],
     }),
     getExtraAdvice: builder.query({
       query: () => {

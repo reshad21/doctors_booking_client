@@ -20,7 +20,7 @@ const MedicineForm = ({
   handleRemoveMedicineInput,
   type,
 }: any) => {
-console.log(medicineInputCount, 'medicineInputCount')
+
   const [duplicateErrors, setDuplicateErrors] = useState<
     Record<string, string>
   >({});
@@ -41,7 +41,6 @@ console.log(medicineInputCount, 'medicineInputCount')
     [dynamicMedicineCount]
   );
 
-  console.log(medicineFieldNames, "medicineFieldNames")
 
   // Watch all medicine fields for changes
   const medicineFieldValues = form.watch(medicineFieldNames);

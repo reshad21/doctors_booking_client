@@ -40,7 +40,7 @@ const CreatePrescription = () => {
   // Replace this with your actual backend data mapping logic
   const backendData = location.state?.backendData || {};
   const form = useForm({
-    defaultValues: backendData
+    defaultValues: backendData,
   });
 
   const handleAddMedicineInput = () => {
@@ -62,7 +62,6 @@ const CreatePrescription = () => {
     }
     form.unregister(`medicine-${contentToDelete}`);
   };
-
 
   const onSubmit = async (data: any) => {
     const medicineEntries = Object.entries(data)
@@ -120,11 +119,13 @@ const CreatePrescription = () => {
       chiefComplaint: data["chief-complaint"],
       onExaminations: data["on-examinations"],
       diagnosis: data.diagnosis,
-      nxVisit: data.nxVisit,
+      nextVisit: data.nextVisit,
       investigation: data.investigation,
       advice: data?.advice,
     };
-    
+
+    console.log(transformedData);
+
     const res = (await createPrescription(transformedData)) as any;
 
     if (res?.data?.message) {

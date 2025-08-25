@@ -25,7 +25,7 @@ const MedicineSelect = ({
 }: MedicineSelectProps) => {
   const [inputValue, setInputValue] = useState("");
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-  console.log(control, "control in medicine select");
+  
   const {
     data: medicineData,
     isLoading,

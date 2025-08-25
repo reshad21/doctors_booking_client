@@ -80,7 +80,7 @@ export const timeOptions = [
 ];
 
 export type FormValues = {
-  nxVisit?: string;
+  nextVisit?: string;
   advice?: string[];
   "chief-complaint"?: string[];
   "on-examinations"?: string[];

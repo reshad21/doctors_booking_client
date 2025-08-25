@@ -71,7 +71,7 @@ const UpdatePrescription = () => {
   useEffect(() => {
     if (prescriptionData && Object.keys(prescriptionData).length > 0) {
       form.reset({
-        nxVisit: prescriptionData.nextVisit,
+        nextVisit: prescriptionData.nextVisit,
         advice: prescriptionData.advice?.map((c: any) => c.description),
         "chief-complaint": prescriptionData.chiefComplaint?.map(
           (c: any) => c.description
@@ -171,7 +171,7 @@ const UpdatePrescription = () => {
             if (!dosage && !day && !time && !comment) return null;
 
             return {
-              id: crypto.randomUUID(),
+              // id: crypto.randomUUID(),
               dosage: dosage || "",
               day: day || "",
               time: time || "",
@@ -203,7 +203,7 @@ const UpdatePrescription = () => {
       diagnosis: Array.isArray(data.diagnosis) ? data.diagnosis : [],
       medicines,
     };
-
+console.log(transformedData, "transformedData")
     const res = (await updatePrescription(transformedData)) as any;
 
     if (res?.data?.message) {

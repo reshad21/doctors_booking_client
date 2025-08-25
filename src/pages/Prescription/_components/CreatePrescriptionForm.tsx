@@ -292,7 +292,7 @@ const CreatePrescriptionForm = ({
                 </h4>
               </div>
               <BaseInput
-                name="nxVisit"
+                name="nextVisit"
                 placeholder="Enter Follow up details"
                 type="text"
                 classname="p-3 rounded-md bg-[#fdfdff] border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
