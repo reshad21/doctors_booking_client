@@ -13,11 +13,15 @@ import type { Patient } from "@/types/patient.types";
 import { Badge } from "@/components/ui/badge";
 import { UpdatePatientModal } from "./UpdatePatientModal";
 import { useState } from "react";
-import { useUpdatePatientMutation } from "@/redux/api/patient/patient";
+import {
+  useUpdateIsArrivedPatientMutation,
+  useUpdatePatientMutation,
+} from "@/redux/api/patient/patient";
 import { useAppDispatch } from "@/redux/hooks";
 import { useSelector } from "react-redux";
 import { toggleSerial, endSerial } from "@/redux/api/features/serialSlice";
 import toast from "react-hot-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface AppointmentTableProps {
   patientsData: Patient[];
@@ -28,7 +32,17 @@ const AppointmentTable = ({
   patientsData,
   deletePatient,
 }: AppointmentTableProps) => {
+  const [updateIsArrivedPatient] = useUpdateIsArrivedPatientMutation();
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [checkboxStates, setCheckboxStates] = useState<Record<string, boolean>>(
+    () => {
+      const initialState: Record<string, boolean> = {};
+      patientsData?.forEach((patient) => {
+        initialState[patient.id] = patient.isArrived || false;
+      });
+      return initialState;
+    }
+  );
   const [modalDataToUpdate, setModalDataToUpdate] = useState<Patient | null>(
     null
   );
@@ -54,6 +68,25 @@ const AppointmentTable = ({
     }
   };
 
+  const handleCheckboxChange = async (patientId: string, checked: boolean) => {
+    setCheckboxStates((prev) => ({
+      ...prev,
+      [patientId]: checked,
+    }));
+
+    const updateData = { isArrived: checked, id: patientId };
+    const res = await updateIsArrivedPatient(updateData) as any;
+    if (res?.data?.message) {
+      toast.success(res?.data?.message);
+    }else{
+      toast.error(res?.error?.data?.message)
+      setCheckboxStates((prev) => ({
+      ...prev,
+      [patientId]: checked,
+    }));
+    }
+  };
+
   return (
     <div>
       <Table className="no-border">
@@ -66,6 +99,7 @@ const AppointmentTable = ({
               "Payment",
               "Visited",
               "Patient Calling",
+              "Is-Arrived",
               "Action",
             ].map((header, ind) => (
               <TableHead
@@ -138,6 +172,16 @@ const AppointmentTable = ({
                 >
                   End
                 </Badge>
+              </TableCell>
+              <TableCell>
+                <Checkbox
+                  id={`arrived-${patient.id}`}
+                  checked={checkboxStates[patient.id] || false}
+                  onCheckedChange={(checked) =>
+                    handleCheckboxChange(patient.id, checked === true)
+                  }
+                  className="data-[state=checked]:border-[#042f16] data-[state=checked]:bg-[#042f16] data-[state=checked]:text-white"
+                />
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2 h-full">
