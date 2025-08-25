@@ -32,10 +32,10 @@ const CreatePrescription = () => {
   const navigate = useNavigate();
 
   const [medicineInputCount, setMedicineInputCount] = useState([
-    { 
+    {
       content: Date.now().toString(),
-      medicineName: "", 
-      DosageSchedule: [{ day: "", dosage: "", time: "", comment: "" }]
+      medicineName: "",
+      DosageSchedule: [{ day: "", dosage: "", time: "", comment: "" }],
     },
   ]);
 
@@ -44,16 +44,15 @@ const CreatePrescription = () => {
     defaultValues: backendData,
   });
 
- 
   const handleAddMedicineInput = () => {
     const newId = Date.now().toString();
     setMedicineInputCount((prev) => [
       ...prev,
-      { 
+      {
         content: newId,
-        medicineName: "", 
-        DosageSchedule: [{ day: "", dosage: "", time: "", comment: "" }]
-      }
+        medicineName: "",
+        DosageSchedule: [{ day: "", dosage: "", time: "", comment: "" }],
+      },
     ]);
   };
 
@@ -61,11 +60,14 @@ const CreatePrescription = () => {
     setMedicineInputCount((prev) =>
       prev.filter((item) => item.content !== contentToDelete)
     );
-    
+
     // Remove all related fields from form state
     const allFormValues = form.getValues();
     Object.keys(allFormValues).forEach((key) => {
-      if (key.endsWith(`-${contentToDelete}`) || key === `medicine-${contentToDelete}`) {
+      if (
+        key.endsWith(`-${contentToDelete}`) ||
+        key === `medicine-${contentToDelete}`
+      ) {
         form.unregister(key);
       }
     });
@@ -87,7 +89,6 @@ const CreatePrescription = () => {
         return parts.length === 3 && parts[2] === medicineId;
       });
 
-
       const dosageGroups = dosageFields.reduce<
         Record<string, Record<string, any>>
       >((acc, [fieldName, value]) => {
@@ -96,7 +97,7 @@ const CreatePrescription = () => {
         if (!acc[dosageIndex]) {
           acc[dosageIndex] = {};
         }
-        
+
         acc[dosageIndex][
           fieldType === "dosage"
             ? "dosage"
@@ -113,7 +114,7 @@ const CreatePrescription = () => {
       DosageSchedule = DosageSchedule.filter(
         (ds: any) => (ds.dosage && ds.day) || ds.day === "চলবে"
       );
-      
+
       return {
         medicineName: name,
         DosageSchedule,
@@ -124,7 +125,7 @@ const CreatePrescription = () => {
     const transformedData = {
       doctorId: doctorId,
       patientId,
-      medicines: medicines.filter(m => m.medicineName), // Filter out empty medicines
+      medicines: medicines.filter((m) => m.medicineName), // Filter out empty medicines
       content: data.content,
       chiefComplaint: data["chief-complaint"],
       onExaminations: data["on-examinations"],
@@ -160,7 +161,7 @@ const CreatePrescription = () => {
     investigation: [],
   });
 
-  // Handler to save new select options (for all fields)
+ 
   const handleSaveNewOption = async (inputValue: string, label: string) => {
     try {
       if (label === "Chief-Complaint") {

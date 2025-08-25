@@ -36,7 +36,7 @@ const CreatePrescriptionForm = ({
   const { data: investigations } = useGetInvestigationQuery({ limit: 200 });
   const { data: diagnosis } = useGetDiagnosisQuery({ limit: 200 });
   const { data: chiefComplaint } = useGetChiefComplaintQuery({ limit: 200 });
-  const { data: advice } = useGetAdviceQuery({});
+  const { data: advice } = useGetAdviceQuery({ limit: 200 });
 
   // Validate unique medicines
   const validateUniqueMedicines = useCallback(() => {
@@ -151,7 +151,7 @@ const CreatePrescriptionForm = ({
     }
   }, [medicineInputCount, medicineFieldValues, validateUniqueMedicines]);
 
-  // Enhanced add timing set function
+ 
   const addTimingSet = useCallback((id: string) => {
     setTimingCounts((prev) => ({
       ...prev,
