@@ -20,6 +20,7 @@ import { Label } from "@radix-ui/react-label";
 import TipTapEditor from "./TiptapEditor";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ZodSchema } from "zod";
+import { BaseDatePicker } from "./BaseDatePicker";
 
 type FieldConfig = {
   label: string;
@@ -37,6 +38,7 @@ interface CustomModalProps {
   description?: string;
   input?: FieldConfig[];
   file?: any[];
+  datePicker?: any[];
   select?: SelectConfig[];
   open: boolean;
   setOpen: (value: boolean) => void;
@@ -70,10 +72,13 @@ const CustomModal: React.FC<CustomModalProps> = ({
   children,
   richTextEditor,
   validationSchema,
+  datePicker = [],
 }) => {
   const formMethods = useForm<Record<string, any>>({
     defaultValues,
-    resolver: validationSchema ? zodResolver(validationSchema as any) : undefined,
+    resolver: validationSchema
+      ? zodResolver(validationSchema as any)
+      : undefined,
   });
 
   useEffect(() => {
@@ -184,7 +189,22 @@ const CustomModal: React.FC<CustomModalProps> = ({
                     className="border-[#A0B19E] rounded-[4px] border text-[#5F597480] w-full bg-gray-50"
                   />
                 ))}
-
+                {datePicker.map(({ label, name }) => (
+                  <FormField
+                    key={name}
+                    control={formMethods.control}
+                    name={name}
+                    render={({ field }) => (
+                      <BaseDatePicker
+                        name={field.name}
+                        label={label}
+                        value={field.value}
+                        onChange={field.onChange}
+                        required
+                      />
+                    )}
+                  />
+                ))}
                 {richTextEditor && (
                   <FormField
                     control={formMethods.control}
