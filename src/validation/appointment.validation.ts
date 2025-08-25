@@ -2,6 +2,7 @@ import z from "zod";
 
 export const patientSchema = z.object({
   name: z.string().min(1, "Name is required"),
+  appDate: z.string().nonempty("Appointment Date is required"),
   phoneNumber: z
     .string()
     .min(11, "Phone number must be at least 11 digits")

@@ -12,6 +12,18 @@ const patientApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["patient"],
     }),
+    updateIsArrivedPatient: builder.mutation({
+      query: (data) => {
+        console.log(data);
+        
+        return {
+          url: `/patients/update-isArrived-status`,
+          method: "POST",
+          body: data,
+        };
+      },
+      invalidatesTags: ["patient"],
+    }),
     getPatient: builder.query({
       query: ({ page, limit, searchTerm, filter, orderBy }) => {
         return {
@@ -51,4 +63,5 @@ export const {
   useGetPatientQuery,
   useUpdatePatientMutation,
   useDeletePatientMutation,
+  useUpdateIsArrivedPatientMutation
 } = patientApi;
