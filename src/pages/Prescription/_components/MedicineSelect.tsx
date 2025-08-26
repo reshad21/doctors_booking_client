@@ -22,7 +22,7 @@ const MedicineSelect = ({
   placeholder = "Search medicines...",
   className = "",
 }: MedicineSelectProps) => {
-  const [inputValue, setInputValue] = useState('A');
+  const [inputValue, setInputValue] = useState('');
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   
   const {
@@ -33,7 +33,7 @@ const MedicineSelect = ({
     limit: 100,
     searchTerm: inputValue,
   });
-console.log(medicineData, "medicineData")
+
   // Move medicines inside useMemo to avoid dependency warning
   const medicines = useMemo(
     () => medicineData?.data?.data || [],
