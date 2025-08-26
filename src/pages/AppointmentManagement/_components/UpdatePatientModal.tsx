@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import CustomModal from "@/components/shared/CustomModal";
 import { useUpdatePatientMutation } from "@/redux/api/patient/patient";
 import { toast } from "react-hot-toast";
@@ -43,16 +42,25 @@ export function UpdatePatientModal({
       ],
     },
   ];
-
+  const date = new Date(
+    new Date(data?.createdAt).getTime() - 24 * 60 * 60 * 1000
+  );
+  const defaultData = { ...data, createdAt: date };
   const handleUpdateSubmit = async (
     formData: Record<string, any>,
     helpers: { reset: () => void; close: () => void }
   ) => {
-    
+    const date = new Date(formData?.createdAt);
+    // Optional: add 1 day if needed
+    date.setDate(date.getDate() + 1);
+    // Always use ISO string for Prisma
+    const createdAtISO = date.toISOString();
+    console.log({ ...formData, createdAt: createdAtISO });
+
     try {
       const res = (await updatePatient({
         id: data?.id,
-        payload: formData,
+        payload: { ...formData, createdAt: createdAtISO },
       })) as any;
 
       if (res?.data?.success) {
@@ -68,8 +76,6 @@ export function UpdatePatientModal({
     }
   };
 
-//   const defaultValues = Array.isArray(data) ? data[0] : data;
-
   return (
     <CustomModal
       open={open}
@@ -79,8 +85,9 @@ export function UpdatePatientModal({
       handleFormSubmit={handleUpdateSubmit}
       input={patientInputFields}
       select={selectFields}
+      datePicker={[{ label: "AppointmentData", name: "createdAt" }]}
       buttonProperty={{ type: "update", text: "Update Patient" }}
-      defaultValues={data}
+      defaultValues={defaultData}
     />
   );
 }
