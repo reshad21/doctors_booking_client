@@ -39,6 +39,7 @@ const MedicineForm = ({
       [],
     [dynamicMedicineCount]
   );
+  console.log(dynamicMedicineCount, 'dynamicMedicineCount')
 
   // Watch all medicine fields for changes
   const medicineFieldValues = form.watch(medicineFieldNames);

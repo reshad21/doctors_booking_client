@@ -26,7 +26,6 @@ export const CreateAdviceFn = async (inputValue: any, rtkFn: any) => {
 };
 
 export const InputOptions = (data: any, type: any) => {
-  console.log(data)
   if (type !== "advice") {
     const options = data?.data?.map((item: any) => ({
       value: item.value,
