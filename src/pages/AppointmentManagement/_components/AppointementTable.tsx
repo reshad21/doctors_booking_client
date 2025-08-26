@@ -13,7 +13,10 @@ import type { Patient } from "@/types/patient.types";
 import { Badge } from "@/components/ui/badge";
 import { UpdatePatientModal } from "./UpdatePatientModal";
 import { useState } from "react";
-import { useUpdatePatientMutation } from "@/redux/api/patient/patient";
+import {
+  useUpdateIsArrivedPatientMutation,
+  useUpdatePatientMutation,
+} from "@/redux/api/patient/patient";
 import { useAppDispatch } from "@/redux/hooks";
 import { useSelector } from "react-redux";
 import { toggleSerial, endSerial } from "@/redux/api/features/serialSlice";
@@ -28,6 +31,7 @@ const AppointmentTable = ({
   patientsData,
   deletePatient,
 }: AppointmentTableProps) => {
+  const [updateIsArrivedPatient] = useUpdateIsArrivedPatientMutation();
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [modalDataToUpdate, setModalDataToUpdate] = useState<Patient | null>(
     null
@@ -54,6 +58,17 @@ const AppointmentTable = ({
     }
   };
 
+  const handleCheckboxChange = async (patientId: string, isArrived: any) => {
+    const arrived = isArrived == "ARRIVED" ? true : false;
+    const updateData = { isArrived: arrived, id: patientId };
+    const res = (await updateIsArrivedPatient(updateData)) as any;
+    if (res?.data?.message) {
+      toast.success(res?.data?.message);
+    } else {
+      toast.error(res?.error?.data?.message);
+    }
+  };
+
   return (
     <div>
       <Table className="no-border">
@@ -66,6 +81,7 @@ const AppointmentTable = ({
               "Payment",
               "Visited",
               "Patient Calling",
+              "Arrived Status",
               "Action",
             ].map((header, ind) => (
               <TableHead
@@ -138,6 +154,20 @@ const AppointmentTable = ({
                 >
                   End
                 </Badge>
+              </TableCell>
+              <TableCell>
+                <select
+                  value={
+                    patient?.isArrived == false ? "NOT-ARRIVED" : "ARRIVED"
+                  }
+                  onChange={(e) =>
+                    handleCheckboxChange(patient.id, e.target.value)
+                  }
+                  className="border rounded text-xs bg-[#14400D] text-white p-1 focus:outline-none"
+                >
+                  <option value="ARRIVED">ARRIVED</option>
+                  <option value="NOT-ARRIVED">NOT-ARRIVED</option>
+                </select>
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2 h-full">

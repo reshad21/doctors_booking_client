@@ -1,6 +1,5 @@
-"use client";
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useState, useMemo } from "react";
 import Select from "react-select";
 import { Controller } from "react-hook-form";
@@ -23,9 +22,9 @@ const MedicineSelect = ({
   placeholder = "Search medicines...",
   className = "",
 }: MedicineSelectProps) => {
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState('');
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-  console.log(control, "control in medicine select");
+  
   const {
     data: medicineData,
     isLoading,

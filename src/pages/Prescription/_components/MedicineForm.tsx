@@ -20,7 +20,6 @@ const MedicineForm = ({
   handleRemoveMedicineInput,
   type,
 }: any) => {
-console.log(medicineInputCount, 'medicineInputCount')
   const [duplicateErrors, setDuplicateErrors] = useState<
     Record<string, string>
   >({});
@@ -40,8 +39,7 @@ console.log(medicineInputCount, 'medicineInputCount')
       [],
     [dynamicMedicineCount]
   );
-
-  console.log(medicineFieldNames, "medicineFieldNames")
+  console.log(dynamicMedicineCount, 'dynamicMedicineCount')
 
   // Watch all medicine fields for changes
   const medicineFieldValues = form.watch(medicineFieldNames);
@@ -115,15 +113,6 @@ console.log(medicineInputCount, 'medicineInputCount')
                 type="button"
                 onClick={() => {
                   handleRemoveMedicineInput(item.content);
-                  const allKeys = Object.keys(form.getValues());
-                  allKeys.forEach((key) => {
-                    if (
-                      key.endsWith(`-${item.content}`) ||
-                      key.startsWith(`${item.content}-`)
-                    ) {
-                      form.unregister(key);
-                    }
-                  });
                 }}
                 className="absolute top-3 right-3 w-6 h-6 text-red-500 hover:bg-red-50 rounded-full flex items-center justify-center transition-all duration-200"
                 title="Remove Medicine"

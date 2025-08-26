@@ -12,6 +12,7 @@ export interface Patient {
   age: string;
   gender: string;
   weight: string;
+  isArrived: boolean
   status: PatientStatus;
   visitStatus: VisitStatus;
   visitedAt?: Date;

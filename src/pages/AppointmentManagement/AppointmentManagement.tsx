@@ -68,6 +68,7 @@ const AppointmentManagement = () => {
         { name: "Other", val: "OTHER" },
       ],
     },
+
     {
       label: "Chamber",
       name: "chamberId",
@@ -88,15 +89,22 @@ const AppointmentManagement = () => {
   ];
 
   const handleFormSubmit = async (
-    data: Record<string, any>,
+    data: any,
     helpers: { reset: () => void; close: () => void }
   ) => {
+    const date = new Date(data?.appDate);
+    // Optional: add 1 day if needed
+    date.setDate(date.getDate() + 1);
+    // Always use ISO string for Prisma
+    const createdAtISO = date.toISOString();
     const res = (await createPatient({
       ...data,
       age: String(data.age),
       weight: data.weight ? String(data.weight) : undefined,
       doctorId,
+      createdAt: createdAtISO,
     })) as any;
+
     if (res?.data?.success) {
       const response = await sendSingleMessage({
         number: data?.phoneNumber,
@@ -152,6 +160,7 @@ const AppointmentManagement = () => {
               handleFormSubmit={handleFormSubmit}
               input={createPatientInputs}
               select={selectFields}
+              datePicker={[{ label: "AppointmentData", name: "appDate" }]}
               buttonProperty={{ type: "create", text: "Add New Patient" }}
               validationSchema={patientSchema}
             />

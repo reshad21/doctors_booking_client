@@ -1,7 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import ReactSelectCompo from "./ReactSelectCompo";
 import MedicineForm from "./MedicineForm";
 import { Form } from "@/components/ui/form";
@@ -37,10 +36,10 @@ const CreatePrescriptionForm = ({
   const { data: investigations } = useGetInvestigationQuery({ limit: 200 });
   const { data: diagnosis } = useGetDiagnosisQuery({ limit: 200 });
   const { data: chiefComplaint } = useGetChiefComplaintQuery({ limit: 200 });
-  const { data: advice } = useGetAdviceQuery({});
+  const { data: advice } = useGetAdviceQuery({ limit: 200 });
 
   // Validate unique medicines
-  const validateUniqueMedicines = () => {
+  const validateUniqueMedicines = useCallback(() => {
     if (!medicineInputCount || medicineInputCount.length <= 1) {
       return true;
     }
@@ -73,7 +72,7 @@ const CreatePrescriptionForm = ({
       setFormError("");
       return true;
     }
-  };
+  }, [medicineInputCount, form]);
 
   const handleSubmit = (data: any) => {
     setFormError("");
@@ -85,47 +84,152 @@ const CreatePrescriptionForm = ({
     onSubmit(data);
   };
 
-  const watchedMedicineFields =
-    medicineInputCount?.map((item: any) => `medicine-${item.content}`) || [];
-  form.watch(watchedMedicineFields);
-
-  useEffect(() => {
-    if (medicineInputCount && medicineInputCount.length > 1) {
-      setTimeout(() => {
-        validateUniqueMedicines();
-      }, 100);
-    } else {
-      setFormError("");
-    }
-  }, [medicineInputCount, form.watch(watchedMedicineFields)]);
-
-  // Sync timingCounts whenever medicineInputCount changes
+  // Initialize timing counts when medicineInputCount changes
   useEffect(() => {
     if (medicineInputCount && medicineInputCount.length > 0) {
       setTimingCounts((prev) => {
         const newTimingCounts: Record<string, number> = { ...prev };
+
         medicineInputCount.forEach((item: any) => {
           if (!(item.content in newTimingCounts)) {
+            // Set timing count based on existing DosageSchedule or default to 1
             newTimingCounts[item.content] = item.DosageSchedule?.length || 1;
           }
         });
+
+        // Remove timing counts for medicines that no longer exist
+        Object.keys(newTimingCounts).forEach((key) => {
+          if (!medicineInputCount.some((item: any) => item.content === key)) {
+            delete newTimingCounts[key];
+          }
+        });
+
         return newTimingCounts;
       });
+    }
+  }, [medicineInputCount]);
 
-      // Preserve existing values
+  // Set form values from existing data when component mounts or data changes
+  useEffect(() => {
+    if (medicineInputCount && medicineInputCount.length > 0) {
       medicineInputCount.forEach((med: any) => {
-        const count = med.DosageSchedule?.length || 1;
-        for (let i = 0; i < count; i++) {
-          const idx = i + 1;
-          const ds = med.DosageSchedule?.[i] || {};
-          form.setValue(`${idx}-duration-${med.content}`, ds.day || "");
-          form.setValue(`${idx}-dosage-${med.content}`, ds.dosage || "");
-          form.setValue(`${idx}-time-${med.content}`, ds.time || "");
-          form.setValue(`${idx}-comment-${med.content}`, ds.comment || "");
+        // Set medicine name if it exists
+        if (med.medicineName && !form.getValues(`medicine-${med.content}`)) {
+          form.setValue(`medicine-${med.content}`, med.medicineName);
+        }
+
+        // Set dosage schedule values
+        if (med.DosageSchedule && med.DosageSchedule.length > 0) {
+          med.DosageSchedule.forEach((ds: any, index: number) => {
+            const idx = index + 1;
+            if (ds.day) form.setValue(`${idx}-duration-${med.content}`, ds.day);
+            if (ds.dosage)
+              form.setValue(`${idx}-dosage-${med.content}`, ds.dosage);
+            if (ds.time) form.setValue(`${idx}-time-${med.content}`, ds.time);
+            if (ds.comment)
+              form.setValue(`${idx}-comment-${med.content}`, ds.comment);
+          });
         }
       });
     }
   }, [medicineInputCount, form]);
+
+  // Watch medicine fields for duplicate validation
+  const watchedMedicineFields =
+    medicineInputCount?.map((item: any) => `medicine-${item.content}`) || [];
+  const medicineFieldValues = form.watch(watchedMedicineFields);
+
+  useEffect(() => {
+    if (medicineInputCount && medicineInputCount.length > 1) {
+      const timeoutId = setTimeout(() => {
+        validateUniqueMedicines();
+      }, 100);
+
+      return () => clearTimeout(timeoutId);
+    } else {
+      setFormError("");
+    }
+  }, [medicineInputCount, medicineFieldValues, validateUniqueMedicines]);
+
+ 
+  const addTimingSet = useCallback((id: string) => {
+    setTimingCounts((prev) => ({
+      ...prev,
+      [id]: (prev[id] || 1) + 1,
+    }));
+  }, []);
+
+  // Enhanced remove timing set function
+  const removeTimingSet = useCallback(
+    (id: string) => {
+      setTimingCounts((prev) => {
+        const newCount = Math.max((prev[id] || 1) - 1, 1);
+
+        // If we're removing a timing set, also clean up the form fields
+        if (prev[id] && prev[id] > newCount) {
+          const timingIndex = prev[id]; // This is the timing we're removing
+          const fieldsToRemove = [
+            `${timingIndex}-dosage-${id}`,
+            `${timingIndex}-duration-${id}`,
+            `${timingIndex}-time-${id}`,
+            `${timingIndex}-comment-${id}`,
+          ];
+
+          fieldsToRemove.forEach((fieldName) => {
+            form.unregister(fieldName);
+          });
+        }
+
+        return {
+          ...prev,
+          [id]: newCount,
+        };
+      });
+    },
+    [form]
+  );
+
+  // Enhanced add medicine input function
+  const enhancedHandleAddMedicineInput = useCallback(() => {
+    // Store current form values
+    const currentValues = form.getValues();
+
+    // Call the original function
+    handleAddMedicineInput();
+
+    // Restore form values after a brief delay to ensure the new medicine is added
+    setTimeout(() => {
+      Object.keys(currentValues).forEach((key) => {
+        const currentValue = form.getValues(key);
+        if (
+          currentValues[key] !== undefined &&
+          currentValues[key] !== "" &&
+          !currentValue
+        ) {
+          form.setValue(key, currentValues[key], { shouldValidate: false });
+        }
+      });
+    }, 50);
+  }, [form, handleAddMedicineInput]);
+
+  // Enhanced remove medicine input function
+  const enhancedHandleRemoveMedicineInput = useCallback(
+    (content: string) => {
+      // Store current values before removal
+      const currentValues = form.getValues();
+
+      // Call the original removal function
+      handleRemoveMedicineInput(content);
+
+      // Clean up form fields for the removed medicine
+      Object.keys(currentValues).forEach((key) => {
+        if (key.endsWith(`-${content}`) || key.startsWith(`${content}-`)) {
+          form.unregister(key);
+        }
+      });
+    },
+    [form, handleRemoveMedicineInput]
+  );
 
   const onExaminationOptions =
     InputOptions(onExaminations, "onExaminations") || [];
@@ -267,20 +371,10 @@ const CreatePrescriptionForm = ({
               dosageOptions={dosageOptions}
               timeOptions={timeOptions}
               type={type}
-              addTimingSet={(id: string) =>
-                setTimingCounts((prev) => ({
-                  ...prev,
-                  [id]: (prev[id] || 1) + 1,
-                }))
-              }
-              removeTimingSet={(id: string) =>
-                setTimingCounts((prev) => ({
-                  ...prev,
-                  [id]: Math.max((prev[id] || 1) - 1, 1),
-                }))
-              }
-              handleAddMedicineInput={handleAddMedicineInput}
-              handleRemoveMedicineInput={handleRemoveMedicineInput}
+              addTimingSet={addTimingSet}
+              removeTimingSet={removeTimingSet}
+              handleAddMedicineInput={enhancedHandleAddMedicineInput}
+              handleRemoveMedicineInput={enhancedHandleRemoveMedicineInput}
               setMedicineInputCount={setMedicineInputCount}
             />
 
@@ -292,7 +386,7 @@ const CreatePrescriptionForm = ({
                 </h4>
               </div>
               <BaseInput
-                name="nxVisit"
+                name="nextVisit"
                 placeholder="Enter Follow up details"
                 type="text"
                 classname="p-3 rounded-md bg-[#fdfdff] border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
