@@ -33,7 +33,7 @@ const MedicineSelect = ({
     limit: 100,
     searchTerm: inputValue,
   });
-
+console.log(medicineData, "medicineData")
   // Move medicines inside useMemo to avoid dependency warning
   const medicines = useMemo(
     () => medicineData?.data?.data || [],
