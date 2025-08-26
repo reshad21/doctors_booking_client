@@ -52,10 +52,15 @@ export default function PatientCallingDisplay() {
   );
 
   // Filter ended patients out once
-  const filteredOutdoorPatients = outdoorPatients.filter(
-    (p) => !endedSerials.includes(p.id)
-  );
+  // const filteredOutdoorPatients = outdoorPatients.filter(
+  //   (p) => !endedSerials.includes(p.id)
+  // );
+  console.log(outdoorPatients);
 
+  // Filter out ended patients AND patients where isArrived is true
+  const filteredOutdoorPatients = outdoorPatients.filter(
+    (p) => !endedSerials.includes(p.id) && p.visitStatus != "VISITED"
+  );
   // Find start index in filtered list
   const outdoorStart = Math.max(
     0,
@@ -86,13 +91,20 @@ export default function PatientCallingDisplay() {
   const patientIndexMap = new Map(outdoorPatients.map((p, idx) => [p.id, idx]));
 
   // Get upcoming outdoor patients that are NOT in the visible table
+  // const upcomingOutdoorPatients = filteredOutdoorPatients.filter(
+  //   (p) => !visibleOutdoorPatients.some((vp) => vp.id === p.id)
+  // );
   const upcomingOutdoorPatients = filteredOutdoorPatients.filter(
-    (p) => !visibleOutdoorPatients.some((vp) => vp.id === p.id)
+    (p) =>
+      !visibleOutdoorPatients.some((vp) => vp.id === p.id) &&
+      p.visitStatus != "VISITED"
   );
-
   // Report patients logic: similar to outdoor patients
+  // const filteredReportPatients = reportPatients.filter(
+  //   (p) => !endedSerials.includes(p.id)
+  // );
   const filteredReportPatients = reportPatients.filter(
-    (p) => !endedSerials.includes(p.id)
+    (p) => !endedSerials.includes(p.id) && p.visitStatus != "VISITED"
   );
 
   // Find start index in filtered report list
@@ -127,10 +139,15 @@ export default function PatientCallingDisplay() {
   );
 
   // Get upcoming report patients that are NOT in the visible table
-  const upcomingReportPatients = filteredReportPatients.filter(
-    (p) => !visibleReportPatients.some((vp) => vp.id === p.id)
-  );
+  // const upcomingReportPatients = filteredReportPatients.filter(
+  //   (p) => !visibleReportPatients.some((vp) => vp.id === p.id)
+  // );
 
+  const upcomingReportPatients = filteredReportPatients.filter(
+    (p) =>
+      !visibleReportPatients.some((vp) => vp.id === p.id) &&
+      p.visitStatus != "VISITED"
+  );
   // Socket listener for new patients
   useEffect(() => {
     socket.on("patient:created", (newPatient) => {
