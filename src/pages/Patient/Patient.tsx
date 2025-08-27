@@ -43,6 +43,7 @@ const Patient = () => {
       chamberId: headerSelect.chamber || undefined,
       startDate: headerSelect.startDate || undefined,
       endDate: headerSelect.endDate || undefined,
+      timezoneOffset: new Date().getTimezoneOffset()
     }),
     orderBy: JSON.stringify({ createdAt: "desc" }),
   });

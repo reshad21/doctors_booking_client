@@ -7,15 +7,25 @@ import { useGetPatientQuery } from "@/redux/api/patient/patient";
 import TodayAppointments from "../_component/TodayAppointment";
 import { useAppSelector } from "@/redux/hooks";
 import LoadingSpinner from "@/loading/LoadingSpinner";
+import { useState } from "react";
 
 const DoctorDashboard = () => {
+  const [selectedChamber, setSelectedChamber] = useState("all");
+
+  // const { data: chambers } = useGetChambersQuery();
+  const chambers = [
+    { id: "all", name: "All Chambers" },
+    { id: "Marvin Myers", name: "Marvin Myers" },
+    { id: "Avram Wiggins", name: "Avram Wiggins" },
+  ];
   const today = new Date().toISOString().split("T")[0];
   const { data: patientSummaryData, isLoading: isPatientSummaryLoading } =
-    useGetPatientSummaryQuery({});
+    useGetPatientSummaryQuery({ chamberName: selectedChamber });
   const { data: patientApiData, isLoading: isPatientLoading } =
     useGetPatientQuery({
       filter: JSON.stringify({
         createdAt: today,
+        timezoneOffset: new Date().getTimezoneOffset(),
       }),
       limit: 1000,
     });
@@ -31,6 +41,9 @@ const DoctorDashboard = () => {
     })) || [];
 
   if (isPatientSummaryLoading || isPatientLoading) return <LoadingSpinner />;
+  const handleChamberChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedChamber(event.target.value);
+  };
 
   return (
     <div>
@@ -59,8 +72,33 @@ const DoctorDashboard = () => {
               <p className="text-gray-600">Have a nice day at work</p>
             </div>
           </div>
-          <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center">
-            <div className="w-8 h-8 bg-black rounded transform rotate-45"></div>
+
+          <div className="flex justify-center items-center gap-5 flex-row-reverse">
+            <div>
+              <div className="mb-4">
+                <label
+                  htmlFor="chamber-select"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Select Chamber:
+                </label>
+                <select
+                  id="chamber-select"
+                  value={selectedChamber}
+                  onChange={handleChamberChange}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-brand focus:border-brand"
+                >
+                  {chambers.map((chamber) => (
+                    <option key={chamber.id} value={chamber.id}>
+                      {chamber.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-black rounded transform rotate-45"></div>
+            </div>
           </div>
         </div>
 
