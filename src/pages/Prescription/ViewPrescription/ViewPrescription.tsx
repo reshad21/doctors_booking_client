@@ -54,7 +54,7 @@ const ViewPrescription = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+      <div className="bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
@@ -78,7 +78,7 @@ const ViewPrescription = () => {
         )}
 
         <div className="flex gap-8">
-          <div className="w-72 flex-shrink-0">
+          <div className="w-72 flex-shrink-0 z-10">
             <div className="bg-white rounded-lg p-4 border border-gray-200">
               <h3 className="text-sm font-medium text-gray-900 mb-3">
                 Prescription Dates
