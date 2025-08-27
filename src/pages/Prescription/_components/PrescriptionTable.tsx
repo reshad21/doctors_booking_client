@@ -49,7 +49,7 @@ const PrescriptionTable = ({ patients, active, totalPages, onPageChange }: any) 
                 "SN",
                 "Patient Name",
                 "Prescription Status",
-                "Created", // Added new column header
+                "Created",
                 "Patient Status",
                 "Action",
               ].map((header, ind) => (
@@ -65,7 +65,7 @@ const PrescriptionTable = ({ patients, active, totalPages, onPageChange }: any) 
           <TableBody>
             {patients?.map((patient: Patient, index: number) => {
               const prescriptionStatus = getPrescriptionStatus(patient)
-              const latestPrescriptionTime = getLatestPrescriptionTime(patient) // Get latest prescription time
+              const latestPrescriptionTime = getLatestPrescriptionTime(patient)
 
               return (
                 <TableRow key={patient.id} className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}>
@@ -109,7 +109,7 @@ const PrescriptionTable = ({ patients, active, totalPages, onPageChange }: any) 
                             <Eye className="h-5 w-5 text-[#14400D]" />
                           </Link>
                         ) : (
-                          <div className="w-5 h-5"></div> // Invisible spacer
+                          <div className="w-5 h-5"></div>
                         )}
                       </div>
 

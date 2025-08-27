@@ -12,7 +12,8 @@ import BackButton from "@/components/shared/BackButton";
 
 const ViewPrescription = () => {
   const { patientId } = useParams();
-  const { data: prescriptions, refetch } = useGetPerceptionByPatientIdQuery(patientId);
+  const { data: prescriptions, refetch } =
+    useGetPerceptionByPatientIdQuery(patientId);
   const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const printRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -24,6 +25,7 @@ const ViewPrescription = () => {
     printRefs.current[index] = el;
   };
 
+  console.log(prescriptions, prescriptions.data);
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -90,7 +92,10 @@ const ViewPrescription = () => {
                       <strong>Age:</strong> {medic?.patient?.age}
                     </span>
                     <span>
-                      <strong>Date:</strong> {medic?.createdAt?.split("T")[0]}
+                      <strong>Date:</strong>{" "}
+                      {new Date(medic?.createdAt)
+                        .toLocaleDateString("en-GB")
+                        .replace(/\//g, "-")}
                     </span>
                     <span>
                       <strong>ID:</strong> N/A

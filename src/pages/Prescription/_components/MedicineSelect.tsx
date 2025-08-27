@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useState, useMemo } from "react";
-import Select from "react-select";
+import { useState, useMemo, useEffect } from "react";
+import Select, { components } from "react-select";
 import { Controller } from "react-hook-form";
 import { debounce } from "lodash";
 import { useGetMedicinesListQuery } from "@/redux/api/manualData/manualData";
@@ -15,6 +15,24 @@ interface MedicineSelectProps {
   className?: string;
 }
 
+interface RecentSearch {
+  name: string;
+  genericName: string;
+  strength: string;
+  fullDisplayName: string;
+  dosageDescription?: string;
+}
+
+// --- Recent searches persisted in localStorage ---
+const getStoredRecentSearches = (): RecentSearch[] => {
+  const stored = localStorage.getItem("recentSearches");
+  return stored ? JSON.parse(stored) : [];
+};
+
+const saveRecentSearches = (items: RecentSearch[]) => {
+  localStorage.setItem("recentSearches", JSON.stringify(items));
+};
+
 const MedicineSelect = ({
   name,
   control,
@@ -22,9 +40,14 @@ const MedicineSelect = ({
   placeholder = "Search medicines...",
   className = "",
 }: MedicineSelectProps) => {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-  
+  const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
+
+  useEffect(() => {
+    setRecentSearches(getStoredRecentSearches());
+  }, []);
+
   const {
     data: medicineData,
     isLoading,
@@ -34,76 +57,153 @@ const MedicineSelect = ({
     searchTerm: inputValue,
   });
 
-  // Move medicines inside useMemo to avoid dependency warning
   const medicines = useMemo(
     () => medicineData?.data?.data || [],
     [medicineData]
   );
 
-  // Create options from medicines, always include current value if missing
-  const allMedicineOptions = useMemo(() => {
-    let options = [];
-    if (medicines && medicines.length > 0) {
-      options = medicines.map((med: any) => {
-        // Function to get abbreviated dosage form
-        const abbreviatedForm = getAbbreviatedDosageForm(med.dosageDescription);
-        const displayName = abbreviatedForm
-          ? `${abbreviatedForm} ${med.brandName} ${med.strength}`
-          : `${med.brandName} ${med.strength}`;
-        return {
-          value: displayName,
-          label: (
-            <div className="flex flex-col py-1">
-              <span className="font-medium text-sm">
-                {displayName}{" "}
-                <span className="text-xs text-gray-500">
-                  ({med.dosageDescription})
+  // --- Add to recents ---
+  const addToRecentSearches = (medicine: RecentSearch) => {
+    let updated = recentSearches.filter(
+      (item) => item.fullDisplayName !== medicine.fullDisplayName
+    );
+    updated.unshift(medicine);
+    if (updated.length > 5) updated = updated.slice(0, 5);
+    setRecentSearches(updated);
+    saveRecentSearches(updated);
+  };
+
+  // --- Remove from recents ---
+  const removeFromRecentSearches = (fullDisplayName: string) => {
+    const updated = recentSearches.filter(
+      (item) => item.fullDisplayName !== fullDisplayName
+    );
+    setRecentSearches(updated);
+    saveRecentSearches(updated);
+  };
+
+  // --- Options for recent searches ---
+  const recentSearchOptions = useMemo(() => {
+    return recentSearches.map((recent) => ({
+      value: recent.fullDisplayName,
+      label: (
+        <div className="flex flex-col py-1">
+          <div className="flex items-center justify-between gap-2">
+            <span className="font-medium text-sm">
+              {recent.fullDisplayName}
+              {recent.dosageDescription && (
+                <span className="text-xs text-gray-500 ml-1">
+                  ({recent.dosageDescription})
                 </span>
+              )}
+            </span>
+          </div>
+          <span className="text-xs text-gray-500">{recent.genericName}</span>
+        </div>
+      ),
+      medicineData: recent,
+      isRecent: true,
+    }));
+  }, [recentSearches]);
+
+  // --- Options from API ---
+  const apiMedicineOptions = useMemo(() => {
+    return medicines.map((med: any) => {
+      const abbreviatedForm = getAbbreviatedDosageForm(med.dosageDescription);
+      const displayName = abbreviatedForm
+        ? `${abbreviatedForm} ${med.brandName} ${med.strength}`
+        : `${med.brandName} ${med.strength}`;
+
+      return {
+        value: displayName,
+        label: (
+          <div className="flex flex-col py-1">
+            <span className="font-medium text-sm">
+              {displayName}{" "}
+              <span className="text-xs text-gray-500">
+                ({med.dosageDescription})
               </span>
-              <span className="text-xs text-gray-500">{med.genericName}</span>
-            </div>
-          ),
-        };
+            </span>
+            <span className="text-xs text-gray-500">{med.genericName}</span>
+          </div>
+        ),
+        medicineData: {
+          name: med.brandName,
+          genericName: med.genericName,
+          strength: med.strength,
+          fullDisplayName: displayName,
+          dosageDescription: med.dosageDescription,
+        },
+        isRecent: false,
+      };
+    });
+  }, [medicines]);
+
+  // --- Grouped options ---
+  const allOptions = useMemo(() => {
+    const options: any[] = [];
+
+    if (recentSearchOptions.length > 0) {
+      options.push({
+        label: "Recent Searches",
+        options: recentSearchOptions,
       });
     }
 
-    // Always include the current value if not present
-    if (control && control._formValues && control._formValues[name]) {
-      const currentValue = control._formValues[name];
-      console.log(currentValue, "current value in medicine select");
-      if (
-        currentValue &&
-        !options.some((opt: any) => opt.value === currentValue)
-      ) {
-        options = [
-          {
-            value: currentValue,
-            label: (
-              <div className="flex flex-col py-1">
-                <span className="font-medium text-sm">{currentValue}</span>
-                <span className="text-xs text-gray-500">
-                  (Not in search results)
-                </span>
-              </div>
-            ),
-          },
-          ...options,
-        ];
-      }
+    if (apiMedicineOptions.length > 0) {
+      options.push({
+        label: inputValue ? "Search Results" : "Medicines",
+        options: apiMedicineOptions,
+      });
     }
-    return options;
-  }, [medicines, control, name]);
 
-  // Debounced input change handler (no useCallback to avoid lint error)
-  const handleInputChange = debounce(
-    (newInputValue: string, actionMeta: any) => {
-      if (actionMeta.action === "input-change") {
-        setInputValue(newInputValue);
-        setMenuIsOpen(newInputValue.length > 0 || menuIsOpen);
+    return options;
+  }, [recentSearchOptions, apiMedicineOptions, inputValue]);
+
+  // --- Custom Option with cross button ---
+  const CustomOption = (props: any) => {
+    const { data } = props;
+    return (
+      <components.Option {...props}>
+        <div className="flex items-center justify-between w-full">
+          <div>{data.label}</div>
+          {data.isRecent && (
+            <button
+              type="button"
+              className="ml-2 text-gray-400 hover:text-red-500 text-xs"
+              onClick={(e) => {
+                e.stopPropagation();
+                removeFromRecentSearches(data.medicineData.fullDisplayName);
+              }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </components.Option>
+    );
+  };
+
+  // --- Debounce input ---
+  const handleInputChange = debounce((newValue: string, actionMeta: any) => {
+    if (actionMeta.action === "input-change") {
+      setInputValue(newValue);
+      setMenuIsOpen(newValue.length > 0 || menuIsOpen);
+    }
+  }, 300);
+
+  // --- Selection ---
+  const handleSelectionChange = (selected: any, field: any) => {
+    if (selected) {
+      if (selected.medicineData && !selected.isRecent) {
+        addToRecentSearches(selected.medicineData);
       }
-    },
-    300
-  );
+      field.onChange(selected.value);
+    } else {
+      field.onChange("");
+    }
+    setMenuIsOpen(false);
+  };
 
   if (isLoadingProp || isLoading) {
     return (
@@ -124,77 +224,66 @@ const MedicineSelect = ({
       <Controller
         name={name}
         control={control}
-        render={({ field }) => {
-          let optionsWithFallback = allMedicineOptions;
-          if (
-            field.value &&
-            !allMedicineOptions.some((opt: any) => opt.value === field.value)
-          ) {
-            optionsWithFallback = [
-              {
-                value: field.value,
-                label: (
-                  <div className="flex flex-col py-1">
-                    <span className="font-medium text-sm">{field.value}</span>
-                    <span className="text-xs text-gray-500">
-                      (Not in search results)
-                    </span>
-                  </div>
-                ),
-              },
-              ...allMedicineOptions,
-            ];
-          }
-
-          return (
-            <Select
-              {...field}
-              options={optionsWithFallback}
-              value={
-                optionsWithFallback.find(
-                  (option: any) => option.value === field.value
-                ) || null
-              }
-              onInputChange={handleInputChange}
-              menuIsOpen={menuIsOpen}
-              onMenuOpen={() => setMenuIsOpen(true)}
-              onMenuClose={() => setMenuIsOpen(false)}
-              onFocus={() => setMenuIsOpen(true)}
-              onChange={(selected: any) => {
-                field.onChange(selected ? selected.value : "");
-                setMenuIsOpen(false);
-              }}
-              placeholder={placeholder}
-              isClearable
-              isSearchable
-              filterOption={() => true}
-              noOptionsMessage={() =>
-                inputValue
-                  ? isFetching
-                    ? "Searching..."
-                    : "No medicines found"
-                  : "Type to search medicines"
-              }
-              loadingMessage={() => "Searching..."}
-              maxMenuHeight={300}
-              menuPlacement="auto"
-              styles={{
-                control: (provided) => ({
-                  ...provided,
-                  borderColor: "gray.300",
-                  boxShadow: "sm",
-                  "&:hover": {
-                    borderColor: "blue.500",
-                  },
-                }),
-                menu: (provided) => ({
-                  ...provided,
-                  zIndex: 9999,
-                }),
-              }}
-            />
-          );
-        }}
+        render={({ field }) => (
+          <Select
+            {...field}
+            options={allOptions}
+            value={
+              allOptions
+                .flatMap((group: any) => group.options)
+                .find((opt: any) => opt.value === field.value) || null
+            }
+            onInputChange={handleInputChange}
+            menuIsOpen={field.value ? false : menuIsOpen}
+            onMenuOpen={() => !field.value && setMenuIsOpen(true)}
+            onMenuClose={() => setMenuIsOpen(false)}
+            onFocus={() => !field.value && setMenuIsOpen(true)}
+            onChange={(selected: any) => handleSelectionChange(selected, field)}
+            placeholder={placeholder}
+            isClearable
+            isSearchable
+            components={{ Option: CustomOption }}
+            filterOption={() => true}
+            noOptionsMessage={() =>
+              inputValue
+                ? isFetching
+                  ? "Searching..."
+                  : "No medicines found"
+                : "Type to search medicines"
+            }
+            loadingMessage={() => "Searching..."}
+            maxMenuHeight={300}
+            menuPlacement="auto"
+            styles={{
+              control: (provided) => ({
+                ...provided,
+                minHeight: "0px", // reset default
+                height: "52px",
+                borderColor: "gray.300",
+                boxShadow: "sm",
+                "&:hover": {
+                  borderColor: "blue.500",
+                },
+              }),
+              menu: (provided) => ({
+                ...provided,
+                zIndex: 9999,
+              }),
+              groupHeading: (provided) => ({
+                ...provided,
+                fontSize: "12px",
+                fontWeight: "600",
+                color: "#374151",
+                textTransform: "uppercase",
+                letterSpacing: "0.025em",
+                padding: "8px 12px 4px 12px",
+                margin: 0,
+                backgroundColor: "#f9fafb",
+                borderBottom: "1px solid #e5e7eb",
+              }),
+            }}
+          />
+        )}
       />
     </div>
   );
