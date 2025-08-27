@@ -18,10 +18,10 @@ import { baseApi } from "../baseApi";
 const patientSummaryApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getPatientSummary: builder.query({
-      query: ({ chamberName }) => {
+      query: ({ chamberId }) => {
         const params = new URLSearchParams();
-        if (chamberName) {
-          params.append('chamberName', chamberName);
+        if (chamberId) {
+          params.append('chamberId', chamberId);
         }
         
         return {

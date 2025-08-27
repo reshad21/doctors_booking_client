@@ -8,25 +8,24 @@ import TodayAppointments from "../_component/TodayAppointment";
 import { useAppSelector } from "@/redux/hooks";
 import LoadingSpinner from "@/loading/LoadingSpinner";
 import { useState } from "react";
+import { useGetChambersQuery } from "@/redux/api/chamber/chamber";
 
 const DoctorDashboard = () => {
   const [selectedChamber, setSelectedChamber] = useState("all");
+  const { data: chambersData } = useGetChambersQuery({});
 
-  // const { data: chambers } = useGetChambersQuery();
-  const chambers = [
-    { id: "all", name: "All Chambers" },
-    { id: "Marvin Myers", name: "Marvin Myers" },
-    { id: "Avram Wiggins", name: "Avram Wiggins" },
-  ];
+  const chambers = chambersData?.data?.map((item:any) =>({name:item?.name,id:item?.id}))
+  
   const today = new Date().toISOString().split("T")[0];
   const { data: patientSummaryData, isLoading: isPatientSummaryLoading } =
-    useGetPatientSummaryQuery({ chamberName: selectedChamber });
+    useGetPatientSummaryQuery({ chamberId: selectedChamber });
   const { data: patientApiData, isLoading: isPatientLoading } =
     useGetPatientQuery({
       filter: JSON.stringify({
-        createdAt: today,
-        timezoneOffset: new Date().getTimezoneOffset(),
-      }),
+          chamberId: selectedChamber == "all" ? {} : selectedChamber,
+          createdAt: today,
+          timezoneOffset: new Date().getTimezoneOffset()
+        }),
       limit: 1000,
     });
   const doctor = useAppSelector((state) => state.admin);
@@ -88,7 +87,7 @@ const DoctorDashboard = () => {
                   onChange={handleChamberChange}
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-brand focus:border-brand"
                 >
-                  {chambers.map((chamber) => (
+                  {[{ id: "all", name: "All Chambers" },...chambers].map((chamber:any) => (
                     <option key={chamber.id} value={chamber.id}>
                       {chamber.name}
                     </option>
