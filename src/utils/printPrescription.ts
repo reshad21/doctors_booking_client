@@ -248,13 +248,12 @@ export const printPrescription = (
             <span><strong>Age:</strong> ${prescriptionData?.patient?.age || ""}</span>
             <span>
              <strong>Date:</strong> 
-             ${
-               prescriptionData?.createdAt
-                 ? new Date(prescriptionData.createdAt)
-                     .toLocaleDateString("en-GB")
-                     .replace(/\//g, "-")
-                 : ""
-             }
+             ${prescriptionData?.createdAt
+      ? new Date(prescriptionData.createdAt)
+        .toLocaleDateString("en-GB")
+        .replace(/\//g, "-")
+      : ""
+    }
             </span>
             <span><strong>ID:</strong> N/A</span>
           </div>

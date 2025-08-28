@@ -40,7 +40,7 @@ const MedicineSelect = ({
   placeholder = "Search medicines...",
   className = "",
 }: MedicineSelectProps) => {
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState("FA");
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
 
