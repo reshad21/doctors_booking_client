@@ -22,7 +22,7 @@ const patientApi = baseApi.injectEndpoints({
           body: data,
         };
       },
-      invalidatesTags: ["patient"],
+      invalidatesTags: ["patient","chamber"],
     }),
     getPatient: builder.query({
       query: ({ page, limit, searchTerm, filter, orderBy }) => {

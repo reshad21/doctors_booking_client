@@ -29,7 +29,7 @@ const patientSummaryApi = baseApi.injectEndpoints({
           method: "GET",
         };
       },
-      providesTags: ["patient-summary"],
+      providesTags: ["patient-summary","patient"],
     }),
   }),
 });

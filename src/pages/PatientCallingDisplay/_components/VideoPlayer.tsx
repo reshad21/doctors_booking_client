@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 
 declare global {
@@ -24,6 +22,8 @@ const extractVideoId = (url: string) => {
     videoId = url.split("youtu.be/")[1].split("?")[0];
   } else if (url.includes("watch?v=")) {
     videoId = url.split("watch?v=")[1].split("&")[0];
+  } else if (url.includes("embed/")) {
+    videoId = url.split("embed/")[1].split("?")[0];
   }
   return videoId;
 };
@@ -32,6 +32,7 @@ export default function VideoPlayer({ videos }: VideoPlayerProps) {
   const [shuffledVideos, setShuffledVideos] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isYTReady, setIsYTReady] = useState(false);
+  const [isPlayerReady, setIsPlayerReady] = useState(false);
   const playerRef = useRef<any>(null);
 
   // Shuffle videos on mount
@@ -49,7 +50,10 @@ export default function VideoPlayer({ videos }: VideoPlayerProps) {
       return;
     }
 
-    window.onYouTubeIframeAPIReady = () => setIsYTReady(true);
+    window.onYouTubeIframeAPIReady = () => {
+      setIsYTReady(true);
+      console.log("YouTube API ready");
+    };
 
     if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
       const tag = document.createElement("script");
@@ -57,6 +61,12 @@ export default function VideoPlayer({ videos }: VideoPlayerProps) {
       tag.async = true;
       document.head.appendChild(tag);
     }
+
+    return () => {
+      if (playerRef.current && typeof playerRef.current.destroy === "function") {
+        playerRef.current.destroy();
+      }
+    };
   }, []);
 
   // Initialize player
@@ -65,53 +75,92 @@ export default function VideoPlayer({ videos }: VideoPlayerProps) {
 
     const currentVideo = shuffledVideos[currentIndex];
     const videoId = extractVideoId(currentVideo.videoFile);
-    if (!videoId) return;
+    
+    if (!videoId) {
+      console.error("Invalid video URL:", currentVideo.videoFile);
+      setCurrentIndex((prev) => (prev + 1) % shuffledVideos.length);
+      return;
+    }
 
-    playerRef.current = new window.YT.Player("yt-player", {
-      height: "100%",
-      width: "100%",
-      videoId,
-      playerVars: {
-        autoplay: 1,
-        mute: 1,
-        controls: 2,
-        showinfo: 0,
-        rel: 0,
-        modestbranding: 1,
-      },
-      events: {
-        onReady: (event: any) => event.target.playVideo(),
-        onStateChange: (event: any) => {
-          if (event.data === window.YT.PlayerState.ENDED) {
-            setCurrentIndex((prev) =>
-              prev + 1 < shuffledVideos.length ? prev + 1 : 0
-            );
-          }
-        },
-        onError: () => {
-          setCurrentIndex((prev) =>
-            prev + 1 < shuffledVideos.length ? prev + 1 : 0
-          );
-        },
-      },
-    });
+    console.log("Initializing player with video:", videoId);
 
-    return () => {
-      if (playerRef.current?.destroy) {
-        playerRef.current.destroy();
-        playerRef.current = null;
-      }
-    };
+    try {
+      playerRef.current = new window.YT.Player("yt-player", {
+        height: "100%",
+        width: "100%",
+        videoId,
+        playerVars: {
+          autoplay: 1,
+          mute: 0,
+          controls: 1, // YouTube native controls
+          showinfo: 0,
+          rel: 0, // IMPORTANT: This prevents related videos at the end
+          modestbranding: 1,
+          playsinline: 1,
+          // Add these to prevent random videos after playlist ends
+          iv_load_policy: 3, // Hide annotations
+          fs: 0, // Hide fullscreen button (optional)
+        },
+        events: {
+          onReady: (event: any) => {
+            console.log("Player ready");
+            setIsPlayerReady(true);
+            event.target.playVideo();
+          },
+          onStateChange: (event: any) => {
+            console.log("Player state changed:", event.data);
+            
+            if (event.data === window.YT.PlayerState.ENDED) {
+              console.log("Video ended, moving to next");
+              // Loop back to start when reaching the end
+              setCurrentIndex((prev) => (prev + 1) % shuffledVideos.length);
+            }
+          },
+          onError: (event: any) => {
+            console.error("Player error:", event.data);
+            setCurrentIndex((prev) => (prev + 1) % shuffledVideos.length);
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Error initializing YouTube player:", error);
+    }
   }, [isYTReady, shuffledVideos, currentIndex]);
 
   // Update video when currentIndex changes
   useEffect(() => {
-    if (!playerRef.current || !shuffledVideos.length) return;
-    const videoId = extractVideoId(shuffledVideos[currentIndex].videoFile);
-    if (!videoId) return;
+    if (!playerRef.current || !shuffledVideos.length || !isPlayerReady) return;
+    
+    const currentVideo = shuffledVideos[currentIndex];
+    const videoId = extractVideoId(currentVideo.videoFile);
+    
+    if (!videoId) {
+      console.error("Invalid video URL:", currentVideo.videoFile);
+      setCurrentIndex((prev) => (prev + 1) % shuffledVideos.length);
+      return;
+    }
 
-    playerRef.current.loadVideoById({ videoId, suggestedQuality: "default" });
-  }, [currentIndex, shuffledVideos]);
+    console.log("Loading new video:", videoId);
+
+    try {
+      playerRef.current.loadVideoById({
+        videoId: videoId,
+        suggestedQuality: "default"
+      });
+    } catch (error) {
+      console.error("Error loading video:", error);
+      setCurrentIndex((prev) => (prev + 1) % shuffledVideos.length);
+    }
+  }, [currentIndex, shuffledVideos, isPlayerReady]);
+
+  // Show loading state
+  if (!isYTReady) {
+    return (
+      <div className="flex items-center justify-center h-full text-white text-lg">
+        Loading YouTube player...
+      </div>
+    );
+  }
 
   if (!shuffledVideos.length) {
     return (
@@ -121,5 +170,14 @@ export default function VideoPlayer({ videos }: VideoPlayerProps) {
     );
   }
 
-  return <div id="yt-player" className="w-full h-full"></div>;
+  return (
+    <div className="w-full h-full relative">
+      {!isPlayerReady && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white">
+          Loading video...
+        </div>
+      )}
+      <div id="yt-player" className="w-full h-full"></div>
+    </div>
+  );
 }

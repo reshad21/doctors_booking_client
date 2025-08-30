@@ -45,7 +45,7 @@ const Patient = () => {
       endDate: headerSelect.endDate || undefined,
       timezoneOffset: new Date().getTimezoneOffset()
     }),
-    orderBy: JSON.stringify({ createdAt: "desc" }),
+    orderBy: JSON.stringify({ createdAt: "asc" }),
   });
 
   if (isLoading || isChamberLoading) return <LoadingSpinner />;

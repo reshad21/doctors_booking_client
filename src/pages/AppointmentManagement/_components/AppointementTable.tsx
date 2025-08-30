@@ -36,6 +36,7 @@ const AppointmentTable = ({
   const [modalDataToUpdate, setModalDataToUpdate] = useState<Patient | null>(
     null
   );
+  
   const [updatePatient] = useUpdatePatientMutation();
   const dispatch = useAppDispatch();
   const calledSerials = useSelector((state: any) => state.serial.calledSerials);
