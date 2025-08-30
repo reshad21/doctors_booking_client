@@ -11,7 +11,6 @@ export const printPrescription = (
       ?.map(
         (item: any) => `
       <li class="print-list-item">
-        <span class="print-bullet">•</span>
         <span>${item.description}</span>
       </li>
     `
@@ -77,15 +76,6 @@ export const printPrescription = (
             body { width: 210mm; height: 297mm; margin: 0; padding: 0; }
             .print-container { width: 210mm; height: 297mm; margin: 0 auto; background: white; display: flex; flex-direction: column; page-break-after: avoid; page-break-inside: avoid; }
             .no-print { display: none !important; }
-            
-            /* Force print visibility for bullets */
-            .print-bullet {
-              -webkit-print-color-adjust: exact !important;
-              color-adjust: exact !important;
-              print-color-adjust: exact !important;
-              visibility: visible !important;
-              display: inline-block !important;
-            }
           }
 
           body {
@@ -156,45 +146,28 @@ export const printPrescription = (
             font-size: 10pt;
           }
 
-          /* Multiple bullet approaches for better browser compatibility */
-          .print-bullet {
-            width: 1.5mm;
-            min-width: 1.5mm;
-            height: 1.5mm;
-            margin-right: 1mm;
-            margin-top: 0.15em;
+          /* Single consistent bullet styling for all list items */
+          .print-list-item::before {
+            content: "•";
+            color: #000;
+            font-weight: bold;
+            font-size: 14pt;
+            line-height: 10pt;
+            width: 1.2mm;
+            min-width: 1.2mm;
+            margin-right: 1.5mm;
+            margin-top: 0;
+            vertical-align: baseline;
+            position: relative;
+            top: 1pt; /* Adjusted from 0.5pt to 1pt for better center alignment across all sections */
             flex-shrink: 0;
             display: inline-block;
             text-align: center;
-            line-height: 1.5mm;
-            font-size: 12pt;
-            font-weight: bold;
-            color: #000 !important;
-            
-            /* Fallback styles */
-            background: #000;
-            border-radius: 50%;
             
             /* Print-specific overrides */
             -webkit-print-color-adjust: exact !important;
             color-adjust: exact !important;
             print-color-adjust: exact !important;
-            
-            /* Alternative bullet character as fallback */
-            position: relative;
-          }
-          
-          /* Alternative approach using ::before pseudo-element */
-          .print-bullet::before {
-            content: "•";
-            color: #000;
-            font-weight: bold;
-            font-size: 12pt;
-            position: absolute;
-            top: -2px;
-            left: 0;
-            width: 100%;
-            text-align: center;
           }
 
           .print-medicine-item {
@@ -253,16 +226,16 @@ export const printPrescription = (
           
           /* Additional browser-specific fixes */
           @media print and (-webkit-min-device-pixel-ratio: 0) {
-            .print-bullet {
-              background: #000 !important;
+            .print-list-item::before {
+              color: #000 !important;
               -webkit-appearance: none;
             }
           }
           
           /* Firefox specific */
           @-moz-document url-prefix() {
-            .print-bullet {
-              background: #000 !important;
+            .print-list-item::before {
+              color: #000 !important;
             }
           }
         </style>
@@ -273,8 +246,16 @@ export const printPrescription = (
           <div class="print-patient-info">
             <span><strong>Name:</strong> ${prescriptionData?.patient?.name || ""}</span>
             <span><strong>Age:</strong> ${prescriptionData?.patient?.age || ""}</span>
-            <span><strong>Date:</strong> ${prescriptionData?.createdAt?.split("T")[0] || ""}</span>
-            <span><strong>ID:</strong> N/A</span>
+            <span>
+             <strong>Date:</strong> 
+             ${prescriptionData?.createdAt
+      ? new Date(prescriptionData.createdAt)
+        .toLocaleDateString("en-GB")
+        .replace(/\//g, "-")
+      : ""
+    }
+            </span>
+            <span><strong>ID:${prescriptionData?.prescriptionNo ? prescriptionData?.prescriptionNo : "N/A"}</strong></span>
           </div>
 
           <div class="print-content-container">

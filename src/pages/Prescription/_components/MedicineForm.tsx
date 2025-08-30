@@ -103,7 +103,7 @@ const MedicineForm = ({
 
         return (
           <div
-            className={`relative border rounded-lg p-4 ${
+            className={`relative border rounded-lg bg-slate-100 p-4 ${
               hasError ? "border-red-300 bg-red-50" : "border-gray-200"
             }`}
             key={item.content}
@@ -147,7 +147,7 @@ const MedicineForm = ({
                     const count = idx2 + 1;
                     return (
                       <div
-                        className="grid grid-cols-1 md:grid-cols-4 gap-3 p-3 bg-gray-50 rounded-md"
+                        className="grid grid-cols-1 md:grid-cols-4 gap-3 rounded-md"
                         key={`${item.content}-${count}`}
                       >
                         {["Dosage", "Duration", "Time", "Comment"].map(
