@@ -56,7 +56,7 @@ const UpdateStaff = ({ staff }: { staff: Staff }) => {
         ]}
         file={[{ label: "Profile Image", name: "staffImage" }]}
         defaultValues={staff}
-        buttonProperty={{ type: "edit", text: "AddNew Staff" }}
+        buttonProperty={{ type: "edit", text: "Add New Staff" }}
       />
     </div>
   );

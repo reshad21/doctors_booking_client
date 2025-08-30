@@ -23,7 +23,7 @@
                 file={[
                    { label: "Profile Image", name: "image" },
                 ]}
-                buttonProperty={{ type: "create", text: "AddNew Staff" }}
+                buttonProperty={{ type: "create", text: "Add New Staff" }}
                 defaultValues={{
                   name: "Asif Khan",
                   email: "asif@example.com",

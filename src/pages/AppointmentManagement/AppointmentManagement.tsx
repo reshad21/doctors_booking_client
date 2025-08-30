@@ -43,19 +43,18 @@ const AppointmentManagement = () => {
     return () => clearTimeout(handler);
   }, [searchInput]);
 
-  const today = new Date().toISOString().split("T")[0];
-
-  const { data: patientsData, isLoading } = useGetPatientQuery({
-    page,
-    limit,
-    searchTerm,
-    filter: JSON.stringify({
-      chamberId: headerSelect.chamber || undefined,
-      ...(searchTerm ? {} : { createdAt: headerSelect.date || today }),
-    }),
-    orderBy: JSON.stringify({ createdAt: "asc" }),
-  });
-
+const today = new Date().toISOString().split('T')[0];
+const { data: patientsData, isLoading } = useGetPatientQuery({
+  page,
+  limit,
+  searchTerm,
+  filter: JSON.stringify({
+    chamberId: headerSelect.chamber || undefined,
+    createdAt: headerSelect.date || today,
+    timezoneOffset: new Date().getTimezoneOffset()
+  }),
+  orderBy: JSON.stringify({ createdAt: "asc" }),
+});
   if (isLoading) return <LoadingSpinner />;
 
   const selectFields = [
@@ -165,6 +164,7 @@ const AppointmentManagement = () => {
               validationSchema={patientSchema}
             />
           </div>
+          <div> <span className="text-xs font-semibold">Present :</span> {patientsData?.data?.data?.filter((item:any) => item?.isArrived == true)?.length}/{ patientsData?.data?.data?.length}</div>
           <Input
             className="w-80 rounded"
             placeholder="Search"

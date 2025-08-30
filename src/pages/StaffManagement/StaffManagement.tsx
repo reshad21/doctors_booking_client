@@ -93,7 +93,7 @@ const StaffManagement = () => {
                   { label: "Password", name: "password", type: "password" },
                 ]}
                 file={[{ label: "Profile Image", name: "staffImage" }]}
-                buttonProperty={{ type: "create", text: "AddNew Staff" }}
+                buttonProperty={{ type: "create", text: "Add New Staff" }}
               />
             )}
           </div>
