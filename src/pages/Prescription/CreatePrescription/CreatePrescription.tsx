@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import CreatePrescriptionForm from "../_components/CreatePrescriptionForm";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 import { useAppSelector } from "@/redux/hooks";
 import { useCreatePrescriptionMutation } from "@/redux/api/prescription/prescription";
@@ -16,6 +15,7 @@ import {
 import { useCreateAdviceMutation } from "@/redux/api/advice/advice";
 import { CreateAdviceFn, CreateFn } from "../_components/CreateFn";
 import BackButton from "@/components/shared/BackButton";
+import PrescriptionForm from "../_components/PrescriptionForm";
 
 const CreatePrescription = () => {
   const [createOnExamination] = useCreateOnExaminationsMutation();
@@ -229,7 +229,7 @@ const CreatePrescription = () => {
           </div>
 
           <div className="p-6">
-            <CreatePrescriptionForm
+            <PrescriptionForm
               form={form}
               onSubmit={onSubmit}
               patient={patient}

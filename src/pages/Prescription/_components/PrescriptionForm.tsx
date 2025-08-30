@@ -5,18 +5,13 @@ import ReactSelectCompo from "./ReactSelectCompo";
 import MedicineForm from "./MedicineForm";
 import { Form } from "@/components/ui/form";
 import { dosageOptions, InputOptions, timeOptions } from "./CreateFn";
-import {
-  useGetChiefComplaintQuery,
-  useGetDiagnosisQuery,
-  useGetInvestigationQuery,
-  useGetOnExaminationsQuery,
-} from "@/redux/api/manualData/manualData";
 import { useGetAdviceQuery } from "@/redux/api/advice/advice";
-import { Badge } from "@/components/ui/badge";
 import BaseInput from "@/components/shared/BaseInput";
 import { AlertTriangle } from "lucide-react";
+import PatientInformation from "./PatientInformation";
+import ClinicalAssessment from "./ChiefComplaints";
 
-const CreatePrescriptionForm = ({
+const PrescriptionForm = ({
   form,
   onSubmit,
   patient,
@@ -31,11 +26,6 @@ const CreatePrescriptionForm = ({
 }: any) => {
   const [timingCounts, setTimingCounts] = useState<Record<string, number>>({});
   const [formError, setFormError] = useState<string>("");
-
-  const { data: onExaminations } = useGetOnExaminationsQuery({ limit: 200 });
-  const { data: investigations } = useGetInvestigationQuery({ limit: 200 });
-  const { data: diagnosis } = useGetDiagnosisQuery({ limit: 200 });
-  const { data: chiefComplaint } = useGetChiefComplaintQuery({ limit: 200 });
   const { data: advice } = useGetAdviceQuery({ limit: 200 });
 
   // Validate unique medicines
@@ -151,7 +141,7 @@ const CreatePrescriptionForm = ({
     }
   }, [medicineInputCount, medicineFieldValues, validateUniqueMedicines]);
 
- 
+
   const addTimingSet = useCallback((id: string) => {
     setTimingCounts((prev) => ({
       ...prev,
@@ -231,13 +221,6 @@ const CreatePrescriptionForm = ({
     [form, handleRemoveMedicineInput]
   );
 
-  const onExaminationOptions =
-    InputOptions(onExaminations, "onExaminations") || [];
-  const investigationOptions =
-    InputOptions(investigations, "investigations") || [];
-  const diagnosisOptions = InputOptions(diagnosis, "diagnosis") || [];
-  const chiefComplaintOptions =
-    InputOptions(chiefComplaint, "chiefComplaint") || [];
   const adviceOptions = InputOptions(advice, "advice") || [];
 
   return (
@@ -253,104 +236,15 @@ const CreatePrescriptionForm = ({
         </div>
       )}
 
-      <div className="p-2">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-2 h-6 bg-blue-500 rounded-full"></div>
-          <h3 className="text-xl font-semibold text-gray-900">
-            Patient Information
-          </h3>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[
-            {
-              key: "name",
-              label: "Patient Name",
-              value: patient?.patient?.name,
-            },
-            { key: "age", label: "Age", value: patient?.patient?.age },
-            {
-              key: "date",
-              label: "Date",
-              value: new Date().toLocaleDateString(),
-            },
-            { key: "Id", label: "Prescription ID", value: null },
-          ].map((item) => (
-            <div key={item.key} className="space-y-2">
-              <label className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                {item.label}
-              </label>
-              <div className="min-h-[40px] flex items-center">
-                {item.value ? (
-                  <span className="text-lg font-semibold text-gray-900">
-                    {item.value}
-                  </span>
-                ) : (
-                  <Badge
-                    variant="outline"
-                    className="text-xs font-medium text-blue-600 border-blue-200 bg-blue-50"
-                  >
-                    Auto-generating
-                  </Badge>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <PatientInformation
+        patient={patient}
+      />
 
-      <div className="p-2">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-2 h-6 bg-green-500 rounded-full"></div>
-          <h3 className="text-xl font-semibold text-gray-900">
-            Clinical Assessment
-          </h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
-          {[
-            {
-              key: "Chief-Complaint",
-              label: "Chief Complaint",
-              options: chiefComplaintOptions,
-            },
-            {
-              key: "On-Examinations",
-              label: "On Examinations",
-              options: onExaminationOptions,
-            },
-            { key: "Diagnosis", label: "Diagnosis", options: diagnosisOptions },
-            {
-              key: "Investigation",
-              label: "Investigation",
-              options: investigationOptions,
-            },
-          ].map((field) => {
-            const fieldName = field.key.toLowerCase();
-            const mergedOptions = [
-              ...field.options,
-              ...(dynamicOptions[fieldName] || []),
-            ].filter(
-              (option, index, self) =>
-                index === self.findIndex((o) => o.value === option.value)
-            );
-
-            return (
-              <div key={field.key} className="space-y-3">
-                <ReactSelectCompo
-                  label={field.label}
-                  name={fieldName}
-                  options={mergedOptions}
-                  control={form.control}
-                  isMulti
-                  showSelectedBox
-                  onCreateOption={(inputValue) =>
-                    handleAdviceInputChange(inputValue, field.key)
-                  }
-                />
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <ClinicalAssessment
+        form={form}
+        dynamicOptions={dynamicOptions}
+        handleAdviceInputChange={handleAdviceInputChange}
+      />
 
       <div className="p-2">
         <div className="flex items-center gap-3 mb-4">
@@ -415,11 +309,10 @@ const CreatePrescriptionForm = ({
               <button
                 type="submit"
                 disabled={!!formError}
-                className={`px-10 py-3 text-sm cursor-pointer font-semibold text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 ${
-                  formError
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-green-600 hover:bg-green-700 focus:ring-green-500"
-                }`}
+                className={`px-10 py-3 text-sm cursor-pointer font-semibold text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 ${formError
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-green-600 hover:bg-green-700 focus:ring-green-500"
+                  }`}
               >
                 Save Prescription
               </button>
@@ -431,4 +324,4 @@ const CreatePrescriptionForm = ({
   );
 };
 
-export default CreatePrescriptionForm;
+export default PrescriptionForm;

@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import CreatePrescriptionForm from "../_components/CreatePrescriptionForm";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 import { Card } from "@/components/ui/card";
 import {
@@ -19,6 +18,7 @@ import {
 import { useCreateAdviceMutation } from "@/redux/api/advice/advice";
 import { CreateAdviceFn, CreateFn } from "../_components/CreateFn";
 import { ChevronLeft } from "lucide-react";
+import PrescriptionForm from "../_components/PrescriptionForm";
 
 const UpdatePrescription = () => {
   const [createOnExamination] = useCreateOnExaminationsMutation();
@@ -281,7 +281,7 @@ console.log(transformedData, "transformedData")
         <div className="pb-[30px]">
           <img src={preManagementData?.data?.[0]?.headerImage} alt="" />
         </div>
-        <CreatePrescriptionForm
+        <PrescriptionForm
           form={form}
           onSubmit={onSubmit}
           patient={prescriptionData}
