@@ -16,7 +16,7 @@ const chamberApi = baseApi.injectEndpoints({
         url: `/chamber/get-chambers`,
         params: { searchTerm },
       }),
-      providesTags: ["chamber"],
+      providesTags: ["chamber","patient"],
     }),
 
     getChamberById: builder.query({
