@@ -21,6 +21,7 @@ import { useAppDispatch } from "@/redux/hooks";
 import { useSelector } from "react-redux";
 import { toggleSerial, endSerial } from "@/redux/api/features/serialSlice";
 import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
 
 interface AppointmentTableProps {
   patientsData: Patient[];
@@ -135,26 +136,29 @@ const AppointmentTable = ({
               </TableCell>
               <TableCell className="text-[#5C727D] capitalize space-x-2">
                 {calledSerials.includes(patient.id) ? (
-                  <Badge
-                    className="rounded bg-green-600 cursor-pointer"
+                  <Button
+                    className="rounded bg-green-600 cursor-pointer size-2 px-5 py-3"
                     onClick={() => dispatch(toggleSerial(patient.id))}
+                    disabled={patient?.visitStatus == "VISITED" ? true : false}
                   >
                     Called
-                  </Badge>
+                  </Button>
                 ) : (
-                  <Badge
-                    className="rounded bg-[#14400D] cursor-pointer"
+                  <Button
+                    className="rounded bg-[#14400D] cursor-pointer size-2 px-5 py-3"
                     onClick={() => dispatch(toggleSerial(patient.id))}
+                    disabled={patient?.visitStatus == "VISITED" ? true : false}
                   >
                     Call
-                  </Badge>
+                  </Button>
                 )}
-                <Badge
-                  className="rounded bg-red-500 cursor-pointer"
+                <Button
+                  className="rounded bg-red-500 cursor-pointer size-2 px-5 py-3"
                   onClick={() => dispatch(endSerial(patient.id))}
+                  disabled={patient?.visitStatus == "VISITED" ? true : false}
                 >
                   End
-                </Badge>
+                </Button>
               </TableCell>
               <TableCell>
                 <select
@@ -164,7 +168,8 @@ const AppointmentTable = ({
                   onChange={(e) =>
                     handleCheckboxChange(patient.id, e.target.value)
                   }
-                  className="border rounded text-xs bg-[#14400D] text-white p-1 focus:outline-none"
+                  disabled={patient?.visitStatus == "VISITED" ? true : false}
+                  className={`border rounded text-xs  text-white p-1 focus:outline-none ${patient?.visitStatus == "VISITED" ? "bg-gray-400" : "bg-[#14400D]"}`}
                 >
                   <option value="ARRIVED">ARRIVED</option>
                   <option value="NOT-ARRIVED">NOT-ARRIVED</option>
