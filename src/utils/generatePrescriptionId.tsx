@@ -1,4 +1,5 @@
 export const generatePrescriptionId = (patientId: string | number): string => {
+  console.log(patientId)
     const now = new Date();
     const dateStr = now.toISOString().split("T")[0].replace(/-/g, ""); // YYYYMMDD
     const patientIdPart = patientId.toString().slice(-3); // Last 3 digits of patient ID

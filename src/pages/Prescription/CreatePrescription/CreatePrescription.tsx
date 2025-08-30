@@ -30,7 +30,7 @@ const CreatePrescription = () => {
   const [createPrescription] = useCreatePrescriptionMutation();
   const { patientId } = useParams();
   const location = useLocation();
-  const { data: patientData } = useGetSinglePatientQuery({ id: patientId })
+  const { data: patientData, isLoading: isPatientLoading } = useGetSinglePatientQuery(patientId);
   const doctorId = useAppSelector((state) => state.admin?.id);
   const navigate = useNavigate();
 
@@ -42,10 +42,25 @@ const CreatePrescription = () => {
     },
   ]);
 
+  // State to hold dynamic options for each field
+  const [dynamicOptions, setDynamicOptions] = useState<{
+    [key: string]: { value: string; label: string }[];
+  }>({
+    "chief-complaint": [],
+    "on-examinations": [],
+    diagnosis: [],
+    investigation: [],
+  });
+
   const backendData = location.state?.backendData || {};
   const form = useForm({
     defaultValues: backendData,
   });
+
+  // Only generate prescription ID when patient data is available
+  const prescriptionId = patientData?.data?.id 
+    ? generatePrescriptionId(patientData.data.id)
+    : null;
 
   const handleAddMedicineInput = () => {
     const newId = Date.now().toString();
@@ -76,7 +91,25 @@ const CreatePrescription = () => {
     });
   };
 
-  const prescriptionId = generatePrescriptionId(patientData?.data?.id);
+  // Show loading state while patient data is being fetched
+  if (isPatientLoading || !prescriptionId) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 py-6">
+          <div className="mb-6">
+            <BackButton />
+          </div>
+          <div className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-center justify-center py-8">
+                <div className="text-gray-500">Loading patient information...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const onSubmit = async (data: any) => {
     const medicineEntries = Object.entries(data)
@@ -157,17 +190,6 @@ const CreatePrescription = () => {
     }
   };
 
-  // State to hold dynamic options for each field
-  const [dynamicOptions, setDynamicOptions] = useState<{
-    [key: string]: { value: string; label: string }[];
-  }>({
-    "chief-complaint": [],
-    "on-examinations": [],
-    diagnosis: [],
-    investigation: [],
-  });
-
-
   const handleSaveNewOption = async (inputValue: string, label: string) => {
     try {
       if (label === "Chief-Complaint") {
@@ -212,7 +234,6 @@ const CreatePrescription = () => {
       console.error("Error saving advice:", error);
     }
   };
-
 
   return (
     <div className="min-h-screen bg-gray-50">

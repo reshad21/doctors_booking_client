@@ -42,7 +42,8 @@ const patientApi = baseApi.injectEndpoints({
     }),
 
     getSinglePatient: builder.query({
-      query: ({id}) => {
+      query: (id) => {
+        console.log(id, 'id in service')
         return {
           url: `/patients/get-patient/${id}`,
           method: "GET",
