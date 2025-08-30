@@ -19,6 +19,8 @@ import { useCreateAdviceMutation } from "@/redux/api/advice/advice";
 import { CreateAdviceFn, CreateFn } from "../_components/CreateFn";
 import { ChevronLeft } from "lucide-react";
 import PrescriptionForm from "../_components/PrescriptionForm";
+import PatientInformation from "../_components/PatientInformation";
+
 
 const UpdatePrescription = () => {
   const [createOnExamination] = useCreateOnExaminationsMutation();
@@ -39,14 +41,13 @@ const UpdatePrescription = () => {
     [prescription]
   );
 
-  console.log(prescriptionData);
 
   const [medicineInputCount, setMedicineInputCount] = useState(
     prescriptionData.medicines && prescriptionData.medicines.length >= 0
       ? prescriptionData.medicines.map((med: any, idx: number) => ({
-          content: idx + 1,
-          DosageSchedule: med.DosageSchedule,
-        }))
+        content: idx + 1,
+        DosageSchedule: med.DosageSchedule,
+      }))
       : [{ content: 1, DosageSchedule: [] }]
   );
 
@@ -203,7 +204,7 @@ const UpdatePrescription = () => {
       diagnosis: Array.isArray(data.diagnosis) ? data.diagnosis : [],
       medicines,
     };
-console.log(transformedData, "transformedData")
+
     const res = (await updatePrescription(transformedData)) as any;
 
     if (res?.data?.message) {
@@ -264,6 +265,7 @@ console.log(transformedData, "transformedData")
     navigate(-1);
   };
 
+
   return (
     <Card className="bg-[#f4f6f9] px-5 rounded-sm">
       {/* Back Button - Inside the card */}
@@ -281,6 +283,10 @@ console.log(transformedData, "transformedData")
         <div className="pb-[30px]">
           <img src={preManagementData?.data?.[0]?.headerImage} alt="" />
         </div>
+        <PatientInformation
+          patient={prescriptionData?.patient}
+          prescriptionId={prescriptionData?.prescriptionNo}
+        />
         <PrescriptionForm
           form={form}
           onSubmit={onSubmit}

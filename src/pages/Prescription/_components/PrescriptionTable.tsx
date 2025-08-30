@@ -116,9 +116,6 @@ const PrescriptionTable = ({ patients, active, totalPages, onPageChange }: any) 
                       {/* Add button with consistent sizing */}
                       <Link
                         to={`/dashboard/create-prescription/${patient?.id}`}
-                        state={{
-                          patient: { name: patient.name, age: patient.age },
-                        }}
                         className="bg-brand inline-flex items-center justify-center w-9 h-9 rounded-md text-white shadow-sm border border-transparent hover:opacity-90 hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-1"
                         title="Create New Prescription"
                       >

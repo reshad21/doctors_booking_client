@@ -16,6 +16,9 @@ import { useCreateAdviceMutation } from "@/redux/api/advice/advice";
 import { CreateAdviceFn, CreateFn } from "../_components/CreateFn";
 import BackButton from "@/components/shared/BackButton";
 import PrescriptionForm from "../_components/PrescriptionForm";
+import { useGetSinglePatientQuery } from "@/redux/api/patient/patient";
+import PatientInformation from "../_components/PatientInformation";
+import { generatePrescriptionId } from "@/utils/generatePrescriptionId";
 
 const CreatePrescription = () => {
   const [createOnExamination] = useCreateOnExaminationsMutation();
@@ -27,7 +30,7 @@ const CreatePrescription = () => {
   const [createPrescription] = useCreatePrescriptionMutation();
   const { patientId } = useParams();
   const location = useLocation();
-  const patient = location.state;
+  const { data: patientData } = useGetSinglePatientQuery({ id: patientId })
   const doctorId = useAppSelector((state) => state.admin?.id);
   const navigate = useNavigate();
 
@@ -72,6 +75,8 @@ const CreatePrescription = () => {
       }
     });
   };
+
+  const prescriptionId = generatePrescriptionId(patientData?.data?.id);
 
   const onSubmit = async (data: any) => {
     const medicineEntries = Object.entries(data)
@@ -133,6 +138,7 @@ const CreatePrescription = () => {
       nextVisit: data.nextVisit,
       investigation: data.investigation,
       advice: data?.advice,
+      prescriptionNo: prescriptionId,
     };
 
     try {
@@ -161,7 +167,7 @@ const CreatePrescription = () => {
     investigation: [],
   });
 
- 
+
   const handleSaveNewOption = async (inputValue: string, label: string) => {
     try {
       if (label === "Chief-Complaint") {
@@ -207,6 +213,7 @@ const CreatePrescription = () => {
     }
   };
 
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-6">
@@ -229,10 +236,14 @@ const CreatePrescription = () => {
           </div>
 
           <div className="p-6">
+            <PatientInformation
+              patient={patientData?.data}
+              prescriptionId={prescriptionId}
+            />
             <PrescriptionForm
               form={form}
               onSubmit={onSubmit}
-              patient={patient}
+              patient={patientData?.data}
               medicineInputCount={medicineInputCount}
               handleRemoveMedicineInput={handleRemoveMedicineInput}
               handleAddMedicineInput={handleAddMedicineInput}

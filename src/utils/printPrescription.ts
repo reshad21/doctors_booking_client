@@ -255,7 +255,7 @@ export const printPrescription = (
       : ""
     }
             </span>
-            <span><strong>ID:</strong> N/A</span>
+            <span><strong>ID:${prescriptionData?.prescriptionNo ? prescriptionData?.prescriptionNo : "N/A"}</strong></span>
           </div>
 
           <div class="print-content-container">

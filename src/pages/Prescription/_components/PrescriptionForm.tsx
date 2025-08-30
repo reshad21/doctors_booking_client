@@ -8,13 +8,11 @@ import { dosageOptions, InputOptions, timeOptions } from "./CreateFn";
 import { useGetAdviceQuery } from "@/redux/api/advice/advice";
 import BaseInput from "@/components/shared/BaseInput";
 import { AlertTriangle } from "lucide-react";
-import PatientInformation from "./PatientInformation";
 import ClinicalAssessment from "./ChiefComplaints";
 
 const PrescriptionForm = ({
   form,
   onSubmit,
-  patient,
   handleAdviceChange,
   medicineInputCount,
   handleRemoveMedicineInput,
@@ -235,10 +233,6 @@ const PrescriptionForm = ({
           <p className="mt-1 text-sm text-red-600">{formError}</p>
         </div>
       )}
-
-      <PatientInformation
-        patient={patient}
-      />
 
       <ClinicalAssessment
         form={form}
