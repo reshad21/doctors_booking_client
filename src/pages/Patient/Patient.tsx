@@ -50,7 +50,10 @@ const Patient = () => {
 
   if (isLoading || isChamberLoading) return <LoadingSpinner />;
 
-  console.log(patientsData, 'patientsData')
+
+  //  const patients = [...(patientsData?.data?.data || [])]?.sort((a, b) => a.time - b.time);
+  //  console.log(patients,"patients");
+   
 
   return (
     <div className="custom-container">

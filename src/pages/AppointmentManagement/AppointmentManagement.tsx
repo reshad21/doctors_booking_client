@@ -56,6 +56,7 @@ const { data: patientsData, isLoading } = useGetPatientQuery({
   orderBy: JSON.stringify({ createdAt: "asc" }),
 });
   if (isLoading) return <LoadingSpinner />;
+console.log(patientsData,"appoinment");
 
   const selectFields = [
     {
@@ -164,7 +165,7 @@ const { data: patientsData, isLoading } = useGetPatientQuery({
               validationSchema={patientSchema}
             />
           </div>
-          <div className="bg-brand px-2 py-1"> <span className="text-xs font-semibold">Present :</span> {patientsData?.data?.data?.filter((item:any) => item?.isArrived == true)?.length}/{ patientsData?.data?.data?.length}</div>
+          <div className="bg-brand px-2 py-1 text-white rounded-sm"> <span className="text-xs font-semibold">Present :</span> {patientsData?.data?.data?.filter((item:any) => item?.isArrived == true)?.length}/{ patientsData?.data?.data?.length}</div>
           <Input
             className="w-80 rounded"
             placeholder="Search"
@@ -176,7 +177,7 @@ const { data: patientsData, isLoading } = useGetPatientQuery({
         <div className="rounded-b-sm overflow-hidden shadow-sm">
           {patientsData?.data?.data && patientsData?.data?.data?.length > 0 ? (
             <AppointmentTable
-              patientsData={patientsData?.data?.data}
+              patients={patientsData?.data?.data}
               deletePatient={deletePatient}
             />
           ) : (
