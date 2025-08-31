@@ -6,13 +6,6 @@ import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagemen
 import { useAppSelector } from "@/redux/hooks";
 import { useCreatePrescriptionMutation } from "@/redux/api/prescription/prescription";
 import toast from "react-hot-toast";
-import {
-  useCreateChiefComplaintMutation,
-  useCreateDiagnosisMutation,
-  useCreateInvestigationMutation,
-  useCreateOnExaminationsMutation,
-} from "@/redux/api/manualData/manualData";
-import { CreateFn } from "../_components/CreateFn";
 import BackButton from "@/components/shared/BackButton";
 import PrescriptionForm from "../_components/PrescriptionForm";
 import { useGetSinglePatientQuery } from "@/redux/api/patient/patient";
@@ -20,10 +13,6 @@ import PatientInformation from "../_components/PatientInformation";
 import { generatePrescriptionId } from "@/utils/generatePrescriptionId";
 
 const CreatePrescription = () => {
-  const [createOnExamination] = useCreateOnExaminationsMutation();
-  const [createInvestigation] = useCreateInvestigationMutation();
-  const [createDiagnosis] = useCreateDiagnosisMutation();
-  const [createComplain] = useCreateChiefComplaintMutation();
   const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const [createPrescription] = useCreatePrescriptionMutation();
   const { patientId } = useParams();
@@ -39,16 +28,6 @@ const CreatePrescription = () => {
       DosageSchedule: [{ day: "", dosage: "", time: "", comment: "" }],
     },
   ]);
-
-  // State to hold dynamic options for each field
-  const [dynamicOptions, setDynamicOptions] = useState<{
-    [key: string]: { value: string; label: string }[];
-  }>({
-    "chief-complaint": [],
-    "on-examinations": [],
-    diagnosis: [],
-    investigation: [],
-  });
 
   const backendData = location.state?.backendData || {};
   const form = useForm({
@@ -188,39 +167,6 @@ const CreatePrescription = () => {
     }
   };
 
-  const handleSaveNewOption = async (inputValue: string, label: string) => {
-    try {
-      if (label === "Chief-Complaint") {
-        await CreateFn(inputValue, createComplain);
-      }
-      if (label === "On-Examinations") {
-        await CreateFn(inputValue, createOnExamination);
-      }
-      if (label === "Diagnosis") {
-        await CreateFn(inputValue, createDiagnosis);
-      }
-      if (label === "Investigation") {
-        await CreateFn(inputValue, createInvestigation);
-      }
-
-      const fieldName = label.toLowerCase();
-      // Add to form value
-      const prev = form.getValues(fieldName) || [];
-      form.setValue(fieldName, [...prev, inputValue]);
-      // Add to dynamic options for the select
-      setDynamicOptions((prevOptions) => ({
-        ...prevOptions,
-        [fieldName]: [
-          ...prevOptions[fieldName],
-          { value: inputValue, label: inputValue },
-        ],
-      }));
-    } catch (error) {
-      toast.error("Failed to save new option");
-      console.error("Error saving new option:", error);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-6">
@@ -255,9 +201,7 @@ const CreatePrescription = () => {
                 medicineInputCount={medicineInputCount}
                 handleRemoveMedicineInput={handleRemoveMedicineInput}
                 handleAddMedicineInput={handleAddMedicineInput}
-                handleAdviceInputChange={handleSaveNewOption}
                 setMedicineInputCount={setMedicineInputCount}
-                dynamicOptions={dynamicOptions}
                 type="create"
               />
             </FormProvider>

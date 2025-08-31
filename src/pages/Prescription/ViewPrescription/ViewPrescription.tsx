@@ -124,7 +124,7 @@ const ViewPrescription = () => {
                   >
                     <div className="screen-container min-h-[800px] flex flex-col justify-between">
                       <img
-                        src={preManagementData?.data?.[0]?.headerImage || "/placeholder.svg" || "/placeholder.svg"}
+                        src={preManagementData?.data?.[0]?.headerImage}
                         alt=""
                       />
 
@@ -136,7 +136,7 @@ const ViewPrescription = () => {
                           </span>
                           <span className="font-medium">
                             <strong className="text-slate-700">Age:</strong>{" "}
-                            <span className="text-slate-900">{medic?.patient?.age}</span>
+                            <span className="text-slate-900">{medic?.patient?.age}yrs</span>
                           </span>
                           <span className="font-medium">
                             <strong className="text-slate-700">Date:</strong>{" "}
@@ -269,7 +269,7 @@ const ViewPrescription = () => {
                       </div>
 
                       <img
-                        src={preManagementData?.data?.[0]?.footerImage || "/placeholder.svg" || "/placeholder.svg"}
+                        src={preManagementData?.data?.[0]?.footerImage}
                         alt=""
                       />
                     </div>

@@ -15,9 +15,7 @@ const PrescriptionForm = ({
   medicineInputCount,
   handleRemoveMedicineInput,
   handleAddMedicineInput,
-  handleAdviceInputChange,
   setMedicineInputCount,
-  dynamicOptions = {},
   type,
 }: any) => {
   const [timingCounts, setTimingCounts] = useState<Record<string, number>>({});
@@ -228,11 +226,7 @@ const PrescriptionForm = ({
         </div>
       )}
 
-      <ClinicalAssessment
-        form={form}
-        dynamicOptions={dynamicOptions}
-        handleAdviceInputChange={handleAdviceInputChange}
-      />
+      <ClinicalAssessment />
 
       <div className="p-2">
         <div className="flex items-center gap-3 mb-4">
