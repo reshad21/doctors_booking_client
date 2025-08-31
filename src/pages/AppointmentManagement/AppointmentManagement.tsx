@@ -93,7 +93,7 @@ const { data: patientsData, isLoading } = useGetPatientQuery({
   ) => {
     const date = new Date(data?.appDate);
     // Optional: add 1 day if needed
-    date.setDate(date.getDate() + 1);
+    date.setDate(date.getDate());
     // Always use ISO string for Prisma
     const createdAtISO = date.toISOString();
     const res = (await createPatient({
@@ -164,7 +164,7 @@ const { data: patientsData, isLoading } = useGetPatientQuery({
               validationSchema={patientSchema}
             />
           </div>
-          <div> <span className="text-xs font-semibold">Present :</span> {patientsData?.data?.data?.filter((item:any) => item?.isArrived == true)?.length}/{ patientsData?.data?.data?.length}</div>
+          <div className="bg-brand px-2 py-1"> <span className="text-xs font-semibold">Present :</span> {patientsData?.data?.data?.filter((item:any) => item?.isArrived == true)?.length}/{ patientsData?.data?.data?.length}</div>
           <Input
             className="w-80 rounded"
             placeholder="Search"

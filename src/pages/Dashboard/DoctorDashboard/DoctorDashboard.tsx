@@ -14,7 +14,9 @@ const DoctorDashboard = () => {
   const [selectedChamber, setSelectedChamber] = useState("all");
   const { data: chambersData } = useGetChambersQuery({});
 
-  const chambers = chambersData?.data?.map((item:any) =>({name:item?.name,id:item?.id}))
+  const chambers = chambersData?.data?.map((item:any) =>({name:item?.name,id:item?.id})) || []
+  console.log(chambers);
+  
   
   const today = new Date().toISOString().split("T")[0];
   const { data: patientSummaryData, isLoading: isPatientSummaryLoading } =
