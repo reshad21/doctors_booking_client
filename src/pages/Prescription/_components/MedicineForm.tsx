@@ -138,10 +138,6 @@ const MedicineForm = ({
               </div>
 
               <div className="space-y-3">
-                <label className="text-sm font-medium text-gray-700">
-                  Dosage Schedule
-                </label>
-
                 {Array.from({ length: timingCounts[item.content] || 1 }).map(
                   (_, idx2) => {
                     const count = idx2 + 1;
@@ -182,7 +178,7 @@ const MedicineForm = ({
                                 {label === "Comment" && (
                                   <BaseInput
                                     name={fieldName}
-                                    placeholder="Ex: Take after meal"
+                                    placeholder="E.G. After food"
                                     classname="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                   />
                                 )}

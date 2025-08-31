@@ -1,19 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useState, useCallback } from "react";
-import ReactSelectCompo from "./ReactSelectCompo";
 import MedicineForm from "./MedicineForm";
 import { Form } from "@/components/ui/form";
-import { dosageOptions, InputOptions, timeOptions } from "./CreateFn";
-import { useGetAdviceQuery } from "@/redux/api/advice/advice";
+import { dosageOptions, timeOptions } from "./CreateFn";
 import BaseInput from "@/components/shared/BaseInput";
 import { AlertTriangle } from "lucide-react";
 import ClinicalAssessment from "./ChiefComplaints";
+import AdviceField from "./AdviceFields";
 
 const PrescriptionForm = ({
   form,
   onSubmit,
-  handleAdviceChange,
   medicineInputCount,
   handleRemoveMedicineInput,
   handleAddMedicineInput,
@@ -24,7 +22,6 @@ const PrescriptionForm = ({
 }: any) => {
   const [timingCounts, setTimingCounts] = useState<Record<string, number>>({});
   const [formError, setFormError] = useState<string>("");
-  const { data: advice } = useGetAdviceQuery({ limit: 200 });
 
   // Validate unique medicines
   const validateUniqueMedicines = useCallback(() => {
@@ -139,7 +136,6 @@ const PrescriptionForm = ({
     }
   }, [medicineInputCount, medicineFieldValues, validateUniqueMedicines]);
 
-
   const addTimingSet = useCallback((id: string) => {
     setTimingCounts((prev) => ({
       ...prev,
@@ -219,8 +215,6 @@ const PrescriptionForm = ({
     [form, handleRemoveMedicineInput]
   );
 
-  const adviceOptions = InputOptions(advice, "advice") || [];
-
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       {/* Show form-level error for duplicate medicines */}
@@ -281,23 +275,7 @@ const PrescriptionForm = ({
               />
             </div>
 
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-2 h-5 bg-orange-500 rounded-full"></div>
-                <h4 className="text-lg font-semibold text-gray-900">
-                  Patient Advice
-                </h4>
-              </div>
-              <ReactSelectCompo
-                label=""
-                name="advice"
-                options={adviceOptions || []}
-                control={form.control}
-                isMulti
-                showSelectedBox
-                onCreateOption={(inputValue) => handleAdviceChange(inputValue)}
-              />
-            </div>
+            <AdviceField />
 
             <div className="flex justify-end items-center gap-4 border-gray-200">
               <button

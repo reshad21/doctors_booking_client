@@ -38,6 +38,24 @@ const onExaminationsApi = baseApi.injectEndpoints({
       invalidatesTags: ["manualData"],
     }),
 
+    createMedicineTime: builder.mutation({
+      query: (data) => ({
+        url: `/medicine-time/create-medicine-time`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["manualData"],
+    }),
+
+    createMedicineDosages: builder.mutation({
+      query: (data) => ({
+        url: `/medicine-dosages/create-medicine-dosages`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["manualData"],
+    }),
+
     getOnExaminations: builder.query({
       query: ({ page, limit, searchTerm, filter, orderBy }) => ({
         url: `/on-examination/get-onExaminations`,
@@ -101,6 +119,34 @@ const onExaminationsApi = baseApi.injectEndpoints({
     getMedicinesList: builder.query({
       query: ({ page, limit, searchTerm, filter, orderBy }) => ({
         url: `/medicines/get-medicines`,
+        params: {
+          page,
+          limit,
+          searchTerm,
+          filter,
+          orderBy,
+        },
+      }),
+      providesTags: ["manualData"],
+    }),
+
+    getMedicinesTime: builder.query({
+      query: ({ page, limit, searchTerm, filter, orderBy }) => ({
+        url: `/medicine-time/get-medicine-time`,
+        params: {
+          page,
+          limit,
+          searchTerm,
+          filter,
+          orderBy,
+        },
+      }),
+      providesTags: ["manualData"],
+    }),
+
+    getMedicinesDosages: builder.query({
+      query: ({ page, limit, searchTerm, filter, orderBy }) => ({
+        url: `/medicine-dosages/get-medicine-dosages`,
         params: {
           page,
           limit,

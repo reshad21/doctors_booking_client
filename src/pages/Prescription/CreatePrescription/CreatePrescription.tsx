@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 import { useAppSelector } from "@/redux/hooks";
@@ -12,8 +12,7 @@ import {
   useCreateInvestigationMutation,
   useCreateOnExaminationsMutation,
 } from "@/redux/api/manualData/manualData";
-import { useCreateAdviceMutation } from "@/redux/api/advice/advice";
-import { CreateAdviceFn, CreateFn } from "../_components/CreateFn";
+import { CreateFn } from "../_components/CreateFn";
 import BackButton from "@/components/shared/BackButton";
 import PrescriptionForm from "../_components/PrescriptionForm";
 import { useGetSinglePatientQuery } from "@/redux/api/patient/patient";
@@ -25,7 +24,6 @@ const CreatePrescription = () => {
   const [createInvestigation] = useCreateInvestigationMutation();
   const [createDiagnosis] = useCreateDiagnosisMutation();
   const [createComplain] = useCreateChiefComplaintMutation();
-  const [createAdvice] = useCreateAdviceMutation();
   const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const [createPrescription] = useCreatePrescriptionMutation();
   const { patientId } = useParams();
@@ -223,18 +221,6 @@ const CreatePrescription = () => {
     }
   };
 
-  // Handler for advice field
-  const handleSaveAdvice = async (inputValue: string) => {
-    try {
-      await CreateAdviceFn(inputValue, createAdvice);
-      const prev = form.getValues("advice") || [];
-      form.setValue("advice", [...prev, inputValue]);
-    } catch (error) {
-      toast.error("Failed to save advice");
-      console.error("Error saving advice:", error);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-6">
@@ -261,19 +247,20 @@ const CreatePrescription = () => {
               patient={patientData?.data}
               prescriptionId={prescriptionId}
             />
-            <PrescriptionForm
-              form={form}
-              onSubmit={onSubmit}
-              patient={patientData?.data}
-              medicineInputCount={medicineInputCount}
-              handleRemoveMedicineInput={handleRemoveMedicineInput}
-              handleAddMedicineInput={handleAddMedicineInput}
-              handleAdviceInputChange={handleSaveNewOption}
-              handleAdviceChange={handleSaveAdvice}
-              setMedicineInputCount={setMedicineInputCount}
-              dynamicOptions={dynamicOptions}
-              type="create"
-            />
+            <FormProvider {...form}>
+              <PrescriptionForm
+                form={form}
+                onSubmit={onSubmit}
+                patient={patientData?.data}
+                medicineInputCount={medicineInputCount}
+                handleRemoveMedicineInput={handleRemoveMedicineInput}
+                handleAddMedicineInput={handleAddMedicineInput}
+                handleAdviceInputChange={handleSaveNewOption}
+                setMedicineInputCount={setMedicineInputCount}
+                dynamicOptions={dynamicOptions}
+                type="create"
+              />
+            </FormProvider>
           </div>
 
           <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
