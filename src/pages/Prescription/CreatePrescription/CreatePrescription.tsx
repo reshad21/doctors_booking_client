@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
@@ -21,14 +20,6 @@ const CreatePrescription = () => {
   const doctorId = useAppSelector((state) => state.admin?.id);
   const navigate = useNavigate();
 
-  const [medicineInputCount, setMedicineInputCount] = useState([
-    {
-      content: Date.now().toString(),
-      medicineName: "",
-      DosageSchedule: [{ day: "", dosage: "", time: "", comment: "" }],
-    },
-  ]);
-
   const backendData = location.state?.backendData || {};
   const form = useForm({
     defaultValues: backendData,
@@ -38,35 +29,6 @@ const CreatePrescription = () => {
   const prescriptionId = patientData?.data?.id 
     ? generatePrescriptionId(patientData.data.id)
     : null;
-
-  const handleAddMedicineInput = () => {
-    const newId = Date.now().toString();
-    setMedicineInputCount((prev) => [
-      ...prev,
-      {
-        content: newId,
-        medicineName: "",
-        DosageSchedule: [{ day: "", dosage: "", time: "", comment: "" }],
-      },
-    ]);
-  };
-
-  const handleRemoveMedicineInput = (contentToDelete: string) => {
-    setMedicineInputCount((prev) =>
-      prev.filter((item) => item.content !== contentToDelete)
-    );
-
-    // Remove all related fields from form state
-    const allFormValues = form.getValues();
-    Object.keys(allFormValues).forEach((key) => {
-      if (
-        key.endsWith(`-${contentToDelete}`) ||
-        key === `medicine-${contentToDelete}`
-      ) {
-        form.unregister(key);
-      }
-    });
-  };
 
   // Show loading state while patient data is being fetched
   if (isPatientLoading || !prescriptionId) {
@@ -151,6 +113,8 @@ const CreatePrescription = () => {
       prescriptionNo: prescriptionId,
     };
 
+    console.log(transformedData, 'transformedData')
+
     try {
       const res = (await createPrescription(transformedData)) as any;
 
@@ -195,13 +159,7 @@ const CreatePrescription = () => {
             />
             <FormProvider {...form}>
               <PrescriptionForm
-                form={form}
                 onSubmit={onSubmit}
-                patient={patientData?.data}
-                medicineInputCount={medicineInputCount}
-                handleRemoveMedicineInput={handleRemoveMedicineInput}
-                handleAddMedicineInput={handleAddMedicineInput}
-                setMedicineInputCount={setMedicineInputCount}
                 type="create"
               />
             </FormProvider>
