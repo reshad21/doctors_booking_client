@@ -143,7 +143,7 @@ const MedicineSelect = ({
   const allOptions = useMemo(() => {
     const options: any[] = [];
 
-    if (recentSearchOptions.length > 0) {
+    if (recentSearchOptions.length > 0 && !inputValue) {
       options.push({
         label: "Recent Searches",
         options: recentSearchOptions,
