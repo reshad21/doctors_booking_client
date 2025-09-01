@@ -93,7 +93,7 @@ const Patient = () => {
         <div className="rounded-b-sm overflow-hidden shadow-sm">
           {patientsData?.data?.data && patientsData.data.data.length > 0 ? (
             <PatientTable
-              patientsData={patientsData.data.data}
+              patients={patientsData.data.data}
               deletePatient={deletePatient}
             />
           ) : (

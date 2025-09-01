@@ -56,7 +56,6 @@ const { data: patientsData, isLoading } = useGetPatientQuery({
   orderBy: JSON.stringify({ createdAt: "asc" }),
 });
   if (isLoading) return <LoadingSpinner />;
-console.log(patientsData,"appoinment");
 
   const selectFields = [
     {
