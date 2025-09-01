@@ -25,7 +25,6 @@ const PrescriptionForm = ({
 
   const handleValidationError = (error: string) => {
     setFormError(error);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (

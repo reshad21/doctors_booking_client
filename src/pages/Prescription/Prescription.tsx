@@ -18,7 +18,8 @@ const Prescription = () => {
     filter: JSON.stringify({
       ...(searchTerm
         ? {}
-        : { createdAt: today, timezoneOffset: new Date().getTimezoneOffset() }),
+        : { createdAt: today, }),
+        // : { createdAt: today, timezoneOffset: new Date().getTimezoneOffset() }),
     }),
     orderBy: JSON.stringify({ createdAt: "asc" }),
   });

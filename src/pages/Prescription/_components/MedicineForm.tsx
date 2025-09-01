@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
@@ -28,7 +27,7 @@ interface MedicineFormProps {
 
 const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
   const form = useFormContext();
-  
+
   const [medicineInputCount, setMedicineInputCount] = useState<MedicineItem[]>([
     {
       content: Date.now().toString(),
@@ -38,7 +37,9 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
   ]);
 
   const [timingCounts, setTimingCounts] = useState<Record<string, number>>({});
-  const [duplicateErrors, setDuplicateErrors] = useState<Record<string, string>>({});
+  const [duplicateErrors, setDuplicateErrors] = useState<
+    Record<string, string>
+  >({});
 
   // Memoize medicine field names to prevent unnecessary changes
   const medicineFieldNames = useMemo(
@@ -148,7 +149,12 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
     } else {
       onValidationError("");
     }
-  }, [medicineInputCount, medicineFieldValues, validateUniqueMedicines, onValidationError]);
+  }, [
+    medicineInputCount,
+    medicineFieldValues,
+    validateUniqueMedicines,
+    onValidationError,
+  ]);
 
   // Initialize timing counts when medicineInputCount changes
   useEffect(() => {
@@ -251,7 +257,10 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
 
       // Clean up form fields for the removed medicine
       Object.keys(currentValues).forEach((key) => {
-        if (key.endsWith(`-${contentToDelete}`) || key.startsWith(`${contentToDelete}-`)) {
+        if (
+          key.endsWith(`-${contentToDelete}`) ||
+          key.startsWith(`${contentToDelete}-`)
+        ) {
           form.unregister(key);
         }
       });
@@ -265,6 +274,30 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
       [id]: (prev[id] || 1) + 1,
     }));
   }, []);
+
+  // Listen for initialization event from UpdatePrescription
+  useEffect(() => {
+    if (type === "update") {
+      const handleInitialize = (event: CustomEvent) => {
+        const { medicines } = event.detail;
+        if (medicines && medicines.length > 0) {
+          setMedicineInputCount(medicines);
+        }
+      };
+
+      window.addEventListener(
+        "initializeMedicineForm",
+        handleInitialize as EventListener
+      );
+
+      return () => {
+        window.removeEventListener(
+          "initializeMedicineForm",
+          handleInitialize as EventListener
+        );
+      };
+    }
+  }, [type]);
 
   const removeTimingSet = useCallback(
     (id: string) => {
