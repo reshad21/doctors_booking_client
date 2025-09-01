@@ -43,18 +43,18 @@ const AppointmentManagement = () => {
     return () => clearTimeout(handler);
   }, [searchInput]);
 
-const today = new Date().toISOString().split('T')[0];
-const { data: patientsData, isLoading } = useGetPatientQuery({
-  page,
-  limit,
-  searchTerm,
-  filter: JSON.stringify({
-    chamberId: headerSelect.chamber || undefined,
-    createdAt: headerSelect.date || today,
-    timezoneOffset: new Date().getTimezoneOffset()
-  }),
-  orderBy: JSON.stringify({ createdAt: "asc" }),
-});
+  const today = new Date().toISOString().split("T")[0];
+  const { data: patientsData, isLoading } = useGetPatientQuery({
+    page,
+    limit,
+    searchTerm,
+    filter: JSON.stringify({
+      chamberId: headerSelect.chamber || undefined,
+      createdAt: headerSelect.date || today,
+      timezoneOffset: new Date().getTimezoneOffset(),
+    }),
+    orderBy: JSON.stringify({ createdAt: "asc" }),
+  });
   if (isLoading) return <LoadingSpinner />;
 
   const selectFields = [
@@ -164,7 +164,16 @@ const { data: patientsData, isLoading } = useGetPatientQuery({
               validationSchema={patientSchema}
             />
           </div>
-          <div className="bg-brand px-2 py-1 text-white rounded-sm"> <span className="text-xs font-semibold">Present :</span> {patientsData?.data?.data?.filter((item:any) => item?.isArrived == true)?.length}/{ patientsData?.data?.data?.length}</div>
+          <div className="bg-brand px-2 py-1 text-white rounded-sm">
+            {" "}
+            <span className="text-xs font-semibold">Present :</span>{" "}
+            {
+              patientsData?.data?.data?.filter(
+                (item: any) => item?.isArrived == true
+              )?.length
+            }
+            /{patientsData?.data?.data?.length}
+          </div>
           <Input
             className="w-80 rounded"
             placeholder="Search"
