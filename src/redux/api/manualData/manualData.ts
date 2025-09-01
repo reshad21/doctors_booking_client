@@ -170,4 +170,8 @@ export const {
   useCreateChiefComplaintMutation,
   useGetChiefComplaintQuery,
   useGetMedicinesListQuery,
+  useCreateMedicineTimeMutation,
+  useGetMedicinesDosagesQuery,
+  useGetMedicinesTimeQuery,
+  useCreateMedicineDosagesMutation,
 } = onExaminationsApi;

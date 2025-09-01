@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { useEffect, useState, useCallback, useMemo } from "react";
@@ -7,7 +8,12 @@ import BaseInput from "@/components/shared/BaseInput";
 import { Plus, X, AlertTriangle } from "lucide-react";
 import DurationInput from "./DurationInput";
 import MedicineSelect from "./MedicineSelect";
-import { dosageOptions, timeOptions } from "./CreateFn";
+import { CreateFn, dosageOptions, timeOptions } from "./CreateFn";
+import {
+  useCreateMedicineDosagesMutation,
+  useGetMedicinesDosagesQuery,
+} from "@/redux/api/manualData/manualData";
+import toast from "react-hot-toast";
 
 interface MedicineItem {
   content: string;
@@ -40,12 +46,20 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
   const [duplicateErrors, setDuplicateErrors] = useState<
     Record<string, string>
   >({});
+  
+  // Add state for dynamic dosage options
+// Remove unused state since allDosageOptions handles the merged options
 
   // Memoize medicine field names to prevent unnecessary changes
   const medicineFieldNames = useMemo(
     () => medicineInputCount?.map((item) => `medicine-${item.content}`) || [],
     [medicineInputCount]
   );
+
+  const [createMedicineDosage] = useCreateMedicineDosagesMutation();
+  const { data: medicinesDosages } = useGetMedicinesDosagesQuery({
+    limit: 200,
+  });
 
   // Watch all medicine fields for changes
   const medicineFieldValues = form.watch(medicineFieldNames);
@@ -336,6 +350,36 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
     ];
   }
 
+  // Save new dosage option
+  const handleSaveNewDosage = async (inputValue: string) => {
+    try {
+      await CreateFn(inputValue, createMedicineDosage);
+
+      // Add to dynamic options
+      // setDynamicDosageOptions((prevOptions) => [
+      //   ...prevOptions,
+      //   { value: inputValue, label: inputValue },
+      // ]);
+    } catch (error) {
+      toast.error("Failed to save new dosage option");
+      console.error("Error saving new dosage option:", error);
+    }
+  };
+
+  // Merge API dosage options with dynamic options
+  const allDosageOptions = useMemo(() => {
+    const apiOptions =
+      medicinesDosages?.data?.map((item: any) => ({
+        value: item.value,
+        label: item.value,
+      })) || [];
+
+    return [...dosageOptions, ...apiOptions].filter(
+      (option, index, self) =>
+        index === self.findIndex((o) => o.value === option.value)
+    );
+  }, [medicinesDosages]);
+
   return (
     <div className="space-y-6">
       {dynamicMedicineCount?.map((item, _idx) => {
@@ -397,9 +441,10 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
                                 {label === "Dosage" && (
                                   <ReactSelectCompo
                                     name={fieldName}
-                                    options={dosageOptions}
+                                    options={allDosageOptions}
                                     control={form.control}
                                     showSelectedBox={false}
+                                    onCreateOption={handleSaveNewDosage}
                                   />
                                 )}
                                 {label === "Duration" && (
