@@ -24,12 +24,12 @@ import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 
 interface AppointmentTableProps {
-  patientsData: Patient[];
+  patients: Patient[];
   deletePatient: (id: string) => void;
 }
 
 const AppointmentTable = ({
-  patientsData,
+  patients,
   deletePatient,
 }: AppointmentTableProps) => {
   const [updateIsArrivedPatient] = useUpdateIsArrivedPatientMutation();
@@ -37,7 +37,7 @@ const AppointmentTable = ({
   const [modalDataToUpdate, setModalDataToUpdate] = useState<Patient | null>(
     null
   );
-  
+
   const [updatePatient] = useUpdatePatientMutation();
   const dispatch = useAppDispatch();
   const calledSerials = useSelector((state: any) => state.serial.calledSerials);
@@ -48,10 +48,11 @@ const AppointmentTable = ({
   };
 
   const handleVisitChange = async (id: string, visitStatus: string) => {
+    const arrivedStatus = visitStatus == "VISITED" ? true : false
     try {
       await updatePatient({
         id,
-        payload: { visitStatus },
+        payload: { visitStatus ,isArrived:arrivedStatus},
       });
       toast.success("Visit status updated successfully");
     } catch (error) {
@@ -71,6 +72,9 @@ const AppointmentTable = ({
     }
   };
 
+  const patientsData = [...(patients || [])]?.sort(
+    (a: any, b: any) => a.time - b.time
+  );
   return (
     <div>
       <Table className="no-border">

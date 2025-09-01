@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Table,
   TableBody,
@@ -16,11 +17,11 @@ import PatientModal from "./PatientModal";
 import { useNavigate } from "react-router-dom";
 
 interface PatientTableProps {
-  patientsData: Patient[];
+  patients: Patient[];
   deletePatient: (id: string) => void;
 }
 
-const PatientTable = ({ patientsData, deletePatient }: PatientTableProps) => {
+const PatientTable = ({ patients, deletePatient }: PatientTableProps) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const navigate = useNavigate();
@@ -38,7 +39,16 @@ const PatientTable = ({ patientsData, deletePatient }: PatientTableProps) => {
   const handleViewPrescriptions = (patientId: string) => {
     navigate(`/dashboard/view-prescription/${patientId}`);
   };
+const patientsData = [...(patients || [])].sort(
+  (a: any, b: any) => {
+    const dateDiff = new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    if (dateDiff !== 0) return dateDiff;
+    return Number(b.time) - Number(a.time);
+  }
+);
 
+ 
+ 
   return (
     <div>
       <Table className="no-border">

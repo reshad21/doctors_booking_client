@@ -5,30 +5,21 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "./_component/app-sidebar";
 import { sideNavMenu } from "@/context/Routes-sideNav";
-import { Link, Outlet, useNavigate } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Link, Outlet } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Home, KeyRound, LogOut, User } from "lucide-react";
+import { Home} from "lucide-react";
 import { useGetAdminByTokenQuery } from "@/redux/api/admin/admin";
 import { filterSideNavMenuByAccess } from "@/utils/filterSideNavMenu";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch } from "@/redux/hooks";
 import { setPermissions } from "@/redux/api/features/permissionSlice";
 import { useEffect, useMemo } from "react";
 import type { PermissionItem } from "@/redux/api/features/permissionSlice";
-import { HandelLogout } from "@/lib/HandelLogout";
 
 export default function DashboardLayout() {
   const { data: adminDataFromApi, isLoading } = useGetAdminByTokenQuery({});
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const doctor = useAppSelector((state) => state.admin);
+  // const navigate = useNavigate();
+  // const doctor = useAppSelector((state) => state.admin);
 
   const routeAccess: PermissionItem[] = useMemo(
     () =>
@@ -65,7 +56,7 @@ export default function DashboardLayout() {
                 <span>Home</span>
               </Button>
             </Link>
-            <DropdownMenu>
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="text-white cursor-pointer">
                   <div className="flex items-center space-x-1 ">
@@ -111,7 +102,7 @@ export default function DashboardLayout() {
                   Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
           </div>
         </header>
 

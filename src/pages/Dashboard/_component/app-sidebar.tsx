@@ -95,10 +95,10 @@ export function AppSidebar({ sideNavMenu, ...props }: AppSidebarProps) {
           })}
         </SidebarMenu>
         <div
-          className="px-5 text-sm flex justify-start items-center gap-2 cursor-pointer"
+          className="px-5 text-sm flex justify-start items-center gap-2 cursor-pointer pb-10"
           onClick={() => HandelLogout(navigate, dispatch)}
         >
-          <LogOutIcon className="size-4" />
+          <LogOutIcon className="size-4 " />
           Log-out
         </div>
       </SidebarContent>

@@ -245,7 +245,7 @@ export const printPrescription = (
           <img src=${preManagementData?.data?.[0]?.headerImage} alt="" class="print-header-image"/>
           <div class="print-patient-info">
             <span><strong>Name:</strong> ${prescriptionData?.patient?.name || ""}</span>
-            <span><strong>Age:</strong> ${prescriptionData?.patient?.age || ""}</span>
+            <span><strong>Age:</strong> ${prescriptionData?.patient?.age || ""}yrs</span>
             <span>
              <strong>Date:</strong> 
              ${prescriptionData?.createdAt

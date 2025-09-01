@@ -63,7 +63,10 @@ export default function VideoPlayer({ videos }: VideoPlayerProps) {
     }
 
     return () => {
-      if (playerRef.current && typeof playerRef.current.destroy === "function") {
+      if (
+        playerRef.current &&
+        typeof playerRef.current.destroy === "function"
+      ) {
         playerRef.current.destroy();
       }
     };
@@ -75,7 +78,7 @@ export default function VideoPlayer({ videos }: VideoPlayerProps) {
 
     const currentVideo = shuffledVideos[currentIndex];
     const videoId = extractVideoId(currentVideo.videoFile);
-    
+
     if (!videoId) {
       console.error("Invalid video URL:", currentVideo.videoFile);
       setCurrentIndex((prev) => (prev + 1) % shuffledVideos.length);
@@ -94,22 +97,27 @@ export default function VideoPlayer({ videos }: VideoPlayerProps) {
           mute: 0,
           controls: 1, // YouTube native controls
           showinfo: 0,
-          rel: 0, // IMPORTANT: This prevents related videos at the end
+          rel: 0,
           modestbranding: 1,
           playsinline: 1,
-          // Add these to prevent random videos after playlist ends
           iv_load_policy: 3, // Hide annotations
           fs: 0, // Hide fullscreen button (optional)
         },
         events: {
+          // onReady: (event: any) => {
+          //   console.log("Player ready");
+          //   setIsPlayerReady(true);
+          //   event.target.playVideo();
+          // },
           onReady: (event: any) => {
             console.log("Player ready");
             setIsPlayerReady(true);
-            event.target.playVideo();
+            event.target.mute(); // make sure muted
+            event.target.playVideo(); // trigger autoplay
           },
           onStateChange: (event: any) => {
             console.log("Player state changed:", event.data);
-            
+
             if (event.data === window.YT.PlayerState.ENDED) {
               console.log("Video ended, moving to next");
               // Loop back to start when reaching the end
@@ -130,10 +138,10 @@ export default function VideoPlayer({ videos }: VideoPlayerProps) {
   // Update video when currentIndex changes
   useEffect(() => {
     if (!playerRef.current || !shuffledVideos.length || !isPlayerReady) return;
-    
+
     const currentVideo = shuffledVideos[currentIndex];
     const videoId = extractVideoId(currentVideo.videoFile);
-    
+
     if (!videoId) {
       console.error("Invalid video URL:", currentVideo.videoFile);
       setCurrentIndex((prev) => (prev + 1) % shuffledVideos.length);
@@ -145,7 +153,7 @@ export default function VideoPlayer({ videos }: VideoPlayerProps) {
     try {
       playerRef.current.loadVideoById({
         videoId: videoId,
-        suggestedQuality: "default"
+        suggestedQuality: "default",
       });
     } catch (error) {
       console.error("Error loading video:", error);
