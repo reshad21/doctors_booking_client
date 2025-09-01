@@ -36,7 +36,7 @@ const Prescription = () => {
     filter: JSON.stringify({
       chamberId: headerSelect?.chamber || undefined,
       createdAt: headerSelect?.date || today,
-      // timezoneOffset: new Date().getTimezoneOffset(),
+      timezoneOffset: new Date().getTimezoneOffset(),
     }),
     orderBy: JSON.stringify({ createdAt: "asc" }),
   });
