@@ -14,7 +14,7 @@ const DoctorDashboard = () => {
   const [selectedChamber, setSelectedChamber] = useState("all");
   const { data: chambersData } = useGetChambersQuery({});
 
-  const chambers = chambersData?.data?.map((item:any) =>({name:item?.name,id:item?.id}))
+  const chambers = chambersData?.data?.map((item:any) =>({name:item?.name,id:item?.id})) || []
   
   const today = new Date().toISOString().split("T")[0];
   const { data: patientSummaryData, isLoading: isPatientSummaryLoading } =
@@ -29,8 +29,6 @@ const DoctorDashboard = () => {
       limit: 1000,
     });
   const doctor = useAppSelector((state) => state.admin);
-  // console.log(doctor, "doctor");
-  // console.log(patientApiData, "Patient api data");
   const appointmentData =
     patientApiData?.data?.data?.map((patient: any, index: number) => ({
       sn: index + 1,

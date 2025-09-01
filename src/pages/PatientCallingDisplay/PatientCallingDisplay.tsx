@@ -38,12 +38,17 @@ export default function PatientCallingDisplay() {
 
   const { data: videoData } = useGetWatchVideoQuery({});
   const { data: patientApiData, refetch } = useGetPatientQuery({
-    limit: 1000,
-    filter: JSON.stringify({ createdAt: today }),
-    orderBy: JSON.stringify({ createdAt: "asc" }),
-  });
+  filter: JSON.stringify({
+    chamberId:  undefined,
+    createdAt:  today,
+    timezoneOffset: new Date().getTimezoneOffset()
+  }),
+  orderBy: JSON.stringify({ createdAt: "asc" }),
+});
 
   const patients: Patient[] = patientApiData?.data?.data || [];
+  console.log(patients);
+  
   const outdoorPatients = patients.filter((p) => p?.status !== "REPORT");
   const reportPatients = patients.filter((p) => p?.status === "REPORT");
   const activeVideos = useMemo(
@@ -55,7 +60,7 @@ export default function PatientCallingDisplay() {
   // const filteredOutdoorPatients = outdoorPatients.filter(
   //   (p) => !endedSerials.includes(p.id)
   // );
-  console.log(outdoorPatients);
+  console.log(outdoorPatients,"outdoorPatients");
 
   // Filter out ended patients AND patients where isArrived is true
   const filteredOutdoorPatients = outdoorPatients.filter(
