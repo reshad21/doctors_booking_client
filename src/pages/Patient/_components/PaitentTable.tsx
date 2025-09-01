@@ -47,7 +47,7 @@ const patientsData = [...(patients || [])].sort(
   }
 );
 
- console.log(patients);
+ 
  
   return (
     <div>
