@@ -22,7 +22,7 @@ const patientApi = baseApi.injectEndpoints({
           body: data,
         };
       },
-      invalidatesTags: ["patient"],
+      invalidatesTags: ["patient","chamber"],
     }),
     getPatient: builder.query({
       query: ({ page, limit, searchTerm, filter, orderBy }) => {
@@ -40,6 +40,18 @@ const patientApi = baseApi.injectEndpoints({
       },
       providesTags: ["patient"],
     }),
+
+    getSinglePatient: builder.query({
+      query: (id) => {
+        console.log(id, 'id in service')
+        return {
+          url: `/patients/get-patient/${id}`,
+          method: "GET",
+        };
+      },
+      providesTags: ["patient"],
+    }),
+
     deletePatient: builder.mutation({
       query: (id) => ({
         url: `/patients/${id}`,
@@ -47,6 +59,7 @@ const patientApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["patient"],
     }),
+
     updatePatient: builder.mutation({
       query: ({ id, payload }) => ({
         url: `/patients/${id}`,
@@ -63,5 +76,6 @@ export const {
   useGetPatientQuery,
   useUpdatePatientMutation,
   useDeletePatientMutation,
-  useUpdateIsArrivedPatientMutation
+  useUpdateIsArrivedPatientMutation,
+  useGetSinglePatientQuery,
 } = patientApi;

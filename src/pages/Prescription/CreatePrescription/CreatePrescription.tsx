@@ -1,77 +1,54 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import CreatePrescriptionForm from "../_components/CreatePrescriptionForm";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 import { useAppSelector } from "@/redux/hooks";
 import { useCreatePrescriptionMutation } from "@/redux/api/prescription/prescription";
 import toast from "react-hot-toast";
-import {
-  useCreateChiefComplaintMutation,
-  useCreateDiagnosisMutation,
-  useCreateInvestigationMutation,
-  useCreateOnExaminationsMutation,
-} from "@/redux/api/manualData/manualData";
-import { useCreateAdviceMutation } from "@/redux/api/advice/advice";
-import { CreateAdviceFn, CreateFn } from "../_components/CreateFn";
 import BackButton from "@/components/shared/BackButton";
+import PrescriptionForm from "../_components/PrescriptionForm";
+import { useGetSinglePatientQuery } from "@/redux/api/patient/patient";
+import PatientInformation from "../_components/PatientInformation";
+import { generatePrescriptionId } from "@/utils/generatePrescriptionId";
 
 const CreatePrescription = () => {
-  const [createOnExamination] = useCreateOnExaminationsMutation();
-  const [createInvestigation] = useCreateInvestigationMutation();
-  const [createDiagnosis] = useCreateDiagnosisMutation();
-  const [createComplain] = useCreateChiefComplaintMutation();
-  const [createAdvice] = useCreateAdviceMutation();
   const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const [createPrescription] = useCreatePrescriptionMutation();
   const { patientId } = useParams();
   const location = useLocation();
-  const patient = location.state;
+  const { data: patientData, isLoading: isPatientLoading } = useGetSinglePatientQuery(patientId);
   const doctorId = useAppSelector((state) => state.admin?.id);
   const navigate = useNavigate();
-
-  const [medicineInputCount, setMedicineInputCount] = useState([
-    {
-      content: Date.now().toString(),
-      medicineName: "",
-      DosageSchedule: [{ day: "", dosage: "", time: "", comment: "" }],
-    },
-  ]);
 
   const backendData = location.state?.backendData || {};
   const form = useForm({
     defaultValues: backendData,
   });
 
-  const handleAddMedicineInput = () => {
-    const newId = Date.now().toString();
-    setMedicineInputCount((prev) => [
-      ...prev,
-      {
-        content: newId,
-        medicineName: "",
-        DosageSchedule: [{ day: "", dosage: "", time: "", comment: "" }],
-      },
-    ]);
-  };
+  // Only generate prescription ID when patient data is available
+  const prescriptionId = patientData?.data?.id 
+    ? generatePrescriptionId(patientData.data.id)
+    : null;
 
-  const handleRemoveMedicineInput = (contentToDelete: string) => {
-    setMedicineInputCount((prev) =>
-      prev.filter((item) => item.content !== contentToDelete)
+  // Show loading state while patient data is being fetched
+  if (isPatientLoading || !prescriptionId) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 py-6">
+          <div className="mb-6">
+            <BackButton />
+          </div>
+          <div className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-center justify-center py-8">
+                <div className="text-gray-500">Loading patient information...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     );
-
-    // Remove all related fields from form state
-    const allFormValues = form.getValues();
-    Object.keys(allFormValues).forEach((key) => {
-      if (
-        key.endsWith(`-${contentToDelete}`) ||
-        key === `medicine-${contentToDelete}`
-      ) {
-        form.unregister(key);
-      }
-    });
-  };
+  }
 
   const onSubmit = async (data: any) => {
     const medicineEntries = Object.entries(data)
@@ -133,7 +110,10 @@ const CreatePrescription = () => {
       nextVisit: data.nextVisit,
       investigation: data.investigation,
       advice: data?.advice,
+      prescriptionNo: prescriptionId,
     };
+
+    console.log(transformedData, 'transformedData')
 
     try {
       const res = (await createPrescription(transformedData)) as any;
@@ -148,62 +128,6 @@ const CreatePrescription = () => {
     } catch (error) {
       toast.error("An error occurred while creating the prescription");
       console.error("Prescription creation error:", error);
-    }
-  };
-
-  // State to hold dynamic options for each field
-  const [dynamicOptions, setDynamicOptions] = useState<{
-    [key: string]: { value: string; label: string }[];
-  }>({
-    "chief-complaint": [],
-    "on-examinations": [],
-    diagnosis: [],
-    investigation: [],
-  });
-
- 
-  const handleSaveNewOption = async (inputValue: string, label: string) => {
-    try {
-      if (label === "Chief-Complaint") {
-        await CreateFn(inputValue, createComplain);
-      }
-      if (label === "On-Examinations") {
-        await CreateFn(inputValue, createOnExamination);
-      }
-      if (label === "Diagnosis") {
-        await CreateFn(inputValue, createDiagnosis);
-      }
-      if (label === "Investigation") {
-        await CreateFn(inputValue, createInvestigation);
-      }
-
-      const fieldName = label.toLowerCase();
-      // Add to form value
-      const prev = form.getValues(fieldName) || [];
-      form.setValue(fieldName, [...prev, inputValue]);
-      // Add to dynamic options for the select
-      setDynamicOptions((prevOptions) => ({
-        ...prevOptions,
-        [fieldName]: [
-          ...prevOptions[fieldName],
-          { value: inputValue, label: inputValue },
-        ],
-      }));
-    } catch (error) {
-      toast.error("Failed to save new option");
-      console.error("Error saving new option:", error);
-    }
-  };
-
-  // Handler for advice field
-  const handleSaveAdvice = async (inputValue: string) => {
-    try {
-      await CreateAdviceFn(inputValue, createAdvice);
-      const prev = form.getValues("advice") || [];
-      form.setValue("advice", [...prev, inputValue]);
-    } catch (error) {
-      toast.error("Failed to save advice");
-      console.error("Error saving advice:", error);
     }
   };
 
@@ -229,19 +153,16 @@ const CreatePrescription = () => {
           </div>
 
           <div className="p-6">
-            <CreatePrescriptionForm
-              form={form}
-              onSubmit={onSubmit}
-              patient={patient}
-              medicineInputCount={medicineInputCount}
-              handleRemoveMedicineInput={handleRemoveMedicineInput}
-              handleAddMedicineInput={handleAddMedicineInput}
-              handleAdviceInputChange={handleSaveNewOption}
-              handleAdviceChange={handleSaveAdvice}
-              setMedicineInputCount={setMedicineInputCount}
-              dynamicOptions={dynamicOptions}
-              type="create"
+            <PatientInformation
+              patient={patientData?.data}
+              prescriptionId={prescriptionId}
             />
+            <FormProvider {...form}>
+              <PrescriptionForm
+                onSubmit={onSubmit}
+                type="create"
+              />
+            </FormProvider>
           </div>
 
           <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
