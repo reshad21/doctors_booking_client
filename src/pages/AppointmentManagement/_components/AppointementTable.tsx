@@ -48,10 +48,11 @@ const AppointmentTable = ({
   };
 
   const handleVisitChange = async (id: string, visitStatus: string) => {
+    const arrivedStatus = visitStatus == "VISITED" ? true : false
     try {
       await updatePatient({
         id,
-        payload: { visitStatus },
+        payload: { visitStatus ,isArrived:arrivedStatus},
       });
       toast.success("Visit status updated successfully");
     } catch (error) {
@@ -74,7 +75,6 @@ const AppointmentTable = ({
   const patientsData = [...(patients || [])]?.sort(
     (a: any, b: any) => a.time - b.time
   );
-  // console.log(patientsData,"patientsData");
   return (
     <div>
       <Table className="no-border">
