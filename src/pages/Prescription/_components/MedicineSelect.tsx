@@ -205,6 +205,27 @@ const MedicineSelect = ({
     setMenuIsOpen(false);
   };
 
+  // FIXED: Helper function to get field value as string
+  const getFieldValueAsString = (fieldValue: any): string => {
+    if (typeof fieldValue === 'string') {
+      return fieldValue;
+    }
+    if (typeof fieldValue === 'object' && fieldValue?.value) {
+      return fieldValue.value;
+    }
+    return '';
+  };
+
+  // FIXED: Helper function to find selected option
+  const getSelectedOption = (fieldValue: any) => {
+    const valueAsString = getFieldValueAsString(fieldValue);
+    if (!valueAsString) return null;
+
+    return allOptions
+      .flatMap((group: any) => group.options)
+      .find((opt: any) => opt.value === valueAsString) || null;
+  };
+
   if (isLoadingProp || isLoading) {
     return (
       <div
@@ -228,11 +249,7 @@ const MedicineSelect = ({
           <Select
             {...field}
             options={allOptions}
-            value={
-              allOptions
-                .flatMap((group: any) => group.options)
-                .find((opt: any) => opt.value === field.value) || null
-            }
+            value={getSelectedOption(field.value)} // FIXED: Use helper function
             onInputChange={handleInputChange}
             menuIsOpen={field.value ? false : menuIsOpen}
             onMenuOpen={() => !field.value && setMenuIsOpen(true)}
