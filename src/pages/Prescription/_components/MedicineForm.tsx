@@ -150,7 +150,7 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
         return (
           <div
             key={medicine.id}
-            className={`relative border rounded-lg bg-slate-100 p-4 ${
+            className={`relative border rounded-lg bg-white p-4 ${
               duplicateError ? "border-red-300 bg-red-50" : "border-gray-200"
             }`}
           >
@@ -225,7 +225,7 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
       <button
         type="button"
         onClick={addMedicine}
-        className="w-full py-3 text-sm font-medium text-gray-600 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-all duration-200"
+        className="w-full py-3 bg-white text-sm font-medium text-gray-600 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-all duration-200"
       >
         <Plus className="w-4 h-4 inline mr-2" />
         Add Another Medicine
