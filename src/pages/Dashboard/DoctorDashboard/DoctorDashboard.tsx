@@ -17,8 +17,13 @@ const DoctorDashboard = () => {
   const chambers = chambersData?.data?.map((item:any) =>({name:item?.name,id:item?.id})) || []
   
   const today = new Date().toISOString().split("T")[0];
+  // const { data: patientSummaryData, isLoading: isPatientSummaryLoading } =
+  //   useGetPatientSummaryQuery({ chamberId: selectedChamber });
   const { data: patientSummaryData, isLoading: isPatientSummaryLoading } =
-    useGetPatientSummaryQuery({ chamberId: selectedChamber });
+  useGetPatientSummaryQuery({ 
+    chamberId: selectedChamber,
+    timezoneOffset: new Date().getTimezoneOffset()
+  });
   const { data: patientApiData, isLoading: isPatientLoading } =
     useGetPatientQuery({
       filter: JSON.stringify({

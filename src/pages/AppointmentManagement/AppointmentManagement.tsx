@@ -123,7 +123,6 @@ const AppointmentManagement = () => {
       toast.error(res?.error?.data?.message || "Something went wrong");
     }
   };
-
   return (
     <div className="custom-container">
       <div className="w-full">
@@ -162,6 +161,9 @@ const AppointmentManagement = () => {
               datePicker={[{ label: "AppointmentData", name: "appDate" }]}
               buttonProperty={{ type: "create", text: "Add New Patient" }}
               validationSchema={patientSchema}
+              defaultValues={{
+                  appDate: `${new Date().toString()}`,
+                }}
             />
           </div>
           <div className="bg-brand px-2 py-1 text-white rounded-sm">
