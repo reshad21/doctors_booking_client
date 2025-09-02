@@ -1,17 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useFormContext } from "react-hook-form";
-import ReactSelectCompo from "./ReactSelectCompo";
-import BaseInput from "@/components/shared/BaseInput";
 import { Plus, X, AlertTriangle } from "lucide-react";
-import DurationInput from "./DurationInput";
 import MedicineSelect from "./MedicineSelect";
-import { CreateFn, dosageOptions, timeOptions } from "./CreateFn";
-import {
-  useCreateMedicineDosagesMutation,
-  useGetMedicinesDosagesQuery,
-} from "@/redux/api/manualData/manualData";
-import toast from "react-hot-toast";
+import DosageTimingRow from "./DosageTimingRow";
 
 interface MedicineItem {
   id: string;
@@ -31,10 +23,7 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
     { id: Date.now().toString(), medicineName: "", timingCount: 1 }
   ]);
 
-  const [createMedicineDosage] = useCreateMedicineDosagesMutation();
-  const { data: medicinesDosages } = useGetMedicinesDosagesQuery({ limit: 200 });
-
-  // Simplified medicine validation - only validate when needed
+  // Medicine validation - check for duplicates
   const validateUniqueMedicines = useCallback(() => {
     const selectedMedicines = new Set<string>();
     const duplicates: string[] = [];
@@ -63,7 +52,7 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
     return true;
   }, [medicines, form, onValidationError]);
 
-  // Simplified duplicate error handling
+  // Debounced duplicate validation
   useEffect(() => {
     if (medicines.length > 1) {
       const timeoutId = setTimeout(validateUniqueMedicines, 300);
@@ -93,7 +82,7 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
     }
   }, [type]);
 
-  // Simplified medicine operations
+  // Add new medicine
   const addMedicine = useCallback(() => {
     setMedicines(prev => [
       ...prev,
@@ -101,10 +90,11 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
     ]);
   }, []);
 
+  // Remove medicine and clean up form fields
   const removeMedicine = useCallback((id: string) => {
     setMedicines(prev => prev.filter(med => med.id !== id));
     
-    // Clean up form fields
+    // Clean up all form fields related to this medicine
     const allFields = form.getValues();
     Object.keys(allFields).forEach(key => {
       if (key.includes(`-${id}`) || key === `medicine-${id}`) {
@@ -113,6 +103,7 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
     });
   }, [form]);
 
+  // Update timing count for a medicine
   const updateTimingCount = useCallback((id: string, increment: boolean) => {
     setMedicines(prev => prev.map(med => {
       if (med.id === id) {
@@ -134,29 +125,7 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
     }));
   }, [form]);
 
-  // Save new dosage option
-  const handleSaveNewDosage = async (inputValue: string) => {
-    try {
-      await CreateFn(inputValue, createMedicineDosage);
-    } catch (error) {
-      toast.error("Failed to save new dosage option");
-      console.error("Error saving new dosage option:", error);
-    }
-  };
-
-  // Merge dosage options
-  const allDosageOptions = useMemo(() => {
-    const apiOptions = medicinesDosages?.data?.map((item: any) => ({
-      value: item.value,
-      label: item.value,
-    })) || [];
-
-    return [...dosageOptions, ...apiOptions].filter(
-      (option, index, self) => index === self.findIndex(o => o.value === option.value)
-    );
-  }, [medicinesDosages]);
-
-  // Check for duplicate medicine
+  // Check for duplicate medicine error
   const getDuplicateError = (medicineId: string) => {
     const currentValue = form.watch(`medicine-${medicineId}`);
     const currentMedicineValue = currentValue?.value || currentValue;
@@ -185,6 +154,7 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
               duplicateError ? "border-red-300 bg-red-50" : "border-gray-200"
             }`}
           >
+            {/* Remove medicine button (only show if more than one medicine) */}
             {medicines.length > 1 && (
               <button
                 type="button"
@@ -197,6 +167,7 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
             )}
 
             <div className="space-y-4">
+              {/* Medicine selection */}
               <div className="space-y-2">
                 <MedicineSelect
                   name={`medicine-${medicine.id}`}
@@ -204,6 +175,7 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
                   placeholder="Search medicine by name, generic name, or strength..."
                 />
 
+                {/* Duplicate error message */}
                 {duplicateError && (
                   <div className="flex items-center gap-2 text-red-600 text-sm">
                     <AlertTriangle className="w-4 h-4" />
@@ -212,53 +184,18 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
                 )}
               </div>
 
+              {/* Dosage timing rows */}
               <div className="space-y-3">
-                {Array.from({ length: medicine.timingCount }).map((_, timingIndex) => {
-                  const count = timingIndex + 1;
-                  return (
-                    <div
-                      key={`${medicine.id}-${count}`}
-                      className="grid grid-cols-1 md:grid-cols-4 gap-3 rounded-md"
-                    >
-                      {[
-                        { label: "Dosage", component: "select", options: allDosageOptions },
-                        { label: "Duration", component: "duration" },
-                        { label: "Time", component: "select", options: timeOptions },
-                        { label: "Comment", component: "input" }
-                      ].map(({ label, component, options }) => {
-                        const fieldName = `${count}-${label.toLowerCase()}-${medicine.id}`;
-                        return (
-                          <div key={label} className="space-y-1">
-                            <label className="text-xs font-medium text-gray-600">
-                              {label}
-                            </label>
-                            {component === "select" && (
-                              <ReactSelectCompo
-                                name={fieldName}
-                                options={options || []}
-                                control={form.control}
-                                showSelectedBox={false}
-                                onCreateOption={label === "Dosage" ? handleSaveNewDosage : undefined}
-                              />
-                            )}
-                            {component === "duration" && (
-                              <DurationInput name={fieldName} />
-                            )}
-                            {component === "input" && (
-                              <BaseInput
-                                name={fieldName}
-                                placeholder="E.G. After food"
-                                classname="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                              />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })}
+                {Array.from({ length: medicine.timingCount }).map((_, timingIndex) => (
+                  <DosageTimingRow
+                    key={`${medicine.id}-${timingIndex + 1}`}
+                    medicineId={medicine.id}
+                    timingIndex={timingIndex}
+                  />
+                ))}
               </div>
 
+              {/* Timing control buttons */}
               <div className="flex flex-wrap gap-2 pt-2">
                 <button
                   type="button"
@@ -284,6 +221,7 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
         );
       })}
 
+      {/* Add medicine button */}
       <button
         type="button"
         onClick={addMedicine}
