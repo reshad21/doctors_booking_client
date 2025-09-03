@@ -2,7 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useGetPerceptionByPatientIdQuery } from "@/redux/api/prescription/prescription"
-import { Edit, Info, Printer } from "lucide-react"
+import { Edit, Info, Printer, Share2, MessageCircle, Mail } from "lucide-react"
 import { Link, useParams } from "react-router-dom"
 import { useEffect, useRef, useState } from "react"
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi"
@@ -29,6 +29,44 @@ const ViewPrescription = () => {
 
   const setPrintRef = (el: HTMLDivElement | null, index: number) => {
     printRefs.current[index] = el
+  }
+
+  const generateShareText = (medic: any) => {
+    const patientName = medic?.patient?.name || "Patient"
+    const date = medic?.createdAt ? new Date(medic.createdAt).toLocaleDateString("en-GB") : ""
+    const prescriptionNo = medic?.prescriptionNo || ""
+
+    let shareText = `Prescription for ${patientName}\n`
+    shareText += `Date: ${date}\n`
+    shareText += `Prescription ID: ${prescriptionNo}\n\n`
+
+    if (medic?.medicines?.length > 0) {
+      shareText += `Medicines:\n`
+      medic.medicines.forEach((med: any, index: number) => {
+        shareText += `${index + 1}. ${med.medicineName}\n`
+      })
+    }
+
+    return shareText
+  }
+
+  const shareViaWhatsApp = (medic: any) => {
+    const text = generateShareText(medic)
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`
+    window.open(whatsappUrl, "_blank")
+  }
+
+  const shareViaEmail = (medic: any) => {
+    const text = generateShareText(medic)
+    const subject = `Prescription for ${medic?.patient?.name || "Patient"}`
+    const emailUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`
+    window.open(emailUrl)
+  }
+
+  const shareViaMessenger = (medic: any) => {
+    const text = generateShareText(medic)
+    const messengerUrl = `https://m.me/?text=${encodeURIComponent(text)}`
+    window.open(messengerUrl, "_blank")
   }
 
   const uniqueDates = [...new Set(prescriptions?.data?.map((medic: any) => medic?.createdAt?.split("T")[0]))]
@@ -116,17 +154,53 @@ const ViewPrescription = () => {
                       <Edit className="size-4" />
                       <span className="text-sm font-medium">Edit</span>
                     </Link>
+
+                    {/* Share dropdown */}
+                    <div className="relative group">
+                      <button
+                        className="flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition-all duration-200 text-slate-700 hover:text-slate-900"
+                        title="Share Prescription"
+                      >
+                        <Share2 className="size-4" />
+                        <span className="text-sm font-medium">Share</span>
+                      </button>
+
+                      {/* Dropdown menu */}
+                      <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        <div className="py-1">
+                          <button
+                            onClick={() => shareViaWhatsApp(medic)}
+                            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                          >
+                            <MessageCircle className="size-4 text-green-600" />
+                            WhatsApp
+                          </button>
+                          <button
+                            onClick={() => shareViaEmail(medic)}
+                            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                          >
+                            <Mail className="size-4 text-blue-600" />
+                            Email
+                          </button>
+                          <button
+                            onClick={() => shareViaMessenger(medic)}
+                            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                          >
+                            <MessageCircle className="size-4 text-blue-500" />
+                            Messenger
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
+                  {/* ... existing prescription display code ... */}
                   <div
                     ref={(el) => setPrintRef(el, index)}
                     className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 relative hover:shadow-md transition-shadow duration-200"
                   >
                     <div className="screen-container min-h-[800px] flex flex-col justify-between">
-                      <img
-                        src={preManagementData?.data?.[0]?.headerImage}
-                        alt=""
-                      />
+                      <img src={preManagementData?.data?.[0]?.headerImage || "/placeholder.svg"} alt="" />
 
                       <div className="min-h-[620px]">
                         <div className="bg-slate-50 p-4 text-sm flex justify-between border-b border-slate-200">
@@ -268,10 +342,7 @@ const ViewPrescription = () => {
                         </div>
                       </div>
 
-                      <img
-                        src={preManagementData?.data?.[0]?.footerImage}
-                        alt=""
-                      />
+                      <img src={preManagementData?.data?.[0]?.footerImage || "/placeholder.svg"} alt="" />
                     </div>
                   </div>
                 </div>

@@ -3,7 +3,6 @@ import { useEffect, useMemo } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
-import { Card } from "@/components/ui/card";
 import {
   useGetPerceptionBIdQuery,
   useUpdatePrescriptionMutation,
@@ -64,7 +63,8 @@ const UpdatePrescription = () => {
         const contentId = medicineContentIds[index];
 
         // Set medicine name with content ID - just use the string value, not an object
-        (formValues as Record<string, any>)[`medicine-${contentId}`] = med.medicineName;
+        (formValues as Record<string, any>)[`medicine-${contentId}`] =
+          med.medicineName;
 
         // Set dosage schedules with content ID
         med.DosageSchedule.forEach((schedule: any, scheduleIndex: number) => {
@@ -184,28 +184,52 @@ const UpdatePrescription = () => {
   };
 
   return (
-    <Card className="bg-[#f4f6f9] px-5 rounded-sm">
-      <BackButton className="w-24" />
-
-      <div className="p-5 bg-white">
-        <div className="pb-[30px]">
-          <img src={preManagementData?.data?.[0]?.headerImage} alt="" />
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-6">
+        <div className="mb-6">
+          <BackButton />
         </div>
-        <PatientInformation
-          patient={prescriptionData?.patient}
-          prescriptionId={prescriptionData?.prescriptionNo}
-        />
+        <div className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+          <div className="bg-white border-b border-gray-200 px-6 py-4">
+            <div className="flex items-center justify-center">
+              {preManagementData?.data?.[0]?.headerImage && (
+                <img
+                  src={
+                    preManagementData.data[0].headerImage || "/placeholder.svg"
+                  }
+                  alt="Clinic Header"
+                  className="object-contain"
+                />
+              )}
+            </div>
+          </div>
+          <div className="p-6 bg-blue-50">
+            <PatientInformation
+              patient={prescriptionData?.patient}
+              prescriptionId={prescriptionData?.prescriptionNo}
+            />
 
-        {/* FIXED: Wrap PrescriptionForm with FormProvider */}
-        <FormProvider {...form}>
-          <PrescriptionForm onSubmit={onSubmit} type="update" />
-        </FormProvider>
+            <FormProvider {...form}>
+              <PrescriptionForm onSubmit={onSubmit} type="update" />
+            </FormProvider>
+          </div>
 
-        <div className="pt-[30px]">
-          <img src={preManagementData?.data?.[0]?.footerImage} alt="" />
+          <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
+            <div className="flex items-center justify-center">
+              {preManagementData?.data?.[0]?.footerImage && (
+                <img
+                  src={
+                    preManagementData.data[0].footerImage || "/placeholder.svg"
+                  }
+                  alt="Clinic Footer"
+                  className="object-contain opacity-70"
+                />
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 

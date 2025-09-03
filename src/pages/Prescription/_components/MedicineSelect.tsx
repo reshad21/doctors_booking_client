@@ -55,7 +55,6 @@ const MedicineSelect = ({
 
   useEffect(() => {
     const storedSearches = getStoredRecentSearches();
-    console.log("Loaded recent searches:", storedSearches);
     setRecentSearches(storedSearches);
   }, []);
 
