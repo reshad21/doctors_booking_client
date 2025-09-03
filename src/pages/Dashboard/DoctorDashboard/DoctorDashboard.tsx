@@ -10,6 +10,7 @@ import LoadingSpinner from "@/loading/LoadingSpinner";
 import { useState } from "react";
 import { useGetChambersQuery } from "@/redux/api/chamber/chamber";
 import chambor from '@/assets/chambor.png'
+import CustomPieChartWith from "./_components/PieChart";
 const DoctorDashboard = () => {
   const [selectedChamber, setSelectedChamber] = useState("all");
   const { data: chambersData } = useGetChambersQuery({});
@@ -107,7 +108,7 @@ const DoctorDashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <StatCard
             title="Today's Visited Appointment"
             value={patientSummaryData?.data?.todaysPatients || 0}
@@ -117,7 +118,7 @@ const DoctorDashboard = () => {
             bgIconColor="bg-red-400"
             subtitleColor="text-red-100"
           />
-
+          <CustomPieChartWith />
           <StatCard
             title="Today's Pending Appointment"
             value={patientSummaryData?.data?.todaysPendingPatients || 0}
@@ -150,6 +151,7 @@ const DoctorDashboard = () => {
             bgIconColor="bg-orange-400"
             subtitleColor="text-orange-100"
           /> */}
+          
         </div>
 
         <TodayAppointments appointments={appointmentData} />
