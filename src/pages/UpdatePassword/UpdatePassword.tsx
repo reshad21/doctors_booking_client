@@ -56,7 +56,7 @@ const UpdatePassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-4 flex justify-center items-start">
+    <div className="min-h-[calc(100vh-7rem)] bg-gray-100 py-10 px-4 flex justify-center items-start">
       <div className="grid lg:grid-cols-2 gap-10 w-full max-w-6xl">
         {/* Change Password Card */}
         <Card className="w-full bg-white shadow-lg border border-gray-200 rounded-2xl">

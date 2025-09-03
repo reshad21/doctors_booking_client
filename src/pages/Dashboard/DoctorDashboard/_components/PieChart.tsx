@@ -7,9 +7,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useGetPatientQuery } from "@/redux/api/patient/patient";
-
-
-
 const RADIAN = Math.PI / 180;
 const renderCustomizedLabel = ({
   cx,
