@@ -221,7 +221,7 @@ body {
 
 @layer utilities {
   .custom-container {
-    @apply p-[30px] min-h-screen flex justify-center items-start bg-[#f4f6f9];
+    @apply p-[30px] min-h-[calc(100vh-5rem)] flex justify-center items-start bg-[#f4f6f9];
   }
   .no-border {
     @apply border-0;

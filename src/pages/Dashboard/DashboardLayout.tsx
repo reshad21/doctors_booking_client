@@ -43,17 +43,17 @@ export default function DashboardLayout() {
   if (isLoading) return null;
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="max-h-[100vh] bg-[#f4f6f9]">
       <AppSidebar sideNavMenu={filteredMenu} />
       <SidebarInset>
-        <header className="flex justify-between h-20 shrink-0 items-center gap-2 px-4 bg-gradient-to-r from-[#042F16] via-[#6F9975] to-[#14400D]">
+        <header className="sticky top-0 z-50 flex justify-between h-20 shrink-0 items-center gap-2 px-4 bg-gradient-to-r from-[#042F16] via-[#6F9975] to-[#14400D]">
           <SidebarTrigger className="-ml-1" />
 
-          <div className="flex items-center text-white">
+          <div className="flex items-center text-white ">
             <Link to="/" target="_blank" rel="noopener noreferrer">
               <Button variant="ghost" className="cursor-pointer">
                 <Home className="w-4 h-4" />
-                <span>Home</span>
+                <span>Display Serial</span>
               </Button>
             </Link>
             {/* <DropdownMenu>
@@ -106,7 +106,7 @@ export default function DashboardLayout() {
           </div>
         </header>
 
-        <div className="bg-[#F4F6F9]">
+        <div className="bg-[#f4f6f9] min-h-[calc(100vh-5rem)]">
           <Outlet />
         </div>
       </SidebarInset>
