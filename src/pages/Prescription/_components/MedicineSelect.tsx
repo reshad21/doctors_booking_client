@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState, useMemo, useEffect } from "react";
@@ -23,14 +24,22 @@ interface RecentSearch {
   dosageDescription?: string;
 }
 
-// --- Recent searches persisted in localStorage ---
 const getStoredRecentSearches = (): RecentSearch[] => {
-  const stored = localStorage.getItem("recentSearches");
-  return stored ? JSON.parse(stored) : [];
+  try {
+    const stored = localStorage.getItem("recentSearches");
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error("Error parsing recent searches from localStorage:", error);
+    return [];
+  }
 };
 
 const saveRecentSearches = (items: RecentSearch[]) => {
-  localStorage.setItem("recentSearches", JSON.stringify(items));
+  try {
+    localStorage.setItem("recentSearches", JSON.stringify(items));
+  } catch (error) {
+    console.error("Error saving recent searches to localStorage:", error);
+  }
 };
 
 const MedicineSelect = ({
@@ -40,21 +49,24 @@ const MedicineSelect = ({
   placeholder = "Search medicines...",
   className = "",
 }: MedicineSelectProps) => {
-  const [inputValue, setInputValue] = useState("FA");
+  const [inputValue, setInputValue] = useState("");
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
 
   useEffect(() => {
-    setRecentSearches(getStoredRecentSearches());
+    const storedSearches = getStoredRecentSearches();
+    setRecentSearches(storedSearches);
   }, []);
 
+  const searchTerm = inputValue || "FA";
+  
   const {
     data: medicineData,
     isLoading,
     isFetching,
   } = useGetMedicinesListQuery({
     limit: 100,
-    searchTerm: inputValue,
+    searchTerm: searchTerm,
   });
 
   const medicines = useMemo(
@@ -62,7 +74,7 @@ const MedicineSelect = ({
     [medicineData]
   );
 
-  // --- Add to recents ---
+
   const addToRecentSearches = (medicine: RecentSearch) => {
     let updated = recentSearches.filter(
       (item) => item.fullDisplayName !== medicine.fullDisplayName
@@ -73,7 +85,7 @@ const MedicineSelect = ({
     saveRecentSearches(updated);
   };
 
-  // --- Remove from recents ---
+
   const removeFromRecentSearches = (fullDisplayName: string) => {
     const updated = recentSearches.filter(
       (item) => item.fullDisplayName !== fullDisplayName
@@ -82,7 +94,7 @@ const MedicineSelect = ({
     saveRecentSearches(updated);
   };
 
-  // --- Options for recent searches ---
+
   const recentSearchOptions = useMemo(() => {
     return recentSearches.map((recent) => ({
       value: recent.fullDisplayName,
@@ -139,11 +151,11 @@ const MedicineSelect = ({
     });
   }, [medicines]);
 
-  // --- Grouped options ---
+
   const allOptions = useMemo(() => {
     const options: any[] = [];
 
-    if (recentSearchOptions.length > 0 && !inputValue) {
+    if (recentSearches.length > 0 && !inputValue.trim()) {
       options.push({
         label: "Recent Searches",
         options: recentSearchOptions,
@@ -151,8 +163,9 @@ const MedicineSelect = ({
     }
 
     if (apiMedicineOptions.length > 0) {
+      const label = inputValue.trim() ? "Search Results" : "Popular Medicines";
       options.push({
-        label: inputValue ? "Search Results" : "Medicines",
+        label: label,
         options: apiMedicineOptions,
       });
     }
@@ -160,7 +173,7 @@ const MedicineSelect = ({
     return options;
   }, [recentSearchOptions, apiMedicineOptions, inputValue]);
 
-  // --- Custom Option with cross button ---
+  
   const CustomOption = (props: any) => {
     const { data } = props;
     return (
@@ -187,14 +200,19 @@ const MedicineSelect = ({
   // --- Debounce input ---
   const handleInputChange = debounce((newValue: string, actionMeta: any) => {
     if (actionMeta.action === "input-change") {
+
       setInputValue(newValue);
-      setMenuIsOpen(newValue.length > 0 || menuIsOpen);
+      // FIXED: Always keep menu open when typing or when there are recent searches and no input
+      if (newValue.length > 0 || (newValue.length === 0 && recentSearches.length > 0)) {
+        setMenuIsOpen(true);
+      }
     }
   }, 300);
 
-  // --- Selection ---
+
   const handleSelectionChange = (selected: any, field: any) => {
     if (selected) {
+
       if (selected.medicineData && !selected.isRecent) {
         addToRecentSearches(selected.medicineData);
       }
@@ -203,6 +221,28 @@ const MedicineSelect = ({
       field.onChange("");
     }
     setMenuIsOpen(false);
+    setInputValue(""); // FIXED: Clear input after selection
+  };
+
+  // Helper function to get field value as string
+  const getFieldValueAsString = (fieldValue: any): string => {
+    if (typeof fieldValue === 'string') {
+      return fieldValue;
+    }
+    if (typeof fieldValue === 'object' && fieldValue?.value) {
+      return fieldValue.value;
+    }
+    return '';
+  };
+
+  // Helper function to find selected option
+  const getSelectedOption = (fieldValue: any) => {
+    const valueAsString = getFieldValueAsString(fieldValue);
+    if (!valueAsString) return null;
+
+    return allOptions
+      .flatMap((group: any) => group.options)
+      .find((opt: any) => opt.value === valueAsString) || null;
   };
 
   if (isLoadingProp || isLoading) {
@@ -228,36 +268,51 @@ const MedicineSelect = ({
           <Select
             {...field}
             options={allOptions}
-            value={
-              allOptions
-                .flatMap((group: any) => group.options)
-                .find((opt: any) => opt.value === field.value) || null
-            }
+            value={getSelectedOption(field.value)}
             onInputChange={handleInputChange}
-            menuIsOpen={field.value ? false : menuIsOpen}
-            onMenuOpen={() => !field.value && setMenuIsOpen(true)}
+            menuIsOpen={field.value ? false : menuIsOpen} // FIXED: Don't show menu when field has value
+            onMenuOpen={() => {
+              if (!field.value) {
+                setMenuIsOpen(true);
+                // FIXED: When opening menu without input, show recent searches
+                if (!inputValue && recentSearches.length > 0) {
+                  setInputValue("");
+                }
+              }
+            }}
             onMenuClose={() => setMenuIsOpen(false)}
-            onFocus={() => !field.value && setMenuIsOpen(true)}
+            onFocus={() => {
+              if (!field.value) {
+                setMenuIsOpen(true);
+                // FIXED: Reset input when focusing to show recent searches
+                if (recentSearches.length > 0) {
+                  setInputValue("");
+                }
+              }
+            }}
             onChange={(selected: any) => handleSelectionChange(selected, field)}
             placeholder={placeholder}
             isClearable
             isSearchable
             components={{ Option: CustomOption }}
             filterOption={() => true}
-            noOptionsMessage={() =>
-              inputValue
+            noOptionsMessage={() => {
+              if (!inputValue && recentSearches.length === 0) {
+                return "No recent searches. Type to search medicines";
+              }
+              return inputValue
                 ? isFetching
                   ? "Searching..."
                   : "No medicines found"
-                : "Type to search medicines"
-            }
+                : "Type to search medicines";
+            }}
             loadingMessage={() => "Searching..."}
             maxMenuHeight={300}
             menuPlacement="auto"
             styles={{
               control: (provided) => ({
                 ...provided,
-                minHeight: "0px", // reset default
+                minHeight: "0px",
                 height: "52px",
                 borderColor: "gray.300",
                 boxShadow: "sm",

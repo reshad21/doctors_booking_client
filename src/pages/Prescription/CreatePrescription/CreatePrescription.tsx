@@ -152,7 +152,7 @@ const CreatePrescription = () => {
             </div>
           </div>
 
-          <div className="p-6">
+          <div className="p-6 bg-blue-50">
             <PatientInformation
               patient={patientData?.data}
               prescriptionId={prescriptionId}
