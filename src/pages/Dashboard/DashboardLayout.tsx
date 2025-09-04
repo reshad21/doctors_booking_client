@@ -14,6 +14,7 @@ import { useAppDispatch } from "@/redux/hooks";
 import { setPermissions } from "@/redux/api/features/permissionSlice";
 import { useEffect, useMemo } from "react";
 import type { PermissionItem } from "@/redux/api/features/permissionSlice";
+import onecare4u from "@/assets/onecare4u.png"
 
 export default function DashboardLayout() {
   const { data: adminDataFromApi, isLoading } = useGetAdminByTokenQuery({});
@@ -50,7 +51,9 @@ export default function DashboardLayout() {
       <SidebarInset>
         <header className="sticky top-0 z-50 flex justify-between h-20 shrink-0 items-center gap-2 px-4 bg-gradient-to-r from-[#042F16] via-[#6F9975] to-[#14400D]">
           <SidebarTrigger className="-ml-1" />
-              <div className="text-white font-semibold">OneCare4u</div>
+              <div className="text-white font-semibold bg-[#91c69d] bg-linear-to-r from-[#B0C6B5] to-[#91c69d] rounded-md h-[4.7rem]">
+                <img src={onecare4u} alt=""  className="w-64 h-[4.7rem]"/>
+              </div>
           <div className="flex items-center text-[#E8E8E8] ">
             <Link to="/" target="_blank" rel="noopener noreferrer">
               <Button variant="ghost" className="cursor-pointer">

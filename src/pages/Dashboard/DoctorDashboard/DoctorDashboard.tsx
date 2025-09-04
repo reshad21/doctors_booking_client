@@ -3,8 +3,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useGetPatientSummaryQuery } from "@/redux/api/patient-summary/patient-summary";
 import { Users } from "lucide-react";
 import StatCard from "../_component/StatCard";
-import { useGetPatientQuery } from "@/redux/api/patient/patient";
-import TodayAppointments from "../_component/TodayAppointment";
 import { useAppSelector } from "@/redux/hooks";
 import LoadingSpinner from "@/loading/LoadingSpinner";
 import { useState } from "react";
@@ -17,7 +15,7 @@ const DoctorDashboard = () => {
 
   const chambers = chambersData?.data?.map((item:any) =>({name:item?.name,id:item?.id})) || []
   
-  const today = new Date().toISOString().split("T")[0];
+  // const today = new Date().toISOString().split("T")[0];
   // const { data: patientSummaryData, isLoading: isPatientSummaryLoading } =
   //   useGetPatientSummaryQuery({ chamberId: selectedChamber });
   const { data: patientSummaryData, isLoading: isPatientSummaryLoading } =
@@ -25,25 +23,25 @@ const DoctorDashboard = () => {
     chamberId: selectedChamber,
     timezoneOffset: new Date().getTimezoneOffset()
   });
-  const { data: patientApiData, isLoading: isPatientLoading } =
-    useGetPatientQuery({
-      filter: JSON.stringify({
-          chamberId: selectedChamber == "all" ? {} : selectedChamber,
-          createdAt: today,
-          timezoneOffset: new Date().getTimezoneOffset()
-        }),
-      limit: 1000,
-    });
+  // const { data: patientApiData, isLoading: isPatientLoading } =
+    // useGetPatientQuery({
+    //   filter: JSON.stringify({
+    //       chamberId: selectedChamber == "all" ? {} : selectedChamber,
+    //       createdAt: today,
+    //       timezoneOffset: new Date().getTimezoneOffset()
+    //     }),
+    //   limit: 1000,
+    // });
   const doctor = useAppSelector((state) => state.admin);
-  const appointmentData =
-    patientApiData?.data?.data?.map((patient: any, index: number) => ({
-      sn: index + 1,
-      name: patient.name,
-      phone: patient.phoneNumber,
-      status: patient.visitStatus || "Unknown",
-    })) || [];
+  // const appointmentData =
+  //   patientApiData?.data?.data?.map((patient: any, index: number) => ({
+  //     sn: index + 1,
+  //     name: patient.name,
+  //     phone: patient.phoneNumber,
+  //     status: patient.visitStatus || "Unknown",
+  //   })) || [];
 
-  if (isPatientSummaryLoading || isPatientLoading) return <LoadingSpinner />;
+  if (isPatientSummaryLoading) return <LoadingSpinner />;
   const handleChamberChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedChamber(event.target.value);
   };
@@ -108,7 +106,7 @@ const DoctorDashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <StatCard
             title="Today's Visited Appointment"
             value={patientSummaryData?.data?.todaysPatients || 0}
@@ -118,7 +116,7 @@ const DoctorDashboard = () => {
             bgIconColor="bg-red-400"
             subtitleColor="text-red-100"
           />
-          <CustomPieChartWith />
+         
           <StatCard
             title="Today's Pending Appointment"
             value={patientSummaryData?.data?.todaysPendingPatients || 0}
@@ -153,8 +151,8 @@ const DoctorDashboard = () => {
           /> */}
           
         </div>
-
-        <TodayAppointments appointments={appointmentData} />
+             <CustomPieChartWith />
+        {/* <TodayAppointments appointments={appointmentData} /> */}
       </main>
     </div>
   );
