@@ -18,9 +18,9 @@ interface MedicineFormProps {
 
 const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
   const form = useFormContext();
-  
+
   const [medicines, setMedicines] = useState<MedicineItem[]>([
-    { id: Date.now().toString(), medicineName: "", timingCount: 1 }
+    { id: Date.now().toString(), medicineName: "", timingCount: 1 },
   ]);
 
   // Medicine validation - check for duplicates
@@ -47,7 +47,7 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
       onValidationError(errorMessage);
       return false;
     }
-    
+
     onValidationError("");
     return true;
   }, [medicines, form, onValidationError]);
@@ -71,75 +71,92 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
           const transformedMedicines = initMedicines.map((med: any) => ({
             id: med.content || Date.now().toString(),
             medicineName: med.medicineName || "",
-            timingCount: med.DosageSchedule?.length || 1
+            timingCount: med.DosageSchedule?.length || 1,
           }));
           setMedicines(transformedMedicines);
         }
       };
 
-      window.addEventListener("initializeMedicineForm", handleInitialize as EventListener);
-      return () => window.removeEventListener("initializeMedicineForm", handleInitialize as EventListener);
+      window.addEventListener(
+        "initializeMedicineForm",
+        handleInitialize as EventListener
+      );
+      return () =>
+        window.removeEventListener(
+          "initializeMedicineForm",
+          handleInitialize as EventListener
+        );
     }
   }, [type]);
 
   // Add new medicine
   const addMedicine = useCallback(() => {
-    setMedicines(prev => [
+    setMedicines((prev) => [
       ...prev,
-      { id: Date.now().toString(), medicineName: "", timingCount: 1 }
+      { id: Date.now().toString(), medicineName: "", timingCount: 1 },
     ]);
   }, []);
 
   // Remove medicine and clean up form fields
-  const removeMedicine = useCallback((id: string) => {
-    setMedicines(prev => prev.filter(med => med.id !== id));
-    
-    // Clean up all form fields related to this medicine
-    const allFields = form.getValues();
-    Object.keys(allFields).forEach(key => {
-      if (key.includes(`-${id}`) || key === `medicine-${id}`) {
-        form.unregister(key);
-      }
-    });
-  }, [form]);
+  const removeMedicine = useCallback(
+    (id: string) => {
+      setMedicines((prev) => prev.filter((med) => med.id !== id));
+
+      // Clean up all form fields related to this medicine
+      const allFields = form.getValues();
+      Object.keys(allFields).forEach((key) => {
+        if (key.includes(`-${id}`) || key === `medicine-${id}`) {
+          form.unregister(key);
+        }
+      });
+    },
+    [form]
+  );
 
   // Update timing count for a medicine
-  const updateTimingCount = useCallback((id: string, increment: boolean) => {
-    setMedicines(prev => prev.map(med => {
-      if (med.id === id) {
-        const newCount = increment 
-          ? med.timingCount + 1 
-          : Math.max(med.timingCount - 1, 1);
-        
-        // Clean up form fields if removing timing
-        if (!increment && newCount < med.timingCount) {
-          const timingIndex = med.timingCount;
-          ['dosage', 'duration', 'time', 'comment'].forEach(field => {
-            form.unregister(`${timingIndex}-${field}-${id}`);
-          });
-        }
-        
-        return { ...med, timingCount: newCount };
-      }
-      return med;
-    }));
-  }, [form]);
+  const updateTimingCount = useCallback(
+    (id: string, increment: boolean) => {
+      setMedicines((prev) =>
+        prev.map((med) => {
+          if (med.id === id) {
+            const newCount = increment
+              ? med.timingCount + 1
+              : Math.max(med.timingCount - 1, 1);
+
+            // Clean up form fields if removing timing
+            if (!increment && newCount < med.timingCount) {
+              const timingIndex = med.timingCount;
+              ["dosage", "duration", "time", "comment"].forEach((field) => {
+                form.unregister(`${timingIndex}-${field}-${id}`);
+              });
+            }
+
+            return { ...med, timingCount: newCount };
+          }
+          return med;
+        })
+      );
+    },
+    [form]
+  );
 
   // Check for duplicate medicine error
   const getDuplicateError = (medicineId: string) => {
     const currentValue = form.watch(`medicine-${medicineId}`);
     const currentMedicineValue = currentValue?.value || currentValue;
-    
+
     if (!currentMedicineValue?.trim()) return null;
-    
-    const duplicateFound = medicines.some(med => {
+
+    const duplicateFound = medicines.some((med) => {
       if (med.id === medicineId) return false;
       const otherValue = form.getValues(`medicine-${med.id}`);
       const otherMedicineValue = otherValue?.value || otherValue;
       return otherMedicineValue === currentMedicineValue;
     });
-    
-    return duplicateFound ? `"${currentValue?.label || currentValue}" is already selected` : null;
+
+    return duplicateFound
+      ? `"${currentValue?.label || currentValue}" is already selected`
+      : null;
   };
 
   return (
@@ -186,13 +203,19 @@ const MedicineForm = ({ type, onValidationError }: MedicineFormProps) => {
 
               {/* Dosage timing rows */}
               <div className="space-y-3">
-                {Array.from({ length: medicine.timingCount }).map((_, timingIndex) => (
-                  <DosageTimingRow
-                    key={`${medicine.id}-${timingIndex + 1}`}
-                    medicineId={medicine.id}
-                    timingIndex={timingIndex}
-                  />
-                ))}
+                {Array.from({ length: medicine.timingCount }).map(
+                  (_, timingIndex) => (
+                    <DosageTimingRow
+                      key={`${medicine.id}-${timingIndex + 1}`}
+                      medicineId={medicine.id}
+                      timingIndex={timingIndex}
+                      dosageDescription={
+                        form.getValues(`medicine-${medicine.id}`)?.medicineData
+                          ?.dosageDescription
+                      }
+                    />
+                  )
+                )}
               </div>
 
               {/* Timing control buttons */}
