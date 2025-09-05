@@ -56,10 +56,6 @@ export default function PatientCallingDisplay() {
     [videoData]
   );
 
-  // Filter ended patients out once
-  // const filteredOutdoorPatients = outdoorPatients.filter(
-  //   (p) => !endedSerials.includes(p.id)
-  // );
   console.log(outdoorPatients,"outdoorPatients");
 
   // Filter out ended patients AND patients where isArrived is true
@@ -95,19 +91,12 @@ export default function PatientCallingDisplay() {
   // Map patient id to original index in outdoorPatients for stable serial numbers
   const patientIndexMap = new Map(outdoorPatients.map((p, idx) => [p.id, idx]));
 
-  // Get upcoming outdoor patients that are NOT in the visible table
-  // const upcomingOutdoorPatients = filteredOutdoorPatients.filter(
-  //   (p) => !visibleOutdoorPatients.some((vp) => vp.id === p.id)
-  // );
   const upcomingOutdoorPatients = filteredOutdoorPatients.filter(
     (p) =>
       !visibleOutdoorPatients.some((vp) => vp.id === p.id) &&
       p.visitStatus != "VISITED"
   );
-  // Report patients logic: similar to outdoor patients
-  // const filteredReportPatients = reportPatients.filter(
-  //   (p) => !endedSerials.includes(p.id)
-  // );
+
   const filteredReportPatients = reportPatients.filter(
     (p) => !endedSerials.includes(p.id) && p.visitStatus != "VISITED"
   );
@@ -143,10 +132,7 @@ export default function PatientCallingDisplay() {
     reportPatients.map((p, idx) => [p.id, idx])
   );
 
-  // Get upcoming report patients that are NOT in the visible table
-  // const upcomingReportPatients = filteredReportPatients.filter(
-  //   (p) => !visibleReportPatients.some((vp) => vp.id === p.id)
-  // );
+
 
   const upcomingReportPatients = filteredReportPatients.filter(
     (p) =>
