@@ -30,7 +30,7 @@ const CreatePrescription = () => {
     ? generatePrescriptionId(patientData.data.id)
     : null;
 
-  // Show loading state while patient data is being fetched
+
   if (isPatientLoading || !prescriptionId) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -66,6 +66,12 @@ const CreatePrescription = () => {
         return parts.length === 3 && parts[2] === medicineId;
       });
 
+      // Find dosageNotes fields for this medicine
+      const dosageNotesFields = Object.entries(data).filter(([fieldName]) => {
+        const parts = fieldName.split("-");
+        return parts.length === 3 && parts[1] === "dosageNotes" && parts[2] === medicineId;
+      });
+
       const dosageGroups = dosageFields.reduce<
         Record<string, Record<string, any>>
       >((acc, [fieldName, value]) => {
@@ -86,6 +92,14 @@ const CreatePrescription = () => {
         return acc;
       }, {});
 
+      // Add dosageNotes to the corresponding dosage groups
+      dosageNotesFields.forEach(([fieldName, value]) => {
+        const [dosageIndex] = fieldName.split("-");
+        if (dosageGroups[dosageIndex]) {
+          dosageGroups[dosageIndex].dosageNotes = value;
+        }
+      });
+
       // Convert to array of dosage schedules and filter out empty/invalid ones
       let DosageSchedule = Object.values(dosageGroups);
       DosageSchedule = DosageSchedule.filter(
@@ -102,7 +116,7 @@ const CreatePrescription = () => {
     const transformedData = {
       doctorId: doctorId,
       patientId,
-      medicines: medicines.filter((m) => m.medicineName), // Filter out empty medicines
+      medicines: medicines.filter((m) => m.medicineName),
       content: data.content,
       chiefComplaint: data["chief-complaint"],
       onExaminations: data["on-examinations"],
@@ -113,7 +127,15 @@ const CreatePrescription = () => {
       prescriptionNo: prescriptionId,
     };
 
-    console.log(transformedData, 'transformedData')
+    console.log('Raw form data:', data);
+    console.log('Transformed data:', transformedData);
+    console.log('Medicines with dosageNotes:', medicines.map(m => ({
+      medicineName: m.medicineName,
+      DosageSchedule: m.DosageSchedule.map(ds => ({
+        ...ds,
+        dosageNotes: ds.dosageNotes
+      }))
+    })));
 
     try {
       const res = (await createPrescription(transformedData)) as any;

@@ -32,6 +32,16 @@ const UpdatePrescription = () => {
 
   useEffect(() => {
     if (prescriptionData && Object.keys(prescriptionData).length > 0) {
+      console.log('Prescription data loaded:', prescriptionData);
+      console.log('Medicines with dosageNotes:', prescriptionData.medicines?.map((med: any) => ({
+        medicineName: med.medicineName,
+        DosageSchedule: med.DosageSchedule?.map((ds: any) => ({
+          dosage: ds.dosage,
+          day: ds.day,
+          dosageNotes: ds.dosageNotes
+        }))
+      })));
+      
       // Create a reference to store medicine content IDs
       const medicineContentIds: string[] = [];
 
@@ -80,10 +90,23 @@ const UpdatePrescription = () => {
           (formValues as Record<string, any>)[
             `${scheduleIndex + 1}-comment-${contentId}`
           ] = schedule.comment || "";
+          
+          // Set dosageNotes if they exist
+          if (schedule.dosageNotes && schedule.dosageNotes.length > 0) {
+            console.log('Setting dosageNotes in form:', {
+              fieldName: `${scheduleIndex + 1}-dosageNotes-${contentId}`,
+              dosageNotes: schedule.dosageNotes,
+              schedule
+            });
+            (formValues as Record<string, any>)[
+              `${scheduleIndex + 1}-dosageNotes-${contentId}`
+            ] = schedule.dosageNotes;
+          }
         });
       });
 
       // Reset form with the new values
+      console.log('Form values being set:', formValues);
       form.reset(formValues);
 
       // Initialize MedicineForm with the medicine data
@@ -134,17 +157,25 @@ const UpdatePrescription = () => {
             const day = data[`${idx}-duration-${medicineIndex}`];
             const time = data[`${idx}-time-${medicineIndex}`];
             const comment = data[`${idx}-comment-${medicineIndex}`];
+            const dosageNotes = data[`${idx}-dosageNotes-${medicineIndex}`];
 
             // Skip completely empty schedule rows
             if (!dosage && !day && !time && !comment) return null;
 
-            return {
+            const schedule: any = {
               // id: crypto.randomUUID(),
               dosage: dosage || "",
               day: day || "",
               time: time || "",
               comment: comment || "",
             };
+
+            // Add dosageNotes if they exist
+            if (dosageNotes && Array.isArray(dosageNotes) && dosageNotes.length > 0) {
+              schedule.dosageNotes = dosageNotes;
+            }
+
+            return schedule;
           })
           .filter(Boolean);
 

@@ -10,6 +10,10 @@ import {
   useCreateMedicineTimeMutation,
   useGetMedicinesDosagesQuery,
   useGetMedicinesTimeQuery,
+  useCreateMedicineDosagesDayInputMutation,
+  useCreateMedicineDosagesDayNameMutation,
+  useGetMedicineDosagesDayInputQueryQuery,
+  useGetMedicineDosagesDayNameQueryQuery,
 } from "@/redux/api/manualData/manualData";
 import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
@@ -35,6 +39,16 @@ const DosageTimingRow = ({
   const [createMedicineTime] = useCreateMedicineTimeMutation();
   const { data: medicinesTimes } = useGetMedicinesTimeQuery({ limit: 200 });
 
+  // New mutations and queries for dynamic selects
+  const [createMedicineDosagesDayInput] = useCreateMedicineDosagesDayInputMutation();
+  const [createMedicineDosagesDayName] = useCreateMedicineDosagesDayNameMutation();
+  const { data: medicineDosagesDayInputs } = useGetMedicineDosagesDayInputQueryQuery({
+    limit: 200,
+  });
+  const { data: medicineDosagesDayNames } = useGetMedicineDosagesDayNameQueryQuery({
+    limit: 200,
+  });
+
   // Determine if current medicine is non tablet/capsule (assumed liquid/others)
   const isNonTabCap = useMemo(() => {
     const desc = (dosageDescription || "").toLowerCase();
@@ -50,6 +64,7 @@ const DosageTimingRow = ({
   const [qtyText, setQtyText] = useState<string>("");
   const [unitValue, setUnitValue] = useState<string>("চামচ");
   const [freqText, setFreqText] = useState<string>("");
+  const [frequencyValue, setFrequencyValue] = useState<string>("বার");
 
   // Bangla number conversion
   const banglaToEnglish: { [key: string]: string } = useMemo(
@@ -77,26 +92,86 @@ const DosageTimingRow = ({
   const dosageFieldName = `${count}-dosage-${medicineId}`;
   const timeFieldName = `${count}-time-${medicineId}`;
   const commentFieldName = `${count}-comment-${medicineId}`;
+  const unitFieldName = `unit-${medicineId}-${count}`;
+  const frequencyFieldName = `frequency-${medicineId}-${count}`;
 
-  // Read selected unit from form and keep local unit in sync
-  const watchedUnit: any = (form as any).watch?.(`unit-${medicineId}-${count}`);
+  // Read selected unit and frequency from form and keep local values in sync
+  const watchedUnit: any = (form as any).watch?.(unitFieldName);
+  const watchedFrequency: any = (form as any).watch?.(frequencyFieldName);
+  const dosageNotesFieldName = `${count}-dosageNotes-${medicineId}`;
+  const watchedDosageNotes: any = (form as any).watch?.(dosageNotesFieldName);
 
   useEffect(() => {
     const nextUnit =
       (watchedUnit && (watchedUnit.value || watchedUnit)) || "চামচ";
+    console.log('Unit field update:', { watchedUnit, nextUnit, unitValue });
     if (nextUnit !== unitValue) setUnitValue(nextUnit);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchedUnit]);
+
+  useEffect(() => {
+    const nextFrequency =
+      (watchedFrequency && (watchedFrequency.value || watchedFrequency)) || "বার";
+    console.log('Frequency field update:', { watchedFrequency, nextFrequency, frequencyValue });
+    if (nextFrequency !== frequencyValue) setFrequencyValue(nextFrequency);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchedFrequency]);
+
+  // Initialize local state from dosageNotes when loading from backend
+  useEffect(() => {
+    console.log('DosageTimingRow Debug:', {
+      isNonTabCap,
+      watchedDosageNotes,
+      dosageNotesFieldName,
+      medicineId,
+      count,
+      formValues: form.getValues()
+    });
+    
+    if (isNonTabCap && watchedDosageNotes && Array.isArray(watchedDosageNotes) && watchedDosageNotes.length > 0) {
+      const dosageNote = watchedDosageNotes[0]; // Take the first dosage note
+      console.log('Setting dosageNote values:', dosageNote);
+      if (dosageNote.qty) setQtyText(dosageNote.qty);
+      if (dosageNote.unit) setUnitValue(dosageNote.unit);
+      if (dosageNote.freq) setFreqText(dosageNote.freq);
+      if (dosageNote.freqUnit) setFrequencyValue(dosageNote.freqUnit);
+    }
+  }, [isNonTabCap, watchedDosageNotes, dosageNotesFieldName, medicineId, count, form]);
 
   // Sync composed values into RHF fields when liquid mode
   useEffect(() => {
     if (!isNonTabCap) return;
 
+    // Get current form values
+    const currentUnit = (watchedUnit && (watchedUnit.value || watchedUnit)) || "চামচ";
+    const currentFreqUnit = (watchedFrequency && (watchedFrequency.value || watchedFrequency)) || "বার";
+
     // Build combined dosage value: "<qty> <unit> * <freq> বার"
     const combined =
-      qtyText && freqText ? `${qtyText} ${unitValue} * ${freqText} বার` : "";
+      qtyText && (freqText || frequencyValue) ? `${qtyText} ${currentUnit} * ${freqText || frequencyValue}` : "";
     if (form.getValues(dosageFieldName) !== combined) {
       form.setValue(dosageFieldName, combined, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+
+    // Create dosageNotes array for non-tab/cap medicines
+    const dosageNotesFieldName = `${count}-dosageNotes-${medicineId}`;
+    if (qtyText && freqText && currentUnit && currentFreqUnit) {
+      const dosageNotes = [{
+        qty: qtyText,
+        unit: currentUnit,
+        freq: freqText,
+        freqUnit: currentFreqUnit,
+      }];
+      
+      form.setValue(dosageNotesFieldName, dosageNotes, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    } else {
+      form.setValue(dosageNotesFieldName, [], {
         shouldDirty: true,
         shouldValidate: true,
       });
@@ -112,12 +187,16 @@ const DosageTimingRow = ({
   }, [
     isNonTabCap,
     qtyText,
-    unitValue,
     freqText,
+    frequencyValue,
+    watchedUnit,
+    watchedFrequency,
     dosageFieldName,
     timeFieldName,
     commentFieldName,
     form,
+    count,
+    medicineId,
   ]);
 
   const handleSaveNewDosage = async (inputValue: string) => {
@@ -138,6 +217,28 @@ const DosageTimingRow = ({
     } catch (error) {
       toast.error("Failed to save new time option");
       console.error("Error saving new time option:", error);
+      throw error;
+    }
+  };
+
+  const handleSaveNewDayInput = async (inputValue: string) => {
+    try {
+      await CreateFn(inputValue, createMedicineDosagesDayInput);
+      toast.success("New day input option saved successfully");
+    } catch (error) {
+      toast.error("Failed to save new day input option");
+      console.error("Error saving new day input option:", error);
+      throw error;
+    }
+  };
+
+  const handleSaveNewDayName = async (inputValue: string) => {
+    try {
+      await CreateFn(inputValue, createMedicineDosagesDayName);
+      toast.success("New day name option saved successfully");
+    } catch (error) {
+      toast.error("Failed to save new day name option");
+      console.error("Error saving new day name option:", error);
       throw error;
     }
   };
@@ -169,6 +270,45 @@ const DosageTimingRow = ({
         index === self.findIndex((o) => o.value === option.value)
     );
   }, [medicinesTimes]);
+
+  // Merge day input options from API and static options
+  const allDayInputOptions = useMemo(() => {
+    const apiOptions =
+      medicineDosagesDayInputs?.data?.map((item: any) => ({
+        value: item.value,
+        label: item.value,
+      })) || [];
+
+    const staticOptions = [
+      { value: "চামচ", label: "চামচ" },
+      { value: "মিলি", label: "মিলি" },
+      { value: "ফোঁটা", label: "ফোঁটা" },
+    ];
+
+    return [...staticOptions, ...apiOptions].filter(
+      (option, index, self) =>
+        index === self.findIndex((o) => o.value === option.value)
+    );
+  }, [medicineDosagesDayInputs]);
+
+  // Merge day name options from API and static options
+  const allDayNameOptions = useMemo(() => {
+    const apiOptions =
+      medicineDosagesDayNames?.data?.map((item: any) => ({
+        value: item.value,
+        label: item.value,
+      })) || [];
+
+    const staticOptions = [
+      { value: "বার", label: "বার" },
+      { value: "বেলা", label: "বেলা" },
+    ];
+
+    return [...staticOptions, ...apiOptions].filter(
+      (option, index, self) =>
+        index === self.findIndex((o) => o.value === option.value)
+    );
+  }, [medicineDosagesDayNames]);
 
   const fields = [
     {
@@ -255,15 +395,15 @@ const DosageTimingRow = ({
                 placeholder="২"
               />
               {/* Unit */}
-              <select
-                value={unitValue}
-                onChange={(e) => setUnitValue(e.target.value)}
-                className="focus-within:outline-none rounded-md border-slate-300 focus-visible:outline-none cursor-pointer px-2 h-[48px] border"
-              >
-                <option value="চামচ">চামচ</option>
-                <option value="মিলি">মিলি</option>
-                <option value="ফোঁটা">ফোঁটা</option>
-              </select>
+              <div className="w-24">
+                <ReactSelectCompo
+                  name={unitFieldName}
+                  options={allDayInputOptions}
+                  control={form.control}
+                  showSelectedBox={false}
+                  onCreateOption={handleSaveNewDayInput}
+                />
+              </div>
               *
               <Input
                 type="text"
@@ -281,14 +421,16 @@ const DosageTimingRow = ({
                 pattern="[০-৯0-9]*"
                 placeholder="২"
               />
-              {/* Fixed 'বার' */}
-              <select
-                value="বার"
-                className="focus-within:outline-none border rounded-md border-slate-300 focus-visible:outline-none cursor-default px-2 h-[48px] bg-transparent"
-              >
-                <option>বার</option>
-                <option>বেলা</option>
-              </select>
+
+              {/* Frequency */}
+              <div className="w-28">
+                <ReactSelectCompo
+                  name={frequencyFieldName}
+                  options={allDayNameOptions}
+                  control={form.control}
+                  onCreateOption={handleSaveNewDayName}
+                />
+              </div>
             </div>
           </div>
 
