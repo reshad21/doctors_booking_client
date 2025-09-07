@@ -17,9 +17,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronRight } from "lucide-react";
 import { useAppSelector } from "@/redux/hooks";
 import NoticeFooter from "./_components/NoticeFooter";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { socket } from "@/socket/socket";
 import VideoPlayer from "./_components/VideoPlayer";
+import { useGetChambersQuery } from "@/redux/api/chamber/chamber";
 
 declare global {
   interface Window {
@@ -31,24 +32,27 @@ declare global {
 const today = new Date().toISOString().split("T")[0];
 
 export default function PatientCallingDisplay() {
+  const { data: chambersData } = useGetChambersQuery({});
   const currentSerial = useAppSelector((state) => state.serial.currentSerial);
   const calledSerials = useAppSelector((state) => state.serial.calledSerials);
   const endedSerials = useAppSelector((state) => state.serial.endedSerials);
+  const [selectedChamber, setSelectedChamber] = useState("all");
   const doctor = useAppSelector((state) => state.admin);
+   const chambers = chambersData?.data?.map((item:any) =>({name:item?.name,id:item?.id})) || []
 
   const { data: videoData } = useGetWatchVideoQuery({});
   const { data: patientApiData, refetch } = useGetPatientQuery({
-  filter: JSON.stringify({
-    chamberId:  undefined,
-    createdAt:  today,
-    timezoneOffset: new Date().getTimezoneOffset()
-  }),
-  orderBy: JSON.stringify({ createdAt: "asc" }),
-});
+    filter: JSON.stringify({
+      chamberId: selectedChamber == "all" ? {} : selectedChamber,
+      createdAt: today,
+      timezoneOffset: new Date().getTimezoneOffset(),
+    }),
+    orderBy: JSON.stringify({ createdAt: "asc" }),
+  });
 
   const patients: Patient[] = patientApiData?.data?.data || [];
   console.log(patients);
-  
+
   const outdoorPatients = patients.filter((p) => p?.status !== "REPORT");
   const reportPatients = patients.filter((p) => p?.status === "REPORT");
   const activeVideos = useMemo(
@@ -56,11 +60,7 @@ export default function PatientCallingDisplay() {
     [videoData]
   );
 
-  // Filter ended patients out once
-  // const filteredOutdoorPatients = outdoorPatients.filter(
-  //   (p) => !endedSerials.includes(p.id)
-  // );
-  console.log(outdoorPatients,"outdoorPatients");
+  console.log(outdoorPatients, "outdoorPatients");
 
   // Filter out ended patients AND patients where isArrived is true
   const filteredOutdoorPatients = outdoorPatients.filter(
@@ -95,19 +95,12 @@ export default function PatientCallingDisplay() {
   // Map patient id to original index in outdoorPatients for stable serial numbers
   const patientIndexMap = new Map(outdoorPatients.map((p, idx) => [p.id, idx]));
 
-  // Get upcoming outdoor patients that are NOT in the visible table
-  // const upcomingOutdoorPatients = filteredOutdoorPatients.filter(
-  //   (p) => !visibleOutdoorPatients.some((vp) => vp.id === p.id)
-  // );
   const upcomingOutdoorPatients = filteredOutdoorPatients.filter(
     (p) =>
       !visibleOutdoorPatients.some((vp) => vp.id === p.id) &&
       p.visitStatus != "VISITED"
   );
-  // Report patients logic: similar to outdoor patients
-  // const filteredReportPatients = reportPatients.filter(
-  //   (p) => !endedSerials.includes(p.id)
-  // );
+
   const filteredReportPatients = reportPatients.filter(
     (p) => !endedSerials.includes(p.id) && p.visitStatus != "VISITED"
   );
@@ -143,11 +136,6 @@ export default function PatientCallingDisplay() {
     reportPatients.map((p, idx) => [p.id, idx])
   );
 
-  // Get upcoming report patients that are NOT in the visible table
-  // const upcomingReportPatients = filteredReportPatients.filter(
-  //   (p) => !visibleReportPatients.some((vp) => vp.id === p.id)
-  // );
-
   const upcomingReportPatients = filteredReportPatients.filter(
     (p) =>
       !visibleReportPatients.some((vp) => vp.id === p.id) &&
@@ -164,7 +152,9 @@ export default function PatientCallingDisplay() {
       socket.off("patient:created");
     };
   }, [refetch]);
-
+ const handleChamberChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedChamber(event.target.value);
+  };
   return (
     <div className="flex flex-col min-h-screen bg-white text-black">
       {/* Header */}
@@ -182,9 +172,30 @@ export default function PatientCallingDisplay() {
         </div>
         <div className="text-sm text-gray-100">{getCurrentDateTime()}</div>
       </header>
-
+      <div className="pt-4 px-4 flex justify-center items-center">
+        <div className="w-full">
+          <select
+            id="chamber-select"
+            value={selectedChamber}
+            onChange={handleChamberChange}
+            className="w-full p-2 border text-gray-700 bg-gray-100 border-gray-200 rounded-md focus:ring-brand focus:border-brand"
+          >
+            {[{ id: "all", name: "All Chambers" }, ...chambers].map(
+              (chamber: any) => (
+                <option
+                  key={chamber.id}
+                  value={chamber.id}
+                  className="text-gray-500"
+                >
+                  {chamber.name}
+                </option>
+              )
+            )}
+          </select>
+        </div>
+      </div>
       {/* Main Content */}
-      <main className="flex-1 p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <main className="flex-1 p-4 grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Section - Patient Tables */}
         <div className="flex flex-col gap-8">
           {/* Outdoor Patients Table */}
