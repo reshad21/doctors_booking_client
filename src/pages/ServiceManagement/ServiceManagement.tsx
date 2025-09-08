@@ -54,9 +54,6 @@ export default function ServiceManagement() {
  const totalReportVisitsDiscount = reportVisits.reduce((sum:any, item:any) => {
   return sum + (Number(item.patient?.discountAmount) || 0);
 }, 0);
-console.log(totalNewVisitsDiscount,"newVisits");
-console.log(totalOldVisitsDiscount,"totalOldVisitsDiscount");
-console.log(totalReportVisitsDiscount,"totalReportVisitsDiscount");
 
   // Count by type
   const newPatientCount = newVisits.length;
