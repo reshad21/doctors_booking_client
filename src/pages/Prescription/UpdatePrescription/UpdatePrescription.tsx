@@ -32,6 +32,19 @@ const UpdatePrescription = () => {
 
   useEffect(() => {
     if (prescriptionData && Object.keys(prescriptionData).length > 0) {
+      console.log("Prescription data loaded:", prescriptionData);
+      console.log(
+        "Medicines with dosageNotes:",
+        prescriptionData.medicines?.map((med: any) => ({
+          medicineName: med.medicineName,
+          DosageSchedule: med.DosageSchedule?.map((ds: any) => ({
+            dosage: ds.dosage,
+            day: ds.day,
+            dosageNotes: ds.dosageNotes,
+          })),
+        }))
+      );
+
       // Create a reference to store medicine content IDs
       const medicineContentIds: string[] = [];
 
@@ -80,6 +93,18 @@ const UpdatePrescription = () => {
           (formValues as Record<string, any>)[
             `${scheduleIndex + 1}-comment-${contentId}`
           ] = schedule.comment || "";
+
+          // Set dosageNotes if they exist
+          if (schedule.dosageNotes && schedule.dosageNotes.length > 0) {
+            console.log("Setting dosageNotes in form:", {
+              fieldName: `${scheduleIndex + 1}-dosageNotes-${contentId}`,
+              dosageNotes: schedule.dosageNotes,
+              schedule,
+            });
+            (formValues as Record<string, any>)[
+              `${scheduleIndex + 1}-dosageNotes-${contentId}`
+            ] = schedule.dosageNotes;
+          }
         });
       });
 
@@ -109,7 +134,10 @@ const UpdatePrescription = () => {
   }, [form, prescriptionData]);
 
   const onSubmit = async (data: any) => {
+    console.log(data, "this is data");
+
     const medicines: any[] = [];
+
     // Loop through each medicine
     Object.keys(data)
       .filter((key) => key.startsWith("medicine-"))
@@ -134,17 +162,31 @@ const UpdatePrescription = () => {
             const day = data[`${idx}-duration-${medicineIndex}`];
             const time = data[`${idx}-time-${medicineIndex}`];
             const comment = data[`${idx}-comment-${medicineIndex}`];
+            const dosageNotes = data[`${idx}-dosageNotes-${medicineIndex}`];
 
             // Skip completely empty schedule rows
-            if (!dosage && !day && !time && !comment) return null;
+            const hasDosageNotes =
+              dosageNotes &&
+              Array.isArray(dosageNotes) &&
+              dosageNotes.length > 0;
+            const hasRegularFields = dosage || day || time || comment;
 
-            return {
-              // id: crypto.randomUUID(),
-              dosage: dosage || "",
+            if (!hasDosageNotes && !hasRegularFields) return null;
+
+            const schedule: any = {
+              // For non-tablet/capsule medicines, don't include dosage if we have dosageNotes
+              dosage: hasDosageNotes ? "" : dosage || "",
               day: day || "",
               time: time || "",
               comment: comment || "",
             };
+
+            // Add dosageNotes if they exist
+            if (hasDosageNotes) {
+              schedule.dosageNotes = dosageNotes;
+            }
+
+            return schedule;
           })
           .filter(Boolean);
 
@@ -172,8 +214,9 @@ const UpdatePrescription = () => {
       medicines,
     };
 
-    const res = (await updatePrescription(transformedData)) as any;
+    console.log("Transformed data:", transformedData);
 
+    const res = (await updatePrescription(transformedData)) as any;
     if (res?.data?.message) {
       toast.success(res?.data?.message);
       navigate(`/dashboard/view-prescription/${prescriptionData?.patient?.id}`);

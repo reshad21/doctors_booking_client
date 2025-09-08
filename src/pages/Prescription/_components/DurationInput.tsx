@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import React from "react";
+import { cn } from "@/lib/utils";
 
 type DurationUnit = "দিন" | "সপ্তাহ" | "মাস" | "বছর" | "চলবে";
 
@@ -10,12 +11,14 @@ type DurationInputProps = {
   name: string;
   defaultUnit?: DurationUnit;
   defaultValue?: number;
+  className?: string;
 };
 
 const DurationInput = ({
   name,
   defaultUnit = "দিন",
   defaultValue,
+  className,
 }: DurationInputProps) => {
   const { register, setValue } = useFormContext();
 
@@ -116,7 +119,7 @@ const DurationInput = ({
 
   return (
     <div
-      className="w-full border bg-white text-sm flex"
+      className={cn(`w-full border bg-white text-sm flex`, className)}
       style={{ height: "52px", borderColor: "#A0B19E", borderRadius: "6px" }}
     >
       <Input

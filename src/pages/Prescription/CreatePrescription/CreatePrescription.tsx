@@ -16,7 +16,8 @@ const CreatePrescription = () => {
   const [createPrescription] = useCreatePrescriptionMutation();
   const { patientId } = useParams();
   const location = useLocation();
-  const { data: patientData, isLoading: isPatientLoading } = useGetSinglePatientQuery(patientId);
+  const { data: patientData, isLoading: isPatientLoading } =
+    useGetSinglePatientQuery(patientId);
   const doctorId = useAppSelector((state) => state.admin?.id);
   const navigate = useNavigate();
 
@@ -26,11 +27,10 @@ const CreatePrescription = () => {
   });
 
   // Only generate prescription ID when patient data is available
-  const prescriptionId = patientData?.data?.id 
+  const prescriptionId = patientData?.data?.id
     ? generatePrescriptionId(patientData.data.id)
     : null;
 
-  // Show loading state while patient data is being fetched
   if (isPatientLoading || !prescriptionId) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -41,7 +41,9 @@ const CreatePrescription = () => {
           <div className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
             <div className="p-6">
               <div className="flex items-center justify-center py-8">
-                <div className="text-gray-500">Loading patient information...</div>
+                <div className="text-gray-500">
+                  Loading patient information...
+                </div>
               </div>
             </div>
           </div>
@@ -58,12 +60,25 @@ const CreatePrescription = () => {
         name: value,
       }));
 
-    // Step 2: For each medicine, find its dosage schedules
     const medicines = medicineEntries.map(({ medicineId, name }) => {
-      // Find all fields that belong to this medicine's dosage schedules
+      // Collect dosage fields
       const dosageFields = Object.entries(data).filter(([fieldName]) => {
         const parts = fieldName.split("-");
-        return parts.length === 3 && parts[2] === medicineId;
+        return (
+          parts.length === 3 &&
+          parts[2] === medicineId &&
+          parts[1] !== "dosageNotes"
+        );
+      });
+
+      // Collect dosageNotes fields
+      const dosageNotesFields = Object.entries(data).filter(([fieldName]) => {
+        const parts = fieldName.split("-");
+        return (
+          parts.length === 3 &&
+          parts[1] === "dosageNotes" &&
+          parts[2] === medicineId
+        );
       });
 
       const dosageGroups = dosageFields.reduce<
@@ -86,11 +101,37 @@ const CreatePrescription = () => {
         return acc;
       }, {});
 
-      // Convert to array of dosage schedules and filter out empty/invalid ones
+      // Attach dosageNotes
+      dosageNotesFields.forEach(([fieldName, value]) => {
+        const [dosageIndex] = fieldName.split("-");
+        if (!Array.isArray(value) || value.length === 0) return;
+
+        const validNotes = value.filter(
+          (note) =>
+            note &&
+            typeof note === "object" &&
+            note.qty &&
+            note.unit &&
+            note.freq &&
+            note.freqUnit
+        );
+
+        if (validNotes.length > 0) {
+          // 🚩 If dosageNotes exist → overwrite everything else (liquid type)
+          dosageGroups[dosageIndex] = { dosageNotes: validNotes };
+        }
+      });
+
       let DosageSchedule = Object.values(dosageGroups);
-      DosageSchedule = DosageSchedule.filter(
-        (ds: any) => (ds.dosage && ds.day) || ds.day === "চলবে"
-      );
+
+      // filter valid entries
+      DosageSchedule = DosageSchedule.filter((ds: any) => {
+        return (
+          (ds.dosage && ds.day) || // normal tab/cap
+          ds.day === "চলবে" ||
+          (Array.isArray(ds.dosageNotes) && ds.dosageNotes.length > 0) // liquid
+        );
+      });
 
       return {
         medicineName: name,
@@ -98,11 +139,13 @@ const CreatePrescription = () => {
       };
     });
 
-    // Step 3: Combine with other form data
+    // Step 3: build final object
     const transformedData = {
-      doctorId: doctorId,
+      doctorId,
       patientId,
-      medicines: medicines.filter((m) => m.medicineName), // Filter out empty medicines
+      medicines: medicines.filter(
+        (m) => m.medicineName && m.DosageSchedule.length > 0
+      ),
       content: data.content,
       chiefComplaint: data["chief-complaint"],
       onExaminations: data["on-examinations"],
@@ -113,7 +156,12 @@ const CreatePrescription = () => {
       prescriptionNo: prescriptionId,
     };
 
-    console.log(transformedData, 'transformedData')
+    console.log("Transformed data:", transformedData);
+
+    if (transformedData.medicines.length === 0) {
+      toast.error("Please add at least one medicine with dosage information");
+      return;
+    }
 
     try {
       const res = (await createPrescription(transformedData)) as any;
@@ -158,10 +206,7 @@ const CreatePrescription = () => {
               prescriptionId={prescriptionId}
             />
             <FormProvider {...form}>
-              <PrescriptionForm
-                onSubmit={onSubmit}
-                type="create"
-              />
+              <PrescriptionForm onSubmit={onSubmit} type="create" />
             </FormProvider>
           </div>
 

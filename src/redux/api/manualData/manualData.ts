@@ -56,6 +56,24 @@ const onExaminationsApi = baseApi.injectEndpoints({
       invalidatesTags: ["manualData"],
     }),
 
+    createMedicineDosagesDayInput: builder.mutation({
+      query: (data) => ({
+        url: `/medicine-dosages-frequency-day/create-medicine-dosages-frequency-day`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["manualData"],
+    }),
+
+    createMedicineDosagesDayName: builder.mutation({
+      query: (data) => ({
+        url: `/medicine-dosages-frequency-name/create-medicine-dosages-frequency-name`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["manualData"],
+    }),
+
     getOnExaminations: builder.query({
       query: ({ page, limit, searchTerm, filter, orderBy }) => ({
         url: `/on-examination/get-onExaminations`,
@@ -157,6 +175,36 @@ const onExaminationsApi = baseApi.injectEndpoints({
       }),
       providesTags: ["manualData"],
     }),
+
+    getMedicineDosagesDayInputQuery: builder.query({
+      query: ({ page, limit, searchTerm, filter, orderBy }) => ({
+        url: `/medicine-dosages-frequency-day/get-medicine-dosages-frequency-day`,
+        method: "GET",
+        params: {
+          page,
+          limit,
+          searchTerm,
+          filter,
+          orderBy,
+        },
+      }),
+      providesTags: ["manualData"],
+    }),
+
+    getMedicineDosagesDayNameQuery: builder.query({
+      query: ({ page, limit, searchTerm, filter, orderBy }) => ({
+        url: `/medicine-dosages-frequency-name/get-medicine-dosages-frequency-name`,
+        method: "GET",
+        params: {
+          page,
+          limit,
+          searchTerm,
+          filter,
+          orderBy,
+        },
+      }),
+      providesTags: ["manualData"],
+    }),
   }),
 });
 
@@ -174,4 +222,8 @@ export const {
   useGetMedicinesDosagesQuery,
   useGetMedicinesTimeQuery,
   useCreateMedicineDosagesMutation,
+  useCreateMedicineDosagesDayInputMutation,
+  useCreateMedicineDosagesDayNameMutation,
+  useGetMedicineDosagesDayInputQueryQuery,
+  useGetMedicineDosagesDayNameQueryQuery,
 } = onExaminationsApi;
