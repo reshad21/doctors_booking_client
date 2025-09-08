@@ -19,6 +19,7 @@ export interface Patient {
   doctorId: string;
   createdAt: string;
   updatedAt: string;
+  discountAmount:number;
   chamberId?: string;
   prescription: Prescription[];
   visit: Visit[];

@@ -59,6 +59,18 @@ const patientApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["patient"],
     }),
+    updatePatientAmount: builder.mutation({
+      query: ({id,discountAmount}) => {
+console.log(discountAmount);
+
+        return {
+        url: `/patients/amount/${id}`,
+        method: "PATCH",
+        body:{discountAmount}
+      }
+      },
+      invalidatesTags: ["patient"],
+    }),
 
     updatePatient: builder.mutation({
       query: ({ id, payload }) => ({
@@ -78,4 +90,5 @@ export const {
   useDeletePatientMutation,
   useUpdateIsArrivedPatientMutation,
   useGetSinglePatientQuery,
+  useUpdatePatientAmountMutation
 } = patientApi;

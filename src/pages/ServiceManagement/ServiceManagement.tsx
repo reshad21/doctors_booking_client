@@ -43,6 +43,7 @@ export default function ServiceManagement() {
   const newVisits = filteredVisits.filter((v: any) => v.type === "NEW");
   const oldVisits = filteredVisits.filter((v: any) => v.type === "OLD");
   const reportVisits = filteredVisits.filter((v: any) => v.type === "REPORT");
+console.log(newVisits,"newVisits");
 
   // Count by type
   const newPatientCount = newVisits.length;
