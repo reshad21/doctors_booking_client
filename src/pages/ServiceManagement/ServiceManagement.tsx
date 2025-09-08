@@ -43,7 +43,20 @@ export default function ServiceManagement() {
   const newVisits = filteredVisits.filter((v: any) => v.type === "NEW");
   const oldVisits = filteredVisits.filter((v: any) => v.type === "OLD");
   const reportVisits = filteredVisits.filter((v: any) => v.type === "REPORT");
-console.log(newVisits,"newVisits");
+
+
+ const totalNewVisitsDiscount = newVisits.reduce((sum:any, item:any) => {
+  return sum + (Number(item.patient?.discountAmount) || 0);
+}, 0);
+ const totalOldVisitsDiscount = oldVisits.reduce((sum:any, item:any) => {
+  return sum + (Number(item.patient?.discountAmount) || 0);
+}, 0);
+ const totalReportVisitsDiscount = reportVisits.reduce((sum:any, item:any) => {
+  return sum + (Number(item.patient?.discountAmount) || 0);
+}, 0);
+console.log(totalNewVisitsDiscount,"newVisits");
+console.log(totalOldVisitsDiscount,"totalOldVisitsDiscount");
+console.log(totalReportVisitsDiscount,"totalReportVisitsDiscount");
 
   // Count by type
   const newPatientCount = newVisits.length;
@@ -112,7 +125,7 @@ console.log(newVisits,"newVisits");
       stats: [
         { label: "New Patient", value: newPatientCount },
         { label: "Visited", value: newPatientCount },
-        { label: "Total Payment", value: `${newPayment}TK` },
+        { label: "Total Payment", value: `${newPayment - totalNewVisitsDiscount}TK` },
       ],
     },
     {
@@ -122,7 +135,7 @@ console.log(newVisits,"newVisits");
       stats: [
         { label: "Old Patient", value: oldPatientCount },
         { label: "Visited", value: oldPatientCount },
-        { label: "Total Payment", value: `${oldPayment}TK` },
+        { label: "Total Payment", value: `${oldPayment - totalOldVisitsDiscount}TK` },
       ],
     },
     {
@@ -132,7 +145,7 @@ console.log(newVisits,"newVisits");
       stats: [
         { label: "Report", value: reportPatientCount },
         { label: "Visited", value: reportPatientCount },
-        { label: "Total Payment", value: `${reportPayment}TK` },
+        { label: "Total Payment", value: `${reportPayment - totalReportVisitsDiscount}TK` },
       ],
     },
   ];
