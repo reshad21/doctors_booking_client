@@ -22,26 +22,37 @@ export const printPrescription = (
   const diagnosisList = createListHTML(prescriptionData?.diagnosis);
   const investigationList = createListHTML(prescriptionData?.investigation);
 
-  const medicinesList =
-    prescriptionData?.medicines
-      ?.map((med: any, medIndex: number) => {
-        const dosageSchedules =
-          med?.DosageSchedule?.map(
-            (schedule: any) => `
-      <div class="print-dosage-schedule">
-        <div class="print-dosage-row">
-          <span class="print-dosage">${schedule.dosage || ""}</span>
-          <span class="print-time">${schedule.time || ""}</span>
-          <span class="print-day">${schedule.day || ""}</span>
-          <span class="print-comment-inline">
-            ${schedule.comment ? `${schedule.comment}` : ""}
-          </span>
-        </div>
-      </div>
-    `
-          ).join("") || "";
+const medicinesList =
+  prescriptionData?.medicines
+    ?.map((med: any, medIndex: number) => {
+      const dosageSchedules =
+        med?.DosageSchedule?.map((schedule: any) => {
+          // ✅ if dosage exists use it, else fallback to dosageNotes
+          const dosageText =
+            schedule?.dosage && schedule.dosage !== ""
+              ? schedule.dosage
+              : (schedule?.dosageNotes || [])
+                  .map(
+                    (note: any) =>
+                      `${note.qty || ""} ${note.unit || ""} ${note.freq || ""} ${note.freqUnit || ""}`
+                  )
+                  .join("<br/>"); // multiple notes in new lines
 
-        return `
+          return `
+        <div class="print-dosage-schedule">
+          <div class="print-dosage-row">
+            <span class="print-dosage">${dosageText}</span>
+            <span class="print-time">${schedule.time || ""}</span>
+            <span class="print-day">${schedule.day || ""}</span>
+            <span class="print-comment-inline">
+              ${schedule.comment ? `${schedule.comment}` : ""}
+            </span>
+          </div>
+        </div>
+      `;
+        }).join("") || "";
+
+      return `
       <div class="print-medicine-item">
         <div class="print-medicine-header">
           ${medIndex + 1}. ${med.medicineName}
@@ -51,8 +62,9 @@ export const printPrescription = (
         </div>
       </div>
     `;
-      })
-      .join("") || "";
+    })
+    .join("") || "";
+
 
   // Advice section
   const adviceList = createListHTML(prescriptionData?.advice);

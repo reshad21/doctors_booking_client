@@ -1,45 +1,98 @@
-"use client"
+"use client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useGetPerceptionByPatientIdQuery } from "@/redux/api/prescription/prescription"
-import { Edit, Info, Printer } from "lucide-react"
-import { Link, useParams } from "react-router-dom"
-import { useEffect, useRef, useState } from "react"
-import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi"
-import { EmptyState } from "@/components/shared/EmptyState"
-import { printPrescription } from "@/utils/printPrescription"
-import BackButton from "@/components/shared/BackButton"
+import { useGetPerceptionByPatientIdQuery } from "@/redux/api/prescription/prescription";
+import { Edit, Info, Printer, Share2, MessageCircle, Mail } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { printPrescription } from "@/utils/printPrescription";
+import BackButton from "@/components/shared/BackButton";
 
 const ViewPrescription = () => {
-  const { patientId } = useParams()
-  const { data: prescriptions, refetch } = useGetPerceptionByPatientIdQuery(patientId)
-  const { data: preManagementData } = useGetPreManagementQuery(undefined)
-  const printRefs = useRef<(HTMLDivElement | null)[]>([])
-  const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const { patientId } = useParams();
+  const { data: prescriptions, refetch } =
+    useGetPerceptionByPatientIdQuery(patientId);
+  const { data: preManagementData } = useGetPreManagementQuery(undefined);
+  const printRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   useEffect(() => {
-    refetch()
-  }, [patientId, refetch])
+    refetch();
+  }, [patientId, refetch]);
 
   useEffect(() => {
     if (prescriptions?.data?.length > 0 && !selectedDate) {
-      setSelectedDate(prescriptions.data[0]?.createdAt?.split("T")[0])
+      setSelectedDate(prescriptions.data[0]?.createdAt?.split("T")[0]);
     }
-  }, [prescriptions?.data, selectedDate])
+  }, [prescriptions?.data, selectedDate]);
 
   const setPrintRef = (el: HTMLDivElement | null, index: number) => {
-    printRefs.current[index] = el
-  }
+    printRefs.current[index] = el;
+  };
 
-  const uniqueDates = [...new Set(prescriptions?.data?.map((medic: any) => medic?.createdAt?.split("T")[0]))]
+  const generateShareText = (medic: any) => {
+    const patientName = medic?.patient?.name || "Patient";
+    const date = medic?.createdAt
+      ? new Date(medic.createdAt).toLocaleDateString("en-GB")
+      : "";
+    const prescriptionNo = medic?.prescriptionNo || "";
+
+    let shareText = `Prescription for ${patientName}\n`;
+    shareText += `Date: ${date}\n`;
+    shareText += `Prescription ID: ${prescriptionNo}\n\n`;
+
+    if (medic?.medicines?.length > 0) {
+      shareText += `Medicines:\n`;
+      medic.medicines.forEach((med: any, index: number) => {
+        shareText += `${index + 1}. ${med.medicineName}\n`;
+      });
+    }
+
+    return shareText;
+  };
+
+  const shareViaWhatsApp = (medic: any) => {
+    const text = generateShareText(medic);
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(whatsappUrl, "_blank");
+  };
+
+  const shareViaEmail = (medic: any) => {
+    const text = generateShareText(medic);
+    const subject = `Prescription for ${medic?.patient?.name || "Patient"}`;
+    const emailUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
+    window.open(emailUrl);
+  };
+
+  const shareViaMessenger = (medic: any) => {
+    const text = generateShareText(medic);
+    const messengerUrl = `https://m.me/?text=${encodeURIComponent(text)}`;
+    window.open(messengerUrl, "_blank");
+  };
+
+  const uniqueDates = [
+    ...new Set(
+      prescriptions?.data?.map((medic: any) => medic?.createdAt?.split("T")[0])
+    ),
+  ];
 
   const getPrescriptionCountForDate = (date: string) => {
-    return prescriptions?.data?.filter((medic: any) => medic?.createdAt?.split("T")[0] === date).length || 0
-  }
+    return (
+      prescriptions?.data?.filter(
+        (medic: any) => medic?.createdAt?.split("T")[0] === date
+      ).length || 0
+    );
+  };
 
   const filteredPrescriptions = selectedDate
-    ? prescriptions?.data?.filter((medic: any) => medic?.createdAt?.split("T")[0] === selectedDate)
-    : prescriptions?.data
+    ? prescriptions?.data?.filter(
+        (medic: any) => medic?.createdAt?.split("T")[0] === selectedDate
+      )
+    : prescriptions?.data;
+
+  console.log(prescriptions, "prescriptions");
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -48,7 +101,9 @@ const ViewPrescription = () => {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
               <BackButton className="shadow-none border-none hover:bg-slate-100 rounded-lg text-slate-600 hover:text-slate-800 transition-colors" />
-              <h1 className="text-lg font-semibold text-slate-900">Prescription History</h1>
+              <h1 className="text-lg font-semibold text-slate-900">
+                Prescription History
+              </h1>
             </div>
           </div>
         </div>
@@ -67,27 +122,33 @@ const ViewPrescription = () => {
         <div className="flex gap-8">
           <div className="w-72 flex-shrink-0 z-10">
             <div className="bg-white rounded-lg p-4 border border-gray-200">
-              <h3 className="text-sm font-medium text-gray-900 mb-3">Prescription Dates</h3>
+              <h3 className="text-sm font-medium text-gray-900 mb-3">
+                Prescription Dates
+              </h3>
               <div className="space-y-1">
                 {uniqueDates?.map((date: any) => {
-                  const isSelected = selectedDate === date
-                  const count = getPrescriptionCountForDate(date)
+                  const isSelected = selectedDate === date;
+                  const count = getPrescriptionCountForDate(date);
                   return (
                     <button
                       key={date}
                       onClick={() => setSelectedDate(date)}
                       className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
-                        isSelected ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50"
+                        isSelected
+                          ? "bg-blue-50 text-blue-700"
+                          : "text-gray-600 hover:bg-gray-50"
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <span>{date}</span>
                         {count > 1 && (
-                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">{count}</span>
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                            {count}
+                          </span>
                         )}
                       </div>
                     </button>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -99,7 +160,9 @@ const ViewPrescription = () => {
                 <div key={medic.id || index}>
                   <div className="flex justify-end gap-3 mb-4">
                     <button
-                      onClick={() => printPrescription(medic, preManagementData)}
+                      onClick={() =>
+                        printPrescription(medic, preManagementData)
+                      }
                       className="flex items-center gap-2 px-4 py-2 cursor-pointer border border-slate-300 rounded-lg hover:bg-slate-50 transition-all duration-200 text-slate-700 hover:text-slate-900"
                       title="Print Prescription"
                     >
@@ -116,15 +179,57 @@ const ViewPrescription = () => {
                       <Edit className="size-4" />
                       <span className="text-sm font-medium">Edit</span>
                     </Link>
+
+                    {/* Share dropdown */}
+                    <div className="relative group">
+                      <button
+                        className="flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition-all duration-200 text-slate-700 hover:text-slate-900"
+                        title="Share Prescription"
+                      >
+                        <Share2 className="size-4" />
+                        <span className="text-sm font-medium">Share</span>
+                      </button>
+
+                      {/* Dropdown menu */}
+                      <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        <div className="py-1">
+                          <button
+                            onClick={() => shareViaWhatsApp(medic)}
+                            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                          >
+                            <MessageCircle className="size-4 text-green-600" />
+                            WhatsApp
+                          </button>
+                          <button
+                            onClick={() => shareViaEmail(medic)}
+                            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                          >
+                            <Mail className="size-4 text-blue-600" />
+                            Email
+                          </button>
+                          <button
+                            onClick={() => shareViaMessenger(medic)}
+                            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                          >
+                            <MessageCircle className="size-4 text-blue-500" />
+                            Messenger
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
+                  {/* ... existing prescription display code ... */}
                   <div
                     ref={(el) => setPrintRef(el, index)}
                     className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 relative hover:shadow-md transition-shadow duration-200"
                   >
                     <div className="screen-container min-h-[800px] flex flex-col justify-between">
                       <img
-                        src={preManagementData?.data?.[0]?.headerImage}
+                        src={
+                          preManagementData?.data?.[0]?.headerImage ||
+                          "/placeholder.svg"
+                        }
                         alt=""
                       />
 
@@ -132,21 +237,31 @@ const ViewPrescription = () => {
                         <div className="bg-slate-50 p-4 text-sm flex justify-between border-b border-slate-200">
                           <span className="font-medium">
                             <strong className="text-slate-700">Name:</strong>{" "}
-                            <span className="text-slate-900">{medic?.patient?.name}</span>
+                            <span className="text-slate-900">
+                              {medic?.patient?.name}
+                            </span>
                           </span>
                           <span className="font-medium">
                             <strong className="text-slate-700">Age:</strong>{" "}
-                            <span className="text-slate-900">{medic?.patient?.age}yrs</span>
+                            <span className="text-slate-900">
+                              {medic?.patient?.age}yrs
+                            </span>
                           </span>
                           <span className="font-medium">
                             <strong className="text-slate-700">Date:</strong>{" "}
                             <span className="text-slate-900">
-                              {medic?.createdAt ? new Date(medic.createdAt).toLocaleDateString("en-GB") : ""}
+                              {medic?.createdAt
+                                ? new Date(medic.createdAt).toLocaleDateString(
+                                    "en-GB"
+                                  )
+                                : ""}
                             </span>
                           </span>
                           <span className="font-medium">
                             <strong className="text-slate-700">ID:</strong>{" "}
-                            <span className="text-slate-900">{medic?.prescriptionNo}</span>
+                            <span className="text-slate-900">
+                              {medic?.prescriptionNo}
+                            </span>
                           </span>
                         </div>
 
@@ -155,56 +270,92 @@ const ViewPrescription = () => {
                             <div className="flex flex-col items-start justify-start w-1/3 border-r-2 border-gray-800 gap-2 mt-5">
                               {medic?.chiefComplaint?.length > 0 && (
                                 <div className="ps-4 overflow-y-auto">
-                                  <h3 className="font-bold text-xs">Chief Complaints</h3>
+                                  <h3 className="font-bold text-xs">
+                                    Chief Complaints
+                                  </h3>
                                   <ul>
-                                    {medic.chiefComplaint.map((item: any, idx: number) => (
-                                      <li key={idx} className="flex items-start text-sm ps-2">
-                                        <span className="w-1 h-1 bg-gray-800 rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
-                                        <span className="text-xs text-gray-800">{item.description}</span>
-                                      </li>
-                                    ))}
+                                    {medic.chiefComplaint.map(
+                                      (item: any, idx: number) => (
+                                        <li
+                                          key={idx}
+                                          className="flex items-start text-sm ps-2"
+                                        >
+                                          <span className="w-1 h-1 bg-gray-800 rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
+                                          <span className="text-xs text-gray-800">
+                                            {item.description}
+                                          </span>
+                                        </li>
+                                      )
+                                    )}
                                   </ul>
                                 </div>
                               )}
 
                               {medic?.onExaminations?.length > 0 && (
                                 <div className="ps-4 overflow-y-auto">
-                                  <h3 className="font-bold text-xs">On Examinations</h3>
+                                  <h3 className="font-bold text-xs">
+                                    On Examinations
+                                  </h3>
                                   <ul>
-                                    {medic.onExaminations.map((item: any, idx: number) => (
-                                      <li key={idx} className="flex items-start text-sm ps-2">
-                                        <span className="w-1 h-1 bg-gray-800 rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
-                                        <span className="text-xs text-gray-800">{item.description}</span>
-                                      </li>
-                                    ))}
+                                    {medic.onExaminations.map(
+                                      (item: any, idx: number) => (
+                                        <li
+                                          key={idx}
+                                          className="flex items-start text-sm ps-2"
+                                        >
+                                          <span className="w-1 h-1 bg-gray-800 rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
+                                          <span className="text-xs text-gray-800">
+                                            {item.description}
+                                          </span>
+                                        </li>
+                                      )
+                                    )}
                                   </ul>
                                 </div>
                               )}
 
                               {medic?.diagnosis?.length > 0 && (
                                 <div className="ps-4">
-                                  <h3 className="font-bold text-xs">Diagnosis</h3>
+                                  <h3 className="font-bold text-xs">
+                                    Diagnosis
+                                  </h3>
                                   <ul>
-                                    {medic.diagnosis.map((item: any, idx: number) => (
-                                      <li key={idx} className="flex items-start text-sm ps-2">
-                                        <span className="w-1 h-1 bg-gray-800 rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
-                                        <span className="text-xs text-gray-800">{item.description}</span>
-                                      </li>
-                                    ))}
+                                    {medic.diagnosis.map(
+                                      (item: any, idx: number) => (
+                                        <li
+                                          key={idx}
+                                          className="flex items-start text-sm ps-2"
+                                        >
+                                          <span className="w-1 h-1 bg-gray-800 rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
+                                          <span className="text-xs text-gray-800">
+                                            {item.description}
+                                          </span>
+                                        </li>
+                                      )
+                                    )}
                                   </ul>
                                 </div>
                               )}
 
                               {medic?.investigation?.length > 0 && (
                                 <div className="ps-4 overflow-y-auto">
-                                  <h3 className="font-bold text-xs">Investigation</h3>
+                                  <h3 className="font-bold text-xs">
+                                    Investigation
+                                  </h3>
                                   <ul>
-                                    {medic.investigation.map((item: any, idx: number) => (
-                                      <li key={idx} className="flex items-start text-sm ps-2">
-                                        <span className="w-1 h-1 bg-gray-800 rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
-                                        <span className="text-xs text-gray-800">{item.description}</span>
-                                      </li>
-                                    ))}
+                                    {medic.investigation.map(
+                                      (item: any, idx: number) => (
+                                        <li
+                                          key={idx}
+                                          className="flex items-start text-sm ps-2"
+                                        >
+                                          <span className="w-1 h-1 bg-gray-800 rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
+                                          <span className="text-xs text-gray-800">
+                                            {item.description}
+                                          </span>
+                                        </li>
+                                      )
+                                    )}
                                   </ul>
                                 </div>
                               )}
@@ -212,54 +363,96 @@ const ViewPrescription = () => {
 
                             <div className="flex-1 flex flex-col justify-between items-start px-2 py-4 h-full overflow-y-auto w-full">
                               <div className="space-y-4">
-                                {medic?.medicines?.map((med: any, medIndex: number) => (
-                                  <div key={medIndex} className="mb-3">
-                                    <div className="font-semibold text-xs mb-1">
-                                      {medIndex + 1}. {med.medicineName}
-                                    </div>
-                                    {med?.DosageSchedule?.map((item: any, scheduleIndex: number) => (
-                                      <div key={scheduleIndex} className="ml-6 text-xs">
-                                        <div className="flex items-start gap-6">
-                                          <div className="min-w-[50px]">{item?.dosage || ""}</div>
-                                          <div className="min-w-[50px]">{item?.time || ""}</div>
-                                          <div className="min-w-[50px]">{item?.day || ""}</div>
-                                          <div className="flex-1">
-                                            {item?.comment && (
-                                              <span className="text-[10px] font-normal text-gray-500 ml-2">
-                                                {item.comment}
-                                              </span>
-                                            )}
-                                          </div>
-                                        </div>
+                                {medic?.medicines?.map(
+                                  (med: any, medIndex: number) => (
+                                    <div key={medIndex} className="mb-3">
+                                      <div className="font-semibold text-xs mb-1">
+                                        {medIndex + 1}. {med.medicineName}
                                       </div>
-                                    ))}
-                                  </div>
-                                ))}
+                                      {med?.DosageSchedule?.map(
+                                        (item: any, scheduleIndex: number) => (
+                                          <div
+                                            key={scheduleIndex}
+                                            className="ml-6 text-xs"
+                                          >
+                                            <div className="flex items-start gap-6">
+                                              {/* If dosage exists show it, else show dosageNotes */}
+                                              <div className="min-w-[120px]">
+                                                {item?.dosage &&
+                                                item.dosage !== ""
+                                                  ? item.dosage
+                                                  : item?.dosageNotes?.map(
+                                                      (
+                                                        note: any,
+                                                        noteIdx: number
+                                                      ) => (
+                                                        <div
+                                                          key={
+                                                            note.id || noteIdx
+                                                          }
+                                                        >
+                                                          {note.qty} {note.unit}{" "}
+                                                          {note.freq}{" "}
+                                                          {note.freqUnit}
+                                                        </div>
+                                                      )
+                                                    )}
+                                              </div>
+
+                                              <div className="min-w-[50px]">
+                                                {item?.time || ""}
+                                              </div>
+                                              <div className="min-w-[50px]">
+                                                {item?.day || ""}
+                                              </div>
+
+                                              <div className="flex-1">
+                                                {item?.comment && (
+                                                  <span className="text-[10px] font-normal text-gray-500 ml-2">
+                                                    {item.comment}
+                                                  </span>
+                                                )}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        )
+                                      )}
+                                    </div>
+                                  )
+                                )}
                               </div>
 
                               <div>
                                 {medic?.advice?.length > 0 && (
                                   <div>
-                                    <span className="font-semibold text-xs">Advice</span>
+                                    <span className="font-semibold text-xs">
+                                      Advice
+                                    </span>
                                     <div className="ps-5">
-                                      {medic.advice.map((item: any, inx: number) => (
-                                        <div
-                                          key={inx}
-                                          className="flex items-start justify-start gap-1 text-xs text-gray-700"
-                                        >
-                                          <span>
-                                            {inx + 1}. {item.description}
-                                          </span>
-                                        </div>
-                                      ))}
+                                      {medic.advice.map(
+                                        (item: any, inx: number) => (
+                                          <div
+                                            key={inx}
+                                            className="flex items-start justify-start gap-1 text-xs text-gray-700"
+                                          >
+                                            <span>
+                                              {inx + 1}. {item.description}
+                                            </span>
+                                          </div>
+                                        )
+                                      )}
                                     </div>
                                   </div>
                                 )}
 
                                 {medic?.nextVisit && (
                                   <div>
-                                    <span className="font-semibold text-xs">Next Visit</span>
-                                    <div className="ps-5 text-xs text-gray-700">{medic.nextVisit}</div>
+                                    <span className="font-semibold text-xs">
+                                      Next Visit
+                                    </span>
+                                    <div className="ps-5 text-xs text-gray-700">
+                                      {medic.nextVisit}
+                                    </div>
                                   </div>
                                 )}
                               </div>
@@ -269,7 +462,10 @@ const ViewPrescription = () => {
                       </div>
 
                       <img
-                        src={preManagementData?.data?.[0]?.footerImage}
+                        src={
+                          preManagementData?.data?.[0]?.footerImage ||
+                          "/placeholder.svg"
+                        }
                         alt=""
                       />
                     </div>
@@ -281,7 +477,7 @@ const ViewPrescription = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ViewPrescription
+export default ViewPrescription;

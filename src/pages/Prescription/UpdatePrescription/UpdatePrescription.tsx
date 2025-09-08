@@ -3,7 +3,6 @@ import { useEffect, useMemo } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
-import { Card } from "@/components/ui/card";
 import {
   useGetPerceptionBIdQuery,
   useUpdatePrescriptionMutation,
@@ -33,6 +32,19 @@ const UpdatePrescription = () => {
 
   useEffect(() => {
     if (prescriptionData && Object.keys(prescriptionData).length > 0) {
+      console.log("Prescription data loaded:", prescriptionData);
+      console.log(
+        "Medicines with dosageNotes:",
+        prescriptionData.medicines?.map((med: any) => ({
+          medicineName: med.medicineName,
+          DosageSchedule: med.DosageSchedule?.map((ds: any) => ({
+            dosage: ds.dosage,
+            day: ds.day,
+            dosageNotes: ds.dosageNotes,
+          })),
+        }))
+      );
+
       // Create a reference to store medicine content IDs
       const medicineContentIds: string[] = [];
 
@@ -64,7 +76,8 @@ const UpdatePrescription = () => {
         const contentId = medicineContentIds[index];
 
         // Set medicine name with content ID - just use the string value, not an object
-        (formValues as Record<string, any>)[`medicine-${contentId}`] = med.medicineName;
+        (formValues as Record<string, any>)[`medicine-${contentId}`] =
+          med.medicineName;
 
         // Set dosage schedules with content ID
         med.DosageSchedule.forEach((schedule: any, scheduleIndex: number) => {
@@ -80,6 +93,18 @@ const UpdatePrescription = () => {
           (formValues as Record<string, any>)[
             `${scheduleIndex + 1}-comment-${contentId}`
           ] = schedule.comment || "";
+
+          // Set dosageNotes if they exist
+          if (schedule.dosageNotes && schedule.dosageNotes.length > 0) {
+            console.log("Setting dosageNotes in form:", {
+              fieldName: `${scheduleIndex + 1}-dosageNotes-${contentId}`,
+              dosageNotes: schedule.dosageNotes,
+              schedule,
+            });
+            (formValues as Record<string, any>)[
+              `${scheduleIndex + 1}-dosageNotes-${contentId}`
+            ] = schedule.dosageNotes;
+          }
         });
       });
 
@@ -109,7 +134,10 @@ const UpdatePrescription = () => {
   }, [form, prescriptionData]);
 
   const onSubmit = async (data: any) => {
+    console.log(data, "this is data");
+
     const medicines: any[] = [];
+
     // Loop through each medicine
     Object.keys(data)
       .filter((key) => key.startsWith("medicine-"))
@@ -134,17 +162,31 @@ const UpdatePrescription = () => {
             const day = data[`${idx}-duration-${medicineIndex}`];
             const time = data[`${idx}-time-${medicineIndex}`];
             const comment = data[`${idx}-comment-${medicineIndex}`];
+            const dosageNotes = data[`${idx}-dosageNotes-${medicineIndex}`];
 
             // Skip completely empty schedule rows
-            if (!dosage && !day && !time && !comment) return null;
+            const hasDosageNotes =
+              dosageNotes &&
+              Array.isArray(dosageNotes) &&
+              dosageNotes.length > 0;
+            const hasRegularFields = dosage || day || time || comment;
 
-            return {
-              // id: crypto.randomUUID(),
-              dosage: dosage || "",
+            if (!hasDosageNotes && !hasRegularFields) return null;
+
+            const schedule: any = {
+              // For non-tablet/capsule medicines, don't include dosage if we have dosageNotes
+              dosage: hasDosageNotes ? "" : dosage || "",
               day: day || "",
               time: time || "",
               comment: comment || "",
             };
+
+            // Add dosageNotes if they exist
+            if (hasDosageNotes) {
+              schedule.dosageNotes = dosageNotes;
+            }
+
+            return schedule;
           })
           .filter(Boolean);
 
@@ -172,8 +214,9 @@ const UpdatePrescription = () => {
       medicines,
     };
 
-    const res = (await updatePrescription(transformedData)) as any;
+    console.log("Transformed data:", transformedData);
 
+    const res = (await updatePrescription(transformedData)) as any;
     if (res?.data?.message) {
       toast.success(res?.data?.message);
       navigate(`/dashboard/view-prescription/${prescriptionData?.patient?.id}`);
@@ -184,28 +227,52 @@ const UpdatePrescription = () => {
   };
 
   return (
-    <Card className="bg-[#f4f6f9] px-5 rounded-sm">
-      <BackButton className="w-24" />
-
-      <div className="p-5 bg-white">
-        <div className="pb-[30px]">
-          <img src={preManagementData?.data?.[0]?.headerImage} alt="" />
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-6">
+        <div className="mb-6">
+          <BackButton />
         </div>
-        <PatientInformation
-          patient={prescriptionData?.patient}
-          prescriptionId={prescriptionData?.prescriptionNo}
-        />
+        <div className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+          <div className="bg-white border-b border-gray-200 px-6 py-4">
+            <div className="flex items-center justify-center">
+              {preManagementData?.data?.[0]?.headerImage && (
+                <img
+                  src={
+                    preManagementData.data[0].headerImage || "/placeholder.svg"
+                  }
+                  alt="Clinic Header"
+                  className="object-contain"
+                />
+              )}
+            </div>
+          </div>
+          <div className="p-6 bg-blue-50">
+            <PatientInformation
+              patient={prescriptionData?.patient}
+              prescriptionId={prescriptionData?.prescriptionNo}
+            />
 
-        {/* FIXED: Wrap PrescriptionForm with FormProvider */}
-        <FormProvider {...form}>
-          <PrescriptionForm onSubmit={onSubmit} type="update" />
-        </FormProvider>
+            <FormProvider {...form}>
+              <PrescriptionForm onSubmit={onSubmit} type="update" />
+            </FormProvider>
+          </div>
 
-        <div className="pt-[30px]">
-          <img src={preManagementData?.data?.[0]?.footerImage} alt="" />
+          <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
+            <div className="flex items-center justify-center">
+              {preManagementData?.data?.[0]?.footerImage && (
+                <img
+                  src={
+                    preManagementData.data[0].footerImage || "/placeholder.svg"
+                  }
+                  alt="Clinic Footer"
+                  className="object-contain opacity-70"
+                />
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 

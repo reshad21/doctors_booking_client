@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState, useMemo, useEffect } from "react";
@@ -54,7 +55,6 @@ const MedicineSelect = ({
 
   useEffect(() => {
     const storedSearches = getStoredRecentSearches();
-    console.log("Loaded recent searches:", storedSearches);
     setRecentSearches(storedSearches);
   }, []);
 
@@ -216,7 +216,16 @@ const MedicineSelect = ({
       if (selected.medicineData && !selected.isRecent) {
         addToRecentSearches(selected.medicineData);
       }
-      field.onChange(selected.value);
+      // Store a sanitized object to avoid React nodes in form state
+      const sanitized = {
+        value: selected.value,
+        label:
+          (selected.medicineData && selected.medicineData.fullDisplayName) ||
+          (typeof selected.label === "string" ? selected.label : selected.value),
+        medicineData: selected.medicineData || null,
+      };
+      field.onChange(sanitized);
+      // field.onChange(selected.value);
     } else {
       field.onChange("");
     }

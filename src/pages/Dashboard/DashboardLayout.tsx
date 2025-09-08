@@ -7,13 +7,14 @@ import { AppSidebar } from "./_component/app-sidebar";
 import { sideNavMenu } from "@/context/Routes-sideNav";
 import { Link, Outlet } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Home} from "lucide-react";
+import { Home } from "lucide-react";
 import { useGetAdminByTokenQuery } from "@/redux/api/admin/admin";
 import { filterSideNavMenuByAccess } from "@/utils/filterSideNavMenu";
 import { useAppDispatch } from "@/redux/hooks";
 import { setPermissions } from "@/redux/api/features/permissionSlice";
 import { useEffect, useMemo } from "react";
 import type { PermissionItem } from "@/redux/api/features/permissionSlice";
+import onecare4u from "@/assets/onecare4u.png"
 
 export default function DashboardLayout() {
   const { data: adminDataFromApi, isLoading } = useGetAdminByTokenQuery({});
@@ -41,19 +42,23 @@ export default function DashboardLayout() {
   }, [dispatch, routeAccess]);
 
   if (isLoading) return null;
+  const date = new Date();
+  const year = date.getFullYear();
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="max-h-[100vh] bg-[#f4f6f9]">
       <AppSidebar sideNavMenu={filteredMenu} />
       <SidebarInset>
-        <header className="flex justify-between h-20 shrink-0 items-center gap-2 px-4 bg-gradient-to-r from-[#042F16] via-[#6F9975] to-[#14400D]">
+        <header className="sticky top-0 z-50 flex justify-between h-20 shrink-0 items-center gap-2 px-4 bg-gradient-to-r from-[#042F16] via-[#6F9975] to-[#14400D]">
           <SidebarTrigger className="-ml-1" />
-
-          <div className="flex items-center text-white">
+              <div className="text-white font-semibold bg-[#91c69d] bg-linear-to-r from-[#B0C6B5] to-[#91c69d] rounded-md h-[4.7rem]">
+                <img src={onecare4u} alt=""  className="w-64 h-[4.7rem]"/>
+              </div>
+          <div className="flex items-center text-[#E8E8E8] ">
             <Link to="/" target="_blank" rel="noopener noreferrer">
               <Button variant="ghost" className="cursor-pointer">
                 <Home className="w-4 h-4" />
-                <span>Home</span>
+                <span>Display Serial</span>
               </Button>
             </Link>
             {/* <DropdownMenu>
@@ -106,8 +111,15 @@ export default function DashboardLayout() {
           </div>
         </header>
 
-        <div className="bg-[#F4F6F9]">
+        <div className="">
           <Outlet />
+          <div className=" flex justify-center items-center py-2 font-semibold text-xs bg-[#F4F6F9]">
+            Technology Partner{" "}
+            <a href="https://mntechdigital.com/" className="px-1">
+              <u>MNTECH DIGITAL</u>
+            </a>{" "}
+            | @{year} OneCare4u{" "}
+          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>

@@ -3,20 +3,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useGetPatientSummaryQuery } from "@/redux/api/patient-summary/patient-summary";
 import { Users } from "lucide-react";
 import StatCard from "../_component/StatCard";
-import { useGetPatientQuery } from "@/redux/api/patient/patient";
-import TodayAppointments from "../_component/TodayAppointment";
 import { useAppSelector } from "@/redux/hooks";
 import LoadingSpinner from "@/loading/LoadingSpinner";
 import { useState } from "react";
 import { useGetChambersQuery } from "@/redux/api/chamber/chamber";
-
+import chambor from '@/assets/chambor.png'
+import CustomPieChartWith from "./_components/PieChart";
 const DoctorDashboard = () => {
   const [selectedChamber, setSelectedChamber] = useState("all");
   const { data: chambersData } = useGetChambersQuery({});
 
   const chambers = chambersData?.data?.map((item:any) =>({name:item?.name,id:item?.id})) || []
   
-  const today = new Date().toISOString().split("T")[0];
+  // const today = new Date().toISOString().split("T")[0];
   // const { data: patientSummaryData, isLoading: isPatientSummaryLoading } =
   //   useGetPatientSummaryQuery({ chamberId: selectedChamber });
   const { data: patientSummaryData, isLoading: isPatientSummaryLoading } =
@@ -24,25 +23,25 @@ const DoctorDashboard = () => {
     chamberId: selectedChamber,
     timezoneOffset: new Date().getTimezoneOffset()
   });
-  const { data: patientApiData, isLoading: isPatientLoading } =
-    useGetPatientQuery({
-      filter: JSON.stringify({
-          chamberId: selectedChamber == "all" ? {} : selectedChamber,
-          createdAt: today,
-          timezoneOffset: new Date().getTimezoneOffset()
-        }),
-      limit: 1000,
-    });
+  // const { data: patientApiData, isLoading: isPatientLoading } =
+    // useGetPatientQuery({
+    //   filter: JSON.stringify({
+    //       chamberId: selectedChamber == "all" ? {} : selectedChamber,
+    //       createdAt: today,
+    //       timezoneOffset: new Date().getTimezoneOffset()
+    //     }),
+    //   limit: 1000,
+    // });
   const doctor = useAppSelector((state) => state.admin);
-  const appointmentData =
-    patientApiData?.data?.data?.map((patient: any, index: number) => ({
-      sn: index + 1,
-      name: patient.name,
-      phone: patient.phoneNumber,
-      status: patient.visitStatus || "Unknown",
-    })) || [];
+  // const appointmentData =
+  //   patientApiData?.data?.data?.map((patient: any, index: number) => ({
+  //     sn: index + 1,
+  //     name: patient.name,
+  //     phone: patient.phoneNumber,
+  //     status: patient.visitStatus || "Unknown",
+  //   })) || [];
 
-  if (isPatientSummaryLoading || isPatientLoading) return <LoadingSpinner />;
+  if (isPatientSummaryLoading) return <LoadingSpinner />;
   const handleChamberChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedChamber(event.target.value);
   };
@@ -51,7 +50,7 @@ const DoctorDashboard = () => {
     <div>
       <main className="flex-1 p-6 mt-4 sm:mt-2 overflow-auto">
         {/* Welcome Section */}
-        <div className="flex items-center justify-between mb-8 bg-white p-4 lg:p-6 rounded-sm">
+        <div className="flex items-center justify-between mb-8 bg-white p-4 lg:p-6 rounded-sm shadow-sm">
           <div className="flex items-center space-x-4">
             <Avatar className="w-16 h-16">
               <AvatarImage
@@ -75,12 +74,12 @@ const DoctorDashboard = () => {
             </div>
           </div>
 
-          <div className="flex justify-center items-center gap-5 flex-row-reverse">
+          <div className="flex justify-center items-center gap-5 flex-row-reverse bg-gray-50 px-4 py-1 rounded-md">
             <div>
               <div className="mb-4">
                 <label
                   htmlFor="chamber-select"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm  text-gray-700 mb-2 font-semibold"
                 >
                   Select Chamber:
                 </label>
@@ -88,20 +87,22 @@ const DoctorDashboard = () => {
                   id="chamber-select"
                   value={selectedChamber}
                   onChange={handleChamberChange}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-brand focus:border-brand"
+                  className="w-full p-2 border text-gray-700 bg-gray-100 border-gray-200 rounded-md focus:ring-brand focus:border-brand"
                 >
                   {[{ id: "all", name: "All Chambers" },...chambers].map((chamber:any) => (
-                    <option key={chamber.id} value={chamber.id}>
+                    <option key={chamber.id} value={chamber.id} className="text-gray-500">
                       {chamber.name}
                     </option>
                   ))}
                 </select>
               </div>
             </div>
-            <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center">
+            {/* <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center">
               <div className="w-8 h-8 bg-black rounded transform rotate-45"></div>
-            </div>
+            </div> */}
+            <img src={chambor} alt="" className="w-20 bg-gray-300 p-1 rounded-md" />
           </div>
+          
         </div>
 
         {/* Stats Cards */}
@@ -115,7 +116,7 @@ const DoctorDashboard = () => {
             bgIconColor="bg-red-400"
             subtitleColor="text-red-100"
           />
-
+         
           <StatCard
             title="Today's Pending Appointment"
             value={patientSummaryData?.data?.todaysPendingPatients || 0}
@@ -148,9 +149,10 @@ const DoctorDashboard = () => {
             bgIconColor="bg-orange-400"
             subtitleColor="text-orange-100"
           /> */}
+          
         </div>
-
-        <TodayAppointments appointments={appointmentData} />
+             <CustomPieChartWith />
+        {/* <TodayAppointments appointments={appointmentData} /> */}
       </main>
     </div>
   );

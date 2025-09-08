@@ -57,7 +57,7 @@ const Patient = () => {
 
   return (
     <div className="custom-container">
-      <div className="w-full min-h-screen">
+      <div className="w-full">
         <div className="mb-4">
           <PatientHeaderSelect
             chambersData={chambersData?.data}
