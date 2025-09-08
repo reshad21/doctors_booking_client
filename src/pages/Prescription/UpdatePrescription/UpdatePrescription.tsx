@@ -30,8 +30,6 @@ const UpdatePrescription = () => {
     defaultValues: {},
   });
 
-  console.log(prescriptionData, "lakgalk");
-
   useEffect(() => {
     if (prescriptionData && Object.keys(prescriptionData).length > 0) {
       console.log("Prescription data loaded:", prescriptionData);
@@ -111,7 +109,6 @@ const UpdatePrescription = () => {
       });
 
       // Reset form with the new values
-      console.log("Form values being set:", formValues);
       form.reset(formValues);
 
       // Initialize MedicineForm with the medicine data

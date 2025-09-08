@@ -191,25 +191,14 @@ const DosageTimingRow = ({
     if (allDayInputOptions.length === 0 || allDayNameOptions.length === 0)
       return;
 
-    console.log("DosageTimingRow Debug:", {
-      isNonTabCap,
-      watchedDosageNotes,
-      dosageNotesFieldName,
-      medicineId,
-      count,
-      allDayInputOptions: allDayInputOptions.length,
-      allDayNameOptions: allDayNameOptions.length,
-    });
-
     if (
       watchedDosageNotes &&
       Array.isArray(watchedDosageNotes) &&
       watchedDosageNotes.length > 0
     ) {
-      const dosageNote = watchedDosageNotes[0]; // Take the first dosage note
-      console.log("Setting dosageNote values:", dosageNote);
+      const dosageNote = watchedDosageNotes[0];
 
-      isInitializingRef.current = true; // Prevent circular updates
+      isInitializingRef.current = true;
 
       // Set local state values
       if (dosageNote.qty) setQtyText(dosageNote.qty);
@@ -222,12 +211,7 @@ const DosageTimingRow = ({
         const unitOption = allDayInputOptions.find(
           (opt) => opt.value === dosageNote.unit
         );
-        console.log(
-          "Setting unit option:",
-          unitOption,
-          "for value:",
-          dosageNote.unit
-        );
+
         if (unitOption) {
           form.setValue(unitFieldName, unitOption.value, {
             shouldDirty: false,
@@ -239,12 +223,7 @@ const DosageTimingRow = ({
         const freqOption = allDayNameOptions.find(
           (opt) => opt.value === dosageNote.freqUnit
         );
-        console.log(
-          "Setting freq option:",
-          freqOption,
-          "for value:",
-          dosageNote.freqUnit
-        );
+
         if (freqOption) {
           form.setValue(frequencyFieldName, freqOption.value, {
             shouldDirty: false,

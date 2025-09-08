@@ -52,29 +52,7 @@ const CreatePrescription = () => {
     );
   }
 
-  // const onSubmit = async (data: any) => {
-  //   console.log("Raw form data:", data);
-
-  //   // try {
-  //   //   const res = (await createPrescription(transformedData)) as any;
-
-  //   //   if (res?.data?.message) {
-  //   //     toast.success(res?.data?.message);
-  //   //     navigate(`/dashboard/view-prescription/${patientId}`);
-  //   //     form.reset();
-  //   //   } else {
-  //   //     toast.error(res?.error?.data?.message || "Something went wrong");
-  //   //   }
-  //   // } catch (error) {
-  //   //   toast.error("An error occurred while creating the prescription");
-  //   //   console.error("Prescription creation error:", error);
-  //   // }
-  // };
-
   const onSubmit = async (data: any) => {
-    console.log("Raw form data:", data);
-
-    // Step 1: collect medicine entries
     const medicineEntries = Object.entries(data)
       .filter(([key]) => key.startsWith("medicine-"))
       .map(([key, value]) => ({
