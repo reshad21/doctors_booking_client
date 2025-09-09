@@ -49,18 +49,13 @@ export default function PatientCallingDisplay() {
     }),
     orderBy: JSON.stringify({ createdAt: "asc" }),
   });
-
   const patients: Patient[] = patientApiData?.data?.data || [];
-  console.log(patients);
-
   const outdoorPatients = patients.filter((p) => p?.status !== "REPORT");
   const reportPatients = patients.filter((p) => p?.status === "REPORT");
   const activeVideos = useMemo(
     () => videoData?.data?.filter((v: any) => v.status === "ACTIVE") || [],
     [videoData]
   );
-
-  console.log(outdoorPatients, "outdoorPatients");
 
   // Filter out ended patients AND patients where isArrived is true
   const filteredOutdoorPatients = outdoorPatients.filter(
@@ -100,6 +95,7 @@ export default function PatientCallingDisplay() {
       !visibleOutdoorPatients.some((vp) => vp.id === p.id) &&
       p.visitStatus != "VISITED"
   );
+console.log(filteredOutdoorPatients,"filteredOutdoorPatients");
 
   const filteredReportPatients = reportPatients.filter(
     (p) => !endedSerials.includes(p.id) && p.visitStatus != "VISITED"
