@@ -158,11 +158,6 @@ const CreatePrescription = () => {
 
     console.log("Transformed data:", transformedData);
 
-    if (transformedData.medicines.length === 0) {
-      toast.error("Please add at least one medicine with dosage information");
-      return;
-    }
-
     try {
       const res = (await createPrescription(transformedData)) as any;
 
