@@ -27,11 +27,13 @@ import { Input } from "@/components/ui/input";
 
 interface AppointmentTableProps {
   patients: Patient[];
+  meta:any;
   deletePatient: (id: string) => void;
 }
 
 const AppointmentTable = ({
   patients,
+  meta,
   deletePatient,
 }: AppointmentTableProps) => {
   const [updateIsArrivedPatient] = useUpdateIsArrivedPatientMutation();
@@ -122,7 +124,7 @@ const AppointmentTable = ({
               key={patient.id}
               className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
             >
-              <TableCell className="font-medium pl-4">{index + 1}</TableCell>
+              <TableCell className="font-medium pl-4">{(meta?.currentPage - 1) * 10 + (index + 1)}</TableCell>
               <TableCell>
                 <div className="flex flex-col">
                   <span className="font-medium">{patient.name || "N/A"}</span>
