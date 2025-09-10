@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 import BaseSelect from "@/components/shared/BaseSelect";
 import BaseInput from "@/components/shared/BaseInput";
 import type { Chamber } from "@/types/chamber.types";
+import { useEffect } from "react";
 
 interface FormData {
   startDate: string;
@@ -21,7 +22,11 @@ interface HeaderSelectProps {
     endDate: string;
     chamber: string;
   };
-  onChange: (val: { startDate: string; endDate: string; chamber: string }) => void;
+  onChange: (val: {
+    startDate: string;
+    endDate: string;
+    chamber: string;
+  }) => void;
 }
 
 const PatientHeaderSelect: React.FC<HeaderSelectProps> = ({
@@ -37,20 +42,31 @@ const PatientHeaderSelect: React.FC<HeaderSelectProps> = ({
     },
   });
 
+  // Update form when selected values change externally (e.g., from Redux)
+  useEffect(() => {
+    methods.reset({
+      startDate: selected.startDate || "",
+      endDate: selected.endDate || "",
+      chamber: selected.chamber || "",
+    });
+  }, [selected, methods]);
+
   const chamberOptions = (chambersData || []).map((chamber: Chamber) => ({
     name: chamber.name,
-    val: chamber.id,
+    value: chamber.id, // Changed from 'val' to 'value' for consistency
   }));
 
   // Handle send button click
   const handleSend = methods.handleSubmit((data) => {
     onChange(data);
+    // Don't reset here - let the parent component manage the state
   });
 
   // Handle cross button click
   const handleClose = () => {
-    methods.reset();
-    onChange({ startDate: "", endDate: "", chamber: "" });
+    const clearedData = { startDate: "", endDate: "", chamber: "" };
+    onChange(clearedData);
+    // The useEffect will handle resetting the form when selected changes
   };
 
   return (
@@ -82,11 +98,9 @@ const PatientHeaderSelect: React.FC<HeaderSelectProps> = ({
             <span className="block text-sm mb-1 font-medium">Chamber</span>
             <BaseSelect
               name="chamber"
-              options={chamberOptions.map((chamber) => ({
-                name: chamber.name,
-                value: chamber.val,
-              }))}
+              options={chamberOptions}
               className="w-full border-[#A0B19E] rounded-[4px] !h-10 border text-[#5F597480] bg-slate-50"
+              // Remove the value prop - let react-hook-form manage it internally
             />
           </div>
           <div className="flex gap-2 justify-end sm:justify-start sm:flex-shrink-0 sm:self-end">

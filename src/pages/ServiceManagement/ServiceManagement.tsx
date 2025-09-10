@@ -3,17 +3,25 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
 export default function ServiceManagement() {
-   const [visits,setVisits] = useState([])
+  const [visits, setVisits] = useState([]);
   const methods = useForm();
-  const chamber =  methods.watch("chamber")
+  // const chamber = methods.watch("chamber");
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
     chamber: "",
   });
+
+  const pageKey = "service-management";
+  const chamber = useAppSelector(
+    (state) => state.chamber.selectedByPage[pageKey] || ""
+  );
+
+  const dispatch = useAppDispatch();
+
   const buildFilter = () => {
     const f: Record<string, any> = {};
-    // if (filters.chamber) f.chamberId = filters.chamber;
+    if (filters.chamber) f.chamberId = filters.chamber;
     if (filters.startDate) f.startDate = filters.startDate;
     if (filters.endDate) f.endDate = filters.endDate;
     return JSON.stringify(f);
@@ -24,19 +32,19 @@ export default function ServiceManagement() {
   });
   const { data: chambersData, isLoading: isChamberLoading } =
     useGetChambersQuery({});
-  // let visits; 
-      useEffect(() => {
-  if (!visit.data?.data) {
-    setVisits([]);
-    return;
-  }
+  // let visits;
+  useEffect(() => {
+    if (!visit.data?.data) {
+      setVisits([]);
+      return;
+    }
 
-  const filtered = chamber
-    ? visit.data.data.filter((v: any) => v?.patient?.chamberId === chamber)
-    : visit.data.data;
+    const filtered = chamber
+      ? visit.data.data.filter((v: any) => v?.patient?.chamberId === chamber)
+      : visit.data.data;
 
-  setVisits(filtered);
-}, [chamber, visit.data?.data]);
+    setVisits(filtered);
+  }, [chamber, visit.data?.data]);
 
   // Filter visits based on filters
   const filteredVisits = visits.filter((v: any) => {
@@ -216,12 +224,16 @@ export default function ServiceManagement() {
               </label>
               <BaseSelect
                 name="chamber"
+                value={chamber}
                 options={chamberOptions.map(
                   (chamber: { name: string; val: string }) => ({
                     name: chamber.name,
                     value: chamber.val,
                   })
                 )}
+                onChange={(val) =>
+                  dispatch(setChamber({ page: pageKey, chamberId: val }))
+                }
                 className="w-full border-[#A0B19E] rounded-[4px] !h-10 border text-[#5F597480] bg-slate-50"
               />
             </div>
@@ -244,6 +256,7 @@ export default function ServiceManagement() {
                     endDate: "",
                     chamber: "",
                   });
+                  dispatch(clearChamber({ page: pageKey }));
                 }}
               >
                 <X className="h-4 w-4" />
@@ -281,10 +294,12 @@ import { useGetVisitsQuery } from "@/redux/api/visit/visit";
 import { useGetChambersQuery } from "@/redux/api/chamber/chamber";
 import BaseSelect from "@/components/shared/BaseSelect";
 import type { Chamber } from "@/types/chamber.types";
-import { FormProvider, useForm,  } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import BaseInput from "@/components/shared/BaseInput";
 import { useEffect, useRef, useState } from "react";
 import LoadingSpinner from "@/loading/LoadingSpinner";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { clearChamber, setChamber } from "@/redux/slices/chamberSlice";
 
 interface HistoryCardProps {
   title: string;

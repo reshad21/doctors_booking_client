@@ -7,6 +7,9 @@ import { X } from "lucide-react";
 import BaseSelect from "@/components/shared/BaseSelect";
 import BaseInput from "@/components/shared/BaseInput";
 import type { Chamber } from "@/types/chamber.types";
+import { clearChamber } from "@/redux/slices/chamberSlice";
+import { useAppDispatch } from "@/redux/hooks";
+import { useEffect } from "react";
 
 interface FormData {
   date: string;
@@ -27,12 +30,21 @@ const HeaderSelect: React.FC<HeaderSelectProps> = ({
   selected,
   onChange,
 }) => {
+  const dispatch = useAppDispatch();
   const methods = useForm<FormData>({
     defaultValues: {
       date: selected.date || "",
       chamber: selected.chamber || "",
     },
   });
+
+  // Update form values when selected prop changes
+  useEffect(() => {
+    methods.reset({
+      date: selected.date || "",
+      chamber: selected.chamber || "",
+    });
+  }, [selected.date, selected.chamber, methods]);
 
   const chamberOptions = (chambersData || []).map((chamber: Chamber) => ({
     name: chamber.name,
@@ -46,8 +58,9 @@ const HeaderSelect: React.FC<HeaderSelectProps> = ({
 
   // Handle cross button click
   const handleClose = () => {
-    methods.reset();
+    methods.reset({ date: "", chamber: "" });
     onChange({ date: "", chamber: "" });
+    dispatch(clearChamber({ page: "appointment-management" }));
   };
 
   return (
@@ -68,6 +81,7 @@ const HeaderSelect: React.FC<HeaderSelectProps> = ({
           <div className="flex-1 min-w-0">
             <span className="block text-sm mb-1 font-medium">Chamber</span>
             <BaseSelect
+              key={selected.chamber} // Force re-render when chamber changes
               name="chamber"
               options={chamberOptions.map((chamber) => ({
                 name: chamber.name,

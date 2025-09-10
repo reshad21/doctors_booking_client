@@ -12,6 +12,8 @@ import ExportDropdown from "@/components/shared/ExportDropdown";
 import LoadingSpinner from "@/loading/LoadingSpinner";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Info } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { clearChamber, setChamber } from "@/redux/slices/chamberSlice";
 
 const Patient = () => {
   const [deletePatient] = useDeletePatientMutation();
@@ -26,6 +28,11 @@ const Patient = () => {
     endDate: "",
     chamber: "",
   });
+  const pageKey = "patient-management";
+  const chamber = useAppSelector(
+    (state) => state.chamber.selectedByPage[pageKey] || ""
+  );
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -40,20 +47,18 @@ const Patient = () => {
     limit,
     searchTerm,
     filter: JSON.stringify({
-      chamberId: headerSelect.chamber || undefined,
+      chamberId: chamber || undefined,
       startDate: headerSelect.startDate || undefined,
       endDate: headerSelect.endDate || undefined,
-      timezoneOffset: new Date().getTimezoneOffset()
+      timezoneOffset: new Date().getTimezoneOffset(),
     }),
     orderBy: JSON.stringify({ createdAt: "asc" }),
   });
 
   if (isLoading || isChamberLoading) return <LoadingSpinner />;
 
-
   //  const patients = [...(patientsData?.data?.data || [])]?.sort((a, b) => a.time - b.time);
   //  console.log(patients,"patients");
-   
 
   return (
     <div className="custom-container">
@@ -61,10 +66,20 @@ const Patient = () => {
         <div className="mb-4">
           <PatientHeaderSelect
             chambersData={chambersData?.data}
-            selected={headerSelect}
+            selected={{
+              startDate: headerSelect.startDate,
+              endDate: headerSelect.endDate,
+              chamber: chamber, // <- comes from Redux
+            }}
+            // selected={headerSelect}
             onChange={(val) => {
               setHeaderSelect(val);
               setPage(1);
+              if (val.chamber) {
+                dispatch(setChamber({ page: pageKey, chamberId: val.chamber }));
+              } else {
+                dispatch(clearChamber({ page: pageKey }));
+              }
             }}
           />
         </div>

@@ -21,6 +21,8 @@ interface BaseSelectProps {
   label?: string;
   options: { name: string; value: string | number }[];
   className?: string;
+  onChange?: (value: string) => void;
+  value?: string;
 }
 
 const BaseSelect: React.FC<BaseSelectProps> = ({
@@ -28,6 +30,8 @@ const BaseSelect: React.FC<BaseSelectProps> = ({
   label,
   options,
   className,
+  onChange,
+  value,
 }) => {
   const { control } = useFormContext();
 
@@ -39,7 +43,13 @@ const BaseSelect: React.FC<BaseSelectProps> = ({
         <FormItem>
           {label && <FormLabel>{label}</FormLabel>}
           <FormControl>
-            <Select onValueChange={field.onChange} value={field.value || ""}>
+            <Select
+              onValueChange={(value) => {
+                field.onChange(value);
+                if (onChange) onChange(value);
+              }}
+              value={value || field.value || ""}
+            >
               <SelectTrigger className={cn("!h-12", className)}>
                 <SelectValue placeholder="Select an option" />
               </SelectTrigger>

@@ -11,17 +11,24 @@ import BaseSelect from "@/components/shared/BaseSelect";
 import type { Chamber } from "@/types/chamber.types";
 import LoadingSpinner from "@/loading/LoadingSpinner";
 import { useForm, FormProvider, useWatch } from "react-hook-form";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { setChamber } from "@/redux/slices/chamberSlice";
 
 const Prescription = () => {
+  const pageKey = "prescription";
   const { data: chambersData, isLoading } = useGetChambersQuery({});
   const today = new Date().toISOString().split("T")[0];
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [limit] = useState(10);
+  const chamber = useAppSelector(
+    (state) => state.chamber.selectedByPage[pageKey] || ""
+  );
+  const dispatch = useAppDispatch();
 
   const methods = useForm({
     defaultValues: {
-      chamber: "",
+      chamber: chamber || "",
       date: today,
     },
   });
@@ -34,7 +41,7 @@ const Prescription = () => {
     limit,
     searchTerm,
     filter: JSON.stringify({
-      chamberId: headerSelect?.chamber || undefined,
+      chamberId: chamber || undefined,
       createdAt: headerSelect?.date || today,
       timezoneOffset: new Date().getTimezoneOffset(),
     }),
@@ -75,6 +82,9 @@ const Prescription = () => {
                       name: chamber.name,
                       value: chamber.val,
                     }))}
+                    onChange={(val) =>
+                      dispatch(setChamber({ page: pageKey, chamberId: val }))
+                    }
                     className="w-full border-[#A0B19E] rounded-[4px] !h-9 border text-[#5F597480]"
                   />
                 </div>
