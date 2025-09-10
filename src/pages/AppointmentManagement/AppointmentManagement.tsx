@@ -30,7 +30,7 @@ const AppointmentManagement = () => {
   const doctorId = useAppSelector((state) => state.admin.id);
   const doctorName = useAppSelector((state) => state.admin.name);
   const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const [limit] = useState(20);
   const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [headerSelect, setHeaderSelect] = useState({ date: "", chamber: "" });
@@ -188,6 +188,7 @@ const AppointmentManagement = () => {
           {patientsData?.data?.data && patientsData?.data?.data?.length > 0 ? (
             <AppointmentTable
               patients={patientsData?.data?.data}
+              meta={patientsData?.data?.meta}
               deletePatient={deletePatient}
             />
           ) : (

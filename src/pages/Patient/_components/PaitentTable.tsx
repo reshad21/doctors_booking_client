@@ -18,10 +18,11 @@ import { useNavigate } from "react-router-dom";
 
 interface PatientTableProps {
   patients: Patient[];
+  meta:any;
   deletePatient: (id: string) => void;
 }
 
-const PatientTable = ({ patients, deletePatient }: PatientTableProps) => {
+const PatientTable = ({ patients, deletePatient,meta }: PatientTableProps) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const navigate = useNavigate();
@@ -48,7 +49,6 @@ const patientsData = [...(patients || [])].sort(
 );
 
  
- 
   return (
     <div>
       <Table className="no-border">
@@ -74,12 +74,14 @@ const patientsData = [...(patients || [])].sort(
           </TableRow>
         </TableHeader>
         <TableBody>
-          {patientsData?.map((patient: Patient, index: number) => (
+          {patientsData?.map((patient: Patient, index: number) => 
+          {
+            return(
             <TableRow
               key={patient.id}
               className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
             >
-              <TableCell className="font-medium pl-4">{index + 1}</TableCell>
+              <TableCell className="font-medium pl-4">{(meta?.currentPage - 1) * 10 + (index + 1)}</TableCell>
               <TableCell>
                 <div className="flex flex-col">
                   <span className="font-medium">{patient.name || "N/A"}</span>
@@ -144,7 +146,8 @@ const patientsData = [...(patients || [])].sort(
                 </div>
               </TableCell>
             </TableRow>
-          ))}
+          )
+          })}
         </TableBody>
       </Table>
 

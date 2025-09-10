@@ -50,10 +50,8 @@ const Patient = () => {
 
   if (isLoading || isChamberLoading) return <LoadingSpinner />;
 
+console.log();
 
-  //  const patients = [...(patientsData?.data?.data || [])]?.sort((a, b) => a.time - b.time);
-  //  console.log(patients,"patients");
-   
 
   return (
     <div className="custom-container">
@@ -82,6 +80,11 @@ const Patient = () => {
               ]}
             />
           </div>
+          <div className="bg-gray-100 text-xs px-2 py-1 text-black rounded-sm">
+            {" "}
+            <span className="text-xs">Total-present :</span>{" "}
+            {patientsData?.data?.meta?.totalItems}
+          </div>
           <Input
             className="w-80 rounded"
             placeholder="Search"
@@ -94,6 +97,7 @@ const Patient = () => {
           {patientsData?.data?.data && patientsData.data.data.length > 0 ? (
             <PatientTable
               patients={patientsData.data.data}
+              meta={patientsData?.data?.meta}
               deletePatient={deletePatient}
             />
           ) : (
