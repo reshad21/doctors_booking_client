@@ -15,6 +15,7 @@ import { UpdatePatientModal } from "./UpdatePatientModal";
 import { useState } from "react";
 import {
   useUpdateIsArrivedPatientMutation,
+  useUpdatePatientAmountMutation,
   useUpdatePatientMutation,
 } from "@/redux/api/patient/patient";
 import { useAppDispatch } from "@/redux/hooks";
@@ -22,6 +23,7 @@ import { useSelector } from "react-redux";
 import { toggleSerial, endSerial } from "@/redux/api/features/serialSlice";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface AppointmentTableProps {
   patients: Patient[];
@@ -33,6 +35,7 @@ const AppointmentTable = ({
   deletePatient,
 }: AppointmentTableProps) => {
   const [updateIsArrivedPatient] = useUpdateIsArrivedPatientMutation();
+  const [updatePatientAmount] = useUpdatePatientAmountMutation();
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [modalDataToUpdate, setModalDataToUpdate] = useState<Patient | null>(
     null
@@ -48,11 +51,11 @@ const AppointmentTable = ({
   };
 
   const handleVisitChange = async (id: string, visitStatus: string) => {
-    const arrivedStatus = visitStatus == "VISITED" ? true : false
+    const arrivedStatus = visitStatus == "VISITED" ? true : false;
     try {
       await updatePatient({
         id,
-        payload: { visitStatus ,isArrived:arrivedStatus},
+        payload: { visitStatus, isArrived: arrivedStatus },
       });
       toast.success("Visit status updated successfully");
     } catch (error) {
@@ -75,6 +78,19 @@ const AppointmentTable = ({
   const patientsData = [...(patients || [])]?.sort(
     (a: any, b: any) => a.time - b.time
   );
+  const handleSendToDB = async (value: string, patientId: string) => {
+    const res = (await updatePatientAmount({
+      discountAmount: Number(value),
+      id: patientId,
+    })) as any;
+    console.log(res?.data?.message);
+    if (res?.data?.message) {
+      toast.success(res?.data?.message);
+    } else {
+      toast.error(res?.data?.error?.data?.message);
+    }
+  };
+
   return (
     <div>
       <Table className="no-border">
@@ -84,6 +100,7 @@ const AppointmentTable = ({
               "SN",
               "Patient Name",
               "Patient Status",
+              "Discount-Amount",
               "Payment",
               "Visited",
               "Patient Calling",
@@ -116,6 +133,20 @@ const AppointmentTable = ({
               </TableCell>
               <TableCell className="text-[#5C727D] capitalize space-x-2">
                 {patient.status ? patient.status.toLowerCase() : "N/A"}
+              </TableCell>
+              <TableCell className="text-[#5C727D] capitalize space-x-2">
+                <Input
+                  type="number"
+                  className="w-28 rounded"
+                  defaultValue={patient?.discountAmount}
+                  placeholder="Search"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const value = (e.target as HTMLInputElement).value;
+                      handleSendToDB(value, patient.id);
+                    }
+                  }}
+                />
               </TableCell>
               <TableCell className="text-[#5C727D] space-x-2">
                 <TableCell className="text-[#5C727D] space-x-2">
