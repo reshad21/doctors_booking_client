@@ -167,6 +167,19 @@ export default function ServiceManagement() {
         },
       ],
     },
+    {
+      title: "Discount Given",
+      from: dateDisplay.from,
+      to: dateDisplay.to,
+      stats: [
+        // { label: "Report", value: reportPatientCount },
+        { label: "Visited", value: reportPatientCount },
+        {
+          label: "Total Discount Given",
+          value: `${totalNewVisitsDiscount + totalOldVisitsDiscount + totalReportVisitsDiscount}TK`,
+        },
+      ],
+    },
   ];
 
   if (isChamberLoading) return <LoadingSpinner />;
