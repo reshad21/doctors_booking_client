@@ -3,14 +3,22 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
 export default function ServiceManagement() {
+  const today = new Date();
+const year = today.getFullYear();
+const month = String(today.getMonth() + 1).padStart(2, "0");
+const day = String(today.getDate()).padStart(2, "0");
+
+const getToday = `${year}-${month}-${day}`
    const [visits,setVisits] = useState([])
   const methods = useForm();
   const chamber =  methods.watch("chamber")
   const [filters, setFilters] = useState({
-    startDate: "",
+    startDate: getToday,
     endDate: "",
     chamber: "",
   });
+  console.log(filters?.startDate);
+  
   const buildFilter = () => {
     const f: Record<string, any> = {};
     // if (filters.chamber) f.chamberId = filters.chamber;
