@@ -115,6 +115,7 @@ const Prescription = () => {
             active={patients?.data?.meta?.currentPage || 1}
             totalPages={patients.data.meta.totalPages || 1}
             onPageChange={setPage}
+            meta={patients?.data?.meta}
           />
         ) : (
           <EmptyState
