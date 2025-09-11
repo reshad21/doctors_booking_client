@@ -81,12 +81,17 @@ const HeaderSelect: React.FC<HeaderSelectProps> = ({
           <div className="flex-1 min-w-0">
             <span className="block text-sm mb-1 font-medium">Chamber</span>
             <BaseSelect
-              key={selected.chamber} // Force re-render when chamber changes
+              key={selected.chamber}
               name="chamber"
+              value={selected.chamber}
               options={chamberOptions.map((chamber) => ({
                 name: chamber.name,
                 value: chamber.val,
               }))}
+              onChange={(val) => {
+                methods.setValue("chamber", val);
+                handleSend();
+              }}
               className="w-full border-[#A0B19E] rounded-[4px] !h-10 border text-[#5F597480] bg-slate-50"
             />
           </div>

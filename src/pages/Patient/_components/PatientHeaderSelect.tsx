@@ -100,7 +100,11 @@ const PatientHeaderSelect: React.FC<HeaderSelectProps> = ({
               name="chamber"
               options={chamberOptions}
               className="w-full border-[#A0B19E] rounded-[4px] !h-10 border text-[#5F597480] bg-slate-50"
-              // Remove the value prop - let react-hook-form manage it internally
+              onChange={(val) => {
+                methods.setValue("chamber", val);
+                handleSend();
+              }}
+              value={selected.chamber}
             />
           </div>
           <div className="flex gap-2 justify-end sm:justify-start sm:flex-shrink-0 sm:self-end">
