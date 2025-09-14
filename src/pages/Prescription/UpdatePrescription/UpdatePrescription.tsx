@@ -93,6 +93,7 @@ const UpdatePrescription = () => {
           (formValues as Record<string, any>)[
             `${scheduleIndex + 1}-comment-${contentId}`
           ] = schedule.comment || "";
+          console.log(schedule, "schedule")
 
           // Set dosageNotes if they exist
           if (schedule.dosageNotes && schedule.dosageNotes.length > 0) {

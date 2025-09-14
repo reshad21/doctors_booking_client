@@ -28,20 +28,19 @@ const Prescription = () => {
 
   const methods = useForm({
     defaultValues: {
-      chamber: chamber || "",
+      chamber: chamber || "all", // set "all" as default
       date: today,
     },
   });
 
   // 🔑 Watch chamber & date from form
   const headerSelect = useWatch({ control: methods.control });
-
   const { data: patients, isLoading: patientsLoading } = useGetPatientQuery({
     page,
     limit,
     searchTerm,
     filter: JSON.stringify({
-      chamberId: chamber || undefined,
+      chamberId: chamber && chamber !== "all" ? chamber : undefined, // only filter if not "all"
       createdAt: headerSelect?.date || today,
       timezoneOffset: new Date().getTimezoneOffset(),
     }),
@@ -49,11 +48,13 @@ const Prescription = () => {
   });
 
   if (isLoading || patientsLoading) return <LoadingSpinner />;
-
-  const chamberOptions = (chambersData?.data || []).map((chamber: Chamber) => ({
-    name: chamber.name,
-    val: chamber.id,
-  }));
+  const chamberOptions = [
+    { name: "All Chambers", value: "all" }, // default option
+    ...(chambersData?.data || []).map((chamber: Chamber) => ({
+      name: chamber.name,
+      value: chamber.id,
+    })),
+  ];
 
   return (
     <div className="custom-container">
@@ -80,7 +81,7 @@ const Prescription = () => {
                     name="chamber"
                     options={chamberOptions.map((chamber: any) => ({
                       name: chamber.name,
-                      value: chamber.val,
+                      value: chamber.value,
                     }))}
                     onChange={(val) =>
                       dispatch(setChamber({ page: pageKey, chamberId: val }))

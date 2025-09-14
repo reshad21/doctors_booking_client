@@ -1,4 +1,3 @@
-// src/redux/slices/chamberSlice.ts
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 interface ChamberState {

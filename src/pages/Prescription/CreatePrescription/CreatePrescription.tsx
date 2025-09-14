@@ -27,9 +27,7 @@ const CreatePrescription = () => {
   });
 
   // Only generate prescription ID when patient data is available
-  const prescriptionId = patientData?.data?.id
-    ? generatePrescriptionId(patientData.data.id)
-    : null;
+  const prescriptionId = generatePrescriptionId()
 
   if (isPatientLoading || !prescriptionId) {
     return (
