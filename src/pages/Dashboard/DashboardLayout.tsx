@@ -5,22 +5,25 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "./_component/app-sidebar";
 import { sideNavMenu } from "@/context/Routes-sideNav";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Home } from "lucide-react";
+import { ChevronDown, Home, KeyRound, LogOut, User } from "lucide-react";
 import { useGetAdminByTokenQuery } from "@/redux/api/admin/admin";
 import { filterSideNavMenuByAccess } from "@/utils/filterSideNavMenu";
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setPermissions } from "@/redux/api/features/permissionSlice";
 import { useEffect, useMemo } from "react";
 import type { PermissionItem } from "@/redux/api/features/permissionSlice";
-import onecare4u from "@/assets/onecare4u.png"
+// import onecare4u from "@/assets/onecare4u.png"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { HandelLogout } from "@/lib/HandelLogout";
 
 export default function DashboardLayout() {
   const { data: adminDataFromApi, isLoading } = useGetAdminByTokenQuery({});
   const dispatch = useAppDispatch();
-  // const navigate = useNavigate();
-  // const doctor = useAppSelector((state) => state.admin);
+  const navigate = useNavigate();
+  const doctor = useAppSelector((state) => state.admin);
 
   const routeAccess: PermissionItem[] = useMemo(
     () =>
@@ -51,9 +54,9 @@ export default function DashboardLayout() {
       <SidebarInset>
         <header className="sticky top-0 z-50 flex justify-between h-20 shrink-0 items-center gap-2 px-4 bg-gradient-to-r from-[#042F16] via-[#6F9975] to-[#14400D]">
           <SidebarTrigger className="-ml-1" />
-              <div className="text-white font-semibold bg-[#91c69d] bg-linear-to-r from-[#B0C6B5] to-[#91c69d] rounded-md h-[4.7rem]">
+              {/* <div className="text-white font-semibold bg-[#91c69d] bg-linear-to-r from-[#B0C6B5] to-[#91c69d] rounded-md h-[4.7rem]">
                 <img src={onecare4u} alt=""  className="w-64 h-[4.7rem]"/>
-              </div>
+              </div> */}
           <div className="flex items-center text-[#E8E8E8] ">
             <Link to="/" target="_blank" rel="noopener noreferrer">
               <Button variant="ghost" className="cursor-pointer">
@@ -61,7 +64,7 @@ export default function DashboardLayout() {
                 <span>Display Serial</span>
               </Button>
             </Link>
-            {/* <DropdownMenu>
+            <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="text-white cursor-pointer">
                   <div className="flex items-center space-x-1 ">
@@ -107,7 +110,7 @@ export default function DashboardLayout() {
                   Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu> */}
+            </DropdownMenu>
           </div>
         </header>
 

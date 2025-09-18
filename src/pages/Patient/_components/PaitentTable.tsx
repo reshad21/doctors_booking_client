@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Eye, FileText } from "lucide-react";
+import { Eye, FileText, SquarePen } from "lucide-react";
 import ConfirmAlert from "@/components/shared/ConfirmAlert";
 import type { Patient } from "@/types/patient.types";
 import formatDateToReadable from "@/utils/formateDateToReveal";
@@ -15,14 +15,20 @@ import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import PatientModal from "./PatientModal";
 import { useNavigate } from "react-router-dom";
+import { UpdatePatientModal } from "@/pages/AppointmentManagement/_components/UpdatePatientModal";
 
 interface PatientTableProps {
   patients: Patient[];
+  meta: any;
   deletePatient: (id: string) => void;
 }
 
-const PatientTable = ({ patients, deletePatient }: PatientTableProps) => {
+const PatientTable = ({ patients, deletePatient, meta }: PatientTableProps) => {
   const [showModal, setShowModal] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [modalDataToUpdate, setModalDataToUpdate] = useState<Patient | null>(
+    null
+  );
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const navigate = useNavigate();
 
@@ -31,6 +37,10 @@ const PatientTable = ({ patients, deletePatient }: PatientTableProps) => {
     setShowModal(true);
   };
 
+  const handleUpdateClick = (patient: Patient) => {
+    setModalDataToUpdate(patient);
+    setUpdateModalOpen(true);
+  };
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedPatient(null);
@@ -39,16 +49,13 @@ const PatientTable = ({ patients, deletePatient }: PatientTableProps) => {
   const handleViewPrescriptions = (patientId: string) => {
     navigate(`/dashboard/view-prescription/${patientId}`);
   };
-const patientsData = [...(patients || [])].sort(
-  (a: any, b: any) => {
-    const dateDiff = new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  const patientsData = [...(patients || [])].sort((a: any, b: any) => {
+    const dateDiff =
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     if (dateDiff !== 0) return dateDiff;
     return Number(b.time) - Number(a.time);
-  }
-);
+  });
 
- 
- 
   return (
     <div>
       <Table className="no-border">
@@ -74,80 +81,96 @@ const patientsData = [...(patients || [])].sort(
           </TableRow>
         </TableHeader>
         <TableBody>
-          {patientsData?.map((patient: Patient, index: number) => (
-            <TableRow
-              key={patient.id}
-              className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
-            >
-              <TableCell className="font-medium pl-4">{index + 1}</TableCell>
-              <TableCell>
-                <div className="flex flex-col">
-                  <span className="font-medium">{patient.name || "N/A"}</span>
-                  <span className="text-xs text-[#5C727D]">
-                    {patient.phoneNumber}
-                  </span>
-                </div>
-              </TableCell>
-              <TableCell className="text-[#5C727D] space-x-2">
-                {formatDateToReadable(patient.createdAt) || "N/A"}
-              </TableCell>
-              <TableCell className="text-[#5C727D] capitalize space-x-2">
-                {patient.status ? patient.status.toLowerCase() : "N/A"}
-              </TableCell>
-              <TableCell className="text-[#5C727D] space-x-2">
-                {patient.visitStatus === "VISITED" ? (
-                  <Badge className="bg-[#14400D] rounded">Offline Paid</Badge>
-                ) : (
-                  <Badge className="bg-red-400 rounded">Unpaid</Badge>
-                )}
-              </TableCell>
-              <TableCell>
-                <span className="border rounded text-xs bg-[#14400D] text-white p-1 capitalize focus:outline-none">
-                  {{
-                    VISITED: "Visited",
-                    NOT_VISITED: "Not Visited",
-                  }[patient?.visitStatus ?? ""] || "N/A"}
-                </span>
-              </TableCell>
-              <TableCell className="text-center">
-                {patient.prescription && patient.prescription.length > 0 ? (
-                  <div
-                    className="flex items-center justify-center gap-1 cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-colors"
-                    onClick={() => handleViewPrescriptions(patient.id)}
-                    title={`View ${patient.prescription.length} prescription(s)`}
-                  >
-                    <FileText className="h-4 w-4 text-[#14400D]" />
-                    <span className="text-[#14400D] font-medium">
-                      {patient.prescription.length}
+          {patientsData?.map((patient: Patient, index: number) => {
+            return (
+              <TableRow
+                key={patient.id}
+                className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
+              >
+                <TableCell className="font-medium pl-4">
+                  {(meta?.currentPage - 1) * 10 + (index + 1)}
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{patient.name || "N/A"}</span>
+                    <span className="text-xs text-[#5C727D]">
+                      {patient.phoneNumber}
                     </span>
                   </div>
-                ) : (
-                  <span className="text-gray-400 text-sm">No Rx</span>
-                )}
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center justify-center gap-2 h-full">
-                  <div
-                    className="hover:bg-gray-50 no-border cursor-pointer p-1 rounded"
-                    onClick={() => handleViewPatient(patient)}
-                    title="View patient details"
-                  >
-                    <Eye className="h-5 w-5 text-[#14400D]" />
+                </TableCell>
+                <TableCell className="text-[#5C727D] space-x-2">
+                  {formatDateToReadable(patient.createdAt) || "N/A"}
+                </TableCell>
+                <TableCell className="text-[#5C727D] capitalize space-x-2">
+                  {patient.status ? patient.status.toLowerCase() : "N/A"}
+                </TableCell>
+                <TableCell className="text-[#5C727D] space-x-2">
+                  {patient.visitStatus === "VISITED" ? (
+                    <Badge className="bg-[#14400D] rounded">Offline Paid</Badge>
+                  ) : (
+                    <Badge className="bg-red-400 rounded">Unpaid</Badge>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <span className="border rounded text-xs bg-[#14400D] text-white p-1 capitalize focus:outline-none">
+                    {{
+                      VISITED: "Visited",
+                      NOT_VISITED: "Not Visited",
+                    }[patient?.visitStatus ?? ""] || "N/A"}
+                  </span>
+                </TableCell>
+                <TableCell className="text-center">
+                  {patient.prescription && patient.prescription.length > 0 ? (
+                    <div
+                      className="flex items-center justify-center gap-1 cursor-pointer hover:bg-gray-200 p-2 rounded-md transition-colors"
+                      onClick={() => handleViewPrescriptions(patient.id)}
+                      title={`View ${patient.prescription.length} prescription(s)`}
+                    >
+                      <FileText className="h-4 w-4 text-[#14400D]" />
+                      <span className="text-[#14400D] font-medium">
+                        {patient.prescription.length}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-gray-400 text-sm">No Rx</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center justify-center gap-2 h-full">
+                    <div className="hover:bg-green-50 no-border cursor-pointer">
+                      <SquarePen
+                        onClick={() => handleUpdateClick(patient)}
+                        className="h-5 w-5 text-[#14400D]"
+                      />
+                    </div>
+                    <div
+                      className="hover:bg-gray-50 no-border cursor-pointer p-1 rounded"
+                      onClick={() => handleViewPatient(patient)}
+                      title="View patient details"
+                    >
+                      <Eye className="h-5 w-5 text-[#14400D]" />
+                    </div>
+                    <div>
+                      <ConfirmAlert
+                        id={patient?.id}
+                        onDeleted={deletePatient}
+                        person={"Patient"}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <ConfirmAlert
-                      id={patient?.id}
-                      onDeleted={deletePatient}
-                      person={"Patient"}
-                    />
-                  </div>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
-
+      <div className="hidden">
+        <UpdatePatientModal
+          open={updateModalOpen}
+          setOpen={setUpdateModalOpen}
+          data={modalDataToUpdate}
+        />
+      </div>
       <PatientModal
         patient={selectedPatient}
         isOpen={showModal}

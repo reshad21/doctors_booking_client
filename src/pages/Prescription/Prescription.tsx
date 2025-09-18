@@ -11,30 +11,36 @@ import BaseSelect from "@/components/shared/BaseSelect";
 import type { Chamber } from "@/types/chamber.types";
 import LoadingSpinner from "@/loading/LoadingSpinner";
 import { useForm, FormProvider, useWatch } from "react-hook-form";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { setChamber } from "@/redux/slices/chamberSlice";
 
 const Prescription = () => {
+  const pageKey = "prescription";
   const { data: chambersData, isLoading } = useGetChambersQuery({});
   const today = new Date().toISOString().split("T")[0];
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [limit] = useState(10);
+  const chamber = useAppSelector(
+    (state) => state.chamber.selectedByPage[pageKey] || ""
+  );
+  const dispatch = useAppDispatch();
 
   const methods = useForm({
     defaultValues: {
-      chamber: "",
+      chamber: chamber || "all", // set "all" as default
       date: today,
     },
   });
 
   // 🔑 Watch chamber & date from form
   const headerSelect = useWatch({ control: methods.control });
-
   const { data: patients, isLoading: patientsLoading } = useGetPatientQuery({
     page,
     limit,
     searchTerm,
     filter: JSON.stringify({
-      chamberId: headerSelect?.chamber || undefined,
+      chamberId: chamber && chamber !== "all" ? chamber : undefined, // only filter if not "all"
       createdAt: headerSelect?.date || today,
       timezoneOffset: new Date().getTimezoneOffset(),
     }),
@@ -42,11 +48,13 @@ const Prescription = () => {
   });
 
   if (isLoading || patientsLoading) return <LoadingSpinner />;
-
-  const chamberOptions = (chambersData?.data || []).map((chamber: Chamber) => ({
-    name: chamber.name,
-    val: chamber.id,
-  }));
+  const chamberOptions = [
+    { name: "All Chambers", value: "all" }, // default option
+    ...(chambersData?.data || []).map((chamber: Chamber) => ({
+      name: chamber.name,
+      value: chamber.id,
+    })),
+  ];
 
   return (
     <div className="custom-container">
@@ -73,8 +81,11 @@ const Prescription = () => {
                     name="chamber"
                     options={chamberOptions.map((chamber: any) => ({
                       name: chamber.name,
-                      value: chamber.val,
+                      value: chamber.value,
                     }))}
+                    onChange={(val) =>
+                      dispatch(setChamber({ page: pageKey, chamberId: val }))
+                    }
                     className="w-full border-[#A0B19E] rounded-[4px] !h-9 border text-[#5F597480]"
                   />
                 </div>
@@ -105,6 +116,7 @@ const Prescription = () => {
             active={patients?.data?.meta?.currentPage || 1}
             totalPages={patients.data.meta.totalPages || 1}
             onPageChange={setPage}
+            meta={patients?.data?.meta}
           />
         ) : (
           <EmptyState

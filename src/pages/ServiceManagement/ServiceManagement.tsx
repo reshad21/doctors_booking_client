@@ -3,11 +3,28 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
 export default function ServiceManagement() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  const getToday = `${year}-${month}-${day}`;
+  const [visits, setVisits] = useState([]);
+  const methods = useForm();
+  // const chamber = methods.watch("chamber");
   const [filters, setFilters] = useState({
-    startDate: "",
+    startDate: getToday,
     endDate: "",
     chamber: "",
   });
+
+  const pageKey = "service-management";
+  const chamber = useAppSelector(
+    (state) => state.chamber.selectedByPage[pageKey] || ""
+  );
+
+  const dispatch = useAppDispatch();
+
   const buildFilter = () => {
     const f: Record<string, any> = {};
     if (filters.chamber) f.chamberId = filters.chamber;
@@ -21,11 +38,19 @@ export default function ServiceManagement() {
   });
   const { data: chambersData, isLoading: isChamberLoading } =
     useGetChambersQuery({});
+  // let visits;
+  useEffect(() => {
+    if (!visit.data?.data) {
+      setVisits([]);
+      return;
+    }
 
-  const methods = useForm();
+    const filtered = chamber
+      ? visit.data.data.filter((v: any) => v?.patient?.chamberId === chamber)
+      : visit.data.data;
 
-  // Extract visit data safely
-  const visits = visit.data?.data || [];
+    setVisits(filtered);
+  }, [chamber, visit.data?.data]);
 
   // Filter visits based on filters
   const filteredVisits = visits.filter((v: any) => {
@@ -43,6 +68,19 @@ export default function ServiceManagement() {
   const newVisits = filteredVisits.filter((v: any) => v.type === "NEW");
   const oldVisits = filteredVisits.filter((v: any) => v.type === "OLD");
   const reportVisits = filteredVisits.filter((v: any) => v.type === "REPORT");
+
+  const totalNewVisitsDiscount = newVisits.reduce((sum: any, item: any) => {
+    return sum + (Number(item.patient?.discountAmount) || 0);
+  }, 0);
+  const totalOldVisitsDiscount = oldVisits.reduce((sum: any, item: any) => {
+    return sum + (Number(item.patient?.discountAmount) || 0);
+  }, 0);
+  const totalReportVisitsDiscount = reportVisits.reduce(
+    (sum: any, item: any) => {
+      return sum + (Number(item.patient?.discountAmount) || 0);
+    },
+    0
+  );
 
   // Count by type
   const newPatientCount = newVisits.length;
@@ -111,7 +149,10 @@ export default function ServiceManagement() {
       stats: [
         { label: "New Patient", value: newPatientCount },
         { label: "Visited", value: newPatientCount },
-        { label: "Total Payment", value: `${newPayment}TK` },
+        {
+          label: "Total Payment",
+          value: `${newPayment - totalNewVisitsDiscount}TK`,
+        },
       ],
     },
     {
@@ -121,7 +162,10 @@ export default function ServiceManagement() {
       stats: [
         { label: "Old Patient", value: oldPatientCount },
         { label: "Visited", value: oldPatientCount },
-        { label: "Total Payment", value: `${oldPayment}TK` },
+        {
+          label: "Total Payment",
+          value: `${oldPayment - totalOldVisitsDiscount}TK`,
+        },
       ],
     },
     {
@@ -131,7 +175,23 @@ export default function ServiceManagement() {
       stats: [
         { label: "Report", value: reportPatientCount },
         { label: "Visited", value: reportPatientCount },
-        { label: "Total Payment", value: `${reportPayment}TK` },
+        {
+          label: "Total Payment",
+          value: `${reportPayment - totalReportVisitsDiscount}TK`,
+        },
+      ],
+    },
+    {
+      title: "Discount Given",
+      from: dateDisplay.from,
+      to: dateDisplay.to,
+      stats: [
+        // { label: "Report", value: reportPatientCount },
+        { label: "Visited", value: reportPatientCount },
+        {
+          label: "Total Discount Given",
+          value: `${totalNewVisitsDiscount + totalOldVisitsDiscount + totalReportVisitsDiscount}TK`,
+        },
       ],
     },
   ];
@@ -183,12 +243,16 @@ export default function ServiceManagement() {
               </label>
               <BaseSelect
                 name="chamber"
+                value={chamber}
                 options={chamberOptions.map(
                   (chamber: { name: string; val: string }) => ({
                     name: chamber.name,
                     value: chamber.val,
                   })
                 )}
+                onChange={(val) =>
+                  dispatch(setChamber({ page: pageKey, chamberId: val }))
+                }
                 className="w-full border-[#A0B19E] rounded-[4px] !h-10 border text-[#5F597480] bg-slate-50"
               />
             </div>
@@ -211,6 +275,7 @@ export default function ServiceManagement() {
                     endDate: "",
                     chamber: "",
                   });
+                  dispatch(clearChamber({ page: pageKey }));
                 }}
               >
                 <X className="h-4 w-4" />
@@ -250,8 +315,10 @@ import BaseSelect from "@/components/shared/BaseSelect";
 import type { Chamber } from "@/types/chamber.types";
 import { FormProvider, useForm } from "react-hook-form";
 import BaseInput from "@/components/shared/BaseInput";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import LoadingSpinner from "@/loading/LoadingSpinner";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { clearChamber, setChamber } from "@/redux/slices/chamberSlice";
 
 interface HistoryCardProps {
   title: string;

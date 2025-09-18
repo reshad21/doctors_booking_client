@@ -120,16 +120,43 @@ const DosageTimingRow = ({
     );
   }, [medicineDosagesDayNames]);
 
-  // Determine if current medicine is non tablet/capsule (assumed liquid/others)
+  // Get dosageNotes and regular dosage from form
+  const dosageNotesFieldName = `${count}-dosageNotes-${medicineId}`;
+  const dosageFieldName = `${count}-dosage-${medicineId}`;
+  const watchedDosageNotes: any = (form as any).watch?.(dosageNotesFieldName);
+  const watchedDosage: any = (form as any).watch?.(dosageFieldName);
+
+  // FIXED: Determine if current medicine is non tablet/capsule based on actual dosageNotes content
+  // Only treat as non-tab/cap if dosageNotes exists AND has actual content (not empty array)
   const isNonTabCap = useMemo(() => {
+    // First check if we have actual dosageNotes with content
+    const hasDosageNotesContent = 
+      watchedDosageNotes && 
+      Array.isArray(watchedDosageNotes) && 
+      watchedDosageNotes.length > 0 &&
+      watchedDosageNotes.some((note: any) => 
+        note && (note.qty || note.unit || note.freq || note.freqUnit)
+      );
+
+    // If we have dosageNotes content, it's definitely non-tab/cap
+    if (hasDosageNotesContent) {
+      return true;
+    }
+
+    // If we have a regular dosage value, it's definitely tab/cap
+    if (watchedDosage) {
+      return false;
+    }
+
+    // Fallback to description-based detection only if we don't have form data
     const desc = (dosageDescription || "").toLowerCase();
-    return !(
-      desc.includes("tab") ||
+    const isTabCapByDescription = desc.includes("tab") ||
       desc.includes("tablet") ||
       desc.includes("cap") ||
-      desc.includes("capsule")
-    );
-  }, [dosageDescription]);
+      desc.includes("capsule");
+
+    return !isTabCapByDescription;
+  }, [watchedDosageNotes, watchedDosage, dosageDescription]);
 
   // Local states for liquid dosage style (e.g., ২ চামচ * ২ বার)
   const [qtyText, setQtyText] = useState<string>("");
@@ -141,7 +168,6 @@ const DosageTimingRow = ({
   const isInitializingRef = useRef(false);
   const initializedRef = useRef(false);
   const updateFormRef = useRef<NodeJS.Timeout | null>(null);
-  // const updateFormRef = useRef<NodeJS.Timeout>();
 
   // Bangla number conversion
   const banglaToEnglish: { [key: string]: string } = useMemo(
@@ -166,77 +192,80 @@ const DosageTimingRow = ({
     [banglaToEnglish]
   );
 
-  const dosageFieldName = `${count}-dosage-${medicineId}`;
   const timeFieldName = `${count}-time-${medicineId}`;
   const commentFieldName = `${count}-comment-${medicineId}`;
   const unitFieldName = `unit-${medicineId}-${count}`;
   const frequencyFieldName = `frequency-${medicineId}-${count}`;
-  const dosageNotesFieldName = `${count}-dosageNotes-${medicineId}`;
 
   // Read selected unit and frequency from form and keep local values in sync
   const watchedUnit: any = (form as any).watch?.(unitFieldName);
   const watchedFrequency: any = (form as any).watch?.(frequencyFieldName);
-  const watchedDosageNotes: any = (form as any).watch?.(dosageNotesFieldName);
 
-  // Initialize local state from dosageNotes ONLY ONCE when loading from backend
+  // FIXED: Initialize local state from dosageNotes ONLY when we actually have content
   useEffect(() => {
-    // Add safety checks for options being loaded
-    if (
-      !isNonTabCap ||
-      initializedRef.current ||
-      !allDayInputOptions ||
-      !allDayNameOptions
-    )
-      return;
-    if (allDayInputOptions.length === 0 || allDayNameOptions.length === 0)
-      return;
+    // For non-tablet/capsule medicines with actual dosageNotes content
+    if (isNonTabCap) {
+      // Add safety checks for options being loaded
+      if (
+        initializedRef.current ||
+        !allDayInputOptions ||
+        !allDayNameOptions
+      )
+        return;
+      if (allDayInputOptions.length === 0 || allDayNameOptions.length === 0)
+        return;
 
-    if (
-      watchedDosageNotes &&
-      Array.isArray(watchedDosageNotes) &&
-      watchedDosageNotes.length > 0
-    ) {
-      const dosageNote = watchedDosageNotes[0];
+      // FIXED: Only initialize if we have actual dosageNotes with content
+      if (
+        watchedDosageNotes &&
+        Array.isArray(watchedDosageNotes) &&
+        watchedDosageNotes.length > 0
+      ) {
+        const dosageNote = watchedDosageNotes[0];
+        
+        // Only initialize if the dosageNote has actual content
+        if (dosageNote && (dosageNote.qty || dosageNote.unit || dosageNote.freq || dosageNote.freqUnit)) {
+          isInitializingRef.current = true;
 
-      isInitializingRef.current = true;
+          // Set local state values
+          if (dosageNote.qty) setQtyText(dosageNote.qty);
+          if (dosageNote.unit) setUnitValue(dosageNote.unit);
+          if (dosageNote.freq) setFreqText(dosageNote.freq);
+          if (dosageNote.freqUnit) setFrequencyValue(dosageNote.freqUnit);
 
-      // Set local state values
-      if (dosageNote.qty) setQtyText(dosageNote.qty);
-      if (dosageNote.unit) setUnitValue(dosageNote.unit);
-      if (dosageNote.freq) setFreqText(dosageNote.freq);
-      if (dosageNote.freqUnit) setFrequencyValue(dosageNote.freqUnit);
+          // IMPORTANT: Set form values for the select components
+          if (dosageNote.unit) {
+            const unitOption = allDayInputOptions.find(
+              (opt) => opt.value === dosageNote.unit
+            );
 
-      // IMPORTANT: Set form values for the select components
-      if (dosageNote.unit) {
-        const unitOption = allDayInputOptions.find(
-          (opt) => opt.value === dosageNote.unit
-        );
+            if (unitOption) {
+              form.setValue(unitFieldName, unitOption.value, {
+                shouldDirty: false,
+              });
+            }
+          }
 
-        if (unitOption) {
-          form.setValue(unitFieldName, unitOption.value, {
-            shouldDirty: false,
-          });
+          if (dosageNote.freqUnit) {
+            const freqOption = allDayNameOptions.find(
+              (opt) => opt.value === dosageNote.freqUnit
+            );
+
+            if (freqOption) {
+              form.setValue(frequencyFieldName, freqOption.value, {
+                shouldDirty: false,
+              });
+            }
+          }
+
+          initializedRef.current = true;
+
+          // Allow updates after a short delay
+          setTimeout(() => {
+            isInitializingRef.current = false;
+          }, 100);
         }
       }
-
-      if (dosageNote.freqUnit) {
-        const freqOption = allDayNameOptions.find(
-          (opt) => opt.value === dosageNote.freqUnit
-        );
-
-        if (freqOption) {
-          form.setValue(frequencyFieldName, freqOption.value, {
-            shouldDirty: false,
-          });
-        }
-      }
-
-      initializedRef.current = true;
-
-      // Allow updates after a short delay
-      setTimeout(() => {
-        isInitializingRef.current = false;
-      }, 100);
     }
   }, [
     isNonTabCap,
@@ -323,15 +352,6 @@ const DosageTimingRow = ({
         const currentDosageNotes = form.getValues(dosageNotesFieldName);
         if (currentDosageNotes && currentDosageNotes.length > 0) {
           form.setValue(dosageNotesFieldName, [], {
-            shouldDirty: true,
-            shouldValidate: true,
-          });
-        }
-
-        // Also clear dosage field when no data
-        const currentDosage = form.getValues(dosageFieldName);
-        if (currentDosage) {
-          form.setValue(dosageFieldName, "", {
             shouldDirty: true,
             shouldValidate: true,
           });

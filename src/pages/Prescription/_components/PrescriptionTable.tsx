@@ -6,7 +6,7 @@ import { Link } from "react-router-dom"
 import Pagination from "@/components/shared/Pagination"
 import { formatTimeAgo } from "@/utils/formatTimeAgo"
 
-const PrescriptionTable = ({ patients, active, totalPages, onPageChange }: any) => {
+const PrescriptionTable = ({ patients, active, totalPages, onPageChange,meta }: any) => {
 
   const hasPrescription = (patient: Patient) => {
     return patient.prescription && patient.prescription.length > 0
@@ -69,7 +69,7 @@ const PrescriptionTable = ({ patients, active, totalPages, onPageChange }: any) 
 
               return (
                 <TableRow key={patient.id} className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}>
-                  <TableCell className="font-medium text-center">{index + 1}</TableCell>
+                  <TableCell className="font-medium text-center">{(meta?.currentPage - 1) * 10 + (index + 1)}</TableCell>
                   <TableCell className="pl-4">
                     <div className="flex flex-col">
                       <span className="font-medium">{patient.name || "N/A"}</span>

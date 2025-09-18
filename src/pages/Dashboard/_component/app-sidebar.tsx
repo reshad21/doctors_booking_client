@@ -10,11 +10,11 @@ import {
 } from "@/components/ui/sidebar";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 // sideNavMenu is now passed as a prop
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOutIcon } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch } from "@/redux/hooks";
 import { HandelLogout } from "@/lib/HandelLogout";
-
+import onecare4u from "@/assets/onecare4u.png"
 import type { sideNavMenu as SideNavMenuType } from "@/context/Routes-sideNav";
 
 type SideNavMenuItem = (typeof SideNavMenuType)[number];
@@ -27,12 +27,12 @@ export function AppSidebar({ sideNavMenu, ...props }: AppSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const doctor = useAppSelector((state) => state.admin);
+  // const doctor = useAppSelector((state) => state.admin);
   return (
     <Sidebar {...props}>
       <SidebarHeader className="bg-[#25102E] text-white">
         {/* Profile Section */}
-        <div className="p-3 border-b border-purple-700">
+        {/* <div className="p-3 border-b border-purple-700">
           <div className="flex items-center space-x-3">
             <Avatar className="w-12 h-12">
               {doctor?.profilePhoto != "N/A" && (
@@ -61,7 +61,8 @@ export function AppSidebar({ sideNavMenu, ...props }: AppSidebarProps) {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
+        <img src={onecare4u} alt="" className="text-white font-semibold bg-[#91c69d] bg-linear-to-r from-[#B0C6B5] to-[#91c69d] rounded-md h-[4.7rem]"/>
         <h1 className="text-xs font-semibold text-white uppercase tracking-wider">
           Main Menu
         </h1>

@@ -27,9 +27,7 @@ const CreatePrescription = () => {
   });
 
   // Only generate prescription ID when patient data is available
-  const prescriptionId = patientData?.data?.id
-    ? generatePrescriptionId(patientData.data.id)
-    : null;
+  const prescriptionId = generatePrescriptionId()
 
   if (isPatientLoading || !prescriptionId) {
     return (
@@ -157,11 +155,6 @@ const CreatePrescription = () => {
     };
 
     console.log("Transformed data:", transformedData);
-
-    if (transformedData.medicines.length === 0) {
-      toast.error("Please add at least one medicine with dosage information");
-      return;
-    }
 
     try {
       const res = (await createPrescription(transformedData)) as any;

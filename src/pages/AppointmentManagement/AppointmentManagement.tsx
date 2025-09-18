@@ -6,7 +6,7 @@ import {
   useDeletePatientMutation,
   useGetPatientQuery,
 } from "@/redux/api/patient/patient";
-import { useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useState, useEffect } from "react";
 import Pagination from "@/components/shared/Pagination";
 import toast from "react-hot-toast";
@@ -20,8 +20,10 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { Info } from "lucide-react";
 import LoadingSpinner from "@/loading/LoadingSpinner";
 import { patientSchema } from "@/validation/appointment.validation";
+import { setChamber } from "@/redux/slices/chamberSlice";
 
 const AppointmentManagement = () => {
+  const pageKey = "appointment-management";
   const [deletePatient] = useDeletePatientMutation();
   const [sendSingleMessage] = useSendSingleMessageMutation();
   const [createPatient] = useCreatePatientMutation();
@@ -30,10 +32,14 @@ const AppointmentManagement = () => {
   const doctorId = useAppSelector((state) => state.admin.id);
   const doctorName = useAppSelector((state) => state.admin.name);
   const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const [limit] = useState(20);
   const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [headerSelect, setHeaderSelect] = useState({ date: "", chamber: "" });
+  const chamber = useAppSelector(
+    (state) => state.chamber.selectedByPage[pageKey] || ""
+  );
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -49,7 +55,7 @@ const AppointmentManagement = () => {
     limit,
     searchTerm,
     filter: JSON.stringify({
-      chamberId: headerSelect.chamber || undefined,
+      chamberId: chamber || undefined,
       createdAt: headerSelect.date || today,
       timezoneOffset: new Date().getTimezoneOffset(),
     }),
@@ -129,10 +135,12 @@ const AppointmentManagement = () => {
         <div className="mb-4">
           <HeaderSelect
             chambersData={chambersData?.data}
-            selected={headerSelect}
+            // selected={headerSelect}
+            selected={{ date: headerSelect.date, chamber }}
             onChange={(val) => {
               setHeaderSelect(val);
               setPage(1);
+              dispatch(setChamber({ page: pageKey, chamberId: val.chamber }));
             }}
           />
         </div>
@@ -162,8 +170,8 @@ const AppointmentManagement = () => {
               buttonProperty={{ type: "create", text: "Add New Patient" }}
               validationSchema={patientSchema}
               defaultValues={{
-                  appDate: `${new Date().toString()}`,
-                }}
+                appDate: `${new Date().toString()}`,
+              }}
             />
           </div>
           <div className="bg-brand px-2 py-1 text-white rounded-sm">
@@ -188,6 +196,7 @@ const AppointmentManagement = () => {
           {patientsData?.data?.data && patientsData?.data?.data?.length > 0 ? (
             <AppointmentTable
               patients={patientsData?.data?.data}
+              meta={patientsData?.data?.meta}
               deletePatient={deletePatient}
             />
           ) : (
