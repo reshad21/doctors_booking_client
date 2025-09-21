@@ -13,6 +13,7 @@ import ViewPrescription from "@/pages/Prescription/ViewPrescription/ViewPrescrip
 import ClinicalNotes from "@/pages/PrescriptionManagement/ClinicalNotes/ClinicalNotes";
 import MedicineManagement from "@/pages/PrescriptionManagement/MedicineManagement/MedicineManagement";
 import PreManagement from "@/pages/PrescriptionManagement/PreManagement";
+import CreatePrescriptionPageSetup from "@/pages/PrescriptionManagement/PrescriptionPageSetup/CreatePrescriptionPageSetup";
 import PrescriptionPageSetup from "@/pages/PrescriptionManagement/PrescriptionPageSetup/PrescriptionPageSetup";
 import PrescriptionTemplates from "@/pages/PrescriptionManagement/PrescriptionTemplates/PrescriptionTemplates";
 import ServiceManagement from "@/pages/ServiceManagement/ServiceManagement";
@@ -101,6 +102,10 @@ const router = createBrowserRouter([
       {
         path: "/dashboard/pre-management/prescription-page-setup",
         element: <PrescriptionPageSetup />,
+      },
+      {
+        path: "/dashboard/pre-management/create-prescription-page-setup",
+        element: <CreatePrescriptionPageSetup />,
       },
       {
         path: "/dashboard/watch-video",
