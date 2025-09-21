@@ -35,7 +35,6 @@ export default function DashboardLayout() {
   const doctor = useAppSelector((state) => state.admin);
   const token = useAppSelector((state) => state.auth)?.token;
   const decoded = decodeToken(token);
-  console.log(decoded);
 
   const routeAccess: PermissionItem[] = useMemo(
     () =>

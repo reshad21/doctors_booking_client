@@ -12,8 +12,10 @@ import {
 } from "@/redux/api/admin/admin";
 import toast from "react-hot-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setAdminDecodeData } from "@/redux/api/features/adminSlice";
+import { useUpdateStaffMutation } from "@/redux/api/staff/staff";
+import { decodeToken } from "@/hooks/decodedToken";
 
 interface FormData {
   name: string;
@@ -22,11 +24,18 @@ interface FormData {
 const UpdateProfile = () => {
   const { data: adminDataFromApi } = useGetAdminByTokenQuery({});
   const [updateDoctor] = useUpdateDoctorMutation();
+  const [updateStaff] = useUpdateStaffMutation();
   const [imagePreview, setImagePreview] = useState<string>(
     adminDataFromApi?.data?.image
   );
+  const token = useAppSelector((state) => state.auth)?.token;
+  const decoded = decodeToken(token);
+  console.log(decoded?.type);
   const dispatch = useAppDispatch();
-console.log(adminDataFromApi,"adminDataFromApiadminDataFromApiadminDataFromApi");
+  console.log(
+    adminDataFromApi,
+    "adminDataFromApiadminDataFromApiadminDataFromApi"
+  );
 
   const {
     register,
@@ -61,12 +70,18 @@ console.log(adminDataFromApi,"adminDataFromApiadminDataFromApiadminDataFromApi")
     formData.append("id", adminDataFromApi?.data?.id);
     formData.append("name", data.name || adminDataFromApi?.data?.name);
 
+    if (decoded?.type && data.image && data.image.length > 0) {
+      formData.append("staffImage", data.image[0]);
+    }
     if (data.image && data.image.length > 0) {
       formData.append("doctorImage", data.image[0]);
     }
-
-    const res = (await updateDoctor(formData)) as any;
-    
+    let res: any;
+    if (decoded?.type === "STAFF") {
+      await updateStaff(formData);
+    } else {
+      await updateDoctor(formData);
+    }
 
     if (res?.error?.data?.message) {
       toast.error(res.error.data.message);
