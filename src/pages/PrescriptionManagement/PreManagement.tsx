@@ -31,7 +31,7 @@ const PreManagement = () => {
         {preManagementPaths.map((item, index) => (
           <Link to={item.path}
             key={index}
-            className="bg-white border group border-gray-100 shadow-md hover:shadow-md hover:bg-green-600 hover:border-green-200 cursor-pointer transition-all duration-200 ease-in-out rounded-lg group"
+            className="bg-white border group border-green-400 shadow-md hover:shadow-md hover:bg-green-600 hover:border-green-200 cursor-pointer transition-all duration-200 ease-in-out rounded-lg group"
           >
             <div className="p-6 flex flex-col items-center text-center space-y-3">
               <div className="text-gray-600 group-hover:text-white transition-colors duration-200">
