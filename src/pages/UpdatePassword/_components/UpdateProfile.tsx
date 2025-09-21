@@ -26,6 +26,7 @@ const UpdateProfile = () => {
     adminDataFromApi?.data?.image
   );
   const dispatch = useAppDispatch();
+console.log(adminDataFromApi,"adminDataFromApiadminDataFromApiadminDataFromApi");
 
   const {
     register,
@@ -65,7 +66,7 @@ const UpdateProfile = () => {
     }
 
     const res = (await updateDoctor(formData)) as any;
-    console.log(res, "res");
+    
 
     if (res?.error?.data?.message) {
       toast.error(res.error.data.message);

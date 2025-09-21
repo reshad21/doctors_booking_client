@@ -80,12 +80,12 @@ const PatientTable = ({ patients, deletePatient, meta }: PatientTableProps) => {
             ))}
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="border-2">
           {patientsData?.map((patient: Patient, index: number) => {
             return (
               <TableRow
                 key={patient.id}
-                className={`no-border ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
+                className={` ${index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}`}
               >
                 <TableCell className="font-medium pl-4">
                   {(meta?.currentPage - 1) * 10 + (index + 1)}

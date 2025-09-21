@@ -19,6 +19,7 @@ import { useEffect, useMemo, useState } from "react";
 import { socket } from "@/socket/socket";
 import VideoPlayer from "./_components/VideoPlayer";
 import { useGetChambersQuery } from "@/redux/api/chamber/chamber";
+import { useGetStaffsDoctorQuery } from "@/redux/api/staff/staff";
 
 interface Chamber {
   id: string;
@@ -28,12 +29,15 @@ interface Chamber {
 const today = new Date().toISOString().split("T")[0];
 
 export default function PatientCallingDisplay() {
+  const { data: staffsDoctor } = useGetStaffsDoctorQuery({});
   const { data: chambersData } = useGetChambersQuery({});
   const currentSerial = useAppSelector((state) => state.serial.currentSerial);
   const calledSerials = useAppSelector((state) => state.serial.calledSerials);
   const endedSerials = useAppSelector((state) => state.serial.endedSerials);
   const [selectedChamber, setSelectedChamber] = useState("all");
-  const doctor = useAppSelector((state) => state.admin);
+  const doctor = useAppSelector((state) => state.admin)
+ 
+  
   
   const chambers: Chamber[] = useMemo(() => 
     chambersData?.data?.map((item: any) => ({ name: item?.name, id: item?.id })) || [], 
@@ -208,6 +212,9 @@ export default function PatientCallingDisplay() {
             <div className="w-2 h-2 rounded-full bg-gray-300 mr-2" />
             {doctor.name && (
               <h1 className="text-2xl font-bold">{doctor.name}</h1>
+            )}
+            {staffsDoctor?.data?.name && (
+              <h1 className="text-2xl font-bold">{staffsDoctor?.data?.name}</h1>
             )}
             <div className="w-2 h-2 rounded-full bg-gray-300 ml-2" />
           </div>

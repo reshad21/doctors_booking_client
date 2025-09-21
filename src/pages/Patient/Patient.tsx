@@ -50,8 +50,6 @@ const Patient = () => {
 
   if (isLoading || isChamberLoading) return <LoadingSpinner />;
 
-console.log();
-
 
   return (
     <div className="custom-container">
