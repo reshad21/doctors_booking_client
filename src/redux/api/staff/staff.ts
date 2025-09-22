@@ -11,6 +11,15 @@ const staffApi = baseApi.injectEndpoints({
       },
       providesTags: ["staff"],
     }),
+    getStaffsDoctor: builder.query({
+      query: () => {
+        return {
+          url: "/staff/get-staffs-doctor",
+          method: "GET",
+        };
+      },
+      providesTags: ["staff"],
+    }),
     createStaff: builder.mutation({
       query: (data) => {
         return {
@@ -57,4 +66,5 @@ export const {
   useCreateStaffMutation,
   useUpdateRoutePermissionMutation,
   useUpdateStaffMutation,
+  useGetStaffsDoctorQuery
 } = staffApi;
