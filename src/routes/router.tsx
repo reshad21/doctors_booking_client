@@ -4,10 +4,10 @@ import Chamber from "@/pages/Chamber/Chamber";
 import DashboardLayout from "@/pages/Dashboard/DashboardLayout";
 import DoctorDashboard from "@/pages/Dashboard/DoctorDashboard/DoctorDashboard";
 import Login from "@/pages/Login/Login";
+import NewPrescription from "@/pages/NewPrescription/NewPrescription";
 import Notice from "@/pages/Notice/Notice";
 import Patient from "@/pages/Patient/Patient";
 import CreatePrescription from "@/pages/Prescription/CreatePrescription/CreatePrescription";
-import Prescription from "@/pages/Prescription/Prescription";
 import UpdatePrescription from "@/pages/Prescription/UpdatePrescription/UpdatePrescription";
 import ViewPrescription from "@/pages/Prescription/ViewPrescription/ViewPrescription";
 import ClinicalNotes from "@/pages/PrescriptionManagement/ClinicalNotes/ClinicalNotes";
@@ -53,7 +53,8 @@ const router = createBrowserRouter([
       },
       {
         path: "/dashboard/prescription",
-        element: <Prescription />,
+        element: <NewPrescription />,
+        // element: <Prescription />,
       },
       {
         path: "/dashboard/create-prescription/:patientId",
