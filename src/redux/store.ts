@@ -18,6 +18,7 @@ import { serialReducer } from "./api/features/serialSlice";
 import { authCacheMiddleware } from "@/middleware/authMiddleware";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { chamberReducer } from "./slices/chamberSlice";
+import { prescriptionTemplateReducer } from "./slices/prescriptionTemplateSlice";
 
 const persistAuthConfig = {
   key: "userInfo",
@@ -44,6 +45,11 @@ const persistChamberConfig = {
   storage,
 };
 
+const persistPrescriptionTemplateConfig = {
+  key: "prescriptionTemplate",
+  storage,
+};
+
 const persisterAuthReducer = persistReducer(persistAuthConfig, authReducer);
 const persistedAdminReducer = persistReducer(persistAdminConfig, adminReducer);
 const persistedPermissionReducer = persistReducer(
@@ -58,6 +64,10 @@ const persistedChamberReducer = persistReducer(
   persistChamberConfig,
   chamberReducer
 );
+const persistedPrescriptionTemplateReducer = persistReducer(
+  persistPrescriptionTemplateConfig,
+  prescriptionTemplateReducer
+);
 
 export const store = configureStore({
   reducer: {
@@ -66,7 +76,8 @@ export const store = configureStore({
     admin: persistedAdminReducer,
     routes: persistedPermissionReducer,
     serial: persistedSerialReducer,
-    chamber: persistedChamberReducer
+    chamber: persistedChamberReducer,
+    prescriptionTemplate: persistedPrescriptionTemplateReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

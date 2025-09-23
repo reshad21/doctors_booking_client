@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/select";
 import { FileText, Printer, Ruler, Settings, Eye, MapPin } from "lucide-react";
 import { useGetChambersQuery } from "@/redux/api/chamber/chamber";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { setPageSetup } from "@/redux/slices/prescriptionTemplateSlice";
 
 // Define Chamber interface
 interface Chamber {
@@ -34,23 +36,18 @@ interface PageSettings {
 }
 
 const PageSetup: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const { pageSetup } = useAppSelector((state) => state.prescriptionTemplate);
+
   const { data: chambers, isLoading: isLoadingChambers } = useGetChambersQuery(
     {}
   );
-  const [pageSettings, setPageSettings] = useState<PageSettings>({
-    pageType: "a4",
-    chamberId: "",
-    totalHeight: 11.7,
-    totalWidth: 8.3,
-    leftMargin: 0.5,
-    rightMargin: 0.5,
-    topMargin: 0.5,
-    bottomMargin: 0.5,
-  });
+
+  const [pageSettings, setPageSettings] = useState<PageSettings>(pageSetup);
 
   const { register, watch, setValue, handleSubmit, control } =
     useForm<PageSettings>({
-      defaultValues: pageSettings,
+      defaultValues: pageSetup,
     });
 
   // Watch specific fields instead of the entire form object
@@ -65,7 +62,7 @@ const PageSetup: React.FC = () => {
 
   // Update state when form values change for real-time preview
   useEffect(() => {
-    setPageSettings({
+    const newSettings = {
       pageType: watchedPageType,
       chamberId: watchedChamberId,
       totalHeight: watchedTotalHeight,
@@ -74,7 +71,11 @@ const PageSetup: React.FC = () => {
       rightMargin: watchedRightMargin,
       topMargin: watchedTopMargin,
       bottomMargin: watchedBottomMargin,
-    });
+    };
+    console.log(newSettings);
+    setPageSettings(newSettings);
+    // Update Redux store
+    dispatch(setPageSetup(newSettings));
   }, [
     watchedPageType,
     watchedChamberId,
@@ -84,6 +85,7 @@ const PageSetup: React.FC = () => {
     watchedRightMargin,
     watchedTopMargin,
     watchedBottomMargin,
+    dispatch,
   ]);
 
   const handlePageTypeChange = (type: "a4" | "custom") => {
@@ -386,11 +388,11 @@ const PageSetup: React.FC = () => {
                         </SelectTrigger>
                         <SelectContent>
                           {isLoadingChambers ? (
-                            <SelectItem value="" disabled>
+                            <SelectItem value="loading" disabled>
                               Loading chambers...
                             </SelectItem>
                           ) : chambers?.data?.length > 0 ? (
-                            chambers.data.map((chamber: Chamber) => (
+                            chambers?.data?.map((chamber: Chamber) => (
                               <SelectItem key={chamber.id} value={chamber.id}>
                                 <div className="flex items-center gap-2">
                                   <MapPin className="h-4 w-4 text-indigo-500" />
@@ -399,7 +401,7 @@ const PageSetup: React.FC = () => {
                               </SelectItem>
                             ))
                           ) : (
-                            <SelectItem value="" disabled>
+                            <SelectItem value="no-chambers" disabled>
                               No chambers available
                             </SelectItem>
                           )}
