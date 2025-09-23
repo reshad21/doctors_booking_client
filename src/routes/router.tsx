@@ -16,6 +16,7 @@ import PreManagement from "@/pages/PrescriptionManagement/PreManagement";
 import CreatePrescriptionPageSetup from "@/pages/PrescriptionManagement/PrescriptionPageSetup/CreatePrescriptionPageSetup";
 import PrescriptionPageSetup from "@/pages/PrescriptionManagement/PrescriptionPageSetup/PrescriptionPageSetup";
 import PrescriptionTemplates from "@/pages/PrescriptionManagement/PrescriptionTemplates/PrescriptionTemplates";
+import PrescriptionTemplatesPageSetup from "@/pages/PrescriptionManagement/PrescriptionTemplates/PrescriptionTemplatesPageSetup/PrescriptionTemplatesPageSetup";
 import ServiceManagement from "@/pages/ServiceManagement/ServiceManagement";
 import StaffLogin from "@/pages/StaffLogin/StaffLogin";
 import StaffManagement from "@/pages/StaffManagement/StaffManagement";
@@ -94,6 +95,32 @@ const router = createBrowserRouter([
       {
         path: "/dashboard/pre-management/prescription-templates",
         element: <PrescriptionTemplates />,
+      },
+      {
+        path: "/dashboard/pre-management/prescription-templates/page-customize",
+        element: <PrescriptionTemplatesPageSetup />,
+        children: [
+          {
+            path: "page-setup",
+            element: <></>,
+          },
+          {
+            path: "patient-section",
+            element: <></>,
+          },
+          {
+            path: "body-section",
+            element: <></>,
+          },
+          {
+            path: "header-section",
+            element: <></>,
+          },
+          {
+            path: "footer-section",
+            element: <></>,
+          },
+        ],
       },
       {
         path: "/dashboard/pre-management/clinical-notes",
