@@ -11,13 +11,35 @@ interface PageSettings {
   bottomMargin: number;
 }
 
+export interface FormFieldData {
+  id: string;
+  label: string;
+  type:
+    | "text"
+    | "email"
+    | "number"
+    | "password"
+    | "textarea"
+    | "select"
+    | "checkbox"
+    | "radio"
+    | "date";
+  placeholder: string;
+  required: boolean;
+  order: number;
+  width: number; // 1-12 grid columns
+  row: number;
+  defaultValue: string;
+  options?: string[]; // for select, radio
+}
+
 interface PatientSection {
   showPatientInfo: boolean;
   showContactInfo: boolean;
   showAge: boolean;
   showGender: boolean;
   showAddress: boolean;
-  // Add more patient section fields as needed
+  formFields: FormFieldData[];
 }
 
 interface BodySection {
@@ -71,6 +93,64 @@ const initialState: PrescriptionTemplateState = {
     showAge: true,
     showGender: true,
     showAddress: false,
+    formFields: [
+      {
+        id: "1",
+        label: "Patient Name",
+        type: "text",
+        placeholder: "Enter patient name",
+        required: true,
+        order: 0,
+        width: 6,
+        row: 0,
+        defaultValue: "",
+      },
+      {
+        id: "2",
+        label: "Age",
+        type: "number",
+        placeholder: "Enter age",
+        required: true,
+        order: 1,
+        width: 3,
+        row: 0,
+        defaultValue: "",
+      },
+      {
+        id: "3",
+        label: "Gender",
+        type: "select",
+        placeholder: "Select gender",
+        required: true,
+        order: 2,
+        width: 3,
+        row: 0,
+        defaultValue: "",
+        options: ["Male", "Female", "Other"],
+      },
+      {
+        id: "4",
+        label: "Patient ID",
+        type: "text",
+        placeholder: "Enter patient ID",
+        required: false,
+        order: 3,
+        width: 6,
+        row: 1,
+        defaultValue: "",
+      },
+      {
+        id: "5",
+        label: "Visit Date",
+        type: "date",
+        placeholder: "Select date",
+        required: true,
+        order: 4,
+        width: 6,
+        row: 1,
+        defaultValue: "",
+      },
+    ],
   },
   bodySection: {
     showMedicineTable: true,
@@ -129,6 +209,35 @@ const prescriptionTemplateSlice = createSlice({
     setCompleted: (state, action: PayloadAction<boolean>) => {
       state.isCompleted = action.payload;
     },
+    updateFormField: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        updates: Partial<FormFieldData>;
+      }>
+    ) => {
+      const { id, updates } = action.payload;
+      const fieldIndex = state.patientSection.formFields.findIndex(
+        (field) => field.id === id
+      );
+      if (fieldIndex !== -1) {
+        state.patientSection.formFields[fieldIndex] = {
+          ...state.patientSection.formFields[fieldIndex],
+          ...updates,
+        };
+      }
+    },
+    setFormFields: (state, action: PayloadAction<FormFieldData[]>) => {
+      state.patientSection.formFields = action.payload;
+    },
+    addFormField: (state, action: PayloadAction<FormFieldData>) => {
+      state.patientSection.formFields.push(action.payload);
+    },
+    deleteFormField: (state, action: PayloadAction<string>) => {
+      state.patientSection.formFields = state.patientSection.formFields.filter(
+        (field) => field.id !== action.payload
+      );
+    },
   },
 });
 
@@ -141,6 +250,10 @@ export const {
   updatePageSetupField,
   resetTemplate,
   setCompleted,
+  updateFormField,
+  setFormFields,
+  addFormField,
+  deleteFormField,
 } = prescriptionTemplateSlice.actions;
 
 export const prescriptionTemplateReducer = prescriptionTemplateSlice.reducer;
