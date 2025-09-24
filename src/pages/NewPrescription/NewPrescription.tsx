@@ -1,69 +1,86 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Plus, X } from "lucide-react" // Added X icon for remove buttons
-import PrescriptionHeader from "./_components/PrescriptionHeader"
-import PrescriptionFooter from "./_components/PrescriptionFooter"
-import ReusableModal from "./_components/ReusableModal"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Plus, X } from "lucide-react"; // Added X icon for remove buttons
+import PrescriptionHeader from "./_components/PrescriptionHeader";
+import PrescriptionFooter from "./_components/PrescriptionFooter";
+import ReusableModal from "./_components/ReusableModal";
+import { cn } from "@/lib/utils";
 
 // Types
 interface PrescriptionData {
-  patientName: string
-  age: string
-  date: string
-  chiefComplaint: string[]
-  examinations: string[]
-  diagnosis: string[]
-  investigations: string[]
-  history: string[]
+  patientName: string;
+  age: string;
+  date: string;
+  chiefComplaint: string[];
+  examinations: string[];
+  diagnosis: string[];
+  investigations: string[];
+  history: string[];
   medications: Array<{
-    name: string
-    dosage: string
-    frequency: string
-    duration: string
-  }>
-  advice: string[]
-  nextVisit: string
+    name: string;
+    dosage: string;
+    frequency: string;
+    duration: string;
+  }>;
+  advice: string[];
+  nextVisit: string;
 }
 
 interface ModalField {
-  id: string
-  label: string
-  type?: "text" | "textarea" | "date"
-  placeholder?: string
-  rows?: number
+  id: string;
+  label: string;
+  type?: "text" | "textarea" | "date";
+  placeholder?: string;
+  rows?: number;
 }
 
 interface ModalConfig {
-  title: string
-  fields: ModalField[]
-  buttonLabel: string
+  title: string;
+  fields: ModalField[];
+  buttonLabel: string;
 }
 
 // Section Component for better organization
 interface SectionProps {
-  title: string
-  children: React.ReactNode
-  onAddClick: () => void
-  minHeight?: string
+  title: string;
+  children: React.ReactNode;
+  onAddClick: () => void;
+  minHeight?: string;
+  className?: string;
 }
 
-const Section: React.FC<SectionProps> = ({ title, children, onAddClick, minHeight = "40px" }) => (
+const Section: React.FC<SectionProps> = ({
+  title,
+  children,
+  onAddClick,
+  minHeight = "40px",
+  className,
+}) => (
   <div className="prescription-section">
     <div className="flex items-center gap-2 mb-2">
-      <h3 className={`section-title ${title === "Rx" ? "text-lg font-bold" : ""}`}>{title}</h3>
-      <Button variant="ghost" size="sm" onClick={onAddClick} className="p-1 h-5 w-5 border cursor-pointer text-green-600 hover:bg-blue-50">
+      <h3
+        className={`section-title ${title === "Rx" ? "text-lg font-bold" : ""}`}
+      >
+        {title}
+      </h3>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onAddClick}
+        className="p-1 h-5 w-5 border cursor-pointer text-green-600 hover:bg-blue-50"
+      >
         <Plus className="h-3 w-3" />
       </Button>
     </div>
-    <div className={`prescription-content text-sm`} style={{ minHeight }}>
+    <div className={cn(`text-sm`, className)} style={{ minHeight }}>
       {children}
     </div>
   </div>
-)
+);
 
 // Modal configurations
 const modalConfigs: Record<string, ModalConfig> = {
@@ -181,7 +198,7 @@ const modalConfigs: Record<string, ModalConfig> = {
       },
     ],
   },
-}
+};
 
 export default function NewPrescription() {
   const [prescriptionData, setPrescriptionData] = useState<PrescriptionData>({
@@ -196,13 +213,13 @@ export default function NewPrescription() {
     medications: [],
     advice: [],
     nextVisit: "",
-  })
+  });
 
   const [modalState, setModalState] = useState({
     isOpen: false,
     type: "",
     formData: {} as Record<string, string>,
-  })
+  });
 
   // Modal handlers
   const openModal = (type: string) => {
@@ -210,24 +227,24 @@ export default function NewPrescription() {
       isOpen: true,
       type,
       formData: {},
-    })
-  }
+    });
+  };
 
   const closeModal = () => {
     setModalState({
       isOpen: false,
       type: "",
       formData: {},
-    })
-  }
+    });
+  };
 
   const handleFormDataChange = (data: Record<string, string>) => {
-    setModalState((prev) => ({ ...prev, formData: data }))
-  }
+    setModalState((prev) => ({ ...prev, formData: data }));
+  };
 
   const handleModalSubmit = (data: Record<string, string>) => {
     setPrescriptionData((prev) => {
-      const updated = { ...prev }
+      const updated = { ...prev };
 
       switch (modalState.type) {
         case "patient":
@@ -236,37 +253,37 @@ export default function NewPrescription() {
             patientName: data.name,
             age: data.age,
             date: data.date,
-          }
+          };
 
         case "chiefComplaint":
           return {
             ...updated,
             chiefComplaint: [...prev.chiefComplaint, data.complaint],
-          }
+          };
 
         case "examinations":
           return {
             ...updated,
             examinations: [...prev.examinations, data.examination],
-          }
+          };
 
         case "diagnosis":
           return {
             ...updated,
             diagnosis: [...prev.diagnosis, data.diagnosis],
-          }
+          };
 
         case "investigations":
           return {
             ...updated,
             investigations: [...prev.investigations, data.investigation],
-          }
+          };
 
         case "history":
           return {
             ...updated,
             history: [...prev.history, data.history],
-          }
+          };
 
         case "medications":
           return {
@@ -280,45 +297,50 @@ export default function NewPrescription() {
                 duration: data.duration,
               },
             ],
-          }
+          };
 
         case "advice":
           return {
             ...updated,
             advice: [...prev.advice, data.advice],
-          }
+          };
 
         case "nextVisit":
           return {
             ...updated,
             nextVisit: data.nextVisit,
-          }
+          };
 
         default:
-          return updated
+          return updated;
       }
-    })
-    closeModal()
-  }
+    });
+    closeModal();
+  };
 
   const removeItem = (type: keyof PrescriptionData, index: number) => {
     setPrescriptionData((prev) => {
-      const updated = { ...prev }
+      const updated = { ...prev };
 
       if (type === "medications") {
-        updated.medications = prev.medications.filter((_, i) => i !== index)
+        updated.medications = prev.medications.filter((_, i) => i !== index);
       } else if (Array.isArray(prev[type])) {
-        ;(updated[type] as string[]) = (prev[type] as string[]).filter((_, i) => i !== index)
+        (updated[type] as string[]) = (prev[type] as string[]).filter(
+          (_, i) => i !== index
+        );
       }
 
-      return updated
-    })
-  }
+      return updated;
+    });
+  };
 
   const renderListItems = (items: string[], type: keyof PrescriptionData) => (
     <>
       {items.map((item, index) => (
-        <div key={index} className="mb-1 flex items-start justify-between group">
+        <div
+          key={index}
+          className="mb-1 flex items-start justify-between group"
+        >
           <div className="flex-1">- {item}</div>
           <Button
             variant="ghost"
@@ -331,7 +353,7 @@ export default function NewPrescription() {
         </div>
       ))}
     </>
-  )
+  );
 
   const renderMedications = () => (
     <>
@@ -359,7 +381,7 @@ export default function NewPrescription() {
         </div>
       ))}
     </>
-  )
+  );
 
   return (
     <div className="min-h-screen">
@@ -373,35 +395,59 @@ export default function NewPrescription() {
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Name:</span>
 
-              <span className="patient-info-line text-sm">{prescriptionData.patientName || ""}</span>
+              <span className="patient-info-line text-sm">
+                {prescriptionData.patientName || ""}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Age:</span>
-              <span className="patient-info-line text-sm w-16">{prescriptionData.age || ""}</span>
+              <span className="patient-info-line text-sm w-16">
+                {prescriptionData.age || ""}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Date:</span>
-              <span className="patient-info-line text-sm">{prescriptionData.date}</span>
+              <span className="patient-info-line text-sm">
+                {prescriptionData.date}
+              </span>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-8">
             {/* Left Column */}
             <div className="space-y-4">
-              <Section title="Chief Complaint" onAddClick={() => openModal("chiefComplaint")}>
-                {renderListItems(prescriptionData.chiefComplaint, "chiefComplaint")}
+              <Section
+                title="Chief Complaint"
+                onAddClick={() => openModal("chiefComplaint")}
+              >
+                {renderListItems(
+                  prescriptionData.chiefComplaint,
+                  "chiefComplaint"
+                )}
               </Section>
 
-              <Section title="On Examinations" onAddClick={() => openModal("examinations")}>
+              <Section
+                title="On Examinations"
+                onAddClick={() => openModal("examinations")}
+              >
                 {renderListItems(prescriptionData.examinations, "examinations")}
               </Section>
 
-              <Section title="Diagnosis" onAddClick={() => openModal("diagnosis")}>
+              <Section
+                title="Diagnosis"
+                onAddClick={() => openModal("diagnosis")}
+              >
                 {renderListItems(prescriptionData.diagnosis, "diagnosis")}
               </Section>
 
-              <Section title="Investigation" onAddClick={() => openModal("investigations")}>
-                {renderListItems(prescriptionData.investigations, "investigations")}
+              <Section
+                title="Investigation"
+                onAddClick={() => openModal("investigations")}
+              >
+                {renderListItems(
+                  prescriptionData.investigations,
+                  "investigations"
+                )}
               </Section>
 
               <Section title="History" onAddClick={() => openModal("history")}>
@@ -411,15 +457,26 @@ export default function NewPrescription() {
 
             {/* Right Column */}
             <div className="space-y-4">
-              <Section title="Rx" onAddClick={() => openModal("medications")} minHeight="200px">
+              <Section
+                title="Rx"
+                onAddClick={() => openModal("medications")}
+                minHeight="200px"
+              >
                 {renderMedications()}
               </Section>
 
-              <Section title="Advice" onAddClick={() => openModal("advice")} minHeight="60px">
+              <Section
+                title="Advice"
+                onAddClick={() => openModal("advice")}
+                minHeight="60px"
+              >
                 {renderListItems(prescriptionData.advice, "advice")}
               </Section>
 
-              <Section title="Next Visit" onAddClick={() => openModal("nextVisit")}>
+              <Section
+                title="Next Visit"
+                onAddClick={() => openModal("nextVisit")}
+              >
                 {prescriptionData.nextVisit}
               </Section>
             </div>
@@ -440,5 +497,5 @@ export default function NewPrescription() {
         />
       </div>
     </div>
-  )
+  );
 }
