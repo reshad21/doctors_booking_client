@@ -55,7 +55,7 @@ const Section: React.FC<SectionProps> = ({ title, children, onAddClick, minHeigh
   <div className="prescription-section">
     <div className="flex items-center gap-2 mb-2">
       <h3 className={`section-title ${title === "Rx" ? "text-lg font-bold" : ""}`}>{title}</h3>
-      <Button variant="ghost" size="sm" onClick={onAddClick} className="p-1 h-5 w-5 text-blue-600 hover:bg-blue-50">
+      <Button variant="ghost" size="sm" onClick={onAddClick} className="p-1 h-5 w-5 border cursor-pointer text-green-600 hover:bg-blue-50">
         <Plus className="h-3 w-3" />
       </Button>
     </div>
