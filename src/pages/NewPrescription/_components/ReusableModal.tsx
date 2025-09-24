@@ -89,7 +89,7 @@ const ReusableModal: React.FC<ReusableModalProps> = ({
           ))}
           <Button
             onClick={handleSubmit}
-            className="w-full bg-blue-600 hover:bg-blue-700"
+            className="w-full bg-green-600 hover:bg-green-700 cursor-pointer"
           >
             {config.buttonLabel}
           </Button>

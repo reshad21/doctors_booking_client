@@ -1,16 +1,9 @@
+import { BriefcaseMedical } from "lucide-react";
+
 const PrescriptionHeader = () => {
   return (
-    <div className="prescription-header flex justify-between items-start">
+    <div className="flex justify-between items-start mb-4">
       <div className="flex items-start gap-4">
-        <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
-          <img
-            src="/images/clinic-logo.jpg"
-            alt="Clinic Logo"
-            width={40}
-            height={40}
-            className="object-contain"
-          />
-        </div>
         <div>
           <h2 className="text-lg font-bold text-gray-800">
             ডাঃ এ.এফ.এম হেলাল উদ্দিন
@@ -22,6 +15,9 @@ const PrescriptionHeader = () => {
           </p>
           <p className="text-sm text-gray-600">শের-ই-বাংলা নগর, ঢাকা</p>
         </div>
+      </div>
+      <div className="size-20 bg-orange-100 rounded-full flex items-center justify-center">
+        <BriefcaseMedical className="size-14" strokeWidth={1.2} />
       </div>
       <div className="text-right">
         <h3 className="text-lg font-bold text-gray-800">
@@ -36,9 +32,6 @@ const PrescriptionHeader = () => {
         </p>
         <p className="text-sm text-gray-600">Diseases & Hospital</p>
         <p className="text-sm text-gray-600">Sher-E-Bangla Nagar, Dhaka</p>
-        <p className="text-xs text-gray-500 mt-2">
-          চেম্বারঃ ০১৭১১-৮৮৮৮৮৮ (শুধুমাত্র এপয়েন্টমেন্টের জন্য)
-        </p>
       </div>
     </div>
   );
