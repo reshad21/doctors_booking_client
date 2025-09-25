@@ -1,20 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import {
-  GripVertical,
-  Settings,
-  Trash2,
-  Plus,
-  Minus,
-  Eye,
-  EyeOff,
-} from "lucide-react";
+import { GripVertical, Settings, Trash2, GripHorizontal } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
 import {
   Select,
   SelectContent,
@@ -23,24 +14,24 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Switch } from "../ui/switch";
-import { Badge } from "../ui/badge";
 import type { FormFieldData } from "../../redux/slices/prescriptionTemplateSlice";
 
 interface FormFieldProps {
   field: FormFieldData;
+  totalWidth: number;
   onUpdate: (updates: Partial<FormFieldData>) => void;
   onDelete: () => void;
-  isPreview?: boolean;
 }
 
 export function FormField({
   field,
+  totalWidth,
   onUpdate,
   onDelete,
-  isPreview = false,
 }: FormFieldProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
+  const [isDragResizing, setIsDragResizing] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, width: 0 });
 
   const {
     attributes,
@@ -48,100 +39,133 @@ export function FormField({
     setNodeRef,
     transform,
     transition,
-    isDragging,
+    isDragging: isSortableDragging,
   } = useSortable({ id: field.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isSortableDragging ? 0.5 : 1,
   };
 
-  const handleWidthChange = (increment: boolean) => {
-    const newWidth = increment
-      ? Math.min(field.width + 1, 12)
-      : Math.max(field.width - 1, 1);
-    onUpdate({ width: newWidth });
+  // Ensure widthInches exists, fallback to width property or default
+  const currentWidth =
+    field.widthInches ??
+    (field as FormFieldData & { width?: number }).width ??
+    2.0;
+
+  const handleWidthChange = useCallback(
+    (newWidth: number) => {
+      const clampedWidth = Math.min(Math.max(newWidth, 0.5), totalWidth);
+      onUpdate({ widthInches: clampedWidth });
+    },
+    [totalWidth, onUpdate]
+  );
+
+  // Handle mouse down on resize handle
+  const handleResizeMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragResizing(true);
+    setDragStart({
+      x: e.clientX,
+      width: currentWidth,
+    });
   };
 
-  const renderFormInput = () => {
-    const baseProps = {
-      placeholder: field.placeholder,
-      defaultValue: field.defaultValue,
-      disabled: !isPreview,
-      className: "w-full",
+  // Handle mouse move and up for resizing
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragResizing) return;
+
+      const deltaX = e.clientX - dragStart.x;
+      // Convert pixel delta to inches (approximately 96 pixels per inch)
+      const deltaInches = deltaX / 96;
+      const newWidth = dragStart.width + deltaInches;
+
+      handleWidthChange(newWidth);
     };
+
+    const handleMouseUp = () => {
+      setIsDragResizing(false);
+    };
+
+    if (isDragResizing) {
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+      document.body.style.cursor = "ew-resize";
+      document.body.style.userSelect = "none";
+    }
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+  }, [isDragResizing, dragStart, handleWidthChange]);
+
+  const renderFormPlaceholder = () => {
+    let typeIcon = "";
+    let displayText = field.placeholder || "Enter value";
 
     switch (field.type) {
       case "textarea":
-        return <Textarea {...baseProps} rows={3} />;
+        typeIcon = "📝";
+        displayText = field.placeholder || "Enter text...";
+        return (
+          <div className="w-full h-16 bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-sm">
+            <span className="mr-2">{typeIcon}</span>
+            {displayText}
+          </div>
+        );
       case "select":
-        return (
-          <Select defaultValue={field.defaultValue} disabled={!isPreview}>
-            <SelectTrigger>
-              <SelectValue placeholder={field.placeholder} />
-            </SelectTrigger>
-            <SelectContent>
-              {field.options?.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        );
+        typeIcon = "📋";
+        displayText = field.placeholder || "Select option";
+        break;
       case "checkbox":
-        return (
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id={field.id}
-              disabled={!isPreview}
-              className="rounded"
-            />
-            <Label htmlFor={field.id}>{field.placeholder}</Label>
-          </div>
-        );
+        typeIcon = "☑️";
+        displayText = field.placeholder || "Checkbox option";
+        break;
       case "radio":
-        return (
-          <div className="space-y-2">
-            {field.options?.map((option) => (
-              <div key={option} className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id={`${field.id}-${option}`}
-                  name={field.id}
-                  value={option}
-                  disabled={!isPreview}
-                />
-                <Label htmlFor={`${field.id}-${option}`}>{option}</Label>
-              </div>
-            ))}
-          </div>
-        );
+        typeIcon = "🔘";
+        displayText = field.placeholder || "Radio option";
+        break;
+      case "date":
+        typeIcon = "📅";
+        displayText = field.placeholder || "Select date";
+        break;
+      case "email":
+        typeIcon = "✉️";
+        displayText = field.placeholder || "Enter email";
+        break;
+      case "number":
+        typeIcon = "🔢";
+        displayText = field.placeholder || "Enter number";
+        break;
+      case "password":
+        typeIcon = "🔒";
+        displayText = field.placeholder || "Enter password";
+        break;
       default:
-        return <Input {...baseProps} type={field.type} />;
+        typeIcon = "📄";
+        displayText = field.placeholder || "Enter text";
     }
-  };
 
-  if (isPreview) {
     return (
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">
-          {field.label}
-          {field.required && <span className="text-red-500 ml-1">*</span>}
-        </Label>
-        {renderFormInput()}
+      <div className="w-full h-10 bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg flex items-center px-3 text-gray-500 text-sm">
+        <span className="mr-2">{typeIcon}</span>
+        {displayText}
       </div>
     );
-  }
+  };
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} style={style} className="relative">
       <Card
         className={`p-4 relative transition-all duration-200 ${
-          isDragging ? "shadow-lg border-blue-400" : "hover:shadow-md"
-        }`}
+          isSortableDragging ? "shadow-lg border-blue-400" : "hover:shadow-md"
+        } ${isDragResizing ? "ring-2 ring-blue-300 shadow-lg" : ""}`}
       >
         {/* Drag Handle */}
         <div
@@ -152,45 +176,8 @@ export function FormField({
           <GripVertical className="w-4 h-4 text-white" />
         </div>
 
-        {/* Width Controls */}
-        <div className="absolute -top-2 left-8 flex items-center gap-1 z-10">
-          <Button
-            size="sm"
-            variant="outline"
-            className="w-6 h-6 p-0 bg-red-500 hover:bg-red-600 border-red-500 text-white"
-            onClick={() => handleWidthChange(false)}
-            disabled={field.width <= 1}
-          >
-            <Minus className="w-3 h-3" />
-          </Button>
-          <Badge variant="secondary" className="px-2 py-1 text-xs font-medium">
-            {field.width}
-          </Badge>
-          <Button
-            size="sm"
-            variant="outline"
-            className="w-6 h-6 p-0 bg-green-500 hover:bg-green-600 border-green-500 text-white"
-            onClick={() => handleWidthChange(true)}
-            disabled={field.width >= 12}
-          >
-            <Plus className="w-3 h-3" />
-          </Button>
-        </div>
-
         {/* Field Actions */}
         <div className="absolute -top-2 -right-2 flex gap-1 z-10">
-          <Button
-            size="sm"
-            variant="outline"
-            className="w-6 h-6 p-0 bg-blue-500 hover:bg-blue-600 border-blue-500 text-white"
-            onClick={() => setShowPreview(!showPreview)}
-          >
-            {showPreview ? (
-              <EyeOff className="w-3 h-3" />
-            ) : (
-              <Eye className="w-3 h-3" />
-            )}
-          </Button>
           <Button
             size="sm"
             variant="outline"
@@ -222,13 +209,33 @@ export function FormField({
             </div>
           </div>
 
-          {showPreview ? (
-            renderFormInput()
-          ) : (
-            <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-4 text-center text-gray-500 text-sm">
-              {field.type} field - {field.placeholder}
+          <div className="flex items-center gap-2">
+            <div className="flex-1">{renderFormPlaceholder()}</div>
+
+            {/* Drag Resize Handle */}
+            <div
+              className={`flex flex-col items-center cursor-ew-resize hover:bg-gray-100 p-2 rounded select-none transition-colors ${
+                isDragResizing ? "bg-blue-100 border-2 border-blue-300" : ""
+              }`}
+              onMouseDown={handleResizeMouseDown}
+              title={`Drag to resize width: ${currentWidth.toFixed(1)}"`}
+            >
+              <GripHorizontal
+                className={`w-4 h-4 rotate-90 transition-colors ${
+                  isDragResizing ? "text-blue-600" : "text-gray-500"
+                }`}
+              />
+              <span
+                className={`text-xs mt-1 transition-colors ${
+                  isDragResizing
+                    ? "text-blue-600 font-semibold"
+                    : "text-gray-500"
+                }`}
+              >
+                {currentWidth.toFixed(1)}"
+              </span>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Settings Panel */}
@@ -282,6 +289,18 @@ export function FormField({
                 id={`placeholder-${field.id}`}
                 value={field.placeholder}
                 onChange={(e) => onUpdate({ placeholder: e.target.value })}
+                className="text-sm"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor={`default-${field.id}`} className="text-xs">
+                Default Value
+              </Label>
+              <Input
+                id={`default-${field.id}`}
+                value={field.defaultValue}
+                onChange={(e) => onUpdate({ defaultValue: e.target.value })}
                 className="text-sm"
               />
             </div>

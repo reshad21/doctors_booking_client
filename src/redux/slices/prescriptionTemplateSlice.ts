@@ -27,7 +27,7 @@ export interface FormFieldData {
   placeholder: string;
   required: boolean;
   order: number;
-  width: number; // 1-12 grid columns
+  widthInches: number; // Width in inches
   row: number;
   defaultValue: string;
   options?: string[]; // for select, radio
@@ -105,7 +105,7 @@ const initialState: PrescriptionTemplateState = {
         placeholder: "Enter patient name",
         required: true,
         order: 0,
-        width: 6,
+        widthInches: 1.8,
         row: 0,
         defaultValue: "",
       },
@@ -116,7 +116,7 @@ const initialState: PrescriptionTemplateState = {
         placeholder: "Enter age",
         required: true,
         order: 1,
-        width: 3,
+        widthInches: 1.0,
         row: 0,
         defaultValue: "",
       },
@@ -127,7 +127,7 @@ const initialState: PrescriptionTemplateState = {
         placeholder: "Select gender",
         required: true,
         order: 2,
-        width: 3,
+        widthInches: 1.2,
         row: 0,
         defaultValue: "",
         options: ["Male", "Female", "Other"],
@@ -139,8 +139,8 @@ const initialState: PrescriptionTemplateState = {
         placeholder: "Enter patient ID",
         required: false,
         order: 3,
-        width: 6,
-        row: 1,
+        widthInches: 1.8,
+        row: 0,
         defaultValue: "",
       },
       {
@@ -150,8 +150,8 @@ const initialState: PrescriptionTemplateState = {
         placeholder: "Select date",
         required: true,
         order: 4,
-        width: 6,
-        row: 1,
+        widthInches: 1.5,
+        row: 0,
         defaultValue: "",
       },
     ],

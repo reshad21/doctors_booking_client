@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useCallback, useMemo, useEffect } from "react";
 import {
   DndContext,
   closestCenter,
@@ -17,13 +17,12 @@ import {
 import { FormField } from "./FormField";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
-import { Plus, Save, Eye, EyeOff, RotateCcw } from "lucide-react";
+import { Plus, Save, RotateCcw } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
   type FormFieldData,
   updateFormField,
   setFormFields,
-  addFormField,
   deleteFormField,
 } from "../../redux/slices/prescriptionTemplateSlice";
 
@@ -32,7 +31,37 @@ export function FormBuilder() {
   const { formFields } = useAppSelector(
     (state) => state.prescriptionTemplate.patientSection
   );
-  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const { totalWidth } = useAppSelector(
+    (state) => state.prescriptionTemplate.pageSetup
+  );
+
+  // Migration: Convert old width property to widthInches
+  useEffect(() => {
+    const needsMigration = formFields.some(
+      (field) =>
+        field.widthInches === undefined &&
+        (field as FormFieldData & { width?: number }).width !== undefined
+    );
+
+    if (needsMigration) {
+      const migratedFields = formFields.map((field) => {
+        if (
+          field.widthInches === undefined &&
+          (field as FormFieldData & { width?: number }).width !== undefined
+        ) {
+          // Convert grid width (1-12) to approximate inches based on 8.3" total width
+          const oldWidth = (field as FormFieldData & { width?: number }).width!;
+          const approximateInches = (oldWidth / 12) * 8.3;
+          return {
+            ...field,
+            widthInches: Math.round(approximateInches * 10) / 10,
+          };
+        }
+        return field;
+      });
+      dispatch(setFormFields(migratedFields));
+    }
+  }, [formFields, dispatch]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -41,23 +70,72 @@ export function FormBuilder() {
     })
   );
 
-  // Calculate row positions based on field widths
-  const calculateRows = useCallback((fieldsData: FormFieldData[]) => {
-    const sortedFields = [...fieldsData].sort((a, b) => a.order - b.order);
-    let currentRow = 0;
-    let currentRowWidth = 0;
+  // Calculate row positions based on field widths in inches
+  const calculateRows = useCallback(
+    (fieldsData: FormFieldData[], availableWidth: number) => {
+      const sortedFields = [...fieldsData].sort((a, b) => a.order - b.order);
+      const rows: FormFieldData[][] = [];
+      let currentRow: FormFieldData[] = [];
+      let currentRowWidth = 0;
 
-    return sortedFields.map((field) => {
-      if (currentRowWidth + field.width > 12) {
-        currentRow++;
-        currentRowWidth = field.width;
-      } else {
-        currentRowWidth += field.width;
+      sortedFields.forEach((field) => {
+        // Ensure widthInches exists, fallback to width property or default
+        const fieldWidth =
+          field.widthInches ??
+          (field as FormFieldData & { width?: number }).width ??
+          2.0;
+
+        // Add some padding between fields (0.2 inches)
+        const fieldWidthWithPadding =
+          fieldWidth + (currentRow.length > 0 ? 0.2 : 0);
+
+        if (
+          currentRowWidth + fieldWidthWithPadding > availableWidth &&
+          currentRow.length > 0
+        ) {
+          // Start new row
+          rows.push(currentRow);
+          currentRow = [{ ...field, widthInches: fieldWidth }];
+          currentRowWidth = fieldWidth;
+        } else {
+          // Add to current row
+          currentRow.push({ ...field, widthInches: fieldWidth });
+          currentRowWidth += fieldWidthWithPadding;
+        }
+      });
+
+      if (currentRow.length > 0) {
+        rows.push(currentRow);
       }
 
-      return { ...field, row: currentRow };
-    });
-  }, []);
+      // Update row numbers
+      const fieldsWithRows: FormFieldData[] = [];
+      rows.forEach((row, rowIndex) => {
+        row.forEach((field) => {
+          fieldsWithRows.push({ ...field, row: rowIndex });
+        });
+      });
+
+      return fieldsWithRows;
+    },
+    []
+  );
+
+  // Grouped fields by row for rendering
+  const fieldsByRow = useMemo(() => {
+    const fieldsWithCalculatedRows = calculateRows(formFields, totalWidth);
+
+    return fieldsWithCalculatedRows.reduce(
+      (acc, field) => {
+        if (!acc[field.row]) {
+          acc[field.row] = [];
+        }
+        acc[field.row].push(field);
+        return acc;
+      },
+      {} as Record<number, FormFieldData[]>
+    );
+  }, [formFields, totalWidth, calculateRows]);
 
   const updateFieldOrder = useCallback(
     (newFields: FormFieldData[]) => {
@@ -65,10 +143,10 @@ export function FormBuilder() {
         ...field,
         order: index,
       }));
-      const fieldsWithRows = calculateRows(fieldsWithOrder);
+      const fieldsWithRows = calculateRows(fieldsWithOrder, totalWidth);
       dispatch(setFormFields(fieldsWithRows));
     },
-    [calculateRows, dispatch]
+    [calculateRows, dispatch, totalWidth]
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -91,14 +169,11 @@ export function FormBuilder() {
       placeholder: "Enter value",
       required: false,
       order: formFields.length,
-      width: 6,
+      widthInches: 1.5,
       row: 0,
       defaultValue: "",
     };
 
-    dispatch(addFormField(newField));
-
-    // Recalculate rows after adding
     const newFields = [...formFields, newField];
     updateFieldOrder(newFields);
   };
@@ -107,7 +182,7 @@ export function FormBuilder() {
     dispatch(updateFormField({ id, updates }));
 
     // If width changed, recalculate rows
-    if (updates.width !== undefined) {
+    if (updates.widthInches !== undefined) {
       const updatedFields = formFields.map((field) =>
         field.id === id ? { ...field, ...updates } : field
       );
@@ -132,7 +207,7 @@ export function FormBuilder() {
         placeholder: "Enter patient name",
         required: true,
         order: 0,
-        width: 6,
+        widthInches: 1.8,
         row: 0,
         defaultValue: "",
       },
@@ -143,7 +218,7 @@ export function FormBuilder() {
         placeholder: "Enter age",
         required: true,
         order: 1,
-        width: 3,
+        widthInches: 1.5,
         row: 0,
         defaultValue: "",
       },
@@ -154,7 +229,7 @@ export function FormBuilder() {
         placeholder: "Select gender",
         required: true,
         order: 2,
-        width: 3,
+        widthInches: 1.2,
         row: 0,
         defaultValue: "",
         options: ["Male", "Female", "Other"],
@@ -166,8 +241,8 @@ export function FormBuilder() {
         placeholder: "Enter patient ID",
         required: false,
         order: 3,
-        width: 6,
-        row: 1,
+        widthInches: 1.8,
+        row: 0,
         defaultValue: "",
       },
       {
@@ -177,8 +252,8 @@ export function FormBuilder() {
         placeholder: "Select date",
         required: true,
         order: 4,
-        width: 6,
-        row: 1,
+        widthInches: 1.5,
+        row: 0,
         defaultValue: "",
       },
     ];
@@ -195,6 +270,7 @@ export function FormBuilder() {
       metadata: {
         totalFields: formFields.length,
         totalRows: Math.max(...formFields.map((f) => f.row)) + 1,
+        totalWidth,
         createdAt: new Date().toISOString(),
       },
     };
@@ -213,18 +289,6 @@ export function FormBuilder() {
     URL.revokeObjectURL(url);
   };
 
-  // Group fields by row for display
-  const fieldsByRow = formFields.reduce(
-    (acc, field) => {
-      if (!acc[field.row]) {
-        acc[field.row] = [];
-      }
-      acc[field.row].push(field);
-      return acc;
-    },
-    {} as Record<number, FormFieldData[]>
-  );
-
   return (
     <div className="w-full max-w-6xl mx-auto p-6">
       <Card className="p-6">
@@ -232,36 +296,21 @@ export function FormBuilder() {
           <div>
             <h2 className="text-2xl font-bold">Patient Section Form Builder</h2>
             <p className="text-sm text-gray-600 mt-1">
-              Drag and drop to reorder • Resize fields with +/- • Click settings
-              to customize
+              Drag and drop to reorder • Use width selector to resize fields •
+              Fields automatically wrap to new rows
             </p>
           </div>
 
           <div className="flex gap-3">
-            <Button
-              onClick={() => setIsPreviewMode(!isPreviewMode)}
-              variant={isPreviewMode ? "default" : "outline"}
-              size="sm"
-            >
-              {isPreviewMode ? (
-                <EyeOff className="w-4 h-4 mr-2" />
-              ) : (
-                <Eye className="w-4 h-4 mr-2" />
-              )}
-              {isPreviewMode ? "Edit Mode" : "Preview"}
-            </Button>
-
             <Button onClick={resetForm} variant="outline" size="sm">
               <RotateCcw className="w-4 h-4 mr-2" />
               Reset
             </Button>
 
-            {!isPreviewMode && (
-              <Button onClick={addField} variant="outline" size="sm">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Field
-              </Button>
-            )}
+            <Button onClick={addField} variant="outline" size="sm">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Field
+            </Button>
 
             <Button onClick={saveForm} size="sm">
               <Save className="w-4 h-4 mr-2" />
@@ -273,91 +322,75 @@ export function FormBuilder() {
         <div className="mb-4 text-sm text-gray-600 flex items-center gap-4">
           <span>Total Fields: {formFields.length}</span>
           <span>Rows: {Math.max(...formFields.map((f) => f.row), 0) + 1}</span>
-          <span>Mode: {isPreviewMode ? "Preview" : "Edit"}</span>
+          <span>Available Width: {totalWidth}"</span>
         </div>
 
-        {isPreviewMode ? (
-          // Preview Mode - Show actual form
-          <div className="space-y-6">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-900 mb-2">Form Preview</h3>
-              <p className="text-blue-700 text-sm">
-                This is how your form will appear to users
-              </p>
-            </div>
-
-            {Object.entries(fieldsByRow)
-              .sort(([a], [b]) => Number.parseInt(a) - Number.parseInt(b))
-              .map(([rowNum, rowFields]) => (
-                <div key={rowNum} className="grid grid-cols-12 gap-4">
-                  {rowFields
-                    .sort((a, b) => a.order - b.order)
-                    .map((field) => (
-                      <div
-                        key={field.id}
-                        className={`col-span-${field.width}`}
-                        style={{ gridColumn: `span ${field.width}` }}
-                      >
-                        <FormField
-                          field={field}
-                          onUpdate={() => {}}
-                          onDelete={() => {}}
-                          isPreview={true}
-                        />
-                      </div>
-                    ))}
-                </div>
-              ))}
-          </div>
-        ) : (
-          // Edit Mode with Drag & Drop
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={formFields.map((f) => f.id)}
+            strategy={verticalListSortingStrategy}
           >
-            <SortableContext
-              items={formFields.map((f) => f.id)}
-              strategy={verticalListSortingStrategy}
-            >
-              <div className="space-y-6">
-                {Object.entries(fieldsByRow)
-                  .sort(([a], [b]) => Number.parseInt(a) - Number.parseInt(b))
-                  .map(([rowNum, rowFields]) => (
-                    <div key={rowNum} className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                        <span className="text-xs text-gray-500 font-medium">
-                          Row {Number.parseInt(rowNum) + 1}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-12 gap-4">
+            <div className="space-y-6">
+              {Object.entries(fieldsByRow)
+                .sort(([a], [b]) => Number.parseInt(a) - Number.parseInt(b))
+                .map(([rowNum, rowFields]) => (
+                  <div key={rowNum} className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                      <span className="text-xs text-gray-500 font-medium">
+                        Row {Number.parseInt(rowNum) + 1} (
                         {rowFields
-                          .sort((a, b) => a.order - b.order)
-                          .map((field) => (
+                          .reduce((sum, field) => {
+                            const fieldWidth =
+                              field.widthInches ??
+                              (field as FormFieldData & { width?: number })
+                                .width ??
+                              2.0;
+                            return sum + fieldWidth;
+                          }, 0)
+                          .toFixed(1)}
+                        " / {totalWidth}")
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1">
+                      {rowFields
+                        .sort((a, b) => a.order - b.order)
+                        .map((field) => {
+                          const fieldWidth =
+                            field.widthInches ??
+                            (field as FormFieldData & { width?: number })
+                              .width ??
+                            2.0;
+                          return (
                             <div
                               key={field.id}
-                              className={`col-span-${field.width}`}
-                              style={{ gridColumn: `span ${field.width}` }}
+                              style={{
+                                width: `${(fieldWidth / totalWidth) * 100}%`,
+                                minWidth: `${fieldWidth * 96}px`, // 96px per inch approximation
+                              }}
                             >
                               <FormField
                                 field={field}
+                                totalWidth={totalWidth}
                                 onUpdate={(updates) =>
                                   updateField(field.id, updates)
                                 }
                                 onDelete={() => deleteField(field.id)}
-                                isPreview={false}
                               />
                             </div>
-                          ))}
-                      </div>
+                          );
+                        })}
                     </div>
-                  ))}
-              </div>
-            </SortableContext>
-          </DndContext>
-        )}
+                  </div>
+                ))}
+            </div>
+          </SortableContext>
+        </DndContext>
 
         {formFields.length === 0 && (
           <div className="text-center py-16 text-gray-500">
