@@ -43,11 +43,15 @@ interface PatientSection {
 }
 
 interface BodySection {
-  showMedicineTable: boolean;
-  showAdvice: boolean;
-  showDiagnosis: boolean;
-  showInvestigation: boolean;
-  // Add more body section fields as needed
+  showBottomLine: boolean;
+  showMiddleLine: boolean;
+  showTopLine: boolean;
+  showRightLine: boolean;
+  showLeftLine: boolean;
+  bodyRightSideWidth: number;
+  bodyLeftSideWidth: number;
+  bodyRightSideTopMargin: number;
+  bodyLeftSideTopMargin: number;
 }
 
 interface HeaderSection {
@@ -153,10 +157,15 @@ const initialState: PrescriptionTemplateState = {
     ],
   },
   bodySection: {
-    showMedicineTable: true,
-    showAdvice: true,
-    showDiagnosis: true,
-    showInvestigation: false,
+    showBottomLine: false,
+    showMiddleLine: false,
+    showTopLine: false,
+    showRightLine: false,
+    showLeftLine: false,
+    bodyRightSideWidth: 50,
+    bodyLeftSideWidth: 50,
+    bodyRightSideTopMargin: 0,
+    bodyLeftSideTopMargin: 0,
   },
   headerSection: {
     showLogo: true,
