@@ -1,14 +1,19 @@
 "use client";
 
-import type React from "react";
-
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Plus, X } from "lucide-react"; // Added X icon for remove buttons
 import PrescriptionHeader from "./_components/PrescriptionHeader";
 import PrescriptionFooter from "./_components/PrescriptionFooter";
 import ReusableModal from "./_components/ReusableModal";
-import { cn } from "@/lib/utils";
+import {
+  ChiefComplaintSection,
+  ExaminationsSection,
+  DiagnosisSection,
+  InvestigationSection,
+  HistorySection,
+  MedicationsSection,
+  AdviceSection,
+  NextVisitSection,
+} from "./PrescriptionSections/PrescriptionSections";
 
 // Types
 interface PrescriptionData {
@@ -43,44 +48,6 @@ interface ModalConfig {
   fields: ModalField[];
   buttonLabel: string;
 }
-
-// Section Component for better organization
-interface SectionProps {
-  title: string;
-  children: React.ReactNode;
-  onAddClick: () => void;
-  minHeight?: string;
-  className?: string;
-}
-
-const Section: React.FC<SectionProps> = ({
-  title,
-  children,
-  onAddClick,
-  minHeight = "40px",
-  className,
-}) => (
-  <div className="prescription-section">
-    <div className="flex items-center gap-2 mb-2">
-      <h3
-        className={`section-title ${title === "Rx" ? "text-lg font-bold" : ""}`}
-      >
-        {title}
-      </h3>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onAddClick}
-        className="p-1 h-5 w-5 border cursor-pointer text-green-600 hover:bg-blue-50"
-      >
-        <Plus className="h-3 w-3" />
-      </Button>
-    </div>
-    <div className={cn(`text-sm`, className)} style={{ minHeight }}>
-      {children}
-    </div>
-  </div>
-);
 
 // Modal configurations
 const modalConfigs: Record<string, ModalConfig> = {
@@ -198,6 +165,54 @@ const modalConfigs: Record<string, ModalConfig> = {
       },
     ],
   },
+};
+
+// Sample tags for different prescription sections
+const prescriptionTags = {
+  chiefComplaint: [
+    { id: "cc1", label: "Chest pain", category: "Cardiac" },
+    { id: "cc2", label: "Shortness of breath", category: "Respiratory" },
+    { id: "cc3", label: "Headache", category: "Neurological" },
+    { id: "cc4", label: "Abdominal pain", category: "GI" },
+    { id: "cc5", label: "Fever", category: "General" },
+    { id: "cc6", label: "Cough", category: "Respiratory" },
+    { id: "cc7", label: "Nausea", category: "GI" },
+    { id: "cc8", label: "Dizziness", category: "Neurological" },
+  ],
+  examinations: [
+    { id: "ex1", label: "Normal heart sounds", category: "Cardiac" },
+    { id: "ex2", label: "Clear lung fields", category: "Respiratory" },
+    { id: "ex3", label: "Soft abdomen", category: "GI" },
+    { id: "ex4", label: "No lymphadenopathy", category: "General" },
+    { id: "ex5", label: "Normal reflexes", category: "Neurological" },
+    { id: "ex6", label: "No edema", category: "General" },
+  ],
+  diagnosis: [
+    { id: "dx1", label: "Hypertension", category: "Cardiac" },
+    { id: "dx2", label: "Type 2 Diabetes", category: "Endocrine" },
+    {
+      id: "dx3",
+      label: "Upper respiratory infection",
+      category: "Respiratory",
+    },
+    { id: "dx4", label: "Gastritis", category: "GI" },
+    { id: "dx5", label: "Migraine", category: "Neurological" },
+  ],
+  medications: [
+    { id: "med1", label: "Paracetamol 500mg", category: "Analgesic" },
+    { id: "med2", label: "Amoxicillin 250mg", category: "Antibiotic" },
+    { id: "med3", label: "Omeprazole 20mg", category: "PPI" },
+    { id: "med4", label: "Metformin 500mg", category: "Antidiabetic" },
+    { id: "med5", label: "Amlodipine 5mg", category: "Antihypertensive" },
+    { id: "med6", label: "Aspirin 75mg", category: "Antiplatelet" },
+  ],
+  advice: [
+    { id: "adv1", label: "Take rest", category: "General" },
+    { id: "adv2", label: "Drink plenty of fluids", category: "General" },
+    { id: "adv3", label: "Avoid spicy food", category: "Dietary" },
+    { id: "adv4", label: "Regular exercise", category: "Lifestyle" },
+    { id: "adv5", label: "Monitor blood pressure", category: "Monitoring" },
+  ],
 };
 
 export default function NewPrescription() {
@@ -318,167 +333,169 @@ export default function NewPrescription() {
     closeModal();
   };
 
-  const removeItem = (type: keyof PrescriptionData, index: number) => {
-    setPrescriptionData((prev) => {
-      const updated = { ...prev };
-
-      if (type === "medications") {
-        updated.medications = prev.medications.filter((_, i) => i !== index);
-      } else if (Array.isArray(prev[type])) {
-        (updated[type] as string[]) = (prev[type] as string[]).filter(
-          (_, i) => i !== index
-        );
-      }
-
-      return updated;
-    });
+  // Remove item handlers
+  const removeChiefComplaint = (index: number) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      chiefComplaint: prev.chiefComplaint.filter((_, i) => i !== index),
+    }));
   };
 
-  const renderListItems = (items: string[], type: keyof PrescriptionData) => (
-    <>
-      {items.map((item, index) => (
-        <div
-          key={index}
-          className="mb-1 flex items-start justify-between group"
-        >
-          <div className="flex-1">- {item}</div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => removeItem(type, index)}
-            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2"
-          >
-            <X className="h-3 w-3" />
-          </Button>
-        </div>
-      ))}
-    </>
-  );
+  const removeExamination = (index: number) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      examinations: prev.examinations.filter((_, i) => i !== index),
+    }));
+  };
 
-  const renderMedications = () => (
-    <>
-      {prescriptionData.medications.map((med, index) => (
-        <div key={index} className="mb-3 group">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start gap-2 flex-1">
-              <span className="rx-number">{index + 1}.</span>
-              <div>
-                <div className="font-medium">{med.name}</div>
-                <div className="text-xs text-gray-600 ml-4">
-                  {med.dosage} - {med.frequency} - {med.duration}
-                </div>
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => removeItem("medications", index)}
-              className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <X className="h-3 w-3" />
-            </Button>
-          </div>
-        </div>
-      ))}
-    </>
-  );
+  const removeDiagnosis = (index: number) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      diagnosis: prev.diagnosis.filter((_, i) => i !== index),
+    }));
+  };
+
+  const removeInvestigation = (index: number) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      investigations: prev.investigations.filter((_, i) => i !== index),
+    }));
+  };
+
+  const removeHistory = (index: number) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      history: prev.history.filter((_, i) => i !== index),
+    }));
+  };
+
+  const removeMedication = (index: number) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      medications: prev.medications.filter((_, i) => i !== index),
+    }));
+  };
+
+  const removeAdvice = (index: number) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      advice: prev.advice.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleTagSelect = (tag: any) => {
+    const fieldMapping: Record<string, string> = {
+      chiefComplaint: "complaint",
+      examinations: "examination",
+      diagnosis: "diagnosis",
+      medications: "name",
+      advice: "advice",
+    };
+
+    const fieldId = fieldMapping[modalState.type];
+    if (fieldId) {
+      handleFormDataChange({ ...modalState.formData, [fieldId]: tag.label });
+    }
+  };
+
+  const getTagsForModalType = (type: string) => {
+    switch (type) {
+      case "chiefComplaint":
+        return prescriptionTags.chiefComplaint;
+      case "examinations":
+        return prescriptionTags.examinations;
+      case "diagnosis":
+        return prescriptionTags.diagnosis;
+      case "medications":
+        return prescriptionTags.medications;
+      case "advice":
+        return prescriptionTags.advice;
+      default:
+        return [];
+    }
+  };
 
   return (
-    <div className="min-h-screen">
-      <div className="max-w-5xl mx-auto">
-        <div className="bg-white p-8 rounded-lg">
+    <div className="min-h-screen bg-[#F4F6F9]">
+      <div className="max-w-5xl mx-auto pt-4">
+        <div className="rounded-lg">
           {/* Header */}
           <PrescriptionHeader />
 
           {/* Patient Information */}
-          <div className="grid grid-cols-3 gap-8 mb-6">
+          <div className="grid grid-cols-4 gap-8 justify-items-center max-w-5xl my-5 mx-auto">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Name:</span>
-
-              <span className="patient-info-line text-sm">
+              <span className="text-sm">
                 {prescriptionData.patientName || ""}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Age:</span>
-              <span className="patient-info-line text-sm w-16">
-                {prescriptionData.age || ""}
-              </span>
+              <span className="text-sm w-16">{prescriptionData.age || ""}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Date:</span>
-              <span className="patient-info-line text-sm">
-                {prescriptionData.date}
-              </span>
+              <span className="text-sm">{prescriptionData.date}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">ID:</span>
+              <span className="text-sm">{prescriptionData.date}</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-2 gap-8 border p-5 mx-2 border-[#C3C3C3] rounded">
             {/* Left Column */}
             <div className="space-y-4">
-              <Section
-                title="Chief Complaint"
+              <ChiefComplaintSection
+                items={prescriptionData.chiefComplaint}
                 onAddClick={() => openModal("chiefComplaint")}
-              >
-                {renderListItems(
-                  prescriptionData.chiefComplaint,
-                  "chiefComplaint"
-                )}
-              </Section>
+                onRemoveItem={removeChiefComplaint}
+              />
 
-              <Section
-                title="On Examinations"
+              <ExaminationsSection
+                items={prescriptionData.examinations}
                 onAddClick={() => openModal("examinations")}
-              >
-                {renderListItems(prescriptionData.examinations, "examinations")}
-              </Section>
+                onRemoveItem={removeExamination}
+              />
 
-              <Section
-                title="Diagnosis"
+              <DiagnosisSection
+                items={prescriptionData.diagnosis}
                 onAddClick={() => openModal("diagnosis")}
-              >
-                {renderListItems(prescriptionData.diagnosis, "diagnosis")}
-              </Section>
+                onRemoveItem={removeDiagnosis}
+              />
 
-              <Section
-                title="Investigation"
+              <InvestigationSection
+                items={prescriptionData.investigations}
                 onAddClick={() => openModal("investigations")}
-              >
-                {renderListItems(
-                  prescriptionData.investigations,
-                  "investigations"
-                )}
-              </Section>
+                onRemoveItem={removeInvestigation}
+              />
 
-              <Section title="History" onAddClick={() => openModal("history")}>
-                {renderListItems(prescriptionData.history, "history")}
-              </Section>
+              <HistorySection
+                items={prescriptionData.history}
+                onAddClick={() => openModal("history")}
+                onRemoveItem={removeHistory}
+              />
             </div>
 
             {/* Right Column */}
             <div className="space-y-4">
-              <Section
-                title="Rx"
+              <MedicationsSection
+                medications={prescriptionData.medications}
                 onAddClick={() => openModal("medications")}
-                minHeight="200px"
-              >
-                {renderMedications()}
-              </Section>
+                onRemoveItem={removeMedication}
+              />
 
-              <Section
-                title="Advice"
+              <AdviceSection
+                items={prescriptionData.advice}
                 onAddClick={() => openModal("advice")}
-                minHeight="60px"
-              >
-                {renderListItems(prescriptionData.advice, "advice")}
-              </Section>
+                onRemoveItem={removeAdvice}
+              />
 
-              <Section
-                title="Next Visit"
+              <NextVisitSection
+                nextVisit={prescriptionData.nextVisit}
                 onAddClick={() => openModal("nextVisit")}
-              >
-                {prescriptionData.nextVisit}
-              </Section>
+              />
             </div>
           </div>
 
@@ -486,7 +503,6 @@ export default function NewPrescription() {
           <PrescriptionFooter />
         </div>
 
-        {/* Single Reusable Modal */}
         <ReusableModal
           isOpen={modalState.isOpen}
           onClose={closeModal}
@@ -494,6 +510,12 @@ export default function NewPrescription() {
           config={modalConfigs[modalState.type] || modalConfigs.patient}
           formData={modalState.formData}
           onFormDataChange={handleFormDataChange}
+          showSearch={
+            modalState.type !== "patient" && modalState.type !== "nextVisit"
+          }
+          tags={getTagsForModalType(modalState.type)}
+          onTagSelect={handleTagSelect}
+          searchPlaceholder={`Search ${modalState.type}...`}
         />
       </div>
     </div>

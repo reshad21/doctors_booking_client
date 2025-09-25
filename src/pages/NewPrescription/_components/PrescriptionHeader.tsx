@@ -2,7 +2,7 @@ import { BriefcaseMedical } from "lucide-react";
 
 const PrescriptionHeader = () => {
   return (
-    <div className="flex justify-between items-start mb-4">
+    <div className="flex justify-between items-start border border-[#C3C3C3] bg-white p-5 mx-2 rounded-xl">
       <div className="flex items-start gap-4">
         <div>
           <h2 className="text-lg font-bold text-gray-800">

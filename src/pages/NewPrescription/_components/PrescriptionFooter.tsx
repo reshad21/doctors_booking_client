@@ -1,6 +1,6 @@
 const PrescriptionFooter = () => {
   return (
-    <div className="footer-signature flex justify-between items-end mt-8">
+    <div className="flex justify-between items-end mx-2 mt-4">
       <div className="text-xs text-gray-600">
         <p>চেম্বার: শ্রীনগর হাসপাতাল লিমিটেড</p>
         <p>১৫২-১৫৩, গ্রীন রোড, ঢাকা-১২০৫</p>
