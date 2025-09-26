@@ -71,11 +71,19 @@ interface HeaderSection {
 }
 
 interface FooterSection {
-  showSignature: boolean;
-  showDate: boolean;
-  showNextVisit: boolean;
-  customFooterText: string;
-  // Add more footer section fields as needed
+  showLogo: boolean;
+  showPrescriptionInBangla: boolean;
+  showPrescriptionInEnglish: boolean;
+  showPrescriptionFooter: boolean;
+  doctorInfoBangla: string;
+  doctorInfoEnglish: string;
+  logo: string; // base64 string for display
+  logoFile: {
+    name: string;
+    size: number;
+    type: string;
+    base64: string;
+  } | null; // File data for backend
 }
 
 interface PrescriptionTemplateState {
@@ -185,10 +193,14 @@ const initialState: PrescriptionTemplateState = {
     logoFile: null,
   },
   footerSection: {
-    showSignature: true,
-    showDate: true,
-    showNextVisit: false,
-    customFooterText: "",
+    showLogo: false,
+    showPrescriptionInBangla: false,
+    showPrescriptionInEnglish: false,
+    showPrescriptionFooter: false,
+    doctorInfoBangla: "",
+    doctorInfoEnglish: "",
+    logo: "",
+    logoFile: null,
   },
   isCompleted: false,
 };
@@ -221,6 +233,16 @@ const prescriptionTemplateSlice = createSlice({
     },
     setFooterSection: (state, action: PayloadAction<FooterSection>) => {
       state.footerSection = action.payload;
+    },
+    updateFooterField: (
+      state,
+      action: PayloadAction<{
+        field: keyof FooterSection;
+        value: FooterSection[keyof FooterSection];
+      }>
+    ) => {
+      const { field, value } = action.payload;
+      state.footerSection[field] = value as never;
     },
     updatePageSetupField: (
       state,
@@ -277,6 +299,7 @@ export const {
   setHeaderSection,
   updateHeaderField,
   setFooterSection,
+  updateFooterField,
   updatePageSetupField,
   resetTemplate,
   setCompleted,
