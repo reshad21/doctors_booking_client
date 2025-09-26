@@ -56,11 +56,18 @@ interface BodySection {
 
 interface HeaderSection {
   showLogo: boolean;
-  showDoctorName: boolean;
-  showSpecialization: boolean;
-  showChamberAddress: boolean;
-  showContactInfo: boolean;
-  // Add more header section fields as needed
+  showPrescriptionInBangla: boolean;
+  showPrescriptionInEnglish: boolean;
+  showPrescriptionHeader: boolean;
+  doctorInfoBangla: string;
+  doctorInfoEnglish: string;
+  logo: string; // base64 string for display
+  logoFile: {
+    name: string;
+    size: number;
+    type: string;
+    base64: string;
+  } | null; // File data for backend
 }
 
 interface FooterSection {
@@ -169,10 +176,13 @@ const initialState: PrescriptionTemplateState = {
   },
   headerSection: {
     showLogo: true,
-    showDoctorName: true,
-    showSpecialization: true,
-    showChamberAddress: true,
-    showContactInfo: true,
+    showPrescriptionInBangla: true,
+    showPrescriptionInEnglish: true,
+    showPrescriptionHeader: true,
+    doctorInfoBangla: "",
+    doctorInfoEnglish: "",
+    logo: "",
+    logoFile: null,
   },
   footerSection: {
     showSignature: true,
@@ -198,6 +208,16 @@ const prescriptionTemplateSlice = createSlice({
     },
     setHeaderSection: (state, action: PayloadAction<HeaderSection>) => {
       state.headerSection = action.payload;
+    },
+    updateHeaderField: (
+      state,
+      action: PayloadAction<{
+        field: keyof HeaderSection;
+        value: HeaderSection[keyof HeaderSection];
+      }>
+    ) => {
+      const { field, value } = action.payload;
+      state.headerSection[field] = value as never;
     },
     setFooterSection: (state, action: PayloadAction<FooterSection>) => {
       state.footerSection = action.payload;
@@ -255,6 +275,7 @@ export const {
   setPatientSection,
   setBodySection,
   setHeaderSection,
+  updateHeaderField,
   setFooterSection,
   updatePageSetupField,
   resetTemplate,
