@@ -13,8 +13,10 @@ import {
   HeaderSection,
   FooterSection,
 } from "../steps";
+import { useCreatePrescriptionPageSetupMutation } from "@/redux/api/PreManagement/PrescriptionPageSetupApi";
 
 const PrescriptionTemplatesPageSetup = () => {
+  const [createPrescriptionPageSetup] = useCreatePrescriptionPageSetupMutation();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
@@ -36,11 +38,11 @@ const PrescriptionTemplatesPageSetup = () => {
 
   const stepRoutes = useMemo(
     () => [
-      "/dashboard/pre-management/prescription-templates/page-customize/page-setup",
-      "/dashboard/pre-management/prescription-templates/page-customize/patient-section",
-      "/dashboard/pre-management/prescription-templates/page-customize/body-section",
-      "/dashboard/pre-management/prescription-templates/page-customize/header-section",
-      "/dashboard/pre-management/prescription-templates/page-customize/footer-section",
+      "/dashboard/pre-management/create-prescription-page-setup/page-setup",
+      "/dashboard/pre-management/create-prescription-page-setup/patient-section",
+      "/dashboard/pre-management/create-prescription-page-setup/body-section",
+      "/dashboard/pre-management/create-prescription-page-setup/header-section",
+      "/dashboard/pre-management/create-prescription-page-setup/footer-section",
     ],
     []
   );
@@ -66,11 +68,80 @@ const PrescriptionTemplatesPageSetup = () => {
     console.log("Current template state:", prescriptionTemplate);
   };
 
-  const handleFinalStepCompleted = () => {
+  const handleFinalStepCompleted = async () => {
     // Mark template as completed in Redux
     dispatch(setCompleted(true));
-    console.log("Prescription template setup completed!", prescriptionTemplate);
-    // You might want to navigate to a success page or back to the main prescription templates list
+    console.log("Template marked as completed:", prescriptionTemplate);
+    const formdata = new FormData();
+    formdata.append(
+      "pageSetup",
+      JSON.stringify(prescriptionTemplate.pageSetup)
+    );
+    formdata.append(
+      "patientSection",
+      JSON.stringify(prescriptionTemplate.patientSection)
+    );
+    formdata.append(
+      "bodySection",
+      JSON.stringify(prescriptionTemplate.bodySection)
+    );
+    formdata.append(
+      "footerSection",
+      JSON.stringify({
+        doctorInfoBangla: prescriptionTemplate.footerSection.doctorInfoBangla,
+        doctorInfoEnglish: prescriptionTemplate.footerSection.doctorInfoEnglish,
+        showPrescriptionFooter:
+          prescriptionTemplate.footerSection.showPrescriptionFooter,
+        showPrescriptionInBangla:
+          prescriptionTemplate.footerSection.showPrescriptionInBangla,
+        showPrescriptionInEnglish:
+          prescriptionTemplate.footerSection.showPrescriptionInEnglish,
+      })
+    );
+    formdata.append(
+      "headerSection",
+      JSON.stringify({
+        doctorInfoBangla: prescriptionTemplate.headerSection.doctorInfoBangla,
+        doctorInfoEnglish: prescriptionTemplate.headerSection.doctorInfoEnglish,
+        showPrescriptionHeader:
+          prescriptionTemplate.headerSection.showPrescriptionHeader,
+        showPrescriptionInBangla:
+          prescriptionTemplate.headerSection.showPrescriptionInBangla,
+        showPrescriptionInEnglish:
+          prescriptionTemplate.headerSection.showPrescriptionInEnglish,
+      })
+    );
+    if (prescriptionTemplate.headerSection.logoFile) {
+      // Convert base64 to Blob
+      const base64Data = prescriptionTemplate.headerSection.logoFile.base64.split(',')[1] || prescriptionTemplate.headerSection.logoFile.base64;
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: prescriptionTemplate.headerSection.logoFile.type });
+      formdata.append("headerLogo", blob, prescriptionTemplate.headerSection.logoFile.name);
+    }
+
+    if(prescriptionTemplate.footerSection.logoFile) {
+      // Convert base64 to Blob
+      const base64Data = prescriptionTemplate.footerSection.logoFile.base64.split(',')[1] || prescriptionTemplate.footerSection.logoFile.base64;
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: prescriptionTemplate.footerSection.logoFile.type });
+      formdata.append("footerLogo", blob, prescriptionTemplate.footerSection.logoFile.name);
+    }
+
+    
+    const response  = await createPrescriptionPageSetup(formdata);
+
+    console.log(response, "API Response after creating prescription page setup");
+    console.log(Object.fromEntries(formdata.entries()), "Final FormData to be submitted");
   };
 
   // Check if we're on a sub-route

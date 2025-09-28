@@ -20,7 +20,7 @@ const PrescriptionPageSetup = () => {
         <div className="w-full">
           <div className="flex items-center justify-between py-4 px-4 bg-white">
             <Link
-              to={"/dashboard/pre-management/create-prescription-page-setup"}
+              to={"/dashboard/pre-management/create-prescription-page-setup/page-setup"}
             >
               <Button className="bg-brand hover:bg-green-800 rounded cursor-pointer text-white">
                 <Plus className="mr-2 h-4 w-4" />

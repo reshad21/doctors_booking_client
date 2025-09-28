@@ -13,7 +13,6 @@ import ViewPrescription from "@/pages/Prescription/ViewPrescription/ViewPrescrip
 import ClinicalNotes from "@/pages/PrescriptionManagement/ClinicalNotes/ClinicalNotes";
 import MedicineManagement from "@/pages/PrescriptionManagement/MedicineManagement/MedicineManagement";
 import PreManagement from "@/pages/PrescriptionManagement/PreManagement";
-import CreatePrescriptionPageSetup from "@/pages/PrescriptionManagement/PrescriptionPageSetup/CreatePrescriptionPageSetup";
 import PrescriptionPageSetup from "@/pages/PrescriptionManagement/PrescriptionPageSetup/PrescriptionPageSetup";
 import PrescriptionTemplates from "@/pages/PrescriptionManagement/PrescriptionTemplates/PrescriptionTemplates";
 import PrescriptionTemplatesPageSetup from "@/pages/PrescriptionManagement/PrescriptionTemplates/PrescriptionTemplatesPageSetup/PrescriptionTemplatesPageSetup";
@@ -98,6 +97,17 @@ const router = createBrowserRouter([
       },
       {
         path: "/dashboard/pre-management/prescription-templates/page-customize",
+      },
+      {
+        path: "/dashboard/pre-management/clinical-notes",
+        element: <ClinicalNotes />,
+      },
+      {
+        path: "/dashboard/pre-management/prescription-page-setup",
+        element: <PrescriptionPageSetup />,
+      },
+      {
+        path: "/dashboard/pre-management/create-prescription-page-setup",
         element: <PrescriptionTemplatesPageSetup />,
         children: [
           {
@@ -121,18 +131,6 @@ const router = createBrowserRouter([
             element: <></>,
           },
         ],
-      },
-      {
-        path: "/dashboard/pre-management/clinical-notes",
-        element: <ClinicalNotes />,
-      },
-      {
-        path: "/dashboard/pre-management/prescription-page-setup",
-        element: <PrescriptionPageSetup />,
-      },
-      {
-        path: "/dashboard/pre-management/create-prescription-page-setup",
-        element: <CreatePrescriptionPageSetup />,
       },
       {
         path: "/dashboard/watch-video",
