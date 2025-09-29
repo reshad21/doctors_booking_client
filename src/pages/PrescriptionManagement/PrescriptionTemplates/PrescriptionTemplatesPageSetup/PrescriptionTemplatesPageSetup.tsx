@@ -14,9 +14,15 @@ import {
   FooterSection,
 } from "../steps";
 import { useCreatePrescriptionPageSetupMutation } from "@/redux/api/PreManagement/PrescriptionPageSetupApi";
+import { useCurrentToken } from "@/redux/api/features/authSlice";
+import { jwtDecode } from "jwt-decode";
+import toast from "react-hot-toast";
 
 const PrescriptionTemplatesPageSetup = () => {
-  const [createPrescriptionPageSetup] = useCreatePrescriptionPageSetupMutation();
+  const [createPrescriptionPageSetup] =
+    useCreatePrescriptionPageSetupMutation();
+  const token = useAppSelector(useCurrentToken);
+  const decoded: { id: string } = jwtDecode(token);
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
@@ -75,20 +81,33 @@ const PrescriptionTemplatesPageSetup = () => {
     const formdata = new FormData();
     formdata.append(
       "pageSetup",
-      JSON.stringify(prescriptionTemplate.pageSetup)
+      JSON.stringify({
+        ...prescriptionTemplate.pageSetup,
+        doctorId: decoded.id,
+      })
     );
     formdata.append(
       "patientSection",
-      JSON.stringify(prescriptionTemplate.patientSection)
+      JSON.stringify({
+        ...prescriptionTemplate.patientSection,
+        doctorId: decoded.id,
+        chamberId: prescriptionTemplate.pageSetup.chamberId,
+      })
     );
     formdata.append(
       "bodySection",
-      JSON.stringify(prescriptionTemplate.bodySection)
+      JSON.stringify({
+        ...prescriptionTemplate.bodySection,
+        doctorId: decoded.id,
+        chamberId: prescriptionTemplate.pageSetup.chamberId,
+      })
     );
     formdata.append(
       "footerSection",
       JSON.stringify({
         doctorInfoBangla: prescriptionTemplate.footerSection.doctorInfoBangla,
+        doctorId: decoded.id,
+        chamberId: prescriptionTemplate.pageSetup.chamberId,
         doctorInfoEnglish: prescriptionTemplate.footerSection.doctorInfoEnglish,
         showPrescriptionFooter:
           prescriptionTemplate.footerSection.showPrescriptionFooter,
@@ -103,6 +122,8 @@ const PrescriptionTemplatesPageSetup = () => {
       JSON.stringify({
         doctorInfoBangla: prescriptionTemplate.headerSection.doctorInfoBangla,
         doctorInfoEnglish: prescriptionTemplate.headerSection.doctorInfoEnglish,
+        chamberId: prescriptionTemplate.pageSetup.chamberId,
+        doctorId: decoded.id,
         showPrescriptionHeader:
           prescriptionTemplate.headerSection.showPrescriptionHeader,
         showPrescriptionInBangla:
@@ -113,35 +134,62 @@ const PrescriptionTemplatesPageSetup = () => {
     );
     if (prescriptionTemplate.headerSection.logoFile) {
       // Convert base64 to Blob
-      const base64Data = prescriptionTemplate.headerSection.logoFile.base64.split(',')[1] || prescriptionTemplate.headerSection.logoFile.base64;
+      const base64Data =
+        prescriptionTemplate.headerSection.logoFile.base64.split(",")[1] ||
+        prescriptionTemplate.headerSection.logoFile.base64;
       const byteCharacters = atob(base64Data);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
         byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
       const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: prescriptionTemplate.headerSection.logoFile.type });
-      formdata.append("headerLogo", blob, prescriptionTemplate.headerSection.logoFile.name);
+      const blob = new Blob([byteArray], {
+        type: prescriptionTemplate.headerSection.logoFile.type,
+      });
+      formdata.append(
+        "headerLogo",
+        blob,
+        prescriptionTemplate.headerSection.logoFile.name
+      );
     }
 
-    if(prescriptionTemplate.footerSection.logoFile) {
+    if (prescriptionTemplate.footerSection.logoFile) {
       // Convert base64 to Blob
-      const base64Data = prescriptionTemplate.footerSection.logoFile.base64.split(',')[1] || prescriptionTemplate.footerSection.logoFile.base64;
+      const base64Data =
+        prescriptionTemplate.footerSection.logoFile.base64.split(",")[1] ||
+        prescriptionTemplate.footerSection.logoFile.base64;
       const byteCharacters = atob(base64Data);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
         byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
       const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: prescriptionTemplate.footerSection.logoFile.type });
-      formdata.append("footerLogo", blob, prescriptionTemplate.footerSection.logoFile.name);
+      const blob = new Blob([byteArray], {
+        type: prescriptionTemplate.footerSection.logoFile.type,
+      });
+      formdata.append(
+        "footerLogo",
+        blob,
+        prescriptionTemplate.footerSection.logoFile.name
+      );
     }
 
-    
-    const response  = await createPrescriptionPageSetup(formdata);
+    const response = await createPrescriptionPageSetup(formdata);
 
-    console.log(response, "API Response after creating prescription page setup");
-    console.log(Object.fromEntries(formdata.entries()), "Final FormData to be submitted");
+    if (response?.data?.statusCode === 201) {
+      toast.success("Prescription template created successfully");
+      dispatch(resetTemplate())
+      navigate("/dashboard/pre-management/prescription-page-setup");
+    }
+
+    console.log(
+      response,
+      "API Response after creating prescription page setup"
+    );
+    console.log(
+      Object.fromEntries(formdata.entries()),
+      "Final FormData to be submitted"
+    );
   };
 
   // Check if we're on a sub-route
@@ -156,7 +204,6 @@ const PrescriptionTemplatesPageSetup = () => {
 
   return (
     <div className="min-h-screen py-4">
-      {/* Debug Panel - Remove in production */}
       <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <div className="flex justify-between items-center">
           <div>
@@ -166,7 +213,7 @@ const PrescriptionTemplatesPageSetup = () => {
             <p className="text-sm text-blue-600">
               Chamber:{" "}
               {prescriptionTemplate.pageSetup.chamberId || "Not selected"} |
-              Page Type: {prescriptionTemplate.pageSetup.pageType} | Completed:{" "}
+              Page Type: {prescriptionTemplate.pageSetup.status} | Completed:{" "}
               {prescriptionTemplate.isCompleted ? "Yes" : "No"}
             </p>
           </div>

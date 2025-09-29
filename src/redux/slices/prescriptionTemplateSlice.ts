@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 interface PageSettings {
-  pageType: "a4" | "custom";
+  status: "a4" | "custom";
   chamberId: string;
   totalHeight: number;
   totalWidth: number;
@@ -97,7 +97,7 @@ interface PrescriptionTemplateState {
 
 const initialState: PrescriptionTemplateState = {
   pageSetup: {
-    pageType: "a4",
+    status: "a4",
     chamberId: "",
     totalHeight: 11.7,
     totalWidth: 8.3,
