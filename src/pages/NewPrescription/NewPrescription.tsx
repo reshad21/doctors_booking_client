@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
 import PrescriptionHeader from "./_components/PrescriptionHeader";
 import PrescriptionFooter from "./_components/PrescriptionFooter";
-import ReusableModal from "./_components/ReusableModal";
 import {
   ChiefComplaintSection,
   ExaminationsSection,
@@ -15,6 +13,15 @@ import {
   AdviceSection,
   NextVisitSection,
 } from "./PrescriptionSections/PrescriptionSections";
+import { ChiefComplaintModal } from "./_components/modals/ChiefComplaintModal";
+import { ExaminationsModal } from "./_components/modals/ExaminationModal";
+import { DiagnosisModal } from "./_components/modals/DiagonisisModal";
+import { InvestigationModal } from "./_components/modals/InvestigationModal";
+import { PatientModal } from "./_components/modals/PatientModal";
+import { HistoryModal } from "./_components/modals/HistoryModal";
+import { MedicationsModal } from "./_components/modals/MedicationsModal";
+import { AdviceModal } from "./_components/modals/AdviceModal";
+import { NextVisitModal } from "./_components/modals/NextVisitModal";
 
 // Types
 interface PrescriptionData {
@@ -35,138 +42,6 @@ interface PrescriptionData {
   advice: string[];
   nextVisit: string;
 }
-
-interface ModalField {
-  id: string;
-  label: string;
-  type?: "text" | "textarea" | "date";
-  placeholder?: string;
-  rows?: number;
-}
-
-interface ModalConfig {
-  title: string;
-  fields: ModalField[];
-  buttonLabel: string;
-}
-
-// Modal configurations
-const modalConfigs: Record<string, ModalConfig> = {
-  patient: {
-    title: "Patient Information",
-    buttonLabel: "Save Patient Information",
-    fields: [
-      { id: "name", label: "Patient Name", placeholder: "Enter patient name" },
-      { id: "age", label: "Age", placeholder: "Enter age" },
-      { id: "date", label: "Date", type: "date" },
-    ],
-  },
-  chiefComplaint: {
-    title: "Chief Complaint",
-    buttonLabel: "Add Complaint",
-    fields: [
-      {
-        id: "complaint",
-        label: "Complaint",
-        type: "textarea",
-        rows: 3,
-        placeholder: "Enter chief complaint",
-      },
-    ],
-  },
-  examinations: {
-    title: "Examinations",
-    buttonLabel: "Add Examination",
-    fields: [
-      {
-        id: "examination",
-        label: "Examination Finding",
-        type: "textarea",
-        rows: 3,
-        placeholder: "Enter examination findings",
-      },
-    ],
-  },
-  diagnosis: {
-    title: "Diagnosis",
-    buttonLabel: "Add Diagnosis",
-    fields: [
-      {
-        id: "diagnosis",
-        label: "Diagnosis",
-        type: "textarea",
-        rows: 3,
-        placeholder: "Enter diagnosis",
-      },
-    ],
-  },
-  investigations: {
-    title: "Investigations",
-    buttonLabel: "Add Investigation",
-    fields: [
-      {
-        id: "investigation",
-        label: "Investigation",
-        type: "textarea",
-        rows: 3,
-        placeholder: "Enter investigation details",
-      },
-    ],
-  },
-  history: {
-    title: "History",
-    buttonLabel: "Add History",
-    fields: [
-      {
-        id: "history",
-        label: "Medical History",
-        type: "textarea",
-        rows: 3,
-        placeholder: "Enter medical history",
-      },
-    ],
-  },
-  medications: {
-    title: "Medications",
-    buttonLabel: "Add Medication",
-    fields: [
-      {
-        id: "name",
-        label: "Medication Name",
-        placeholder: "Enter medication name",
-      },
-      { id: "dosage", label: "Dosage", placeholder: "e.g., 500mg" },
-      { id: "frequency", label: "Frequency", placeholder: "e.g., Twice daily" },
-      { id: "duration", label: "Duration", placeholder: "e.g., 7 days" },
-    ],
-  },
-  advice: {
-    title: "Advice",
-    buttonLabel: "Add Advice",
-    fields: [
-      {
-        id: "advice",
-        label: "Medical Advice",
-        type: "textarea",
-        rows: 3,
-        placeholder: "Enter medical advice",
-      },
-    ],
-  },
-  nextVisit: {
-    title: "Next Visit",
-    buttonLabel: "Set Next Visit",
-    fields: [
-      {
-        id: "nextVisit",
-        label: "Next Visit Details",
-        type: "textarea",
-        rows: 2,
-        placeholder: "Enter next visit details",
-      },
-    ],
-  },
-};
 
 // Sample tags for different prescription sections
 const prescriptionTags = {
@@ -231,107 +106,86 @@ export default function NewPrescription() {
     nextVisit: "",
   });
 
-  const [modalState, setModalState] = useState({
-    isOpen: false,
-    type: "",
-    formData: {} as Record<string, string>,
-  });
+  const [activeModal, setActiveModal] = useState<string | null>(null);
 
   // Modal handlers
   const openModal = (type: string) => {
-    setModalState({
-      isOpen: true,
-      type,
-      formData: {},
-    });
+    setActiveModal(type);
   };
 
   const closeModal = () => {
-    setModalState({
-      isOpen: false,
-      type: "",
-      formData: {},
-    });
+    setActiveModal(null);
   };
 
-  const handleFormDataChange = (data: Record<string, string>) => {
-    setModalState((prev) => ({ ...prev, formData: data }));
+  // Submit handlers for each modal
+  const handlePatientSubmit = (data: { name: string; age: string; date: string }) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      patientName: data.name,
+      age: data.age,
+      date: data.date,
+    }));
   };
 
-  const handleModalSubmit = (data: Record<string, string>) => {
-    setPrescriptionData((prev) => {
-      const updated = { ...prev };
+  const handleChiefComplaintSubmit = (data: { complaint: string }) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      chiefComplaint: [...prev.chiefComplaint, data.complaint],
+    }));
+  };
 
-      switch (modalState.type) {
-        case "patient":
-          return {
-            ...updated,
-            patientName: data.name,
-            age: data.age,
-            date: data.date,
-          };
+  const handleExaminationsSubmit = (data: { examination: string }) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      examinations: [...prev.examinations, data.examination],
+    }));
+  };
 
-        case "chiefComplaint":
-          return {
-            ...updated,
-            chiefComplaint: [...prev.chiefComplaint, data.complaint],
-          };
+  const handleDiagnosisSubmit = (data: { diagnosis: string }) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      diagnosis: [...prev.diagnosis, data.diagnosis],
+    }));
+  };
 
-        case "examinations":
-          return {
-            ...updated,
-            examinations: [...prev.examinations, data.examination],
-          };
+  const handleInvestigationSubmit = (data: { investigation: string }) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      investigations: [...prev.investigations, data.investigation],
+    }));
+  };
 
-        case "diagnosis":
-          return {
-            ...updated,
-            diagnosis: [...prev.diagnosis, data.diagnosis],
-          };
+  const handleHistorySubmit = (data: { history: string }) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      history: [...prev.history, data.history],
+    }));
+  };
 
-        case "investigations":
-          return {
-            ...updated,
-            investigations: [...prev.investigations, data.investigation],
-          };
+  const handleMedicationsSubmit = (data: {
+    name: string;
+    dosage: string;
+    frequency: string;
+    duration: string;
+  }) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      medications: [...prev.medications, data],
+    }));
+  };
 
-        case "history":
-          return {
-            ...updated,
-            history: [...prev.history, data.history],
-          };
+  const handleAdviceSubmit = (data: { advice: string }) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      advice: [...prev.advice, data.advice],
+    }));
+  };
 
-        case "medications":
-          return {
-            ...updated,
-            medications: [
-              ...prev.medications,
-              {
-                name: data.name,
-                dosage: data.dosage,
-                frequency: data.frequency,
-                duration: data.duration,
-              },
-            ],
-          };
-
-        case "advice":
-          return {
-            ...updated,
-            advice: [...prev.advice, data.advice],
-          };
-
-        case "nextVisit":
-          return {
-            ...updated,
-            nextVisit: data.nextVisit,
-          };
-
-        default:
-          return updated;
-      }
-    });
-    closeModal();
+  const handleNextVisitSubmit = (data: { nextVisit: string }) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      nextVisit: data.nextVisit,
+    }));
   };
 
   // Remove item handlers
@@ -382,38 +236,6 @@ export default function NewPrescription() {
       ...prev,
       advice: prev.advice.filter((_, i) => i !== index),
     }));
-  };
-
-  const handleTagSelect = (tag: any) => {
-    const fieldMapping: Record<string, string> = {
-      chiefComplaint: "complaint",
-      examinations: "examination",
-      diagnosis: "diagnosis",
-      medications: "name",
-      advice: "advice",
-    };
-
-    const fieldId = fieldMapping[modalState.type];
-    if (fieldId) {
-      handleFormDataChange({ ...modalState.formData, [fieldId]: tag.label });
-    }
-  };
-
-  const getTagsForModalType = (type: string) => {
-    switch (type) {
-      case "chiefComplaint":
-        return prescriptionTags.chiefComplaint;
-      case "examinations":
-        return prescriptionTags.examinations;
-      case "diagnosis":
-        return prescriptionTags.diagnosis;
-      case "medications":
-        return prescriptionTags.medications;
-      case "advice":
-        return prescriptionTags.advice;
-      default:
-        return [];
-    }
   };
 
   return (
@@ -504,19 +326,68 @@ export default function NewPrescription() {
           <PrescriptionFooter />
         </div>
 
-        <ReusableModal
-          isOpen={modalState.isOpen}
+        <PatientModal
+          isOpen={activeModal === "patient"}
           onClose={closeModal}
-          onSubmit={handleModalSubmit}
-          config={modalConfigs[modalState.type] || modalConfigs.patient}
-          formData={modalState.formData}
-          onFormDataChange={handleFormDataChange}
-          showSearch={
-            modalState.type !== "patient" && modalState.type !== "nextVisit"
-          }
-          tags={getTagsForModalType(modalState.type)}
-          onTagSelect={handleTagSelect}
-          searchPlaceholder={`Search ${modalState.type}...`}
+          onSubmit={handlePatientSubmit}
+          initialData={{
+            name: prescriptionData.patientName,
+            age: prescriptionData.age,
+            date: prescriptionData.date,
+          }}
+        />
+
+        <ChiefComplaintModal
+          isOpen={activeModal === "chiefComplaint"}
+          onClose={closeModal}
+          onSubmit={handleChiefComplaintSubmit}
+          tags={prescriptionTags.chiefComplaint}
+        />
+
+        <ExaminationsModal
+          isOpen={activeModal === "examinations"}
+          onClose={closeModal}
+          onSubmit={handleExaminationsSubmit}
+          tags={prescriptionTags.examinations}
+        />
+
+        <DiagnosisModal
+          isOpen={activeModal === "diagnosis"}
+          onClose={closeModal}
+          onSubmit={handleDiagnosisSubmit}
+          tags={prescriptionTags.diagnosis}
+        />
+
+        <InvestigationModal
+          isOpen={activeModal === "investigations"}
+          onClose={closeModal}
+          onSubmit={handleInvestigationSubmit}
+        />
+
+        <HistoryModal
+          isOpen={activeModal === "history"}
+          onClose={closeModal}
+          onSubmit={handleHistorySubmit}
+        />
+
+        <MedicationsModal
+          isOpen={activeModal === "medications"}
+          onClose={closeModal}
+          onSubmit={handleMedicationsSubmit}
+          tags={prescriptionTags.medications}
+        />
+
+        <AdviceModal
+          isOpen={activeModal === "advice"}
+          onClose={closeModal}
+          onSubmit={handleAdviceSubmit}
+          tags={prescriptionTags.advice}
+        />
+
+        <NextVisitModal
+          isOpen={activeModal === "nextVisit"}
+          onClose={closeModal}
+          onSubmit={handleNextVisitSubmit}
         />
       </div>
     </div>
