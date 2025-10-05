@@ -22,74 +22,8 @@ import { HistoryModal } from "./_components/modals/HistoryModal";
 import { MedicationsModal } from "./_components/modals/MedicationsModal";
 import { AdviceModal } from "./_components/modals/AdviceModal";
 import { NextVisitModal } from "./_components/modals/NextVisitModal";
-
-// Types
-interface PrescriptionData {
-  patientName: string;
-  age: string;
-  date: string;
-  chiefComplaint: string[];
-  examinations: string[];
-  diagnosis: string[];
-  investigations: string[];
-  history: string[];
-  medications: Array<{
-    name: string;
-    dosage: string;
-    frequency: string;
-    duration: string;
-  }>;
-  advice: string[];
-  nextVisit: string;
-}
-
-// Sample tags for different prescription sections
-const prescriptionTags = {
-  chiefComplaint: [
-    { id: "cc1", label: "Chest pain", category: "Cardiac" },
-    { id: "cc2", label: "Shortness of breath", category: "Respiratory" },
-    { id: "cc3", label: "Headache", category: "Neurological" },
-    { id: "cc4", label: "Abdominal pain", category: "GI" },
-    { id: "cc5", label: "Fever", category: "General" },
-    { id: "cc6", label: "Cough", category: "Respiratory" },
-    { id: "cc7", label: "Nausea", category: "GI" },
-    { id: "cc8", label: "Dizziness", category: "Neurological" },
-  ],
-  examinations: [
-    { id: "ex1", label: "Normal heart sounds", category: "Cardiac" },
-    { id: "ex2", label: "Clear lung fields", category: "Respiratory" },
-    { id: "ex3", label: "Soft abdomen", category: "GI" },
-    { id: "ex4", label: "No lymphadenopathy", category: "General" },
-    { id: "ex5", label: "Normal reflexes", category: "Neurological" },
-    { id: "ex6", label: "No edema", category: "General" },
-  ],
-  diagnosis: [
-    { id: "dx1", label: "Hypertension", category: "Cardiac" },
-    { id: "dx2", label: "Type 2 Diabetes", category: "Endocrine" },
-    {
-      id: "dx3",
-      label: "Upper respiratory infection",
-      category: "Respiratory",
-    },
-    { id: "dx4", label: "Gastritis", category: "GI" },
-    { id: "dx5", label: "Migraine", category: "Neurological" },
-  ],
-  medications: [
-    { id: "med1", label: "Paracetamol 500mg", category: "Analgesic" },
-    { id: "med2", label: "Amoxicillin 250mg", category: "Antibiotic" },
-    { id: "med3", label: "Omeprazole 20mg", category: "PPI" },
-    { id: "med4", label: "Metformin 500mg", category: "Antidiabetic" },
-    { id: "med5", label: "Amlodipine 5mg", category: "Antihypertensive" },
-    { id: "med6", label: "Aspirin 75mg", category: "Antiplatelet" },
-  ],
-  advice: [
-    { id: "adv1", label: "Take rest", category: "General" },
-    { id: "adv2", label: "Drink plenty of fluids", category: "General" },
-    { id: "adv3", label: "Avoid spicy food", category: "Dietary" },
-    { id: "adv4", label: "Regular exercise", category: "Lifestyle" },
-    { id: "adv5", label: "Monitor blood pressure", category: "Monitoring" },
-  ],
-};
+import { prescriptionTags } from "@/constant/prescription-tags";
+import type { PrescriptionData } from "@/types/new-prescription.types";
 
 export default function NewPrescription() {
   const [prescriptionData, setPrescriptionData] = useState<PrescriptionData>({

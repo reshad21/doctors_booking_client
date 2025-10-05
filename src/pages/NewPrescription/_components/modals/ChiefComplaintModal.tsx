@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { BaseModal, type Tag } from "../BaseModal";
+import { BaseModal } from "../BaseModal";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import type { Tag } from "@/types/new-prescription.types";
 
 export const ChiefComplaintModal = ({
   isOpen,
