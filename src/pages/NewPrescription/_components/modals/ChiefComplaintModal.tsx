@@ -40,6 +40,7 @@ export const ChiefComplaintModal = ({
   const [groups, setGroups] = useState<ComplaintGroup[]>([])
   const [newGroupName, setNewGroupName] = useState("")
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
+  const [isCreatingGroup, setIsCreatingGroup] = useState(false)
 
   const filterOptions = ["H/O Fever", "Fever", "Chest Pain (Central)", "Sennzing"]
 
@@ -122,6 +123,7 @@ export const ChiefComplaintModal = ({
   const handleSaveGroup = () => {
     if (selectedGroupId) {
       alert(`Group "${selectedGroup?.name}" saved successfully!`)
+      setSelectedGroupId(null)
     }
   }
 
@@ -171,6 +173,7 @@ export const ChiefComplaintModal = ({
       setGroups([...groups, newGroup])
       setSelectedGroupId(newGroup.id)
       setNewGroupName("")
+      setIsCreatingGroup(false)
     }
   }
 
@@ -204,10 +207,7 @@ export const ChiefComplaintModal = ({
   const handleLoadGroup = (groupId: string) => {
     const group = groups.find((g) => g.id === groupId)
     if (group) {
-      // Switch to Chief Complaint tab
       setActiveTab("complaint")
-
-      // Create complaint items for each symptom in the group
       const newComplaints: ComplaintItem[] = group.symptoms.map((symptom) => ({
         id: `${Date.now()}-${symptom}`,
         label: symptom,
@@ -215,7 +215,6 @@ export const ChiefComplaintModal = ({
         unit: "Days",
         notes: "",
       }))
-
       setComplaints(newComplaints)
     }
   }
@@ -326,41 +325,57 @@ export const ChiefComplaintModal = ({
               </div>
 
               {/* Right Side - Complaints List */}
-              <div className="w-1/2 space-y-3">
+              <div className="w-1/2 space-y-3 overflow-x-hidden">
                 {complaints.length === 0 && (
                   <p className="text-sm text-gray-500 text-center py-8">
                     Select symptoms from the left to add them here
                   </p>
                 )}
                 {complaints.map((complaint, index) => (
-                  <div key={complaint.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm font-medium text-gray-700 min-w-[100px]">
-                      {index + 1}. {complaint.label}
-                    </span>
-                    <span className="text-sm text-gray-600">For :</span>
-                    <Input
-                      placeholder="Duration..."
-                      value={complaint.duration}
-                      onChange={(e) => handleUpdateComplaint(complaint.id, "duration", e.target.value)}
-                      className="w-24"
-                    />
-                    <button className="flex items-center gap-1 px-2 py-1.5 border border-gray-300 rounded-md bg-white text-sm hover:bg-gray-50">
-                      {complaint.unit}
-                      <ChevronDown className="h-4 w-4" />
-                    </button>
-                    <span className="text-sm text-gray-600">Nots :</span>
-                    <Input
-                      placeholder="Add Note..."
-                      value={complaint.notes}
-                      onChange={(e) => handleUpdateComplaint(complaint.id, "notes", e.target.value)}
-                      className="flex-1"
-                    />
-                    <button
-                      onClick={() => handleRemoveComplaint(complaint.id)}
-                      className="text-red-500 hover:text-red-700 transition-colors"
-                    >
-                      <X className="h-5 w-5" />
-                    </button>
+                  <div key={complaint.id} className="p-3 bg-gray-50 rounded-lg border border-gray-200 space-y-3">
+                    {/* Header row with complaint name and delete button */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold text-gray-800">
+                        {index + 1}. {complaint.label}
+                      </span>
+                      <button
+                        onClick={() => handleRemoveComplaint(complaint.id)}
+                        className="text-red-500 hover:text-red-700 transition-colors"
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
+                    </div>
+
+                    {/* Input row with proper spacing */}
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-600">Duration</label>
+                        <Input
+                          placeholder="Enter duration..."
+                          value={complaint.duration}
+                          onChange={(e) => handleUpdateComplaint(complaint.id, "duration", e.target.value)}
+                          className="w-full"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-600">Unit</label>
+                        <button className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-md bg-white text-sm hover:bg-gray-50">
+                          <span>{complaint.unit}</span>
+                          <ChevronDown className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-600">Notes</label>
+                        <Input
+                          placeholder="Add notes..."
+                          value={complaint.notes}
+                          onChange={(e) => handleUpdateComplaint(complaint.id, "notes", e.target.value)}
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -369,23 +384,56 @@ export const ChiefComplaintModal = ({
 
           {activeTab === "groups" && (
             <div className="flex gap-4 pb-6 h-[500px]">
+              {/* Left sidebar - Groups list */}
               <div className="w-64 flex flex-col gap-3">
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="New group..."
-                    value={newGroupName}
-                    onChange={(e) => setNewGroupName(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleCreateGroup()}
-                    className="flex-1 text-sm"
-                  />
+                {!isCreatingGroup ? (
                   <Button
-                    onClick={handleCreateGroup}
-                    size="icon"
-                    className="bg-green-600 hover:bg-green-700 text-white shrink-0 h-9 w-9"
+                    onClick={() => setIsCreatingGroup(true)}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white justify-start gap-2"
                   >
                     <Plus className="h-4 w-4" />
+                    Create New Group
                   </Button>
-                </div>
+                ) : (
+                  <div className="p-3 border-2 border-green-600 rounded-lg bg-green-50 space-y-2">
+                    <label className="text-xs font-semibold text-gray-700 uppercase">New Group Name</label>
+                    <Input
+                      placeholder="Enter group name..."
+                      value={newGroupName}
+                      onChange={(e) => setNewGroupName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleCreateGroup()
+                        if (e.key === "Escape") {
+                          setIsCreatingGroup(false)
+                          setNewGroupName("")
+                        }
+                      }}
+                      className="text-sm"
+                      autoFocus
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={handleCreateGroup}
+                        size="sm"
+                        className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                        disabled={!newGroupName.trim()}
+                      >
+                        Create
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setIsCreatingGroup(false)
+                          setNewGroupName("")
+                        }}
+                        size="sm"
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex-1 overflow-y-auto space-y-1 border rounded-lg p-2 bg-gray-50">
                   {groups.map((group) => (
@@ -435,11 +483,18 @@ export const ChiefComplaintModal = ({
                 </div>
               </div>
 
+              {/* Right side - Group editor with side-by-side layout */}
               <div className="flex-1 flex flex-col gap-3">
                 {selectedGroup ? (
                   <>
                     <div className="flex items-center justify-between pb-2 border-b">
-                      <h3 className="font-semibold text-gray-800">"{selectedGroup.name}"</h3>
+                      <div>
+                        <h3 className="font-semibold text-gray-800">"{selectedGroup.name}"</h3>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {selectedGroup.symptoms.length} symptom{selectedGroup.symptoms.length !== 1 ? "s" : ""} in
+                          this group
+                        </p>
+                      </div>
                       <Button
                         onClick={handleSaveGroup}
                         size="sm"
@@ -449,63 +504,80 @@ export const ChiefComplaintModal = ({
                       </Button>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto space-y-3">
-                      <div>
-                        <h4 className="text-xs font-semibold text-gray-600 mb-2 uppercase">
-                          Available Symptoms (use search above)
-                        </h4>
-                        <div className="grid grid-cols-3 gap-1.5 max-h-[200px] overflow-y-auto p-2 bg-gray-50 rounded border">
+                    <div className="flex-1 grid grid-cols-2 gap-4 min-h-0">
+                      {/* Left column - Available Symptoms */}
+                      <div className="flex flex-col min-h-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-xs font-semibold text-gray-600 uppercase">Available Symptoms</h4>
+                          <span className="text-xs text-gray-500">
+                            {filteredSymptoms.filter((symptom) => !selectedGroup.symptoms.includes(symptom)).length}{" "}
+                            available
+                          </span>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-3 bg-gray-50 rounded border space-y-1.5 min-h-0">
                           {filteredSymptoms
                             .filter((symptom) => !selectedGroup.symptoms.includes(symptom))
                             .map((symptom) => (
                               <button
                                 key={symptom}
                                 onClick={() => handleAddSymptomToGroup(symptom)}
-                                className="px-2 py-1.5 text-xs border border-gray-300 rounded bg-white text-gray-700 hover:bg-green-50 hover:border-green-600 hover:text-green-700 transition-colors text-left truncate"
-                                title={symptom}
+                                className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded bg-white text-gray-700 hover:bg-green-50 hover:border-green-600 hover:text-green-700 transition-colors text-left flex items-start gap-2 min-h-[44px]"
                               >
-                                {symptom}
+                                <Plus className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                                <span className="line-clamp-2 leading-relaxed">{symptom}</span>
                               </button>
                             ))}
                           {filteredSymptoms.filter((symptom) => !selectedGroup.symptoms.includes(symptom)).length ===
                             0 && (
-                            <p className="col-span-3 text-xs text-gray-500 text-center py-4">
-                              {searchQuery ? `No symptoms found` : "All symptoms added"}
+                            <p className="text-xs text-gray-500 text-center py-8">
+                              {searchQuery ? `No symptoms found matching "${searchQuery}"` : "All symptoms added"}
                             </p>
                           )}
                         </div>
                       </div>
 
-                      {selectedGroup.symptoms.length > 0 && (
-                        <div>
-                          <h4 className="text-xs font-semibold text-gray-600 mb-2 uppercase">
-                            In Group ({selectedGroup.symptoms.length})
-                          </h4>
-                          <div className="grid grid-cols-2 gap-1.5 p-2 bg-green-50 rounded border border-green-200">
-                            {selectedGroup.symptoms.map((symptom) => (
+                      {/* Right column - Selected Symptoms */}
+                      <div className="flex flex-col min-h-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-xs font-semibold text-gray-600 uppercase">In Group</h4>
+                          <span className="text-xs text-green-700 font-medium">
+                            {selectedGroup.symptoms.length} selected
+                          </span>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-3 bg-green-50 rounded border border-green-200 space-y-1.5 min-h-0">
+                          {selectedGroup.symptoms.length > 0 ? (
+                            selectedGroup.symptoms.map((symptom) => (
                               <div
                                 key={symptom}
-                                className="flex items-center justify-between gap-1 px-2 py-1.5 text-xs bg-white border border-green-600 rounded text-green-800"
+                                className="flex items-start justify-between gap-2 px-3 py-2.5 text-sm bg-white border border-green-600 rounded text-green-800 min-h-[44px]"
                               >
-                                <span className="truncate flex-1" title={symptom}>
-                                  {symptom}
+                                <span className="flex-1 flex items-start gap-2">
+                                  <span className="text-green-600 shrink-0 mt-0.5">✓</span>
+                                  <span className="line-clamp-2 leading-relaxed">{symptom}</span>
                                 </span>
                                 <button
                                   onClick={() => handleRemoveSymptomFromGroup(symptom)}
-                                  className="text-red-500 hover:text-red-700 shrink-0"
+                                  className="text-red-500 hover:text-red-700 shrink-0 mt-0.5"
                                 >
-                                  <X className="h-3 w-3" />
+                                  <X className="h-4 w-4" />
                                 </button>
                               </div>
-                            ))}
-                          </div>
+                            ))
+                          ) : (
+                            <p className="text-xs text-gray-500 text-center py-8">
+                              Click symptoms from the left to add them to this group
+                            </p>
+                          )}
                         </div>
-                      )}
+                      </div>
                     </div>
                   </>
                 ) : (
                   <div className="flex items-center justify-center h-full">
-                    <p className="text-sm text-gray-500">Select or create a group to manage symptoms</p>
+                    <div className="text-center space-y-2">
+                      <p className="text-sm text-gray-500">Select a group to manage symptoms</p>
+                      <p className="text-xs text-gray-400">or create a new group to get started</p>
+                    </div>
                   </div>
                 )}
               </div>
