@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ClipboardList, Plus, RepeatIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import PrescriptionPageSetupTable from "./PrescriptionPageSetupTable/PrescriptionPageSetupTable";
 
 const PrescriptionPageSetup = () => {
   const breadcrumbItems = [
@@ -28,6 +29,9 @@ const PrescriptionPageSetup = () => {
               </Button>
             </Link>
             <Input className="w-72 rounded" placeholder="Search" />
+          </div>
+          <div className="mt-4 bg-white p-4 rounded">
+            <PrescriptionPageSetupTable />
           </div>
         </div>
       </div>

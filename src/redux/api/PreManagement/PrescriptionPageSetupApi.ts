@@ -9,8 +9,22 @@ const prescriptionPageSetupApi = baseApi.injectEndpoints({
         body: payload,
       }),
     }),
+    getPrescriptionPageSetups: builder.query({
+      query: ({ doctorId }) => {
+        const params = new URLSearchParams();
+        if (doctorId) {
+          params.append("doctorId", doctorId.toString());
+        }
+        return {
+          url: `/prescription-page-setup?${params.toString()}`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
-export const { useCreatePrescriptionPageSetupMutation } =
-  prescriptionPageSetupApi;
+export const {
+  useCreatePrescriptionPageSetupMutation,
+  useGetPrescriptionPageSetupsQuery,
+} = prescriptionPageSetupApi;

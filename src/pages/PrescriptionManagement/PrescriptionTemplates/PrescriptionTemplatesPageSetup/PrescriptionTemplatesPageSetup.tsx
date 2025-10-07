@@ -83,31 +83,24 @@ const PrescriptionTemplatesPageSetup = () => {
       "pageSetup",
       JSON.stringify({
         ...prescriptionTemplate.pageSetup,
-        doctorId: decoded.id,
       })
     );
     formdata.append(
       "patientSection",
       JSON.stringify({
         ...prescriptionTemplate.patientSection,
-        doctorId: decoded.id,
-        chamberId: prescriptionTemplate.pageSetup.chamberId,
       })
     );
     formdata.append(
       "bodySection",
       JSON.stringify({
         ...prescriptionTemplate.bodySection,
-        doctorId: decoded.id,
-        chamberId: prescriptionTemplate.pageSetup.chamberId,
       })
     );
     formdata.append(
       "footerSection",
       JSON.stringify({
         doctorInfoBangla: prescriptionTemplate.footerSection.doctorInfoBangla,
-        doctorId: decoded.id,
-        chamberId: prescriptionTemplate.pageSetup.chamberId,
         doctorInfoEnglish: prescriptionTemplate.footerSection.doctorInfoEnglish,
         showPrescriptionFooter:
           prescriptionTemplate.footerSection.showPrescriptionFooter,
@@ -122,8 +115,6 @@ const PrescriptionTemplatesPageSetup = () => {
       JSON.stringify({
         doctorInfoBangla: prescriptionTemplate.headerSection.doctorInfoBangla,
         doctorInfoEnglish: prescriptionTemplate.headerSection.doctorInfoEnglish,
-        chamberId: prescriptionTemplate.pageSetup.chamberId,
-        doctorId: decoded.id,
         showPrescriptionHeader:
           prescriptionTemplate.headerSection.showPrescriptionHeader,
         showPrescriptionInBangla:
@@ -132,6 +123,9 @@ const PrescriptionTemplatesPageSetup = () => {
           prescriptionTemplate.headerSection.showPrescriptionInEnglish,
       })
     );
+
+    formdata.append("doctorId", JSON.stringify(decoded.id));
+    formdata.append("chamberId", JSON.stringify(prescriptionTemplate.pageSetup.chamberId));
     if (prescriptionTemplate.headerSection.logoFile) {
       // Convert base64 to Blob
       const base64Data =
