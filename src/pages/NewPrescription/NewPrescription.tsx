@@ -25,6 +25,14 @@ import { NextVisitModal } from "./_components/modals/NextVisitModal";
 import { prescriptionTags } from "@/constant/prescription-tags";
 import type { PrescriptionData } from "@/types/new-prescription.types";
 
+interface ComplaintItem {
+  id: string;
+  label: string;
+  duration: string;
+  unit: string;
+  notes: string;
+}
+
 export default function NewPrescription() {
   const [prescriptionData, setPrescriptionData] = useState<PrescriptionData>({
     patientName: "",
@@ -52,7 +60,11 @@ export default function NewPrescription() {
   };
 
   // Submit handlers for each modal
-  const handlePatientSubmit = (data: { name: string; age: string; date: string }) => {
+  const handlePatientSubmit = (data: {
+    name: string;
+    age: string;
+    date: string;
+  }) => {
     setPrescriptionData((prev) => ({
       ...prev,
       patientName: data.name,
@@ -61,10 +73,15 @@ export default function NewPrescription() {
     }));
   };
 
-  const handleChiefComplaintSubmit = (data: { complaint: string }) => {
+  const handleChiefComplaintSubmit = (data: {
+    complaints: ComplaintItem[];
+  }) => {
     setPrescriptionData((prev) => ({
       ...prev,
-      chiefComplaint: [...prev.chiefComplaint, data.complaint],
+      chiefComplaint: [
+        ...prev.chiefComplaint,
+        ...data.complaints.map((item) => item.label),
+      ],
     }));
   };
 

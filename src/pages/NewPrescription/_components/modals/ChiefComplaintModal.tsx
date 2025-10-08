@@ -41,7 +41,7 @@ export const ChiefComplaintModal = ({
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
   const [isCreatingGroup, setIsCreatingGroup] = useState(false)
 
-  
+  console.log(tags, 'useless')
   const sortedFilterOptions = filterOptions
     .filter((option) => complaints.some((c) => c.label === option))
     .concat(filterOptions.filter((option) => !complaints.some((c) => c.label === option)))
