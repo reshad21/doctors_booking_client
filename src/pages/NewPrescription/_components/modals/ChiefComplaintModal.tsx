@@ -1,11 +1,10 @@
-"use client"
-
 import { useState } from "react"
 import { X, Search, ChevronDown, Plus, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import type { Tag } from "@/types/new-prescription.types"
+import { availableSymptoms, filterOptions } from "@/constant/chief-complaint.constant"
 
 interface ComplaintItem {
   id: string
@@ -42,63 +41,7 @@ export const ChiefComplaintModal = ({
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
   const [isCreatingGroup, setIsCreatingGroup] = useState(false)
 
-  const filterOptions = ["H/O Fever", "Fever", "Chest Pain (Central)", "Sennzing"]
-
-  const availableSymptoms = [
-    "H/O Fever",
-    "Fever",
-    "Chest Pain (Central)",
-    "Sennzing",
-    "Headache",
-    "Cough",
-    "Nausea",
-    "Vomiting",
-    "Dizziness",
-    "Fatigue",
-    "Abdominal Pain",
-    "Back Pain",
-    "Joint Pain",
-    "Muscle Pain",
-    "Sore Throat",
-    "Runny Nose",
-    "Shortness of Breath",
-    "Wheezing",
-    "Chest Tightness",
-    "Palpitations",
-    "Sweating",
-    "Chills",
-    "Loss of Appetite",
-    "Weight Loss",
-    "Weight Gain",
-    "Insomnia",
-    "Anxiety",
-    "Depression",
-    "Confusion",
-    "Memory Loss",
-    "Blurred Vision",
-    "Eye Pain",
-    "Ear Pain",
-    "Hearing Loss",
-    "Tinnitus",
-    "Nosebleed",
-    "Sneezing",
-    "Skin Rash",
-    "Itching",
-    "Swelling",
-    "Bruising",
-    "Bleeding",
-    "Constipation",
-    "Diarrhea",
-    "Bloating",
-    "Gas",
-    "Heartburn",
-    "Difficulty Swallowing",
-    "Frequent Urination",
-    "Painful Urination",
-    "Blood in Urine",
-    "Incontinence",
-  ]
-
+  
   const sortedFilterOptions = filterOptions
     .filter((option) => complaints.some((c) => c.label === option))
     .concat(filterOptions.filter((option) => !complaints.some((c) => c.label === option)))
@@ -224,7 +167,7 @@ export const ChiefComplaintModal = ({
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-lg shadow-xl w-full max-w-6xl mx-4 z-10 max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
+        <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-xl font-semibold text-gray-800">Add Chief Complaint (C/C)</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
             <X className="h-6 w-6" />
@@ -232,7 +175,7 @@ export const ChiefComplaintModal = ({
         </div>
 
         {/* Search and Checkbox */}
-        <div className="p-6 pb-4 space-y-4">
+        <div className="p-4 pb-4 space-y-4">
           <div className="flex items-center gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -586,7 +529,7 @@ export const ChiefComplaintModal = ({
         </div>
 
         {activeTab === "complaint" && (
-          <div className="flex justify-end gap-3 p-6 border-t bg-gray-50">
+          <div className="flex justify-end gap-3 p-2 border-t bg-gray-50">
             <Button onClick={handleSubmit} className="bg-green-700 hover:bg-green-800 text-white px-8">
               Save
             </Button>
