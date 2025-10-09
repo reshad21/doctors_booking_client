@@ -36,6 +36,7 @@ export const baseApi = createApi({
     "patient-summary",
     "advice",
     "notice",
+    "medicine",
     "admin",
     "manualData"
   ],
