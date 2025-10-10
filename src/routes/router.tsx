@@ -10,7 +10,14 @@ import CreatePrescription from "@/pages/Prescription/CreatePrescription/CreatePr
 import Prescription from "@/pages/Prescription/Prescription";
 import UpdatePrescription from "@/pages/Prescription/UpdatePrescription/UpdatePrescription";
 import ViewPrescription from "@/pages/Prescription/ViewPrescription/ViewPrescription";
+import AdviceInput from "@/pages/PrescriptionManagement/ClinicalNotes/AdviceInput/AdviceInput";
+import ChiefComplaintInput from "@/pages/PrescriptionManagement/ClinicalNotes/ChiefComplaintInput/ChiefComplaintInput";
 import ClinicalNotes from "@/pages/PrescriptionManagement/ClinicalNotes/ClinicalNotes";
+import DiagnosisInput from "@/pages/PrescriptionManagement/ClinicalNotes/DiagnosisInput/DiagnosisInput";
+import HistoryInput from "@/pages/PrescriptionManagement/ClinicalNotes/HistoryInput/HistoryInput";
+import InvestigationInput from "@/pages/PrescriptionManagement/ClinicalNotes/InvestigationInput/InvestigationInput";
+import NextVisitInput from "@/pages/PrescriptionManagement/ClinicalNotes/NextVisitInput/NextVisitInput";
+import OnExaminationsInput from "@/pages/PrescriptionManagement/ClinicalNotes/OnExaminationsInput/OnExaminationsInput";
 import MedicineManagement from "@/pages/PrescriptionManagement/MedicineManagement/MedicineManagement";
 import PreManagement from "@/pages/PrescriptionManagement/PreManagement";
 import PrescriptionPageSetup from "@/pages/PrescriptionManagement/PrescriptionPageSetup/PrescriptionPageSetup";
@@ -101,6 +108,34 @@ const router = createBrowserRouter([
       {
         path: "/dashboard/pre-management/clinical-notes",
         element: <ClinicalNotes />,
+      },
+      {
+        path: "/dashboard/pre-management/clinical-notes/chief-complaint-input",
+        element: <ChiefComplaintInput />,
+      },
+      {
+        path: "/dashboard/pre-management/clinical-notes/on-examinations-input",
+        element: <OnExaminationsInput />,
+      },
+      {
+        path: "/dashboard/pre-management/clinical-notes/diagnosis-input",
+        element: <DiagnosisInput />,
+      },
+      {
+        path: "/dashboard/pre-management/clinical-notes/investigation-input",
+        element: <InvestigationInput />,
+      },
+      {
+        path: "/dashboard/pre-management/clinical-notes/history-input",
+        element: <HistoryInput />,
+      },
+      {
+        path: "/dashboard/pre-management/clinical-notes/advice-input",
+        element: <AdviceInput />,
+      },
+      {
+        path: "/dashboard/pre-management/clinical-notes/next-visit-input",
+        element: <NextVisitInput />,
       },
       {
         path: "/dashboard/pre-management/prescription-page-setup",

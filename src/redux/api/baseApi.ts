@@ -30,6 +30,13 @@ export const baseApi = createApi({
     "chamber",
     "watchVideo",
     "prescription",
+    "chief-complaint-input",
+    "diagnosis-input",
+    "history-input",
+    "next-visit-input",
+    "on-examinations-input",
+    "advice-input",
+    "investigation-input",
     "preManagement",
     "message",
     "visit",
@@ -38,7 +45,7 @@ export const baseApi = createApi({
     "notice",
     "medicine",
     "admin",
-    "manualData"
+    "manualData",
   ],
   endpoints: () => ({}),
 });
