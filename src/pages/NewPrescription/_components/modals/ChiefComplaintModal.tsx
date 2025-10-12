@@ -216,7 +216,7 @@ export const ChiefComplaintModal = ({
                   ))}
                 </div>
 
-                <div className="flex flex-wrap gap-2">
+                {/* <div className="flex flex-wrap gap-2">
                   {filteredComplaintOptions.map((filter) => (
                     <button
                       key={`${filter}-2`}
@@ -232,7 +232,7 @@ export const ChiefComplaintModal = ({
                       <ChevronDown className="h-4 w-4" />
                     </button>
                   ))}
-                </div>
+                </div> */}
 
                 {filteredComplaintOptions.length === 0 && (
                   <p className="text-sm text-gray-500 text-center py-4">No symptoms found matching "{searchQuery}"</p>
