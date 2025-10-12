@@ -1,8 +1,8 @@
 import { useState } from "react"
-import { X, Search, ChevronDown, Plus, ArrowRight } from "lucide-react"
+import { X, ChevronDown, Plus, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
+import Modal from "@/components/shared/Modal"
 import type { Tag } from "@/types/new-prescription.types"
 import { availableSymptoms, filterOptions } from "@/constant/chief-complaint.constant"
 
@@ -62,7 +62,6 @@ export const ChiefComplaintModal = ({
     onSubmit({ complaints })
     onClose()
   }
-
   const handleSaveGroup = () => {
     if (selectedGroupId) {
       alert(`Group "${selectedGroup?.name}" saved successfully!`)
@@ -163,65 +162,38 @@ export const ChiefComplaintModal = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-6xl mx-4 z-10 max-h-[90vh] flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-xl font-semibold text-gray-800">Add Chief Complaint (C/C)</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
-            <X className="h-6 w-6" />
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      maxWidthClass="max-w-6xl"
+      title="Add Chief Complaint (C/C)"
+      search={{ value: searchQuery, onChange: setSearchQuery, placeholder: "Search..." }}
+      prescriptionToggle={{ checked: showInPrescription, onChange: setShowInPrescription }}
+    >
+
+      <div className="p-4 pb-4 space-y-4">
+        {/* Tabs */}
+        <div className="flex gap-3">
+          <button
+            onClick={() => setActiveTab("complaint")}
+            className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors ${
+              activeTab === "complaint" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Chief Complaint
+          </button>
+          <button
+            onClick={() => setActiveTab("groups")}
+            className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors ${
+              activeTab === "groups" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Chief Complaint Groups
           </button>
         </div>
+      </div>
 
-        {/* Search and Checkbox */}
-        <div className="p-4 pb-4 space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <Input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="show-prescription"
-                checked={showInPrescription}
-                onCheckedChange={(checked) => setShowInPrescription(checked as boolean)}
-                className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
-              />
-              <label htmlFor="show-prescription" className="text-sm font-medium text-gray-700 cursor-pointer">
-                Show in Prescription
-              </label>
-            </div>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex gap-3">
-            <button
-              onClick={() => setActiveTab("complaint")}
-              className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors ${
-                activeTab === "complaint" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              Chief Complaint
-            </button>
-            <button
-              onClick={() => setActiveTab("groups")}
-              className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors ${
-                activeTab === "groups" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              Chief Complaint Groups
-            </button>
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto px-6">
+      <div className="flex-1 overflow-y-auto px-6">
           {activeTab === "complaint" && (
             <div className="flex gap-6 pb-6">
               {/* Left Side - Filter Tags */}
@@ -529,16 +501,15 @@ export const ChiefComplaintModal = ({
         </div>
 
         {activeTab === "complaint" && (
-          <div className="flex justify-end gap-3 p-2 border-t bg-gray-50">
+          <Modal.Footer>
             <Button onClick={handleSubmit} className="bg-green-700 hover:bg-green-800 text-white px-8">
               Save
             </Button>
             <Button onClick={onClose} className="bg-red-600 hover:bg-red-700 text-white px-8">
               Close
             </Button>
-          </div>
+          </Modal.Footer>
         )}
-      </div>
-    </div>
+    </Modal>
   )
 }
