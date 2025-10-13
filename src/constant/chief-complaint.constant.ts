@@ -1,8 +1,12 @@
 export const filterOptions = [
-  "H/O Fever",
-  "Fever",
-  "Chest Pain (Central)",
-  "Sennzing",
+"Chest pain",
+"Shortness of Breath",
+"Headache",
+"Abdominal pain",
+"Fever",
+"Cough",
+"Nausea",
+"Dizziness",
 ];
 
 export const availableSymptoms = [

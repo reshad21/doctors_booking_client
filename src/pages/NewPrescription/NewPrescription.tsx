@@ -13,7 +13,7 @@ import {
   AdviceSection,
   NextVisitSection,
 } from "./PrescriptionSections/PrescriptionSections";
-import { ChiefComplaintModal } from "./_components/modals/ChiefComplaintModal";
+import { ChiefComplaintModal } from "./_components/modals/ChiefComplaintModals/ChiefComplaintModal";
 import { ExaminationsModal } from "./_components/modals/ExaminationModal";
 import { DiagnosisModal } from "./_components/modals/DiagonisisModal";
 import { InvestigationModal } from "./_components/modals/InvestigationModal";
@@ -50,7 +50,6 @@ export default function NewPrescription() {
 
   const [activeModal, setActiveModal] = useState<string | null>(null);
 
-  // Modal handlers
   const openModal = (type: string) => {
     setActiveModal(type);
   };
@@ -76,13 +75,25 @@ export default function NewPrescription() {
   const handleChiefComplaintSubmit = (data: {
     complaints: ComplaintItem[];
   }) => {
-    setPrescriptionData((prev) => ({
-      ...prev,
-      chiefComplaint: [
-        ...prev.chiefComplaint,
-        ...data.complaints.map((item) => item.label),
-      ],
-    }));
+    const formatted = data.complaints.map((item) => {
+      const dur = item.duration ? `${item.duration}` : "";
+      const unit = item.unit ? ` ${item.unit}` : "";
+      const notes = item.notes ? ` (${item.notes})` : "";
+
+      const middle = dur ? `${dur}${unit}`.trim() : unit.trim();
+      return `${item.label}${middle ? ` ${middle}` : ""}${notes}`.trim();
+    });
+console.log(formatted, 'formatted')
+    setPrescriptionData((prev) => {
+      const existingSet = new Set(prev.chiefComplaint.map((c) => c.trim().toLowerCase()))
+
+      const toAdd = formatted.filter((f) => !existingSet.has(f.trim().toLowerCase()));
+
+      return {
+        ...prev,
+        chiefComplaint: [...prev.chiefComplaint, ...toAdd],
+      };
+    });
   };
 
   const handleExaminationsSubmit = (data: { examination: string }) => {
@@ -292,7 +303,6 @@ export default function NewPrescription() {
           isOpen={activeModal === "chiefComplaint"}
           onClose={closeModal}
           onSubmit={handleChiefComplaintSubmit}
-          tags={prescriptionTags.chiefComplaint}
         />
 
         <ExaminationsModal

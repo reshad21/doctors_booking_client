@@ -72,23 +72,28 @@ export const ChiefComplaintSection: React.FC<ListSectionProps> = ({
   items,
   onAddClick,
   onRemoveItem,
-}) => (
-  <SectionWrapper title="Chief Complaint" onAddClick={onAddClick}>
-    {items.map((item, index) => (
-      <div key={index} className="mb-1 flex items-start justify-between group">
-        <div className="flex-1">• {item}</div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onRemoveItem(index)}
-          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2"
+}) => {
+  return (
+    <SectionWrapper title="Chief Complaint" onAddClick={onAddClick}>
+      {items.map((item, index) => (
+        <div
+          key={index}
+          className="mb-1 flex items-start justify-between group"
         >
-          <X className="h-3 w-3" />
-        </Button>
-      </div>
-    ))}
-  </SectionWrapper>
-);
+          <div className="flex-1">• {item}</div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onRemoveItem(index)}
+            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2"
+          >
+            <X className="h-3 w-3" />
+          </Button>
+        </div>
+      ))}
+    </SectionWrapper>
+  );
+};
 
 // Examinations Section
 export const ExaminationsSection: React.FC<ListSectionProps> = ({
