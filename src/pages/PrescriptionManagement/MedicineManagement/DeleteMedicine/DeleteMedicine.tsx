@@ -7,20 +7,17 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useDeleteMedicineMutation } from "@/redux/api/medicine/medicine";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
 interface DeleteMedicineProps {
   medicineId: string;
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
   medicineName?: string;
 }
 
-const DeleteMedicine = ({
-  medicineId,
-  trigger,
-  medicineName,
-}: DeleteMedicineProps) => {
+const DeleteMedicine = ({ medicineId, medicineName }: DeleteMedicineProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [deleteMedicine, { isLoading }] = useDeleteMedicineMutation();
 
@@ -34,7 +31,9 @@ const DeleteMedicine = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogTrigger asChild>
+        <Trash2 className="w-4 h-4 text-red-500 cursor-pointer" />
+      </DialogTrigger>
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
           <DialogTitle>Delete Medicine</DialogTitle>

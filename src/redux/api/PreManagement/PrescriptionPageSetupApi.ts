@@ -18,6 +18,13 @@ const prescriptionPageSetupApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["prescriptionPageSetup"],
     }),
+    updateStatus: builder.mutation({
+      query: (id) => ({
+        url: `/prescription-page-setup/status/${id}`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["prescriptionPageSetup"],
+    }),
     getPrescriptionPageSetups: builder.query({
       query: ({ doctorId }) => {
         const params = new URLSearchParams();
@@ -38,12 +45,21 @@ const prescriptionPageSetupApi = baseApi.injectEndpoints({
       }),
       providesTags: ["prescriptionPageSetup"],
     }),
+    deletePrescriptionPageSetupById: builder.mutation({
+      query: (id) => ({
+        url: `/prescription-page-setup/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["prescriptionPageSetup"],
+    }),
   }),
 });
 
 export const {
   useCreatePrescriptionPageSetupMutation,
   useUpdatePrescriptionPageSetupMutation,
+  useDeletePrescriptionPageSetupByIdMutation,
   useGetPrescriptionPageSetupByIdQuery,
   useGetPrescriptionPageSetupsQuery,
+  useUpdateStatusMutation,
 } = prescriptionPageSetupApi;

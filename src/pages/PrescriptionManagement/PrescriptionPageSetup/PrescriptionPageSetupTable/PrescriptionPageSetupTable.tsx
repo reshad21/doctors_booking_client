@@ -1,4 +1,7 @@
+import { useState } from "react";
+import DeletePrescriptionPageSetupTemplate from "@/components/shared/DeletePrescriptionPageSetupTemplate";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -9,10 +12,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useCurrentToken } from "@/redux/api/features/authSlice";
-import { useGetPrescriptionPageSetupsQuery } from "@/redux/api/PreManagement/PrescriptionPageSetupApi";
+import {
+  useGetPrescriptionPageSetupsQuery,
+  useUpdateStatusMutation,
+} from "@/redux/api/PreManagement/PrescriptionPageSetupApi";
 import { useAppSelector } from "@/redux/hooks";
 import { jwtDecode } from "jwt-decode";
-import { SquarePen, Trash2 } from "lucide-react";
+import { SquarePen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const PrescriptionPageSetupTable = () => {
@@ -22,11 +28,31 @@ const PrescriptionPageSetupTable = () => {
   const { data: prescriptionPageSetupData, isLoading } =
     useGetPrescriptionPageSetupsQuery({ doctorId: decoded.id });
 
+  // Local state to manage switch values
+  const [switchStates, setSwitchStates] = useState<Record<string, boolean>>({});
+  const [updateStatus] = useUpdateStatusMutation();
+
   const handleUpdatePrescriptionSetup = (id: string) => {
-    navigate("/dashboard/pre-management/create-prescription-page-setup/page-setup", {
-      state: { id },
-    });
+    navigate(
+      "/dashboard/pre-management/create-prescription-page-setup/page-setup",
+      {
+        state: { id },
+      }
+    );
   };
+
+  const handleSwitchChange = async (id: string, checked: boolean) => {
+    // Update local state
+    setSwitchStates((prev) => ({
+      ...prev,
+      [id]: checked,
+    }));
+
+    await updateStatus(id);
+  };
+
+  console.log(prescriptionPageSetupData);
+
   return (
     <div>
       <Table>
@@ -51,36 +77,48 @@ const PrescriptionPageSetupTable = () => {
                 id: string;
                 chamber: { name: string };
                 createdAt: string;
+                isActive: boolean;
                 status: boolean;
               },
               index: number
-            ) => (
-              <TableRow key={item.id}>
-                <TableCell className="font-medium">{index + 1}</TableCell>
-                <TableCell>{item?.chamber?.name}</TableCell>
-                <TableCell>
-                  {new Date(item.createdAt).toLocaleDateString()}
-                </TableCell>
-                <TableCell>{item.status}</TableCell>
-                <TableCell className="space-x-3">
-                  <Button
-                    variant={"outline"}
-                    onClick={() => handleUpdatePrescriptionSetup(item.id)}
-                    size={"icon"}
-                    className="bg-green-400 border-0 hover:bg-green-500 cursor-pointer"
-                  >
-                    <SquarePen className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={"destructive"}
-                    size={"icon"}
-                    className="cursor-pointer"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            )
+            ) => {
+              // Use local state if it exists, otherwise use the value from API
+              const isActive = switchStates[item.id] ?? item.isActive;
+
+              return (
+                <TableRow key={item.id}>
+                  <TableCell className="font-medium">{index + 1}</TableCell>
+                  <TableCell>{item?.chamber?.name}</TableCell>
+                  <TableCell>
+                    {new Date(item.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={isActive}
+                        onCheckedChange={(checked) =>
+                          handleSwitchChange(item.id, checked)
+                        }
+                      />
+                      <span className="text-sm text-gray-600">
+                        {isActive ? "Active" : "Inactive"}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="flex gap-2 items-center">
+                    <Button
+                      variant={"outline"}
+                      onClick={() => handleUpdatePrescriptionSetup(item.id)}
+                      size={"icon"}
+                      className="bg-green-400 border-0 hover:bg-green-500 cursor-pointer"
+                    >
+                      <SquarePen className="h-4 w-4" />
+                    </Button>
+                    <DeletePrescriptionPageSetupTemplate deleteId={item?.id} />
+                  </TableCell>
+                </TableRow>
+              );
+            }
           )}
         </TableBody>
       </Table>

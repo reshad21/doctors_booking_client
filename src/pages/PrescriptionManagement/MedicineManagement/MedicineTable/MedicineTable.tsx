@@ -26,7 +26,7 @@ const MedicineTable = ({
   }[];
 }) => {
   return (
-    <div className="bg-white w-[940px]">
+    <div className="bg-white w-[950px] 2xl:w-[1100px]">
       <Table>
         <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader className="bg-gray-50">

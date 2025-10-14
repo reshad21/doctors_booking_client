@@ -12,6 +12,7 @@ import { Form } from "@/components/ui/form";
 import { useUpdateMedicineMutation } from "@/redux/api/medicine/medicine";
 import medicineValidation from "@/validation/medicine.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Edit2 } from "lucide-react";
 import { useState } from "react";
 import {
   FormProvider,
@@ -34,14 +35,10 @@ interface MedicineFormValues {
 interface UpdateMedicineProps {
   defaultValues: MedicineFormValues;
   medicineId: string;
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
 }
 
-const UpdateMedicine = ({
-  defaultValues,
-  medicineId,
-  trigger,
-}: UpdateMedicineProps) => {
+const UpdateMedicine = ({ defaultValues, medicineId }: UpdateMedicineProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [updateMedicine, { isLoading }] = useUpdateMedicineMutation();
   const form = useForm({
@@ -58,7 +55,9 @@ const UpdateMedicine = ({
   };
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogTrigger asChild>
+        <Edit2 className="w-4 h-4 text-blue-500 cursor-pointer" />
+      </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Update Medicine</DialogTitle>

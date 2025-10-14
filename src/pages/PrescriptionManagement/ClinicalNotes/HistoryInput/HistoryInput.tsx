@@ -201,11 +201,19 @@ const HistoryInput = () => {
                 )}
               />
               <DialogFooter>
-                <Button type="submit" variant="default">
+                <Button
+                  type="submit"
+                  variant="default"
+                  className="cursor-pointer bg-blue-500"
+                >
                   {editId ? "Update" : "Create"}
                 </Button>
                 <DialogClose asChild>
-                  <Button type="button" variant="outline">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="cursor-pointer bg-red-500 text-white"
+                  >
                     Cancel
                   </Button>
                 </DialogClose>

@@ -207,7 +207,7 @@ const OnExaminationsInput = () => {
                 )}
               />
               <DialogFooter>
-                <Button type="submit" variant="default">
+                <Button type="submit" variant="default" className="bg-blue-500">
                   {editId ? "Update" : "Create"}
                 </Button>
                 <DialogClose asChild>
