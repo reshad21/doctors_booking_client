@@ -12,14 +12,21 @@ import { useCurrentToken } from "@/redux/api/features/authSlice";
 import { useGetPrescriptionPageSetupsQuery } from "@/redux/api/PreManagement/PrescriptionPageSetupApi";
 import { useAppSelector } from "@/redux/hooks";
 import { jwtDecode } from "jwt-decode";
-import { Trash2 } from "lucide-react";
+import { SquarePen, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const PrescriptionPageSetupTable = () => {
+  const navigate = useNavigate();
   const token = useAppSelector(useCurrentToken);
   const decoded: { id: string } = jwtDecode(token);
   const { data: prescriptionPageSetupData, isLoading } =
     useGetPrescriptionPageSetupsQuery({ doctorId: decoded.id });
-  console.log(prescriptionPageSetupData);
+
+  const handleUpdatePrescriptionSetup = (id: string) => {
+    navigate("/dashboard/pre-management/create-prescription-page-setup/page-setup", {
+      state: { id },
+    });
+  };
   return (
     <div>
       <Table>
@@ -55,8 +62,20 @@ const PrescriptionPageSetupTable = () => {
                   {new Date(item.createdAt).toLocaleDateString()}
                 </TableCell>
                 <TableCell>{item.status}</TableCell>
-                <TableCell>
-                  <Button variant={"destructive"} size={"icon"}>
+                <TableCell className="space-x-3">
+                  <Button
+                    variant={"outline"}
+                    onClick={() => handleUpdatePrescriptionSetup(item.id)}
+                    size={"icon"}
+                    className="bg-green-400 border-0 hover:bg-green-500 cursor-pointer"
+                  >
+                    <SquarePen className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={"destructive"}
+                    size={"icon"}
+                    className="cursor-pointer"
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </TableCell>

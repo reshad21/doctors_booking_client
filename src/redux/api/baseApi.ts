@@ -37,6 +37,8 @@ export const baseApi = createApi({
     "on-examinations-input",
     "advice-input",
     "investigation-input",
+    "clinicTemplate",
+    "prescriptionPageSetup",
     "preManagement",
     "message",
     "visit",
