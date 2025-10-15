@@ -12,7 +12,6 @@ interface ComplaintItem {
   notes: string;
 }
 
-// ============= Main Modal Component =============
 export const ChiefComplaintModal = ({
   isOpen,
   onClose,
@@ -108,7 +107,7 @@ export const ChiefComplaintModal = ({
         <div className="flex gap-3">
           <button
             onClick={() => setActiveTab("complaint")}
-            className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors ${
+            className={`flex-1 py-3 px-6 cursor-pointer rounded-lg font-medium transition-colors ${
               activeTab === "complaint"
                 ? "bg-green-600 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -118,7 +117,7 @@ export const ChiefComplaintModal = ({
           </button>
           <button
             onClick={() => setActiveTab("groups")}
-            className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors ${
+            className={`flex-1 py-3 px-6 cursor-pointer rounded-lg font-medium transition-colors ${
               activeTab === "groups"
                 ? "bg-green-600 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -129,7 +128,7 @@ export const ChiefComplaintModal = ({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-6">
+      <div className="flex-1 overflow-y-auto px-6 py-2">
         {activeTab === "complaint" && (
           <ComplaintTab
             searchQuery={searchQuery}

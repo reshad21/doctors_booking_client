@@ -19,7 +19,7 @@ import { DiagnosisModal } from "./_components/modals/DiagonisisModal";
 import { InvestigationModal } from "./_components/modals/InvestigationModal";
 import { PatientModal } from "./_components/modals/PatientModal";
 import { HistoryModal } from "./_components/modals/HistoryModal";
-import { MedicationsModal } from "./_components/modals/MedicationsModal";
+import { MedicationsModal } from "./_components/modals/MedicationModal.tsx/MedicationsModal";
 import { AdviceModal } from "./_components/modals/AdviceModal";
 import { NextVisitModal } from "./_components/modals/NextVisitModal";
 import { prescriptionTags } from "@/constant/prescription-tags";
@@ -335,7 +335,6 @@ console.log(formatted, 'formatted')
           isOpen={activeModal === "medications"}
           onClose={closeModal}
           onSubmit={handleMedicationsSubmit}
-          tags={prescriptionTags.medications}
         />
 
         <AdviceModal

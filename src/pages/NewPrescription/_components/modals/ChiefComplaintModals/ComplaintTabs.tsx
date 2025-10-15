@@ -144,7 +144,7 @@ export function ComplaintTab({
             <button
               key={filter}
               onClick={() => onToggleFilter(filter)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md border transition-colors ${
+              className={`flex items-center gap-2 px-1 py-0.5 cursor-pointer rounded-md border transition-colors ${
                 isFilterSelected(filter)
                   ? "bg-green-50 border-green-600 text-green-700"
                   : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
