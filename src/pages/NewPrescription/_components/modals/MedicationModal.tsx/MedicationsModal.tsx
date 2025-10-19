@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Tag } from "@/types/new-prescription.types";
 import { useState } from "react";
 import Modal from "@/components/shared/Modal";
@@ -11,6 +12,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { medicineOptions } from "@/constant/medication.constant";
 
 export const MedicationsModal = ({
   isOpen,
@@ -33,7 +35,6 @@ export const MedicationsModal = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [showInPrescription, setShowInPrescription] = useState(true);
 
-
   const [medications, setMedications] = useState<
     Array<{
       id: string;
@@ -47,7 +48,6 @@ export const MedicationsModal = ({
   >([]);
 
   const handleSubmit = () => {
-    // Submit the first selected medication if available to keep the original onSubmit contract
     if (medications.length > 0) {
       const med = medications[0];
       onSubmit({
@@ -56,24 +56,10 @@ export const MedicationsModal = ({
         frequency: med.frequency,
         duration: med.duration,
       });
-      // optionally clear selection and close
       setMedications([]);
       onClose();
     }
   };
-
-
-  const medicineOptions = [
-    "Fexo",
-    "Paracetamol",
-    "Ibuprofen",
-    "Amoxicillin",
-    "Cetirizine",
-    "Azithromycin",
-    "Loratadine",
-    "Metformin",
-    "Amlodipine",
-  ];
 
   const isMedSelected = (name: string) =>
     medications.some((m) => m.name === name);
@@ -106,6 +92,237 @@ export const MedicationsModal = ({
   const removeMedication = (id: string) => {
     setMedications((prev) => prev.filter((m) => m.id !== id));
   };
+
+  const renderMedicationForm = (med: any, medicationType: string) => {
+    if (medicationType === "Tablet" || medicationType === "Capsule") {
+      return (
+        <>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-gray-600">
+                Dosage
+              </label>
+              <div className="flex gap-x-5">
+                <Input
+                  value={med.dosage}
+                  onChange={(e) =>
+                    updateMedication(med.id, "dosage", e.target.value)
+                  }
+                  className="w-8"
+                />
+                <Input
+                  value={med.dosage}
+                  onChange={(e) =>
+                    updateMedication(med.id, "dosage", e.target.value)
+                  }
+                  className="w-8"
+                />
+                <Input
+                  value={med.dosage}
+                  onChange={(e) =>
+                    updateMedication(med.id, "dosage", e.target.value)
+                  }
+                  className="w-8"
+                />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-gray-600">
+                Duration
+              </label>
+              <div className="flex justify-between">
+                <Input
+                  value={med.duration}
+                  onChange={(e) =>
+                    updateMedication(med.id, "duration", e.target.value)
+                  }
+                  className="w-16"
+                />
+                <Input
+                  value={med.duration}
+                  onChange={(e) =>
+                    updateMedication(med.id, "duration", e.target.value)
+                  }
+                  className="w-16"
+                />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-gray-600">
+                Frequency
+              </label>
+              <Input
+                placeholder="Frequency"
+                value={med.frequency}
+                onChange={(e) =>
+                  updateMedication(med.id, "frequency", e.target.value)
+                }
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-1 col-span-2">
+              <label className="text-xs font-medium text-gray-600">Notes</label>
+              <Input
+                placeholder="Notes"
+                value={med.notes}
+                onChange={(e) =>
+                  updateMedication(med.id, "notes", e.target.value)
+                }
+              />
+            </div>
+          </div>
+        </>
+      );
+    }
+
+    if (medicationType === "Syrup") {
+      return (
+        <>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-gray-600">
+                Volume (ml)
+              </label>
+              <Input
+                placeholder="Volume"
+                value={med.dosage}
+                onChange={(e) =>
+                  updateMedication(med.id, "dosage", e.target.value)
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-gray-600">
+                Times per day
+              </label>
+              <Input
+                placeholder="Times per day"
+                value={med.frequency}
+                onChange={(e) =>
+                  updateMedication(med.id, "frequency", e.target.value)
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-gray-600">Days</label>
+              <Input
+                placeholder="Number of days"
+                value={med.duration}
+                onChange={(e) =>
+                  updateMedication(med.id, "duration", e.target.value)
+                }
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-gray-600">Unit</label>
+              <Select
+                value={med.unit}
+                onValueChange={(v) => updateMedication(med.id, "unit", v)}
+              >
+                <SelectTrigger className="w-full text-left">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="w-full">
+                  {["ml", "tsp", "tbsp"].map((u) => (
+                    <SelectItem key={u} value={u}>
+                      {u}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1 col-span-2">
+              <label className="text-xs font-medium text-gray-600">Notes</label>
+              <Input
+                placeholder="Notes"
+                value={med.notes}
+                onChange={(e) =>
+                  updateMedication(med.id, "notes", e.target.value)
+                }
+              />
+            </div>
+          </div>
+        </>
+      );
+    }
+
+    if (medicationType === "Injection") {
+      return (
+        <div className="grid grid-cols-3 gap-3">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-600">
+              Dosage (units)
+            </label>
+            <Input
+              placeholder="Units"
+              value={med.dosage}
+              onChange={(e) =>
+                updateMedication(med.id, "dosage", e.target.value)
+              }
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-600">Route</label>
+            <Select
+              value={med.frequency}
+              onValueChange={(v) => updateMedication(med.id, "frequency", v)}
+            >
+              <SelectTrigger className="w-full text-left">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="w-full">
+                {["IM", "IV", "SC"].map((u) => (
+                  <SelectItem key={u} value={u}>
+                    {u}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-600">Timing</label>
+            <Input
+              placeholder="When to inject"
+              value={med.duration}
+              onChange={(e) =>
+                updateMedication(med.id, "duration", e.target.value)
+              }
+            />
+          </div>
+        </div>
+      );
+    }
+
+    // Default form for other types
+    return (
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <label className="text-xs font-medium text-gray-600">
+            Instructions
+          </label>
+          <Input
+            placeholder="How to use"
+            value={med.dosage}
+            onChange={(e) => updateMedication(med.id, "dosage", e.target.value)}
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs font-medium text-gray-600">Duration</label>
+          <Input
+            placeholder="For how long"
+            value={med.duration}
+            onChange={(e) =>
+              updateMedication(med.id, "duration", e.target.value)
+            }
+          />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -123,7 +340,6 @@ export const MedicationsModal = ({
       }}
     >
       <div className="p-4 pb-4 space-y-4">
-        {/* Tabs */}
         <div className="flex gap-3">
           <button
             onClick={() => setActiveTab("medication")}
@@ -151,34 +367,33 @@ export const MedicationsModal = ({
       <div className="flex-1 overflow-y-auto px-6">
         {activeTab === "medication" && (
           <div className="flex gap-6 pb-6">
-            {/* Left Side - Filter Tags */}
             <div className="w-1/2 space-y-4">
               <div className="flex flex-wrap gap-2">
                 {medicineOptions
                   .filter((opt) =>
-                    opt.toLowerCase().includes(searchQuery.toLowerCase())
+                    opt.name.toLowerCase().includes(searchQuery.toLowerCase())
                   )
                   .map((filter) => (
                     <button
-                      key={filter}
-                      onClick={() => toggleMedication(filter)}
+                      key={filter.name}
+                      onClick={() => toggleMedication(filter.name)}
                       className={`flex items-center gap-2 px-1 py-0.5 cursor-pointer rounded-md border transition-colors ${
-                        isMedSelected(filter)
+                        isMedSelected(filter.name)
                           ? "bg-green-50 border-green-600 text-green-700"
                           : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
                       }`}
                     >
-                      {isMedSelected(filter) && (
+                      {isMedSelected(filter.name) && (
                         <span className="text-green-600">✓</span>
                       )}
-                      {filter}
+                      {filter.name}
                       <ChevronDown className="h-4 w-4" />
                     </button>
                   ))}
               </div>
 
               {medicineOptions.filter((opt) =>
-                opt.toLowerCase().includes(searchQuery.toLowerCase())
+                opt.name.toLowerCase().includes(searchQuery.toLowerCase())
               ).length === 0 && (
                 <p className="text-sm text-gray-500 text-center py-4">
                   No medications found matching "{searchQuery}"
@@ -186,7 +401,6 @@ export const MedicationsModal = ({
               )}
             </div>
 
-            {/* Right Side - Medication Cards */}
             <div className="w-1/2 space-y-3 overflow-x-hidden">
               {medications.length === 0 && (
                 <p className="text-sm text-gray-500 text-center py-8">
@@ -194,121 +408,50 @@ export const MedicationsModal = ({
                 </p>
               )}
 
-              {medications.map((med, index) => (
-                <div
-                  key={med.id}
-                  className="p-3 bg-gray-50 rounded-lg border border-gray-200 space-y-3"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-gray-800">
-                      {index + 1}. {med.name}
-                    </span>
-                    <button
-                      onClick={() => removeMedication(med.id)}
-                      className="text-red-500 hover:text-red-700 transition-colors"
-                    >
-                      <X className="h-5 w-5" />
-                    </button>
-                  </div>
+              {medications.map((med, index) => {
+                const medicationType = medicineOptions.find(
+                  (m) => m.name === med.name
+                )?.type;
 
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="space-y-1">
-                      <label className="text-xs font-medium text-gray-600">
-                        Dosage
-                      </label>
-                      <Input
-                        placeholder="Dosage"
-                        value={med.dosage}
-                        onChange={(e) =>
-                          updateMedication(med.id, "dosage", e.target.value)
-                        }
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-xs font-medium text-gray-600">
-                        Frequency
-                      </label>
-                      <Input
-                        placeholder="Frequency"
-                        value={med.frequency}
-                        onChange={(e) =>
-                          updateMedication(med.id, "frequency", e.target.value)
-                        }
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-xs font-medium text-gray-600">
-                        Duration
-                      </label>
-                      <Input
-                        placeholder="Duration"
-                        value={med.duration}
-                        onChange={(e) =>
-                          updateMedication(med.id, "duration", e.target.value)
-                        }
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="space-y-1">
-                      <label className="text-xs font-medium text-gray-600">
-                        Unit
-                      </label>
-                      <Select
-                        value={med.unit}
-                        onValueChange={(v) =>
-                          updateMedication(med.id, "unit", v)
-                        }
+                return (
+                  <div
+                    key={med.id}
+                    className="p-3 bg-gray-50 rounded-lg border border-gray-200 space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold text-gray-800">
+                        {index + 1}. {med.name} ({medicationType})
+                      </span>
+                      <button
+                        onClick={() => removeMedication(med.id)}
+                        className="text-red-500 hover:text-red-700 transition-colors"
                       >
-                        <SelectTrigger className="w-full text-left">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="w-full">
-                          {["Tablet", "ml", "Drops", "mg"].map((u) => (
-                            <SelectItem key={u} value={u}>
-                              {u}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                        <X className="h-5 w-5" />
+                      </button>
                     </div>
 
-                    <div className="space-y-1 col-span-2">
-                      <label className="text-xs font-medium text-gray-600">
-                        Notes
-                      </label>
-                      <Input
-                        placeholder="Notes"
-                        value={med.notes}
-                        onChange={(e) =>
-                          updateMedication(med.id, "notes", e.target.value)
-                        }
-                      />
-                    </div>
+                    {renderMedicationForm(med, medicationType || "")}
+
+                    {(med.dosage ||
+                      med.frequency ||
+                      med.duration ||
+                      med.unit ||
+                      med.notes) && (
+                      <div className="text-sm text-gray-600">
+                        {med.dosage && (
+                          <span className="font-medium">{med.dosage} </span>
+                        )}
+                        {med.frequency && <span>{med.frequency} </span>}
+                        {med.duration && <span>{med.duration} </span>}
+                        {med.unit && <span>{med.unit} </span>}
+                        {med.notes && (
+                          <span className="text-gray-500">({med.notes})</span>
+                        )}
+                      </div>
+                    )}
                   </div>
-
-                  {(med.dosage ||
-                    med.frequency ||
-                    med.duration ||
-                    med.unit ||
-                    med.notes) && (
-                    <div className="text-sm text-gray-600">
-                      {med.dosage && (
-                        <span className="font-medium">{med.dosage} </span>
-                      )}
-                      {med.frequency && <span>{med.frequency} </span>}
-                      {med.duration && <span>{med.duration} </span>}
-                      {med.unit && <span>{med.unit} </span>}
-                      {med.notes && (
-                        <span className="text-gray-500">({med.notes})</span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
