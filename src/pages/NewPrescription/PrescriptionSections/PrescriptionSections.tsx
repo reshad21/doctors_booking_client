@@ -1,8 +1,6 @@
-"use client";
-
 import type React from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, X } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Types
@@ -195,7 +193,7 @@ export const MedicationsSection: React.FC<MedicationSectionProps> = ({
 }) => (
   <SectionWrapper title="Rx" onAddClick={onAddClick} minHeight="200px">
     {medications.map((med, index) => (
-      <div key={index} className="mb-3 group">
+      <div key={index} className="mb-3 flex items-center justify-between">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-2 flex-1">
             <span className="rx-number">{index + 1}.</span>
@@ -206,15 +204,15 @@ export const MedicationsSection: React.FC<MedicationSectionProps> = ({
               </div>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onRemoveItem(index)}
-            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <X className="h-3 w-3" />
-          </Button>
         </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onRemoveItem(index)}
+          className="p-1 size-14 text-red-500 cursor-pointer"
+        >
+          <Trash2 className="size-5" />
+        </Button>
       </div>
     ))}
   </SectionWrapper>
