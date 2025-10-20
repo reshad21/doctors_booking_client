@@ -1,3 +1,5 @@
+"use client";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Tag } from "@/types/new-prescription.types";
 import { useState } from "react";
@@ -12,7 +14,20 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { medicineOptions } from "@/constant/medication.constant";
+
+const medicineOptions = [
+  { name: "Aspirin", type: "Tablet" },
+  { name: "Ibuprofen", type: "Tablet" },
+  { name: "Paracetamol", type: "Tablet" },
+  { name: "Amoxicillin", type: "Capsule" },
+  { name: "Doxycycline", type: "Capsule" },
+  { name: "Cough Syrup", type: "Syrup" },
+  { name: "Vitamin D Syrup", type: "Syrup" },
+  { name: "Insulin", type: "Injection" },
+  { name: "Penicillin", type: "Injection" },
+  { name: "Hydrocortisone Cream", type: "Cream" },
+  { name: "Antibiotic Ointment", type: "Cream" },
+];
 
 export const MedicationsModal = ({
   isOpen,
@@ -26,6 +41,12 @@ export const MedicationsModal = ({
     dosage: string;
     frequency: string;
     duration: string;
+    instructions?: {
+      beforeEating: boolean;
+      afterEating: boolean;
+      notes: string;
+    };
+    showInPrescription?: boolean;
   }) => void;
   tags?: Tag[];
 }) => {
@@ -37,24 +58,52 @@ export const MedicationsModal = ({
 
   const [medications, setMedications] = useState<
     Array<{
+      [x: string]: any;
       id: string;
       name: string;
       dosage: string;
-      frequency: string;
-      duration: string;
-      unit: string;
-      notes: string;
+      durationValue: string;
+      durationUnit: string;
+      instruction1: boolean;
+      instruction2: boolean;
+      instructionNotes: string;
+      isInstruction: boolean;
+      dosageValue: string;
+      dosageUnit: string;
+      frequencyValue: string;
+      frequencyText: string;
+      limitValue: string;
+      limitUnit: string;
+      beforeEating: boolean;
+      afterEating: boolean;
     }>
   >([]);
 
   const handleSubmit = () => {
     if (medications.length > 0) {
       const med = medications[0];
+
+      // Build instruction string
+      let instructionStr = "";
+      if (med.beforeEating) instructionStr += "Before eating ";
+      if (med.afterEating) instructionStr += "After eating ";
+      if (med.instructionNotes) instructionStr += `- ${med.instructionNotes}`;
+
       onSubmit({
         name: med.name,
-        dosage: med.dosage,
-        frequency: med.frequency,
-        duration: med.duration,
+        dosage: med.dosageValue ? `${med.dosageValue} ${med.dosageUnit}` : "",
+        frequency: med.frequencyValue
+          ? `${med.frequencyValue} ${med.frequencyUnit}`
+          : "",
+        duration: med.durationValue
+          ? `${med.durationValue} ${med.durationUnit}`
+          : "",
+        instructions: {
+          beforeEating: med.beforeEating,
+          afterEating: med.afterEating,
+          notes: instructionStr.trim(),
+        },
+        showInPrescription: showInPrescription,
       });
       setMedications([]);
       onClose();
@@ -74,16 +123,31 @@ export const MedicationsModal = ({
           id: String(Date.now()) + Math.random().toString(16).slice(2),
           name,
           dosage: "",
-          frequency: "",
-          duration: "",
-          unit: "",
-          notes: "",
+          durationValue: "",
+          durationUnit: "days",
+          instruction1: false,
+          instruction2: false,
+          instructionNotes: "",
+          isInstruction: false,
+          dosageValue: "",
+          dosageUnit: "piece", // Set default unit
+          frequencyValue: "",
+          frequencyUnit: "times", // Set default unit
+          frequencyText: "",
+          limitValue: "",
+          limitUnit: "piece",
+          beforeEating: false,
+          afterEating: false,
         },
       ]);
     }
   };
 
-  const updateMedication = (id: string, field: string, value: string) => {
+  const updateMedication = (
+    id: string,
+    field: string,
+    value: string | boolean
+  ) => {
     setMedications((prev) =>
       prev.map((m) => (m.id === id ? { ...m, [field]: value } : m))
     );
@@ -93,234 +157,345 @@ export const MedicationsModal = ({
     setMedications((prev) => prev.filter((m) => m.id !== id));
   };
 
-  const renderMedicationForm = (med: any, medicationType: string) => {
-    if (medicationType === "Tablet" || medicationType === "Capsule") {
-      return (
-        <>
-          <div className="grid grid-cols-3 gap-3">
+  const parseDosageValues = (dosageString: string) => {
+    return dosageString.split("+").map((v) => v.trim());
+  };
+
+  const renderStandardizedForm = (med: any) => {
+    return (
+      <div className="space-y-2">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-12">
+          {/* Dosage Section */}
+          <div>
             <div className="space-y-1">
               <label className="text-xs font-medium text-gray-600">
-                Dosage
+                Schedule
               </label>
-              <div className="flex gap-x-5">
+              <div className="flex gap-2">
                 <Input
-                  value={med.dosage}
+                  type="text"
+                  value={med.dosageValue}
                   onChange={(e) =>
-                    updateMedication(med.id, "dosage", e.target.value)
+                    updateMedication(med.id, "dosageValue", e.target.value)
                   }
-                  className="w-8"
+                  placeholder="5"
+                  className="w-16 text-sm text-center"
                 />
-                <Input
-                  value={med.dosage}
-                  onChange={(e) =>
-                    updateMedication(med.id, "dosage", e.target.value)
+                <Select
+                  value={med.dosageUnit}
+                  onValueChange={(v) =>
+                    updateMedication(med.id, "dosageUnit", v)
                   }
-                  className="w-8"
-                />
-                <Input
-                  value={med.dosage}
-                  onChange={(e) =>
-                    updateMedication(med.id, "dosage", e.target.value)
-                  }
-                  className="w-8"
-                />
+                >
+                  <SelectTrigger className="w-32 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="spoon">চামচ</SelectItem>
+                    <SelectItem value="piece">টা</SelectItem>
+                    <SelectItem value="drop">ড্রপ</SelectItem>
+                    <SelectItem value="ampule">এম্পুল</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-gray-600">
-                Duration
-              </label>
-              <div className="flex justify-between">
-                <Input
-                  value={med.duration}
-                  onChange={(e) =>
-                    updateMedication(med.id, "duration", e.target.value)
-                  }
-                  className="w-16"
-                />
-                <Input
-                  value={med.duration}
-                  onChange={(e) =>
-                    updateMedication(med.id, "duration", e.target.value)
-                  }
-                  className="w-16"
-                />
-              </div>
-            </div>
+          </div>
+
+          {/* Frequency Section */}
+          <div>
             <div className="space-y-1">
               <label className="text-xs font-medium text-gray-600">
                 Frequency
               </label>
-              <Input
-                placeholder="Frequency"
-                value={med.frequency}
-                onChange={(e) =>
-                  updateMedication(med.id, "frequency", e.target.value)
-                }
-              />
+              <div className="flex gap-2">
+                <Input
+                  type="text"
+                  value={med.frequencyValue}
+                  onChange={(e) =>
+                    updateMedication(med.id, "frequencyValue", e.target.value)
+                  }
+                  placeholder="0"
+                  className="w-16 text-center text-sm"
+                />
+                <Select
+                  value={med.frequencyUnit}
+                  onValueChange={(v) =>
+                    updateMedication(med.id, "frequencyUnit", v)
+                  }
+                >
+                  <SelectTrigger className="w-32 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="times">বার</SelectItem>
+                    <SelectItem value="meals">বেলা</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            <div className="space-y-1 col-span-2">
-              <label className="text-xs font-medium text-gray-600">Notes</label>
-              <Input
-                placeholder="Notes"
-                value={med.notes}
-                onChange={(e) =>
-                  updateMedication(med.id, "notes", e.target.value)
-                }
-              />
-            </div>
-          </div>
-        </>
-      );
-    }
+        </div>
 
-    if (medicationType === "Syrup") {
-      return (
-        <>
-          <div className="grid grid-cols-3 gap-3">
+        {/* Duration Section in second line */}
+        <div className="flex flex-col md:flex-row gap-4 md:gap-2">
+          <div className="flex-1 min-w-[200px]">
             <div className="space-y-1">
               <label className="text-xs font-medium text-gray-600">
-                Volume (ml)
+                Duration
               </label>
-              <Input
-                placeholder="Volume"
-                value={med.dosage}
-                onChange={(e) =>
-                  updateMedication(med.id, "dosage", e.target.value)
-                }
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-gray-600">
-                Times per day
-              </label>
-              <Input
-                placeholder="Times per day"
-                value={med.frequency}
-                onChange={(e) =>
-                  updateMedication(med.id, "frequency", e.target.value)
-                }
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-gray-600">Days</label>
-              <Input
-                placeholder="Number of days"
-                value={med.duration}
-                onChange={(e) =>
-                  updateMedication(med.id, "duration", e.target.value)
-                }
-              />
+              <div className="flex gap-2">
+                <Input
+                  type="number"
+                  value={med.durationValue}
+                  onChange={(e) =>
+                    updateMedication(med.id, "durationValue", e.target.value)
+                  }
+                  placeholder="0"
+                  className="w-16 text-center text-sm"
+                />
+                <Select
+                  value={med.durationUnit}
+                  onValueChange={(v) =>
+                    updateMedication(med.id, "durationUnit", v)
+                  }
+                >
+                  <SelectTrigger className="w-32 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="days">Days</SelectItem>
+                    <SelectItem value="weeks">Weeks</SelectItem>
+                    <SelectItem value="months">Months</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-gray-600">Unit</label>
-              <Select
-                value={med.unit}
-                onValueChange={(v) => updateMedication(med.id, "unit", v)}
-              >
-                <SelectTrigger className="w-full text-left">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="w-full">
-                  {["ml", "tsp", "tbsp"].map((u) => (
-                    <SelectItem key={u} value={u}>
-                      {u}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1 col-span-2">
-              <label className="text-xs font-medium text-gray-600">Notes</label>
-              <Input
-                placeholder="Notes"
-                value={med.notes}
-                onChange={(e) =>
-                  updateMedication(med.id, "notes", e.target.value)
-                }
-              />
-            </div>
-          </div>
-        </>
-      );
-    }
+        </div>
 
-    if (medicationType === "Injection") {
-      return (
-        <div className="grid grid-cols-3 gap-3">
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-gray-600">
-              Dosage (units)
+        {/* Display entered values */}
+        {(med.dosageValue || med.frequencyValue || med.durationValue) && (
+          <div className="text-sm text-gray-600 mt-2">
+            <p>
+              {med.dosageValue} {med.dosageUnit} {med.frequencyValue}{" "}
+              {med.frequencyUnit} for {med.durationValue} {med.durationUnit}
+              {med.beforeEating && " (Before eating)"}
+              {med.afterEating && " (After eating)"}
+              {med.instructionNotes && ` - Note: ${med.instructionNotes}`}
+            </p>
+          </div>
+        )}
+
+        {/* Instructions and Notes Section - Responsive Layout */}
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6 mt-4">
+          {/* Instruction Section - inline checkboxes */}
+          <div className="flex-1">
+            <label className="text-xs font-medium text-gray-600 block mb-2">
+              Instructions
+            </label>
+            <div className="flex flex-wrap gap-4">
+              <label className="flex items-center gap-1.5 cursor-pointer min-w-[120px]">
+                <input
+                  type="checkbox"
+                  checked={med.beforeEating}
+                  onChange={(e) =>
+                    updateMedication(med.id, "beforeEating", e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <span className="text-xs text-gray-600">Before eating</span>
+              </label>
+              <label className="flex items-center gap-1.5 cursor-pointer min-w-[120px]">
+                <input
+                  type="checkbox"
+                  checked={med.afterEating}
+                  onChange={(e) =>
+                    updateMedication(med.id, "afterEating", e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <span className="text-xs text-gray-600">After eating</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Instruction Notes Section */}
+          <div className="flex-1">
+            <label className="text-xs font-medium text-gray-600 block mb-2">
+              Notes
             </label>
             <Input
-              placeholder="Units"
-              value={med.dosage}
+              type="text"
+              placeholder="Additional notes"
+              value={med.instructionNotes}
               onChange={(e) =>
-                updateMedication(med.id, "dosage", e.target.value)
+                updateMedication(med.id, "instructionNotes", e.target.value)
               }
+              className="w-full text-sm"
             />
           </div>
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-gray-600">Route</label>
-            <Select
-              value={med.frequency}
-              onValueChange={(v) => updateMedication(med.id, "frequency", v)}
-            >
-              <SelectTrigger className="w-full text-left">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="w-full">
-                {["IM", "IV", "SC"].map((u) => (
-                  <SelectItem key={u} value={u}>
-                    {u}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-gray-600">Timing</label>
-            <Input
-              placeholder="When to inject"
-              value={med.duration}
-              onChange={(e) =>
-                updateMedication(med.id, "duration", e.target.value)
-              }
-            />
-          </div>
-        </div>
-      );
-    }
-
-    // Default form for other types
-    return (
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1">
-          <label className="text-xs font-medium text-gray-600">
-            Instructions
-          </label>
-          <Input
-            placeholder="How to use"
-            value={med.dosage}
-            onChange={(e) => updateMedication(med.id, "dosage", e.target.value)}
-          />
-        </div>
-        <div className="space-y-1">
-          <label className="text-xs font-medium text-gray-600">Duration</label>
-          <Input
-            placeholder="For how long"
-            value={med.duration}
-            onChange={(e) =>
-              updateMedication(med.id, "duration", e.target.value)
-            }
-          />
         </div>
       </div>
     );
+  };
+
+  const renderMedicationForm = (med: any, medicationType: string) => {
+    if (medicationType === "Tablet" || medicationType === "Capsule") {
+      const dosageValues = med.dosage
+        ? parseDosageValues(med.dosage)
+        : ["", "", ""];
+
+      return (
+        <>
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              {/* Schedule*/}
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-600">
+                  Schedule
+                </label>
+                <div className="flex items-center gap-1.5">
+                  <Input
+                    value={dosageValues[0] || ""}
+                    onChange={(e) => {
+                      const newValues = [
+                        e.target.value,
+                        dosageValues[1] || "",
+                        dosageValues[2] || "",
+                      ];
+                      updateMedication(med.id, "dosage", newValues.join(" + "));
+                    }}
+                    className="w-12 text-center text-sm"
+                    placeholder="0"
+                  />
+                  <span className="text-gray-400 text-sm">+</span>
+                  <Input
+                    value={dosageValues[1] || ""}
+                    onChange={(e) => {
+                      const newValues = [
+                        dosageValues[0] || "",
+                        e.target.value,
+                        dosageValues[2] || "",
+                      ];
+                      updateMedication(med.id, "dosage", newValues.join(" + "));
+                    }}
+                    className="w-12 text-center text-sm"
+                    placeholder="0"
+                  />
+                  <span className="text-gray-400 text-sm">+</span>
+                  <Input
+                    value={dosageValues[2] || ""}
+                    onChange={(e) => {
+                      const newValues = [
+                        dosageValues[0] || "",
+                        dosageValues[1] || "",
+                        e.target.value,
+                      ];
+                      updateMedication(med.id, "dosage", newValues.join(" + "));
+                    }}
+                    className="w-12 text-center text-sm"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+
+              {/* Duration */}
+              <div>
+                <label className="text-xs font-medium text-gray-600">
+                  Duration
+                </label>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    value={med.durationValue}
+                    onChange={(e) =>
+                      updateMedication(med.id, "durationValue", e.target.value)
+                    }
+                    placeholder="0"
+                    className="w-16 text-sm text-center"
+                  />
+                  <div className="w-32">
+                    <Select
+                      value={med.durationUnit}
+                      onValueChange={(v) =>
+                        updateMedication(med.id, "durationUnit", v)
+                      }
+                    >
+                      <SelectTrigger className="w-full text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="days">Days</SelectItem>
+                        <SelectItem value="months">Months</SelectItem>
+                        <SelectItem value="years">Years</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              {/* Instructions - inline checkboxes */}
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-600">
+                  Instructions
+                </label>
+                <div className="flex gap-3">
+                  <label className="flex items-center gap-1.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={med.instruction1}
+                      onChange={(e) =>
+                        updateMedication(
+                          med.id,
+                          "instruction1",
+                          e.target.checked
+                        )
+                      }
+                      className="w-4 h-4 rounded border-gray-300"
+                    />
+                    <span className="text-xs text-gray-600">Before Meal</span>
+                  </label>
+                  <label className="flex items-center gap-1.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={med.instruction2}
+                      onChange={(e) =>
+                        updateMedication(
+                          med.id,
+                          "instruction2",
+                          e.target.checked
+                        )
+                      }
+                      className="w-4 h-4 rounded border-gray-300"
+                    />
+                    <span className="text-xs text-gray-600">After Meal</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Instruction Notes */}
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-600">
+                  Notes
+                </label>
+                <Input
+                  placeholder="Additional notes"
+                  value={med.instructionNotes}
+                  onChange={(e) =>
+                    updateMedication(med.id, "instructionNotes", e.target.value)
+                  }
+                  className="w-full text-sm"
+                />
+              </div>
+            </div>
+          </div>
+        </>
+      );
+    } else {
+      return renderStandardizedForm(med);
+    }
   };
 
   return (
@@ -432,23 +607,50 @@ export const MedicationsModal = ({
 
                     {renderMedicationForm(med, medicationType || "")}
 
-                    {(med.dosage ||
-                      med.frequency ||
-                      med.duration ||
-                      med.unit ||
-                      med.notes) && (
-                      <div className="text-sm text-gray-600">
-                        {med.dosage && (
-                          <span className="font-medium">{med.dosage} </span>
+                    {/* Unified summary display for all medication types */}
+                    <div className="text-sm text-gray-600 pt-1">
+                      {/* Tablet/Capsule: show combined dosage, duration, instructions */}
+                      {(medicationType === "Tablet" ||
+                        medicationType === "Capsule") &&
+                        med.dosage && (
+                          <div>
+                            <span className="font-medium">
+                              Dosage: {med.dosage}
+                            </span>{" "}
+                            <span>
+                              for {med.durationValue} {med.durationUnit}
+                            </span>
+                            {med.instruction1 && <span> (Before Meal)</span>}
+                            {med.instruction2 && <span> (After Meal)</span>}
+                            {med.instructionNotes && (
+                              <span> - Note: {med.instructionNotes}</span>
+                            )}
+                          </div>
                         )}
-                        {med.frequency && <span>{med.frequency} </span>}
-                        {med.duration && <span>{med.duration} </span>}
-                        {med.unit && <span>{med.unit} </span>}
-                        {med.notes && (
-                          <span className="text-gray-500">({med.notes})</span>
+                      {/* Other types: show standardized summary */}
+                      {medicationType !== "Tablet" &&
+                        medicationType !== "Capsule" &&
+                        (med.dosageValue ||
+                          med.frequencyValue ||
+                          med.durationValue) && (
+                          <div>
+                            <span className="font-medium">
+                              {med.dosageValue} {med.dosageUnit}
+                            </span>{" "}
+                            <span>
+                              {med.frequencyValue} {med.frequencyUnit}
+                            </span>{" "}
+                            <span>
+                              for {med.durationValue} {med.durationUnit}
+                            </span>
+                            {med.beforeEating && <span> (Before eating)</span>}
+                            {med.afterEating && <span> (After eating)</span>}
+                            {med.instructionNotes && (
+                              <span> - Note: {med.instructionNotes}</span>
+                            )}
+                          </div>
                         )}
-                      </div>
-                    )}
+                    </div>
                   </div>
                 );
               })}

@@ -9,6 +9,11 @@ interface Medication {
   dosage: string;
   frequency: string;
   duration: string;
+  instructions?: {
+    beforeEating: boolean;
+    afterEating: boolean;
+    notes: string;
+  };
 }
 
 interface BaseSectionProps {
@@ -190,33 +195,60 @@ export const MedicationsSection: React.FC<MedicationSectionProps> = ({
   medications,
   onAddClick,
   onRemoveItem,
-}) => (
-  <SectionWrapper title="Rx" onAddClick={onAddClick} minHeight="200px">
-    {medications.map((med, index) => (
-      <div key={index} className="mb-3 flex items-center justify-between">
-        <div className="flex items-start justify-between">
-          <div className="flex items-start gap-2 flex-1">
-            <span className="rx-number">{index + 1}.</span>
-            <div>
-              <div className="font-medium">{med.name}</div>
-              <div className="text-xs text-gray-600 ml-4">
-                {med.dosage} - {med.frequency} - {med.duration}
+}) => {
+
+  return (
+     <SectionWrapper title="Rx" onAddClick={onAddClick} minHeight="200px">
+    {medications.map((med, index) => {
+      // Detect tablet/capsule by dosage format (contains '+')
+      const isTabletCapsule = med.dosage && med.dosage.includes("+");
+      let summary = "";
+      if (isTabletCapsule) {
+        summary = `${med.dosage}${med.duration ? ` for ${med.duration}` : ""}`;
+        if (med.instructions) {
+          let instr = [];
+          if (med.instructions.beforeEating) instr.push("Before Meal");
+          if (med.instructions.afterEating) instr.push("After Meal");
+          if (med.instructions.notes) instr.push(med.instructions.notes);
+          if (instr.length > 0) summary += ` (${instr.join(", ")})`;
+        }
+      } else {
+        summary = `${med.dosage}${med.frequency ? ` - ${med.frequency}` : ""}${med.duration ? ` - ${med.duration}` : ""}`;
+        if (med.instructions) {
+          let instr = [];
+          if (med.instructions.beforeEating) instr.push("Before eating");
+          if (med.instructions.afterEating) instr.push("After eating");
+          if (med.instructions.notes) instr.push(med.instructions.notes);
+          if (instr.length > 0) summary += ` (${instr.join(", ")})`;
+        }
+      }
+      return (
+        <div key={index} className="mb-3 flex items-center justify-between">
+          <div className="flex items-start justify-between">
+            <div className="flex items-start gap-2 flex-1">
+              <span className="rx-number">{index + 1}.</span>
+              <div>
+                <div className="font-medium">{med.name}</div>
+                <div className="text-xs text-gray-600 ml-4">
+                  {summary}
+                </div>
               </div>
             </div>
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onRemoveItem(index)}
+            className="p-1 size-14 text-red-500 cursor-pointer"
+          >
+            <Trash2 className="size-5" />
+          </Button>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onRemoveItem(index)}
-          className="p-1 size-14 text-red-500 cursor-pointer"
-        >
-          <Trash2 className="size-5" />
-        </Button>
-      </div>
-    ))}
+      );
+    })}
   </SectionWrapper>
-);
+  )
+};
 
 // Advice Section
 export const AdviceSection: React.FC<ListSectionProps> = ({
