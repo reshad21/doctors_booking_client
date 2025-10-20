@@ -1,5 +1,3 @@
-"use client";
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Tag } from "@/types/new-prescription.types";
 import { useState } from "react";

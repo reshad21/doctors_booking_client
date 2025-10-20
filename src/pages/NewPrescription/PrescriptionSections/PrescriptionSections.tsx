@@ -206,7 +206,7 @@ export const MedicationsSection: React.FC<MedicationSectionProps> = ({
       if (isTabletCapsule) {
         summary = `${med.dosage}${med.duration ? ` for ${med.duration}` : ""}`;
         if (med.instructions) {
-          let instr = [];
+          const instr = [];
           if (med.instructions.beforeEating) instr.push("Before Meal");
           if (med.instructions.afterEating) instr.push("After Meal");
           if (med.instructions.notes) instr.push(med.instructions.notes);
@@ -215,7 +215,7 @@ export const MedicationsSection: React.FC<MedicationSectionProps> = ({
       } else {
         summary = `${med.dosage}${med.frequency ? ` - ${med.frequency}` : ""}${med.duration ? ` - ${med.duration}` : ""}`;
         if (med.instructions) {
-          let instr = [];
+          const instr = [];
           if (med.instructions.beforeEating) instr.push("Before eating");
           if (med.instructions.afterEating) instr.push("After eating");
           if (med.instructions.notes) instr.push(med.instructions.notes);
