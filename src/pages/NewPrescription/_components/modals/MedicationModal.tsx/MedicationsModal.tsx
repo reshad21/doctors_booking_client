@@ -12,20 +12,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-
-const medicineOptions = [
-  { name: "Aspirin", type: "Tablet" },
-  { name: "Ibuprofen", type: "Tablet" },
-  { name: "Paracetamol", type: "Tablet" },
-  { name: "Amoxicillin", type: "Capsule" },
-  { name: "Doxycycline", type: "Capsule" },
-  { name: "Cough Syrup", type: "Syrup" },
-  { name: "Vitamin D Syrup", type: "Syrup" },
-  { name: "Insulin", type: "Injection" },
-  { name: "Penicillin", type: "Injection" },
-  { name: "Hydrocortisone Cream", type: "Cream" },
-  { name: "Antibiotic Ointment", type: "Cream" },
-];
+import { medicineOptions } from "@/constant/medication.constant";
 
 export const MedicationsModal = ({
   isOpen,
