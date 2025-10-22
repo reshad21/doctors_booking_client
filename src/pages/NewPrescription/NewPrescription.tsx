@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import PrescriptionHeader from "./_components/PrescriptionHeader";
 import PrescriptionFooter from "./_components/PrescriptionFooter";
@@ -83,7 +81,6 @@ export default function NewPrescription() {
       const middle = dur ? `${dur}${unit}`.trim() : unit.trim();
       return `${item.label}${middle ? ` ${middle}` : ""}${notes}`.trim();
     });
-console.log(formatted, 'formatted')
     setPrescriptionData((prev) => {
       const existingSet = new Set(prev.chiefComplaint.map((c) => c.trim().toLowerCase()))
 
@@ -129,11 +126,35 @@ console.log(formatted, 'formatted')
     dosage: string;
     frequency: string;
     duration: string;
+    instructions?: {
+      beforeEating: boolean;
+      afterEating: boolean;
+      notes: string;
+    };
   }) => {
+    const formatInstructions = (instr: any): string => {
+      if (!instr) return "";
+      if (typeof instr === "string") return instr;
+      const parts: string[] = [];
+      if (instr.beforeEating) parts.push("Before eating");
+      if (instr.afterEating) parts.push("After eating");
+      if (instr.notes) parts.push(instr.notes);
+      return parts.join("; ").trim();
+    };
+
+    const medicationEntry = {
+      name: data.name,
+      dosage: data.dosage,
+      frequency: data.frequency,
+      duration: data.duration,
+      instructions: formatInstructions((data as any).instructions),
+    };
+
     setPrescriptionData((prev) => ({
       ...prev,
-      medications: [...prev.medications, data],
+      medications: [...prev.medications, medicationEntry],
     }));
+    console.log(data, "hleh");
   };
 
   const handleAdviceSubmit = (data: { advice: string }) => {

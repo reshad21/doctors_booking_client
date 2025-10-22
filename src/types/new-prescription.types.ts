@@ -18,6 +18,7 @@ export interface PrescriptionData {
     dosage: string;
     frequency: string;
     duration: string;
+    instructions: string;
   }>;
   advice: string[];
   nextVisit: string;
