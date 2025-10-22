@@ -132,6 +132,7 @@ export default function NewPrescription() {
       notes: string;
     };
   }) => {
+    
     const formatInstructions = (instr: any): string => {
       if (!instr) return "";
       if (typeof instr === "string") return instr;
@@ -154,7 +155,6 @@ export default function NewPrescription() {
       ...prev,
       medications: [...prev.medications, medicationEntry],
     }));
-    console.log(data, "hleh");
   };
 
   const handleAdviceSubmit = (data: { advice: string }) => {

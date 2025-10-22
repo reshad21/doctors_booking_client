@@ -196,32 +196,44 @@ export const MedicationsSection: React.FC<MedicationSectionProps> = ({
   onAddClick,
   onRemoveItem,
 }) => {
-  console.log(medications, 'this from the prescription section component')
+
   return (
     <SectionWrapper title="Rx" onAddClick={onAddClick} minHeight="200px">
       {medications.map((med, index) => {
-        // Detect tablet/capsule by dosage format (contains '+')
         const isTabletCapsule = med.dosage && med.dosage.includes("+");
-        let summary = "";
-        if (isTabletCapsule) {
-          summary = `${med.dosage}${med.duration ? ` for ${med.duration}` : ""}`;
-          if (med.instructions) {
-            const instr = [];
-            if (med.instructions.beforeEating) instr.push("Before Meal");
-            if (med.instructions.afterEating) instr.push("After Meal");
-            if (med.instructions.notes) instr.push(med.instructions.notes);
-            if (instr.length > 0) summary += ` (${instr.join(", ")})`;
-          }
-        } else {
-          summary = `${med.dosage}${med.frequency ? ` - ${med.frequency}` : ""}${med.duration ? ` - ${med.duration}` : ""}`;
-          if (med.instructions) {
-            const instr = [];
-            if (med.instructions.beforeEating) instr.push("Before eating");
-            if (med.instructions.afterEating) instr.push("After eating");
-            if (med.instructions.notes) instr.push(med.instructions.notes);
-            if (instr.length > 0) summary += ` (${instr.join(", ")})`;
+
+        // ✅ Handle both object or string instructions
+        let instructionText = "";
+        if (med.instructions) {
+          if (typeof med.instructions === "object") {
+            const { beforeEating, afterEating, notes } = med.instructions;
+            const parts: string[] = [];
+            if (beforeEating) parts.push("Before eating");
+            if (afterEating) parts.push("After eating");
+            if (notes && notes.trim()) parts.push(`Note: ${notes}`);
+            instructionText = parts.join(" - ");
+          } else if (typeof med.instructions === "string") {
+            const parts: string[] = (med.instructions as string)
+              .split(";")
+              .map((p: string) => p.trim())
+              .filter(Boolean);
+            instructionText = parts.join(" - ");
           }
         }
+
+        // ✅ Build summary
+        let summary = "";
+        if (isTabletCapsule) {
+          summary = `${med.dosage}`;
+          if (med.duration) summary += ` for ${med.duration}`;
+          if (instructionText) summary += ` (${instructionText})`;
+        } else {
+          summary = `${med.dosage}`;
+          if (med.frequency) summary += ` ${med.frequency}`;
+          if (med.duration) summary += ` for ${med.duration}`;
+          if (instructionText) summary += ` (${instructionText})`;
+        }
+
         return (
           <div key={index} className="mb-3 flex items-center justify-between">
             <div className="flex items-start justify-between">

@@ -287,9 +287,9 @@ const renderMedicationForm = (
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={med.instruction1}
+                    checked={med.beforeEating}
                     onChange={(e) =>
-                      updateMedication(med.id, "instruction1", e.target.checked)
+                      updateMedication(med.id, "beforeEating", e.target.checked)
                     }
                     className="w-4 h-4 rounded border-gray-300"
                   />
@@ -298,9 +298,9 @@ const renderMedicationForm = (
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={med.instruction2}
+                    checked={med.afterEating}
                     onChange={(e) =>
-                      updateMedication(med.id, "instruction2", e.target.checked)
+                      updateMedication(med.id, "afterEating", e.target.checked)
                     }
                     className="w-4 h-4 rounded border-gray-300"
                   />

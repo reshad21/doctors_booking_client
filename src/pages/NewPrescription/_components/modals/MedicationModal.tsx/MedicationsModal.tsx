@@ -82,8 +82,8 @@ export const MedicationsModal = ({
           dosage: "",
           durationValue: "",
           durationUnit: "days",
-          instruction1: false,
-          instruction2: false,
+          beforeEating: false,
+          afterEating: false,
           instructionNotes: "",
           isInstruction: false,
           dosageValue: "",
@@ -93,8 +93,6 @@ export const MedicationsModal = ({
           frequencyText: "",
           limitValue: "",
           limitUnit: "piece",
-          beforeEating: false,
-          afterEating: false,
         },
       ]);
     }
