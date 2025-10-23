@@ -5,6 +5,7 @@ import Modal from "@/components/shared/Modal";
 import { Button } from "@/components/ui/button";
 import MedicationList from "./MedicationList";
 import MedicationEditor from "./MedicationEditor";
+import { MedicineGroupsTab } from "./MedicineGroupTabs";
 
 export const MedicationsModal = ({
   isOpen,
@@ -117,7 +118,7 @@ export const MedicationsModal = ({
       isOpen={isOpen}
       onClose={onClose}
       title="Medications"
-      maxWidthClass="max-w-5xl"
+      maxWidthClass="max-w-6xl"
       search={{
         value: searchQuery,
         onChange: setSearchQuery,
@@ -169,7 +170,15 @@ export const MedicationsModal = ({
           </div>
         )}
 
-        {activeTab === "medication groups" && <div>Medicine groups</div>}
+        {activeTab === "medication groups" && (
+          <MedicineGroupsTab
+            searchQuery={searchQuery}
+            onLoadGroup={(medications) => {
+              medications.forEach(med => toggleMedication(med));
+              setActiveTab("medication");
+            }}
+          />
+        )}
       </div>
 
       <Modal.Footer>
