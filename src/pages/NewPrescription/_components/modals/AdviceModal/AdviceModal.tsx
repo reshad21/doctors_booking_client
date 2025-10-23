@@ -4,7 +4,7 @@ import Modal from "@/components/shared/Modal";
 import { AdviceTabs } from "./components/AdviceTabs";
 import { GroupTabs } from "./components/GroupTabs";
 
-interface AdviceItem {
+export interface AdviceItem {
   id: string;
   label: string;
   notes: string;
@@ -17,7 +17,9 @@ export const AdviceModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { advices: AdviceItem[] }) => void;
+  // keep legacy shape but allow caller to accept array of AdviceItem or strings
+  onSubmit: (data: { advices: AdviceItem[] } | { advices: string[] }) => void;
+  tags?: Array<{ id: string; label: string; category?: string }>;
 }) => {
   const [activeTab, setActiveTab] = useState<"advice" | "groups">("advice");
   const [searchQuery, setSearchQuery] = useState("");

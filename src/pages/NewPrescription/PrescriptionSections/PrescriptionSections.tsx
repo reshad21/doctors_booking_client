@@ -1,4 +1,4 @@
-import type React from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -9,11 +9,15 @@ interface Medication {
   dosage: string;
   frequency: string;
   duration: string;
-  instructions?: {
-    beforeEating: boolean;
-    afterEating: boolean;
-    notes: string;
-  };
+  // instructions can be a formatted string (what we store in PrescriptionData)
+  // or the object shape while editing. Accept both to avoid type errors.
+  instructions?:
+    | string
+    | {
+        beforeEating?: boolean;
+        afterEating?: boolean;
+        notes?: string;
+      };
 }
 
 interface BaseSectionProps {

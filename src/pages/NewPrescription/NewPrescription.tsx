@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import PrescriptionHeader from "./_components/PrescriptionHeader";
 import PrescriptionFooter from "./_components/PrescriptionFooter";
@@ -157,11 +158,29 @@ export default function NewPrescription() {
     }));
   };
 
-  const handleAdviceSubmit = (data: { advice: string }) => {
-    setPrescriptionData((prev) => ({
-      ...prev,
-      advice: [...prev.advice, data.advice],
-    }));
+  const handleAdviceSubmit = (
+    data: { advice: string } | { advices: Array<{ id?: string; label: string; notes?: string } | string> }
+  ) => {
+    // Support both old single-advice shape and new advices array from AdviceModal
+    if ((data as any).advices && Array.isArray((data as any).advices)) {
+      const advArr: string[] = (data as any).advices.map((a: any) =>
+        typeof a === "string" ? a : a.label
+      );
+      setPrescriptionData((prev) => ({
+        ...prev,
+        advice: [...prev.advice, ...advArr],
+      }));
+      return;
+    }
+
+    // fallback for single advice string
+    const adv = (data as any).advice ?? (data as any).adviceText ?? "";
+    if (adv) {
+      setPrescriptionData((prev) => ({
+        ...prev,
+        advice: [...prev.advice, String(adv)],
+      }));
+    }
   };
 
   const handleNextVisitSubmit = (data: { nextVisit: string }) => {
@@ -361,7 +380,15 @@ export default function NewPrescription() {
         <AdviceModal
           isOpen={activeModal === "advice"}
           onClose={closeModal}
-          onSubmit={handleAdviceSubmit}
+          // AdviceModal may call onSubmit with { advices: AdviceItem[] } or { advices: string[] }
+          onSubmit={(data: any) => {
+            // Normalize to shape expected by handleAdviceSubmit
+            if (data && Array.isArray(data.advices)) {
+              handleAdviceSubmit({ advices: data.advices });
+            } else if (data && data.advice) {
+              handleAdviceSubmit({ advice: data.advice });
+            }
+          }}
           tags={prescriptionTags.advice}
         />
 
