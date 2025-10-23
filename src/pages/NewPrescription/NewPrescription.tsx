@@ -18,7 +18,7 @@ import { InvestigationModal } from "./_components/modals/InvestigationModal";
 import { PatientModal } from "./_components/modals/PatientModal";
 import { HistoryModal } from "./_components/modals/HistoryModal";
 import { MedicationsModal } from "./_components/modals/MedicationModal.tsx/MedicationsModal";
-import { AdviceModal } from "./_components/modals/AdviceModal";
+import { AdviceModal } from "./_components/modals/AdviceModal/AdviceModal";
 import { NextVisitModal } from "./_components/modals/NextVisitModal";
 import { prescriptionTags } from "@/constant/prescription-tags";
 import type { PrescriptionData } from "@/types/new-prescription.types";
