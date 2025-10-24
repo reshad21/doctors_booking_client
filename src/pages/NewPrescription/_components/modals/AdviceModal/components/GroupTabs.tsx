@@ -1,17 +1,17 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ArrowRight, Plus, X } from "lucide-react";
-import { useState } from "react";
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { ArrowRight, Plus, X } from "lucide-react"
+import { useState } from "react"
 
 interface AdviceGroup {
-  id: string;
-  name: string;
-  adviceList: string[];
+  id: string
+  name: string
+  adviceList: string[]
 }
 
 interface GroupsTabProps {
-  searchQuery: string;
-  onLoadGroup: (adviceList: string[]) => void;
+  searchQuery: string
+  onLoadGroup: (adviceList: string[]) => void
 }
 
 // Mock advice list - replace with your actual advice data
@@ -25,20 +25,18 @@ const adviceOptions = [
   "Follow healthy sleep schedule",
   "Avoid stress",
   "Regular check-ups",
-  "Balanced diet"
-];
+  "Balanced diet",
+]
 
 export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
-  const [groups, setGroups] = useState<AdviceGroup[]>([]);
-  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
-  const [isCreatingGroup, setIsCreatingGroup] = useState(false);
-  const [newGroupName, setNewGroupName] = useState("");
+  const [groups, setGroups] = useState<AdviceGroup[]>([])
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
+  const [isCreatingGroup, setIsCreatingGroup] = useState(false)
+  const [newGroupName, setNewGroupName] = useState("")
 
-  const selectedGroup = groups.find((g) => g.id === selectedGroupId);
+  const selectedGroup = groups.find((g) => g.id === selectedGroupId)
 
-  const filteredAdvice = adviceOptions.filter((advice) =>
-    advice.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredAdvice = adviceOptions.filter((advice) => advice.toLowerCase().includes(searchQuery.toLowerCase()))
 
   const handleCreateGroup = () => {
     if (newGroupName.trim()) {
@@ -46,25 +44,23 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
         id: String(Date.now()),
         name: newGroupName,
         adviceList: [],
-      };
-      setGroups([...groups, newGroup]);
-      setSelectedGroupId(newGroup.id);
-      setNewGroupName("");
-      setIsCreatingGroup(false);
+      }
+      setGroups([...groups, newGroup])
+      setSelectedGroupId(newGroup.id)
+      setNewGroupName("")
+      setIsCreatingGroup(false)
     }
-  };
+  }
 
   const handleAddAdviceToGroup = (advice: string) => {
     if (selectedGroupId) {
       setGroups(
         groups.map((group) =>
-          group.id === selectedGroupId
-            ? { ...group, adviceList: [...group.adviceList, advice] }
-            : group
-        )
-      );
+          group.id === selectedGroupId ? { ...group, adviceList: [...group.adviceList, advice] } : group,
+        ),
+      )
     }
-  };
+  }
 
   const handleRemoveAdviceFromGroup = (advice: string) => {
     if (selectedGroupId) {
@@ -75,30 +71,30 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
                 ...group,
                 adviceList: group.adviceList.filter((a) => a !== advice),
               }
-            : group
-        )
-      );
+            : group,
+        ),
+      )
     }
-  };
+  }
 
   const handleDeleteGroup = (groupId: string) => {
-    setGroups(groups.filter((g) => g.id !== groupId));
+    setGroups(groups.filter((g) => g.id !== groupId))
     if (selectedGroupId === groupId) {
-      setSelectedGroupId(null);
+      setSelectedGroupId(null)
     }
-  };
+  }
 
   const handleLoadGroupToAdvices = (groupId: string) => {
-    const group = groups.find((g) => g.id === groupId);
+    const group = groups.find((g) => g.id === groupId)
     if (group) {
-      onLoadGroup(group.adviceList);
+      onLoadGroup(group.adviceList)
     }
-  };
+  }
 
   return (
-    <div className="flex gap-4 pb-6 h-[500px]">
+    <div className="flex gap-4 pb-6 flex-1 min-h-0">
       {/* Left sidebar - Groups list */}
-      <div className="w-64 flex flex-col gap-3">
+      <div className="w-64 flex flex-col gap-3 min-h-0">
         {!isCreatingGroup ? (
           <Button
             onClick={() => setIsCreatingGroup(true)}
@@ -109,18 +105,16 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
           </Button>
         ) : (
           <div className="p-3 border-2 border-green-600 rounded-lg bg-green-50 space-y-2">
-            <label className="text-xs font-semibold text-gray-700 uppercase">
-              New Group Name
-            </label>
+            <label className="text-xs font-semibold text-gray-700 uppercase">New Group Name</label>
             <Input
               placeholder="Enter group name..."
               value={newGroupName}
               onChange={(e) => setNewGroupName(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") handleCreateGroup();
+                if (e.key === "Enter") handleCreateGroup()
                 if (e.key === "Escape") {
-                  setIsCreatingGroup(false);
-                  setNewGroupName("");
+                  setIsCreatingGroup(false)
+                  setNewGroupName("")
                 }
               }}
               className="text-sm"
@@ -137,8 +131,8 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
               </Button>
               <Button
                 onClick={() => {
-                  setIsCreatingGroup(false);
-                  setNewGroupName("");
+                  setIsCreatingGroup(false)
+                  setNewGroupName("")
                 }}
                 size="sm"
                 variant="outline"
@@ -150,30 +144,24 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto space-y-1 border rounded-lg p-2 bg-gray-50">
+        <div className="flex-1 overflow-y-auto space-y-1 border rounded-lg p-2 bg-gray-50 min-h-0">
           {groups.map((group) => (
             <div
               key={group.id}
               className={`group flex items-center justify-between gap-2 p-2 rounded cursor-pointer transition-colors ${
-                selectedGroupId === group.id
-                  ? "bg-green-600 text-white"
-                  : "bg-white hover:bg-gray-100 text-gray-800"
+                selectedGroupId === group.id ? "bg-green-600 text-white" : "bg-white hover:bg-gray-100 text-gray-800"
               }`}
               onClick={() => setSelectedGroupId(group.id)}
             >
-              <span className="text-sm font-medium truncate flex-1">
-                {group.name}
-              </span>
-              <div className="flex items-center gap-1">
+              <span className="text-sm font-medium truncate flex-1">{group.name}</span>
+              <div className="flex items-center gap-1 flex-shrink-0">
                 <button
                   onClick={(e) => {
-                    e.stopPropagation();
-                    handleLoadGroupToAdvices(group.id);
+                    e.stopPropagation()
+                    handleLoadGroupToAdvices(group.id)
                   }}
                   className={`p-1 rounded transition-all ${
-                    selectedGroupId === group.id
-                      ? "text-white hover:bg-green-700"
-                      : "text-green-600 hover:bg-green-100"
+                    selectedGroupId === group.id ? "text-white hover:bg-green-700" : "text-green-600 hover:bg-green-100"
                   }`}
                   title="Use this group in Advice tab"
                 >
@@ -181,13 +169,11 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
                 </button>
                 <button
                   onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteGroup(group.id);
+                    e.stopPropagation()
+                    handleDeleteGroup(group.id)
                   }}
                   className={`opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded ${
-                    selectedGroupId === group.id
-                      ? "text-white hover:bg-red-500"
-                      : "text-red-500 hover:bg-red-100"
+                    selectedGroupId === group.id ? "text-white hover:bg-red-500" : "text-red-500 hover:bg-red-100"
                   }`}
                   title="Delete group"
                 >
@@ -196,33 +182,27 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
               </div>
             </div>
           ))}
-          {groups.length === 0 && (
-            <p className="text-xs text-gray-500 text-center py-8">
-              No groups yet
-            </p>
-          )}
+          {groups.length === 0 && <p className="text-xs text-gray-500 text-center py-8">No groups yet</p>}
         </div>
       </div>
 
       {/* Right side - Group editing */}
       {selectedGroup && (
-        <div className="flex-1 space-y-4">
-          <h3 className="font-medium text-sm text-gray-700">
+        <div className="flex-1 space-y-4 min-h-0 flex flex-col">
+          <h3 className="font-medium text-sm text-gray-700 flex-shrink-0">
             Editing Group: <span className="text-green-600">{selectedGroup.name}</span>
           </h3>
 
-          <div className="flex gap-4 h-[calc(100%-2rem)]">
+          <div className="flex gap-4 flex-1 min-h-0">
             {/* Available advice */}
-            <div className="w-1/2 space-y-2">
-              <h4 className="text-xs font-semibold text-gray-600 uppercase">
-                Available Advice
-              </h4>
-              <div className="space-y-1 border rounded-lg p-2 bg-gray-50">
+            <div className="w-1/2 space-y-2 flex flex-col min-h-0">
+              <h4 className="text-xs font-semibold text-gray-600 uppercase flex-shrink-0">Available Advice</h4>
+              <div className="space-y-1 border rounded-lg p-2 bg-gray-50 overflow-y-auto flex-1 min-h-0">
                 {filteredAdvice.map((advice) => (
                   <button
                     key={advice}
                     onClick={() => handleAddAdviceToGroup(advice)}
-                    className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
+                    className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors flex-shrink-0 ${
                       selectedGroup.adviceList.includes(advice)
                         ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                         : "hover:bg-white"
@@ -236,16 +216,11 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
             </div>
 
             {/* Group advice */}
-            <div className="w-1/2 space-y-2">
-              <h4 className="text-xs font-semibold text-gray-600 uppercase">
-                Group Advice
-              </h4>
-              <div className="space-y-1 border rounded-lg p-2 bg-gray-50">
+            <div className="w-1/2 space-y-2 flex flex-col min-h-0">
+              <h4 className="text-xs font-semibold text-gray-600 uppercase flex-shrink-0">Group Advice</h4>
+              <div className="space-y-1 border rounded-lg p-2 bg-gray-50 overflow-y-auto flex-1 min-h-0">
                 {selectedGroup.adviceList.map((advice, index) => (
-                  <div
-                    key={advice}
-                    className="flex items-center justify-between p-2 bg-white rounded-md"
-                  >
+                  <div key={advice} className="flex items-center justify-between p-2 bg-white rounded-md flex-shrink-0">
                     <span className="text-sm">
                       {index + 1}. {advice}
                     </span>
@@ -260,9 +235,7 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
                   </div>
                 ))}
                 {selectedGroup.adviceList.length === 0 && (
-                  <p className="text-sm text-gray-500 text-center py-4">
-                    No advice added to this group
-                  </p>
+                  <p className="text-sm text-gray-500 text-center py-4">No advice added to this group</p>
                 )}
               </div>
             </div>
@@ -270,5 +243,5 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
         </div>
       )}
     </div>
-  );
+  )
 }

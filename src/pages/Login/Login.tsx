@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
 
 import BaseInput from "@/components/shared/BaseInput";
 import { Button } from "@/components/ui/button";

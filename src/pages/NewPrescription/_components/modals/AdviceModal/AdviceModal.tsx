@@ -17,7 +17,6 @@ export const AdviceModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  // keep legacy shape but allow caller to accept array of AdviceItem or strings
   onSubmit: (data: { advices: AdviceItem[] } | { advices: string[] }) => void;
   tags?: Array<{ id: string; label: string; category?: string }>;
 }) => {
