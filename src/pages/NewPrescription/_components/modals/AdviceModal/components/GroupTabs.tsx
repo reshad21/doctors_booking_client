@@ -1,7 +1,9 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ArrowRight, Plus, X } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 interface AdviceGroup {
   id: string
@@ -29,7 +31,15 @@ const adviceOptions = [
 ]
 
 export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
-  const [groups, setGroups] = useState<AdviceGroup[]>([])
+  // initialize groups from localStorage so saved groups persist across sessions
+  const [groups, setGroups] = useState<AdviceGroup[]>(() => {
+    try {
+      const raw = localStorage.getItem("advice_groups")
+      return raw ? (JSON.parse(raw) as AdviceGroup[]) : []
+    } catch {
+      return []
+    }
+  })
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
   const [isCreatingGroup, setIsCreatingGroup] = useState(false)
   const [newGroupName, setNewGroupName] = useState("")
@@ -51,6 +61,15 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
       setIsCreatingGroup(false)
     }
   }
+
+  // persist groups to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem("advice_groups", JSON.stringify(groups))
+    } catch {
+      // ignore
+    }
+  }, [groups])
 
   const handleAddAdviceToGroup = (advice: string) => {
     if (selectedGroupId) {
@@ -91,10 +110,23 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
     }
   }
 
+  const handleSaveGroup = () => {
+    const group = groups.find((g) => g.id === selectedGroupId)
+    if (group) {
+      // groups are already persisted on change; keep this for UX parity with chief-complaint modal
+      try {
+        localStorage.setItem("advice_groups", JSON.stringify(groups))
+      } catch {
+        // ignore
+      }
+      alert(`Group "${group.name}" saved successfully!`)
+    }
+  }
+
   return (
-    <div className="flex gap-4 pb-6 flex-1 min-h-0">
+    <div className="flex flex-col md:flex-row gap-4 pb-6 h-[500px] max-h-[70vh]">
       {/* Left sidebar - Groups list */}
-      <div className="w-64 flex flex-col gap-3 min-h-0">
+      <div className="w-full md:w-64 flex flex-col gap-3 min-h-0">
         {!isCreatingGroup ? (
           <Button
             onClick={() => setIsCreatingGroup(true)}
@@ -144,7 +176,7 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto space-y-1 border rounded-lg p-2 bg-gray-50 min-h-0">
+        <div className="flex-1 overflow-y-auto space-y-1 border rounded-lg p-2 bg-gray-50 ">
           {groups.map((group) => (
             <div
               key={group.id}
@@ -189,20 +221,25 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
       {/* Right side - Group editing */}
       {selectedGroup && (
         <div className="flex-1 space-y-4 min-h-0 flex flex-col">
-          <h3 className="font-medium text-sm text-gray-700 flex-shrink-0">
-            Editing Group: <span className="text-green-600">{selectedGroup.name}</span>
-          </h3>
+          <div className="flex items-center justify-between flex-shrink-0">
+            <h3 className="font-medium text-sm text-gray-700">
+              Editing Group: <span className="text-green-600">{selectedGroup.name}</span>
+            </h3>
+            <Button onClick={handleSaveGroup} size="sm" className="bg-green-700 hover:bg-green-800 text-white">
+              Save Group
+            </Button>
+          </div>
 
-          <div className="flex gap-4 flex-1 min-h-0">
+          <div className="flex flex-col md:flex-row gap-4 flex-1 min-h-0">
             {/* Available advice */}
-            <div className="w-1/2 space-y-2 flex flex-col min-h-0">
+            <div className="w-full md:w-1/2 space-y-2 flex flex-col min-h-0">
               <h4 className="text-xs font-semibold text-gray-600 uppercase flex-shrink-0">Available Advice</h4>
               <div className="space-y-1 border rounded-lg p-2 bg-gray-50 overflow-y-auto flex-1 min-h-0">
                 {filteredAdvice.map((advice) => (
                   <button
                     key={advice}
                     onClick={() => handleAddAdviceToGroup(advice)}
-                    className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors flex-shrink-0 ${
+                    className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
                       selectedGroup.adviceList.includes(advice)
                         ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                         : "hover:bg-white"
@@ -216,11 +253,11 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
             </div>
 
             {/* Group advice */}
-            <div className="w-1/2 space-y-2 flex flex-col min-h-0">
+            <div className="w-full md:w-1/2 space-y-2 flex flex-col min-h-0">
               <h4 className="text-xs font-semibold text-gray-600 uppercase flex-shrink-0">Group Advice</h4>
               <div className="space-y-1 border rounded-lg p-2 bg-gray-50 overflow-y-auto flex-1 min-h-0">
                 {selectedGroup.adviceList.map((advice, index) => (
-                  <div key={advice} className="flex items-center justify-between p-2 bg-white rounded-md flex-shrink-0">
+                  <div key={advice} className="flex items-center justify-between p-2 bg-white rounded-md">
                     <span className="text-sm">
                       {index + 1}. {advice}
                     </span>
@@ -228,7 +265,7 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
                       size="sm"
                       variant="ghost"
                       onClick={() => handleRemoveAdviceFromGroup(advice)}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
                     >
                       <X className="h-4 w-4" />
                     </Button>
