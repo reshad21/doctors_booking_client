@@ -18,11 +18,12 @@ import { PatientModal } from "./_components/modals/PatientModal";
 import { HistoryModal } from "./_components/modals/HistoryModal";
 import { MedicationsModal } from "./_components/modals/MedicationModal.tsx/MedicationsModal";
 import { AdviceModal } from "./_components/modals/AdviceModal/AdviceModal";
-import { NextVisitModal } from "./_components/modals/NextVisitModal";
 import { prescriptionTags } from "@/constant/prescription-tags";
 import type { PrescriptionData } from "@/types/new-prescription.types";
 import { DiagnosisModal } from "./_components/modals/DiagnosisModal/DiagnosisModal";
 import { InvestigationModal } from "./_components/modals/InvestigationModal/InvestigationModal";
+import { NextVisitModal } from "./_components/modals/NextVisitModal/NextVisitModal";
+import type { NextVisitItem } from "./_components/modals/NextVisitModal/NextVisitModal";
 
 interface ComplaintItem {
   id: string;
@@ -199,10 +200,13 @@ export default function NewPrescription() {
     }
   };
 
-  const handleNextVisitSubmit = (data: { nextVisit: string }) => {
+  const handleNextVisitSubmit = (data: { nextVisit: NextVisitItem }) => {
+    const nv = data.nextVisit;
+    // Format into the string representation used in the UI
+    const formatted = `${nv.durationValue} ${nv.durationType} পর${nv.notes ? ` ${nv.notes}` : ""}${nv.showInReport ? " বিশেষ" : ""}${nv.withPatient ? " সহ আসবেন" : ""}`.trim();
     setPrescriptionData((prev) => ({
       ...prev,
-      nextVisit: data.nextVisit,
+      nextVisit: formatted,
     }));
   };
 
