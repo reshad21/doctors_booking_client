@@ -15,7 +15,6 @@ import {
 import { ChiefComplaintModal } from "./_components/modals/ChiefComplaintModals/ChiefComplaintModal";
 import { ExaminationsModal } from "./_components/modals/ExaminationModal";
 import { PatientModal } from "./_components/modals/PatientModal";
-import { HistoryModal } from "./_components/modals/HistoryModal";
 import { MedicationsModal } from "./_components/modals/MedicationModal.tsx/MedicationsModal";
 import { AdviceModal } from "./_components/modals/AdviceModal/AdviceModal";
 import { prescriptionTags } from "@/constant/prescription-tags";
@@ -24,6 +23,7 @@ import { DiagnosisModal } from "./_components/modals/DiagnosisModal/DiagnosisMod
 import { InvestigationModal } from "./_components/modals/InvestigationModal/InvestigationModal";
 import { NextVisitModal } from "./_components/modals/NextVisitModal/NextVisitModal";
 import type { NextVisitItem } from "./_components/modals/NextVisitModal/NextVisitModal";
+import { HistoryModal } from "./_components/modals/HistoryModal/HistoryModal";
 
 interface ComplaintItem {
   id: string;
@@ -124,11 +124,72 @@ export default function NewPrescription() {
     }
   };
 
-  const handleHistorySubmit = (data: { history: string }) => {
-    setPrescriptionData((prev) => ({
-      ...prev,
-      history: [...prev.history, data.history],
-    }));
+  type IncomingInvestigation = { id: string; label: string; notes: string; result: string };
+
+  const handleHistorySubmit = (
+    data:
+      | { history: string }
+      | {
+          general?: ComplaintItem[];
+          drugs?: string[];
+          investigations?: Array<IncomingInvestigation>;
+          personal?: ComplaintItem[];
+          family?: ComplaintItem[];
+        }
+  ) => {
+    // Helper to format complaint-like items (used for general/personal/family)
+    const formatComplaint = (item: ComplaintItem) => {
+      const dur = item.duration ? `${item.duration}` : "";
+      const unit = item.unit ? ` ${item.unit}` : "";
+      const notes = item.notes ? ` (${item.notes})` : "";
+      const middle = dur ? `${dur}${unit}`.trim() : unit.trim();
+      return `${item.label}${middle ? ` ${middle}` : ""}${notes}`.trim();
+    };
+
+    if ("history" in data) {
+      setPrescriptionData((prev) => ({
+        ...prev,
+        history: [...prev.history, data.history],
+      }));
+      return;
+    }
+
+    // Structured history — turn into one or more string entries to store in prescriptionData.history
+    const sections: string[] = [];
+
+    if (data.general && data.general.length > 0) {
+      const items = data.general.map((g) => formatComplaint(g));
+      sections.push(`G/o: ${items.join("; ")}`);
+    }
+
+    if (data.drugs && data.drugs.length > 0) {
+      sections.push(`D/o: ${data.drugs.join(", ")}`);
+    }
+
+    if (data.investigations && data.investigations.length > 0) {
+      const items = data.investigations.map((inv) => {
+        const res = inv.result ? ` [Result: ${inv.result}]` : "";
+        return `${inv.label}${res}`;
+      });
+      sections.push(`I/o: ${items.join("; ")}`);
+    }
+
+    if (data.personal && data.personal.length > 0) {
+      const items = data.personal.map((p) => formatComplaint(p));
+      sections.push(`P/o: ${items.join("; ")}`);
+    }
+
+    if (data.family && data.family.length > 0) {
+      const items = data.family.map((f) => formatComplaint(f));
+      sections.push(`F/o: ${items.join("; ")}`);
+    }
+
+    if (sections.length > 0) {
+      setPrescriptionData((prev) => ({
+        ...prev,
+        history: [...prev.history, ...sections],
+      }));
+    }
   };
 
   const handleMedicationsSubmit = (data: {
