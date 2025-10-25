@@ -161,11 +161,19 @@ export default function NewPrescription() {
   const handleAdviceSubmit = (
     data: { advice: string } | { advices: Array<{ id?: string; label: string; notes?: string } | string> }
   ) => {
-    // Support both old single-advice shape and new advices array from AdviceModal
+    
+    console.log(data, 'advice from new prescription')
     if ((data as any).advices && Array.isArray((data as any).advices)) {
-      const advArr: string[] = (data as any).advices.map((a: any) =>
-        typeof a === "string" ? a : a.label
-      );
+      // Preserve label and notes (if present). Store as a single string so existing UI
+      // (which expects string[]) can display both.
+      const advArr: string[] = (data as any).advices.map((a: any) => {
+        if (typeof a === "string") return a;
+        const label = a.label ?? "";
+        const notes = a.notes ?? "";
+        return notes && String(notes).trim()
+          ? `${String(label).trim()} (${String(notes).trim()})`
+          : String(label).trim();
+      });
       setPrescriptionData((prev) => ({
         ...prev,
         advice: [...prev.advice, ...advArr],

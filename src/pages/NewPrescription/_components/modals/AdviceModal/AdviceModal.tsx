@@ -34,6 +34,7 @@ export const AdviceModal = ({
   }
 
   const handleAddAdvice = (label: string) => {
+    console.log(advices, "advices")
     const exists = advices.some((a) => a.label === label)
     if (!exists) {
       setAdvices([
