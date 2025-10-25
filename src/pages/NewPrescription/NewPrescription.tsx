@@ -14,7 +14,6 @@ import {
 } from "./PrescriptionSections/PrescriptionSections";
 import { ChiefComplaintModal } from "./_components/modals/ChiefComplaintModals/ChiefComplaintModal";
 import { ExaminationsModal } from "./_components/modals/ExaminationModal";
-import { InvestigationModal } from "./_components/modals/InvestigationModal";
 import { PatientModal } from "./_components/modals/PatientModal";
 import { HistoryModal } from "./_components/modals/HistoryModal";
 import { MedicationsModal } from "./_components/modals/MedicationModal.tsx/MedicationsModal";
@@ -23,6 +22,7 @@ import { NextVisitModal } from "./_components/modals/NextVisitModal";
 import { prescriptionTags } from "@/constant/prescription-tags";
 import type { PrescriptionData } from "@/types/new-prescription.types";
 import { DiagnosisModal } from "./_components/modals/DiagnosisModal/DiagnosisModal";
+import { InvestigationModal } from "./_components/modals/InvestigationModal/InvestigationModal";
 
 interface ComplaintItem {
   id: string;
@@ -108,11 +108,19 @@ export default function NewPrescription() {
     }));
   };
 
-  const handleInvestigationSubmit = (data: { investigation: string }) => {
-    setPrescriptionData((prev) => ({
-      ...prev,
-      investigations: [...prev.investigations, data.investigation],
-    }));
+  const handleInvestigationSubmit = (data: { investigations: Array<{ id: string; label: string; notes: string; result: string }> } | { investigations: string[] }) => {
+    if (Array.isArray(data.investigations)) {
+      const formattedInvestigations = data.investigations.map(inv => {
+        if (typeof inv === 'string') return inv;
+        const result = inv.result ? ` [Result: ${inv.result}]` : '';
+        return `${inv.label}${result}`;
+      });
+      
+      setPrescriptionData((prev) => ({
+        ...prev,
+        investigations: [...prev.investigations, ...formattedInvestigations],
+      }));
+    }
   };
 
   const handleHistorySubmit = (data: { history: string }) => {

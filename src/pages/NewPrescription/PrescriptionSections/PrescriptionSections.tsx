@@ -155,19 +155,31 @@ export const InvestigationSection: React.FC<ListSectionProps> = ({
   onRemoveItem,
 }) => (
   <SectionWrapper title="Investigation" onAddClick={onAddClick}>
-    {items.map((item, index) => (
-      <div key={index} className="mb-1 flex items-start justify-between group">
-        <div className="flex-1">• {item}</div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onRemoveItem(index)}
-          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2"
-        >
-          <X className="h-3 w-3" />
-        </Button>
-      </div>
-    ))}
+    {items.map((item, index) => {
+      const [label, result] = item.split('[Result:').map(s => s.trim());
+      const hasResult = result && result.endsWith(']');
+      
+      return (
+        <div key={index} className="mb-1 flex items-start justify-between group">
+          <div className="flex-1">
+            <span>• {label}</span>
+            {hasResult && (
+              <span className="ml-2 text-blue-500 text-sm">
+                {result.slice(0, -1)}
+              </span>
+            )}
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onRemoveItem(index)}
+            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2"
+          >
+            <X className="h-3 w-3" />
+          </Button>
+        </div>
+      );
+    })}
   </SectionWrapper>
 );
 
