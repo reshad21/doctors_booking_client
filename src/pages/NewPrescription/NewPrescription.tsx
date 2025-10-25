@@ -14,7 +14,6 @@ import {
 } from "./PrescriptionSections/PrescriptionSections";
 import { ChiefComplaintModal } from "./_components/modals/ChiefComplaintModals/ChiefComplaintModal";
 import { ExaminationsModal } from "./_components/modals/ExaminationModal";
-import { DiagnosisModal } from "./_components/modals/DiagonisisModal";
 import { InvestigationModal } from "./_components/modals/InvestigationModal";
 import { PatientModal } from "./_components/modals/PatientModal";
 import { HistoryModal } from "./_components/modals/HistoryModal";
@@ -23,6 +22,7 @@ import { AdviceModal } from "./_components/modals/AdviceModal/AdviceModal";
 import { NextVisitModal } from "./_components/modals/NextVisitModal";
 import { prescriptionTags } from "@/constant/prescription-tags";
 import type { PrescriptionData } from "@/types/new-prescription.types";
+import { DiagnosisModal } from "./_components/modals/DiagnosisModal/DiagnosisModal";
 
 interface ComplaintItem {
   id: string;
@@ -364,7 +364,6 @@ export default function NewPrescription() {
           isOpen={activeModal === "diagnosis"}
           onClose={closeModal}
           onSubmit={handleDiagnosisSubmit}
-          tags={prescriptionTags.diagnosis}
         />
 
         <InvestigationModal
