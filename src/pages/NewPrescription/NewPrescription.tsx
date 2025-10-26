@@ -99,10 +99,51 @@ export default function NewPrescription() {
     });
   };
 
-  const handleExaminationsSubmit = (data: { examination: string }) => {
+  type ExaminationItem = {
+    id: string;
+    label: string;
+    notes: string;
+  };
+  type GeneralExamination = {
+    bloodPressure: string;
+    diastolic: string;
+    pulse: string;
+    pulseType: "Regular" | "Irregular" | "Drop-Beat";
+    temperature: string;
+    temperatureType: "Normal" | "Abnormal";
+    weight: string;
+    height: {
+      feet: string;
+      inch: string;
+    };
+    showInPrescription: boolean;
+  };
+
+  const handleExaminationsSubmit = (data: { examinations: ExaminationItem[]; generalExam: GeneralExamination }) => {
+    // Always replace the examinations section with the latest selection for clarity
+    const formattedExaminations = data.examinations.map(
+      (item) => item.label + (item.notes ? ` (${item.notes})` : "")
+    );
+
+    // Format general examination if needed
+    const { bloodPressure, diastolic, pulse, pulseType, temperature, temperatureType, weight, height, showInPrescription } = data.generalExam;
+    let generalExamStr = "";
+    if (showInPrescription) {
+      generalExamStr = [
+        bloodPressure && diastolic ? `BP: ${bloodPressure}/${diastolic} mmHg` : "",
+        pulse ? `Pulse: ${pulse} ${pulseType}` : "",
+        temperature ? `Temp: ${temperature} ${temperatureType}` : "",
+        weight ? `Weight: ${weight} kg` : "",
+        (height.feet || height.inch) ? `Height: ${height.feet}'${height.inch}"` : ""
+      ].filter(Boolean).join(", ");
+    }
+
     setPrescriptionData((prev) => ({
       ...prev,
-      examinations: [...prev.examinations, data.examination],
+      examinations: [
+        ...formattedExaminations,
+        ...(generalExamStr ? [generalExamStr] : [])
+      ],
     }));
   };
 
@@ -455,7 +496,6 @@ export default function NewPrescription() {
           isOpen={activeModal === "examinations"}
           onClose={closeModal}
           onSubmit={handleExaminationsSubmit}
-          tags={prescriptionTags.examinations}
         />
 
         <DiagnosisModal
