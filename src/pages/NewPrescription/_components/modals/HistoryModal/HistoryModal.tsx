@@ -391,7 +391,7 @@ export const HistoryModal = ({
     onClose()
   }
 
-  const prefix = { general: "G/o", drug: "D/o", investigation: "I/o", personal: "P/o", family: "F/o" } as const
+  // const prefix = { general: "G/o", drug: "D/o", investigation: "I/o", personal: "P/o", family: "F/o" } as const
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -538,7 +538,7 @@ export const HistoryModal = ({
             )}
           </div>
 
-          <div className="p-3 sm:p-4 border-t bg-gray-50 max-h-48 overflow-y-auto flex-shrink-0">
+          {/* <div className="p-3 sm:p-4 border-t bg-gray-50 max-h-48 overflow-y-auto flex-shrink-0">
             <h3 className="text-sm font-semibold text-gray-700">History Summary</h3>
             <div className="mt-2 space-y-2 text-xs sm:text-sm">
               <div>
@@ -622,7 +622,7 @@ export const HistoryModal = ({
                 </ul>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
 
         <DialogFooter className="px-4 sm:px-6 py-4 border-t">
