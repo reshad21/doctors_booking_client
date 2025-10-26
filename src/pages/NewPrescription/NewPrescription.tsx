@@ -84,9 +84,13 @@ export default function NewPrescription() {
       return `${item.label}${middle ? ` ${middle}` : ""}${notes}`.trim();
     });
     setPrescriptionData((prev) => {
-      const existingSet = new Set(prev.chiefComplaint.map((c) => c.trim().toLowerCase()))
+      const existingSet = new Set(
+        prev.chiefComplaint.map((c) => c.trim().toLowerCase())
+      );
 
-      const toAdd = formatted.filter((f) => !existingSet.has(f.trim().toLowerCase()));
+      const toAdd = formatted.filter(
+        (f) => !existingSet.has(f.trim().toLowerCase())
+      );
 
       return {
         ...prev,
@@ -109,14 +113,25 @@ export default function NewPrescription() {
     }));
   };
 
-  const handleInvestigationSubmit = (data: { investigations: Array<{ id: string; label: string; notes: string; result: string }> } | { investigations: string[] }) => {
+  const handleInvestigationSubmit = (
+    data:
+      | {
+          investigations: Array<{
+            id: string;
+            label: string;
+            notes: string;
+            result: string;
+          }>;
+        }
+      | { investigations: string[] }
+  ) => {
     if (Array.isArray(data.investigations)) {
-      const formattedInvestigations = data.investigations.map(inv => {
-        if (typeof inv === 'string') return inv;
-        const result = inv.result ? ` [Result: ${inv.result}]` : '';
+      const formattedInvestigations = data.investigations.map((inv) => {
+        if (typeof inv === "string") return inv;
+        const result = inv.result ? ` [Result: ${inv.result}]` : "";
         return `${inv.label}${result}`;
       });
-      
+
       setPrescriptionData((prev) => ({
         ...prev,
         investigations: [...prev.investigations, ...formattedInvestigations],
@@ -124,7 +139,12 @@ export default function NewPrescription() {
     }
   };
 
-  type IncomingInvestigation = { id: string; label: string; notes: string; result: string };
+  type IncomingInvestigation = {
+    id: string;
+    label: string;
+    notes: string;
+    result: string;
+  };
 
   const handleHistorySubmit = (
     data:
@@ -203,7 +223,6 @@ export default function NewPrescription() {
       notes: string;
     };
   }) => {
-    
     const formatInstructions = (instr: any): string => {
       if (!instr) return "";
       if (typeof instr === "string") return instr;
@@ -229,10 +248,15 @@ export default function NewPrescription() {
   };
 
   const handleAdviceSubmit = (
-    data: { advice: string } | { advices: Array<{ id?: string; label: string; notes?: string } | string> }
+    data:
+      | { advice: string }
+      | {
+          advices: Array<
+            { id?: string; label: string; notes?: string } | string
+          >;
+        }
   ) => {
-    
-    console.log(data, 'advice from new prescription')
+    console.log(data, "advice from new prescription");
     if ((data as any).advices && Array.isArray((data as any).advices)) {
       // Preserve label and notes (if present). Store as a single string so existing UI
       // (which expects string[]) can display both.
@@ -264,7 +288,8 @@ export default function NewPrescription() {
   const handleNextVisitSubmit = (data: { nextVisit: NextVisitItem }) => {
     const nv = data.nextVisit;
     // Format into the string representation used in the UI
-    const formatted = `${nv.durationValue} ${nv.durationType} পর${nv.notes ? ` ${nv.notes}` : ""}${nv.showInReport ? " বিশেষ" : ""}${nv.withPatient ? " সহ আসবেন" : ""}`.trim();
+    const formatted =
+      `${nv.durationValue} ${nv.durationType} পর${nv.notes ? ` ${nv.notes}` : ""}${nv.showInReport ? " রিপোর্ট" : ""}${nv.withPatient ? " সহ আসবেন" : ""}`.trim();
     setPrescriptionData((prev) => ({
       ...prev,
       nextVisit: formatted,
