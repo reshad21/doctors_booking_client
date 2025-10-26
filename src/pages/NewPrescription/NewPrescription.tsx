@@ -13,7 +13,7 @@ import {
   NextVisitSection,
 } from "./PrescriptionSections/PrescriptionSections";
 import { ChiefComplaintModal } from "./_components/modals/ChiefComplaintModals/ChiefComplaintModal";
-import { ExaminationsModal } from "./_components/modals/ExaminationModal";
+import { ExaminationsModal } from "./_components/modals/ExaminationModal/ExaminationModal";
 import { PatientModal } from "./_components/modals/PatientModal";
 import { MedicationsModal } from "./_components/modals/MedicationModal.tsx/MedicationsModal";
 import { AdviceModal } from "./_components/modals/AdviceModal/AdviceModal";
