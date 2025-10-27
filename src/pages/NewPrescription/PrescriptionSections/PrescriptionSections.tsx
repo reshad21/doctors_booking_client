@@ -3,14 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Plus, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Types
 interface Medication {
   name: string;
   dosage: string;
   frequency: string;
   duration: string;
-  // instructions can be a formatted string (what we store in PrescriptionData)
-  // or the object shape while editing. Accept both to avoid type errors.
   instructions?:
     | string
     | {
@@ -55,8 +52,14 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
   className,
 }) => (
   <div>
+    <style>{`
+      @media print {
+        .no-print {
+          display: none !important;
+        }
+      }
+    `}</style>
     <div className="flex items-center gap-2 mb-2">
-      {/* <h3 className="text-lg font-bold"> */}
       <h3 className={`${title === "Rx" ? "text-lg font-extrabold" : "font-semibold"}`}>
         {title}
       </h3>
@@ -64,7 +67,7 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
         variant="ghost"
         size="sm"
         onClick={onAddClick}
-        className="p-1 h-5 w-5 border cursor-pointer text-green-600 hover:bg-blue-50"
+        className="p-1 h-5 w-5 border cursor-pointer text-green-600 hover:bg-blue-50 no-print"
       >
         <Plus className="h-3 w-3" />
       </Button>
@@ -93,7 +96,7 @@ export const ChiefComplaintSection: React.FC<ListSectionProps> = ({
             variant="ghost"
             size="sm"
             onClick={() => onRemoveItem(index)}
-            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2"
+            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
           >
             <X className="h-3 w-3" />
           </Button>
@@ -117,7 +120,7 @@ export const ExaminationsSection: React.FC<ListSectionProps> = ({
           variant="ghost"
           size="sm"
           onClick={() => onRemoveItem(index)}
-          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2"
+          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
         >
           <X className="h-3 w-3" />
         </Button>
@@ -140,7 +143,7 @@ export const DiagnosisSection: React.FC<ListSectionProps> = ({
           variant="ghost"
           size="sm"
           onClick={() => onRemoveItem(index)}
-          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2"
+          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
         >
           <X className="h-3 w-3" />
         </Button>
@@ -174,7 +177,7 @@ export const InvestigationSection: React.FC<ListSectionProps> = ({
             variant="ghost"
             size="sm"
             onClick={() => onRemoveItem(index)}
-            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2"
+            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
           >
             <X className="h-3 w-3" />
           </Button>
@@ -198,7 +201,7 @@ export const HistorySection: React.FC<ListSectionProps> = ({
           variant="ghost"
           size="sm"
           onClick={() => onRemoveItem(index)}
-          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2"
+          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
         >
           <X className="h-3 w-3" />
         </Button>
@@ -219,7 +222,6 @@ export const MedicationsSection: React.FC<MedicationSectionProps> = ({
       {medications.map((med, index) => {
         const isTabletCapsule = med.dosage && med.dosage.includes("+");
 
-        // ✅ Handle both object or string instructions
         let instructionText = "";
         if (med.instructions) {
           if (typeof med.instructions === "object") {
@@ -238,7 +240,6 @@ export const MedicationsSection: React.FC<MedicationSectionProps> = ({
           }
         }
 
-        // ✅ Build summary
         let summary = "";
         if (isTabletCapsule) {
           summary = `${med.dosage}`;
@@ -266,7 +267,7 @@ export const MedicationsSection: React.FC<MedicationSectionProps> = ({
               variant="ghost"
               size="sm"
               onClick={() => onRemoveItem(index)}
-              className="p-1 size-14 text-red-500 cursor-pointer"
+              className="p-1 size-14 text-red-500 cursor-pointer no-print"
             >
               <Trash2 className="size-5" />
             </Button>
@@ -291,7 +292,7 @@ export const AdviceSection: React.FC<ListSectionProps> = ({
           variant="ghost"
           size="sm"
           onClick={() => onRemoveItem(index)}
-          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2"
+          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
         >
           <X className="h-3 w-3" />
         </Button>

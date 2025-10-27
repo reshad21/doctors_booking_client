@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
+import { Printer } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import PrescriptionHeader from "./_components/PrescriptionHeader";
 import PrescriptionFooter from "./_components/PrescriptionFooter";
 import {
@@ -56,6 +58,11 @@ export default function NewPrescription() {
 
   const closeModal = () => {
     setActiveModal(null);
+  };
+
+  // Print handler
+  const handlePrint = () => {
+    window.print();
   };
 
   // Submit handlers for each modal
@@ -120,12 +127,10 @@ export default function NewPrescription() {
   };
 
   const handleExaminationsSubmit = (data: { examinations: ExaminationItem[]; generalExam: GeneralExamination }) => {
-    // Always replace the examinations section with the latest selection for clarity
     const formattedExaminations = data.examinations.map(
       (item) => item.label + (item.notes ? ` (${item.notes})` : "")
     );
 
-    // Format general examination if needed
     const { bloodPressure, diastolic, pulse, pulseType, temperature, temperatureType, weight, height, showInPrescription } = data.generalExam;
     let generalExamStr = "";
     if (showInPrescription) {
@@ -198,7 +203,6 @@ export default function NewPrescription() {
           family?: ComplaintItem[];
         }
   ) => {
-    // Helper to format complaint-like items (used for general/personal/family)
     const formatComplaint = (item: ComplaintItem) => {
       const dur = item.duration ? `${item.duration}` : "";
       const unit = item.unit ? ` ${item.unit}` : "";
@@ -215,7 +219,6 @@ export default function NewPrescription() {
       return;
     }
 
-    // Structured history — turn into one or more string entries to store in prescriptionData.history
     const sections: string[] = [];
 
     if (data.general && data.general.length > 0) {
@@ -297,10 +300,7 @@ export default function NewPrescription() {
           >;
         }
   ) => {
-    console.log(data, "advice from new prescription");
     if ((data as any).advices && Array.isArray((data as any).advices)) {
-      // Preserve label and notes (if present). Store as a single string so existing UI
-      // (which expects string[]) can display both.
       const advArr: string[] = (data as any).advices.map((a: any) => {
         if (typeof a === "string") return a;
         const label = a.label ?? "";
@@ -316,7 +316,6 @@ export default function NewPrescription() {
       return;
     }
 
-    // fallback for single advice string
     const adv = (data as any).advice ?? (data as any).adviceText ?? "";
     if (adv) {
       setPrescriptionData((prev) => ({
@@ -328,7 +327,6 @@ export default function NewPrescription() {
 
   const handleNextVisitSubmit = (data: { nextVisit: NextVisitItem }) => {
     const nv = data.nextVisit;
-    // Format into the string representation used in the UI
     const formatted =
       `${nv.durationValue} ${nv.durationType} পর${nv.notes ? ` ${nv.notes}` : ""}${nv.showInReport ? " রিপোর্ট" : ""}${nv.withPatient ? " সহ আসবেন" : ""}`.trim();
     setPrescriptionData((prev) => ({
@@ -389,7 +387,35 @@ export default function NewPrescription() {
 
   return (
     <div className="min-h-screen bg-[#F4F6F9]">
-      <div className="max-w-5xl mx-auto pt-4">
+      <style>{`
+        @media print {
+          body {
+            background: white !important;
+          }
+          .no-print {
+            display: none !important;
+          }
+          .print-container {
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 20px !important;
+            background: white !important;
+          }
+        }
+      `}</style>
+      
+      <div className="max-w-5xl mx-auto pt-4 print-container">
+        {/* Print Button */}
+        <div className="flex justify-end mb-4 no-print">
+          <Button
+            onClick={handlePrint}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Printer className="h-4 w-4" />
+            Print Prescription
+          </Button>
+        </div>
+
         <div className="rounded-lg">
           {/* Header */}
           <PrescriptionHeader />
@@ -525,9 +551,7 @@ export default function NewPrescription() {
         <AdviceModal
           isOpen={activeModal === "advice"}
           onClose={closeModal}
-          // AdviceModal may call onSubmit with { advices: AdviceItem[] } or { advices: string[] }
           onSubmit={(data: any) => {
-            // Normalize to shape expected by handleAdviceSubmit
             if (data && Array.isArray(data.advices)) {
               handleAdviceSubmit({ advices: data.advices });
             } else if (data && data.advice) {
