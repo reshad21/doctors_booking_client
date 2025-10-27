@@ -8,7 +8,7 @@ import NewPrescription from "@/pages/NewPrescription/NewPrescription";
 import Notice from "@/pages/Notice/Notice";
 import Patient from "@/pages/Patient/Patient";
 // import CreatePrescription from "@/pages/Prescription/CreatePrescription/CreatePrescription";
-import Prescription from "@/pages/Prescription/Prescription";
+import Prescription from "@/pages/NewPrescription/Prescription";
 import UpdatePrescription from "@/pages/Prescription/UpdatePrescription/UpdatePrescription";
 import ViewPrescription from "@/pages/Prescription/ViewPrescription/ViewPrescription";
 import ClinicalNotes from "@/pages/PrescriptionManagement/ClinicalNotes/ClinicalNotes";

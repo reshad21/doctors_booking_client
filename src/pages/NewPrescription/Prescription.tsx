@@ -4,7 +4,7 @@ import { Info, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import ExportDropdown from "@/components/shared/ExportDropdown";
 import { useState } from "react";
-import PrescriptionTable from "./_components/PrescriptionTable";
+import PrescriptionTable from "../Prescription/_components/PrescriptionTable";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { useGetChambersQuery } from "@/redux/api/chamber/chamber";
 import BaseSelect from "@/components/shared/BaseSelect";
