@@ -21,7 +21,17 @@ const adminApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["admin"],
     }),
+
+    createDoctor: builder.mutation({
+      query: (payload) => {
+        return {
+          url: '/auth/create-doctor',
+          method: "POST",
+          body: payload
+        }
+      }
+    })
   }),
 });
 
-export const { useGetAdminByTokenQuery, useUpdateDoctorMutation } = adminApi;
+export const { useGetAdminByTokenQuery, useUpdateDoctorMutation, useCreateDoctorMutation } = adminApi;

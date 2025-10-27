@@ -25,12 +25,17 @@ import UpdatePassword from "@/pages/UpdatePassword/UpdatePassword";
 import WatchVideo from "@/pages/Watch Video/WatchVideo";
 import PrivateRoute from "@/PrivateRoute/PrivateRoute";
 import { createBrowserRouter } from "react-router-dom";
+import DemoDoctorForm from "@/pages/DemoDoctor/DemoDoctor";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [],
+  },
+  {
+    path: '/secret/create-demo-doctor',
+    element: <DemoDoctorForm />
   },
   {
     path: "/dashboard",
