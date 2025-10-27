@@ -71,8 +71,8 @@ export const NextVisitModal = ({
       title="Next Visit"
     >
       <div className="flex flex-col h-full">
-        <div className="flex-1 overflow-y-auto px-6 py-4">
-          <div className="border-2 border-blue-500 rounded-lg p-4 mb-4">
+        <div className="flex-1 overflow-y-auto px-4 py-6">
+          <div className="rounded-lg">
             <div className="flex items-center gap-3">
               <select
                 value={nextVisit.durationValue}

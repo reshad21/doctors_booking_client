@@ -56,7 +56,8 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
 }) => (
   <div>
     <div className="flex items-center gap-2 mb-2">
-      <h3 className={`${title === "Rx" ? "text-lg font-bold" : "font-medium"}`}>
+      {/* <h3 className="text-lg font-bold"> */}
+      <h3 className={`${title === "Rx" ? "text-lg font-extrabold" : "font-semibold"}`}>
         {title}
       </h3>
       <Button

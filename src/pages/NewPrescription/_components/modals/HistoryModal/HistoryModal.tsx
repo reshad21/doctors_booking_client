@@ -630,7 +630,7 @@ export const HistoryModal = ({
             Close
           </Button>
           <Button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700 text-sm sm:text-base">
-            Save History
+            Add to History
           </Button>
         </DialogFooter>
       </DialogContent>
