@@ -82,7 +82,7 @@ export const AdviceModal = ({
         onChange: setShowInPrescription,
       }}
     >
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full max-h-[calc(90vh-120px)]">
         <div className="flex gap-3 p-4 pb-0 flex-shrink-0">
           <Button
             className={`flex-1 py-3 px-6 cursor-pointer rounded-lg font-medium transition-colors ${
@@ -102,7 +102,7 @@ export const AdviceModal = ({
           </Button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-2">
+        <div className="flex-1 overflow-y-auto px-6 py-2 min-h-0">
           {activeTab === "advice" && (
             <AdviceTabs
               searchQuery={searchQuery}

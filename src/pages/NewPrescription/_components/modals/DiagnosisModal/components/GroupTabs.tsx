@@ -98,7 +98,7 @@ export function GroupTabs({ searchQuery, onLoadGroup }: GroupsTabProps) {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 pb-6 h-[500px] max-h-[70vh]">
+    <div className="flex flex-col md:flex-row gap-4 pb-6 h-[300px] max-h-[70vh]">
       <div className="w-full md:w-64 flex flex-col gap-3 min-h-0">
         {!isCreatingGroup ? (
           <Button onClick={() => setIsCreatingGroup(true)} className="w-full bg-green-600 hover:bg-green-700 text-white justify-start gap-2">
