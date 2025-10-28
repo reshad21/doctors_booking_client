@@ -343,6 +343,8 @@ export const MedicationEditor = ({
     value: string | boolean
   ) => void;
 }) => {
+
+  console.log(medications, "medications")
   return (
     <div className="w-1/2 space-y-3 overflow-x-hidden">
       {medications.length === 0 && (
@@ -363,7 +365,7 @@ export const MedicationEditor = ({
           >
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold text-gray-800">
-                {index + 1}. {med.name} ({medicationType})
+                {index + 1}. {med.name}
               </span>
               <button
                 onClick={() => removeMedication(med.id)}

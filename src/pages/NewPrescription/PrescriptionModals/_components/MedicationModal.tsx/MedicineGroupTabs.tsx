@@ -61,9 +61,9 @@ export function MedicineGroupsTab({ searchQuery, onLoadGroup }: MedicineGroupsTa
         groups.map((group) =>
           group.id === selectedGroupId
             ? {
-                ...group,
-                medications: group.medications.filter((m) => m !== medication),
-              }
+              ...group,
+              medications: group.medications.filter((m) => m !== medication),
+            }
             : group
         )
       );
@@ -149,11 +149,10 @@ export function MedicineGroupsTab({ searchQuery, onLoadGroup }: MedicineGroupsTa
           {groups.map((group) => (
             <div
               key={group.id}
-              className={`group flex items-center justify-between gap-2 p-2 rounded cursor-pointer transition-colors ${
-                selectedGroupId === group.id
+              className={`group flex items-center justify-between gap-2 p-2 rounded cursor-pointer transition-colors ${selectedGroupId === group.id
                   ? "bg-green-600 text-white"
                   : "bg-white hover:bg-gray-100 text-gray-800"
-              }`}
+                }`}
               onClick={() => setSelectedGroupId(group.id)}
             >
               <span className="text-sm font-medium truncate flex-1">
@@ -165,11 +164,10 @@ export function MedicineGroupsTab({ searchQuery, onLoadGroup }: MedicineGroupsTa
                     e.stopPropagation();
                     handleLoadGroupToMedications(group.id);
                   }}
-                  className={`p-1 rounded transition-all ${
-                    selectedGroupId === group.id
+                  className={`p-1 rounded transition-all ${selectedGroupId === group.id
                       ? "text-white hover:bg-green-700"
                       : "text-green-600 hover:bg-green-100"
-                  }`}
+                    }`}
                   title="Use this group in Medication tab"
                 >
                   <ArrowRight className="h-4 w-4" />
@@ -179,11 +177,10 @@ export function MedicineGroupsTab({ searchQuery, onLoadGroup }: MedicineGroupsTa
                     e.stopPropagation();
                     handleDeleteGroup(group.id);
                   }}
-                  className={`opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded ${
-                    selectedGroupId === group.id
+                  className={`opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded ${selectedGroupId === group.id
                       ? "text-white hover:bg-red-500"
                       : "text-red-500 hover:bg-red-100"
-                  }`}
+                    }`}
                   title="Delete group"
                 >
                   <X className="h-4 w-4" />
@@ -258,12 +255,12 @@ export function MedicineGroupsTab({ searchQuery, onLoadGroup }: MedicineGroupsTa
                   {filteredMedications.filter(
                     (medication) => !selectedGroup.medications.includes(medication)
                   ).length === 0 && (
-                    <p className="text-xs text-gray-500 text-center py-8">
-                      {searchQuery
-                        ? `No medications found matching "${searchQuery}"`
-                        : "All medications added"}
-                    </p>
-                  )}
+                      <p className="text-xs text-gray-500 text-center py-8">
+                        {searchQuery
+                          ? `No medications found matching "${searchQuery}"`
+                          : "All medications added"}
+                      </p>
+                    )}
                 </div>
               </div>
 

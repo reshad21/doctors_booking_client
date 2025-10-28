@@ -37,7 +37,6 @@ export const MedicationsModal = ({
   const [medications, setMedications] = useState<any[]>([]);
 
   const handleSubmit = () => {
-    console.log(medications, 'md')
     if (medications.length > 0) {
       const med = medications[0];
 
@@ -133,21 +132,19 @@ export const MedicationsModal = ({
         <div className="flex gap-3">
           <button
             onClick={() => setActiveTab("medication")}
-            className={`flex-1 py-3 px-6 rounded-lg cursor-pointer font-medium transition-colors ${
-              activeTab === "medication"
+            className={`flex-1 py-3 px-6 rounded-lg cursor-pointer font-medium transition-colors ${activeTab === "medication"
                 ? "bg-green-600 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
+              }`}
           >
             Medicine
           </button>
           <button
             onClick={() => setActiveTab("medication groups")}
-            className={`flex-1 py-3 px-6 rounded-lg cursor-pointer font-medium transition-colors ${
-              activeTab === "medication groups"
+            className={`flex-1 py-3 px-6 rounded-lg cursor-pointer font-medium transition-colors ${activeTab === "medication groups"
                 ? "bg-green-600 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
+              }`}
           >
             Medicine Groups
           </button>

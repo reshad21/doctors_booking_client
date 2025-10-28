@@ -34,7 +34,7 @@ const MedicineManagement = () => {
     // }
   ];
   const { data: medicines } = useGetMedicinesQuery(query);
-  console.log(medicines);
+ 
   return (
     <div>
       <div className="p-5">

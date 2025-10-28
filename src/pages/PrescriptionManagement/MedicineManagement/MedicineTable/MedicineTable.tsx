@@ -6,7 +6,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import UpdateMedicine from "../UpdateMedicine/UpdateMedicine";
 import DeleteMedicine from "../DeleteMedicine/DeleteMedicine";
 
@@ -17,19 +16,21 @@ const breakLine = (text: string, limit = 50) => {
   return text.match(regex)?.join("\n") || text;
 };
 
+export interface TMedicine {
+  id: string;
+  nameManufacturer: string;
+  brandName: string;
+  genericName: string;
+  strength: string;
+  dosageDescription: string;
+  price: number;
+  useFor: string;
+}
+
 const MedicineTable = ({
   medicines,
 }: {
-  medicines: {
-    id: string;
-    nameManufacturer: string;
-    brandName: string;
-    genericName: string;
-    strength: string;
-    dosageDescription: string;
-    price: number;
-    useFor: string;
-  }[];
+  medicines: TMedicine[];
 }) => {
   return (
     <div className="bg-white w-full max-w-[950px] rounded-lg 2xl:max-w-[1400px] overflow-x-auto">
