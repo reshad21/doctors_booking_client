@@ -32,7 +32,7 @@ export default function NewPrescription() {
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <div>
+    <div className="bg-slate-100">
       <style>{`
         @media print {
           body {
@@ -55,14 +55,14 @@ export default function NewPrescription() {
         <div className="flex justify-end mb-4 no-print mr-2">
           <Button
             onClick={handlePrint}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 cursor-pointer text-white"
           >
             <Printer className="h-4 w-4" />
             Print Prescription
           </Button>
         </div>
 
-        <div className="rounded-lg">
+        <div>
           {/* Header */}
           <PrescriptionHeader data={headerData} />
 
