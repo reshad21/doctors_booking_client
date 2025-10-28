@@ -128,7 +128,7 @@ export const NextVisitModal = ({
                 }`}
               >
                 {nextVisit.showInReport && <Check className="h-4 w-4" />}
-                রিপোর্ট
+                রিপোর্ট সহ
               </button>
 
               <button
@@ -145,7 +145,7 @@ export const NextVisitModal = ({
                 }`}
               >
                 {nextVisit.withPatient && <Check className="h-4 w-4" />}
-                সহ আসবেন
+                আসবেন
               </button>
             </div>
           </div>

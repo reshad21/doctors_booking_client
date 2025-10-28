@@ -328,7 +328,7 @@ export default function NewPrescription() {
   const handleNextVisitSubmit = (data: { nextVisit: NextVisitItem }) => {
     const nv = data.nextVisit;
     const formatted =
-      `${nv.durationValue} ${nv.durationType} পর${nv.notes ? ` ${nv.notes}` : ""}${nv.showInReport ? " রিপোর্ট" : ""}${nv.withPatient ? " সহ আসবেন" : ""}`.trim();
+      `${nv.durationValue} ${nv.durationType} পর${nv.notes ? ` ${nv.notes}` : ""}${nv.showInReport ? " রিপোর্ট সহ" : ""}${nv.withPatient ? " আসবেন" : ""}`.trim();
     setPrescriptionData((prev) => ({
       ...prev,
       nextVisit: formatted,
