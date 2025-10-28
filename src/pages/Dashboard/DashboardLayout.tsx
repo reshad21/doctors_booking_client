@@ -63,7 +63,7 @@ export default function DashboardLayout() {
     <SidebarProvider className="max-h-[100vh] bg-[#f4f6f9]">
       <AppSidebar sideNavMenu={filteredMenu} />
       <SidebarInset>
-        <header className="sticky top-0 z-50 flex justify-between h-20 shrink-0 items-center gap-2 px-4 bg-gradient-to-r from-[#042F16] via-[#6F9975] to-[#14400D]">
+        <header className="sticky top-0 z-50 flex justify-between h-20 shrink-0 items-center gap-2 px-4 bg-gradient-to-r from-[#042F16] via-[#6F9975] to-[#14400D] print:hidden">
           <div className="flex justify-start items-center gap-5">
             <SidebarTrigger className="" />
             <div className="text-white font-semibold">{staffsDoctor?.data?.name}</div>
@@ -157,9 +157,9 @@ export default function DashboardLayout() {
           </div>
         </header>
 
-        <div className="">
+        <div>
           <Outlet />
-          <div className=" flex justify-center items-center py-2 font-semibold text-xs bg-[#F4F6F9]">
+          <div className="flex print:hidden justify-center items-center py-2 font-semibold text-xs bg-[#F4F6F9]">
             Technology Partner{" "}
             <a href="https://mntechdigital.com/" className="px-1">
               <u>MNTECH DIGITAL</u>

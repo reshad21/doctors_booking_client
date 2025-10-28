@@ -11,22 +11,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useCurrentToken } from "@/redux/api/features/authSlice";
+// import { useCurrentToken } from "@/redux/api/features/authSlice";
+// import { useAppSelector } from "@/redux/hooks";
+// import { jwtDecode } from "jwt-decode";
 import {
   useGetPrescriptionPageSetupsQuery,
   useUpdateStatusMutation,
 } from "@/redux/api/PreManagement/PrescriptionPageSetupApi";
-import { useAppSelector } from "@/redux/hooks";
-import { jwtDecode } from "jwt-decode";
 import { SquarePen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const PrescriptionPageSetupTable = () => {
   const navigate = useNavigate();
-  const token = useAppSelector(useCurrentToken);
-  const decoded: { id: string } = jwtDecode(token);
-  const { data: prescriptionPageSetupData, isLoading } =
-    useGetPrescriptionPageSetupsQuery({ doctorId: decoded.id });
+  // const token = useAppSelector(useCurrentToken);
+  // const decoded: { id: string } = jwtDecode(token);
+  const { data: prescriptionPageSetupData, isLoading } = useGetPrescriptionPageSetupsQuery({});
 
   // Local state to manage switch values
   const [switchStates, setSwitchStates] = useState<Record<string, boolean>>({});

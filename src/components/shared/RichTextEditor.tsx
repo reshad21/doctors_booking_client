@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -36,7 +34,10 @@ interface RichTextEditorProps {
   onChange: (content: string) => void;
 }
 
-export default function RichTextEditor({ content, onChange }: RichTextEditorProps) {
+export default function RichTextEditor({
+  content,
+  onChange,
+}: RichTextEditorProps) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -48,17 +49,17 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
       StarterKit.configure({
         horizontalRule: {
           HTMLAttributes: {
-            class: "my-4 border-t border-[#334155]",
+            class: "my-4 border-t border-gray-300",
           },
         },
         orderedList: {
           HTMLAttributes: {
-            class: "list-decimal ml-4 text-[#F8FAFC]",
+            class: "list-decimal ml-4 text-black",
           },
         },
         bulletList: {
           HTMLAttributes: {
-            class: "list-disc ml-4 text-[#F8FAFC]",
+            class: "list-disc ml-4 text-black",
           },
         },
       }),
@@ -66,7 +67,7 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: "text-[#F91938] underline hover:text-[#F8FAFC]",
+          class: "text-blue-600 underline hover:text-blue-800",
         },
       }),
       Image,
@@ -78,7 +79,7 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
     editorProps: {
       attributes: {
         class:
-          "focus:outline-none prose prose-sm sm:prose lg:prose-lg xl:prose-xl mx-auto text-[#F8FAFC] bg-[#0F172A] prose-a:text-[#F91938] prose-a:underline hover:prose-a:text-[#F8FAFC] prose-hr:my-4 prose-hr:border-t prose-hr:border-[#334155] prose-ol:list-decimal prose-ol:ml-4 prose-ul:list-disc prose-ul:ml-4",
+          "focus:outline-none prose prose-sm sm:prose lg:prose-lg xl:prose-xl mx-auto text-black bg-white prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800 prose-hr:my-4 prose-hr:border-t prose-hr:border-gray-300 prose-ol:list-decimal prose-ol:ml-4 prose-ul:list-disc prose-ul:ml-4 leading-tight",
       },
     },
     onUpdate: ({ editor }) => {
@@ -88,49 +89,43 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
 
   if (!isMounted) {
     return (
-      <div className="border border-gray-800 rounded-md overflow-hidden bg-[#0F172A]">
-        <div className="flex flex-wrap gap-1 p-2 border-b border-[#334155] bg-[#16213A]">
+      <div className="border border-gray-300 rounded-md overflow-hidden bg-white">
+        <div className="flex flex-wrap gap-1 p-2 border-b border-gray-300 bg-gray-50">
           <div className="flex flex-wrap gap-1">
-            {/* Skeleton buttons */}
             {Array.from({ length: 15 }).map((_, i) => (
               <div
                 key={i}
-                className="h-9 w-9 bg-[#334155] rounded animate-pulse"
+                className="h-9 w-9 bg-gray-200 rounded animate-pulse"
               />
             ))}
           </div>
         </div>
-        <div className="p-4 min-h-[200px]">
-          
-        </div>
+        <div className="p-4 min-h-[200px]"></div>
       </div>
     );
   }
 
   if (!editor) {
     return (
-      <div className="border border-gray-800 rounded-md overflow-hidden bg-[#0F172A]">
-        <div className="flex flex-wrap gap-1 p-2 border-b border-[#334155] bg-[#16213A]">
+      <div className="border border-gray-300 rounded-md overflow-hidden bg-white">
+        <div className="flex flex-wrap gap-1 p-2 border-b border-gray-300 bg-gray-50">
           <div className="flex flex-wrap gap-1">
-            {/* Skeleton buttons */}
             {Array.from({ length: 15 }).map((_, i) => (
               <div
                 key={i}
-                className="h-9 w-9 bg-[#334155] rounded animate-pulse"
+                className="h-9 w-9 bg-gray-200 rounded animate-pulse"
               />
             ))}
           </div>
         </div>
-        <div className="p-4 min-h-[200px]">
-          
-        </div>
+        <div className="p-4 min-h-[200px]"></div>
       </div>
     );
   }
 
   return (
-    <div className="border border-gray-800 rounded-md overflow-hidden bg-[#0F172A]">
-      <div className="flex flex-wrap gap-1 p-2 border-b border-[#334155] bg-[#16213A]">
+    <div className="border border-gray-300 rounded-md overflow-hidden bg-white">
+      <div className="flex flex-wrap gap-1 p-2 border-b border-gray-300 bg-gray-50">
         <div className="flex flex-wrap gap-1">
           <Button
             variant="ghost"
@@ -138,8 +133,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             onClick={() => editor.chain().focus().toggleBold().run()}
             className={
               editor.isActive("bold")
-                ? "bg-[#334155] text-[#F91938]"
-                : "text-[#F8FAFC]"
+                ? "bg-gray-200 text-blue-600"
+                : "text-black"
             }
             type="button"
           >
@@ -151,8 +146,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             onClick={() => editor.chain().focus().toggleItalic().run()}
             className={
               editor.isActive("italic")
-                ? "bg-[#334155] text-[#F91938]"
-                : "text-[#F8FAFC]"
+                ? "bg-gray-200 text-blue-600"
+                : "text-black"
             }
             type="button"
           >
@@ -164,8 +159,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             onClick={() => editor.chain().focus().toggleUnderline().run()}
             className={
               editor.isActive("underline")
-                ? "bg-[#334155] text-[#F91938]"
-                : "text-[#F8FAFC]"
+                ? "bg-gray-200 text-blue-600"
+                : "text-black"
             }
             type="button"
           >
@@ -177,8 +172,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             onClick={() => editor.chain().focus().toggleStrike().run()}
             className={
               editor.isActive("strike")
-                ? "bg-[#334155] text-[#F91938]"
-                : "text-[#F8FAFC]"
+                ? "bg-gray-200 text-blue-600"
+                : "text-black"
             }
             type="button"
           >
@@ -194,8 +189,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             }
             className={
               editor.isActive("heading", { level: 1 })
-                ? "bg-[#334155] text-[#F91938]"
-                : "text-[#F8FAFC]"
+                ? "bg-gray-200 text-blue-600"
+                : "text-black"
             }
             type="button"
           >
@@ -209,8 +204,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             }
             className={
               editor.isActive("heading", { level: 2 })
-                ? "bg-[#334155] text-[#F91938]"
-                : "text-[#F8FAFC]"
+                ? "bg-gray-200 text-blue-600"
+                : "text-black"
             }
             type="button"
           >
@@ -224,8 +219,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             }
             className={
               editor.isActive("heading", { level: 3 })
-                ? "bg-[#334155] text-[#F91938]"
-                : "text-[#F8FAFC]"
+                ? "bg-gray-200 text-blue-600"
+                : "text-black"
             }
             type="button"
           >
@@ -239,8 +234,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             onClick={() => editor.chain().focus().toggleBulletList().run()}
             className={
               editor.isActive("bulletList")
-                ? "bg-[#334155] text-[#F91938]"
-                : "text-[#F8FAFC]"
+                ? "bg-gray-200 text-blue-600"
+                : "text-black"
             }
             type="button"
           >
@@ -252,8 +247,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
             className={
               editor.isActive("orderedList")
-                ? "bg-[#334155] text-[#F91938]"
-                : "text-[#F8FAFC]"
+                ? "bg-gray-200 text-blue-600"
+                : "text-black"
             }
             type="button"
           >
@@ -273,8 +268,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             }}
             className={
               editor.isActive({ textAlign: "left" })
-                ? "bg-[#334155] text-[#F91938]"
-                : "text-[#F8FAFC]"
+                ? "bg-gray-200 text-blue-600"
+                : "text-black"
             }
             type="button"
           >
@@ -292,8 +287,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             }}
             className={
               editor.isActive({ textAlign: "center" })
-                ? "bg-[#334155] text-[#F91938]"
-                : "text-[#F8FAFC]"
+                ? "bg-gray-200 text-blue-600"
+                : "text-black"
             }
             type="button"
           >
@@ -311,8 +306,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             }}
             className={
               editor.isActive({ textAlign: "right" })
-                ? "bg-[#334155] text-[#F91938]"
-                : "text-[#F8FAFC]"
+                ? "bg-gray-200 text-blue-600"
+                : "text-black"
             }
             type="button"
           >
@@ -330,8 +325,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             }}
             className={
               editor.isActive({ textAlign: "justify" })
-                ? "bg-[#334155] text-[#F91938]"
-                : "text-[#F8FAFC]"
+                ? "bg-gray-200 text-blue-600"
+                : "text-black"
             }
             type="button"
           >
@@ -348,6 +343,7 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
                 editor.chain().focus().setImage({ src: url }).run();
               }
             }}
+            className="text-black"
             type="button"
           >
             <ImageIcon className="h-4 w-4" />
@@ -358,20 +354,18 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             onClick={() => {
               const url = window.prompt("URL");
               if (url) {
-                // Check if there's selected text
                 if (editor.state.selection.empty) {
-                  // If no text is selected, just insert the URL as text
                   editor
                     .chain()
                     .focus()
                     .insertContent(`<a href="${url}">${url}</a>`)
                     .run();
                 } else {
-                  // If text is selected, apply the link to the selection
                   editor.chain().focus().setLink({ href: url }).run();
                 }
               }
             }}
+            className="text-black"
             type="button"
           >
             <LinkIcon className="h-4 w-4" />
@@ -382,6 +376,7 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             variant="ghost"
             size="icon"
             onClick={() => editor.chain().focus().undo().run()}
+            className="text-black"
             type="button"
           >
             <Undo className="h-4 w-4" />
@@ -390,6 +385,7 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             variant="ghost"
             size="icon"
             onClick={() => editor.chain().focus().redo().run()}
+            className="text-black"
             type="button"
           >
             <Redo className="h-4 w-4" />
@@ -402,8 +398,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             onClick={() => editor.chain().focus().toggleCodeBlock().run()}
             className={
               editor.isActive("codeBlock")
-                ? "bg-[#334155] text-[#F91938]"
-                : "text-[#F8FAFC]"
+                ? "bg-gray-200 text-blue-600"
+                : "text-black"
             }
             type="button"
           >
@@ -415,8 +411,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             onClick={() => editor.chain().focus().toggleBlockquote().run()}
             className={
               editor.isActive("blockquote")
-                ? "bg-[#334155] text-[#F91938]"
-                : "text-[#F8FAFC]"
+                ? "bg-gray-200 text-blue-600"
+                : "text-black"
             }
             type="button"
           >
@@ -426,6 +422,7 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             variant="ghost"
             size="icon"
             onClick={() => editor.chain().focus().setHorizontalRule().run()}
+            className="text-black"
             type="button"
           >
             <Minus className="h-4 w-4" />
@@ -434,7 +431,7 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
       </div>
       <EditorContent
         editor={editor}
-        className="border-gray-800 text-green-500"
+        className="border-gray-300"
         placeholder="Type your content here..."
       />
     </div>
