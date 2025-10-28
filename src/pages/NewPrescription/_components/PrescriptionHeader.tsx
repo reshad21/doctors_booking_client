@@ -16,17 +16,21 @@ interface PrescriptionHeader {
 }
 
 const PrescriptionHeader = ({ data }: { data: PrescriptionHeader }) => {
-  if (!data.showPrescriptionHeader) {
-    return null;
+  if (!data?.showPrescriptionHeader) {
+    return (
+      <div className="text-center py-6 text-sm text-gray-700">
+        Try Create Doctor Information from the Pre Management For Header.
+      </div>
+    );
   }
 
   return (
     <div className="flex justify-between items-start border border-[#C3C3C3] bg-white p-5 mx-2 rounded-xl">
-      {data.showPrescriptionInBangla && (
+      {data?.showPrescriptionInBangla && (
         <div className="flex items-start gap-4">
           <div>
             <Preview
-              content={data.doctorInfoBangla}
+              content={data?.doctorInfoBangla}
               details
               className="text-sm text-gray-600"
             />
@@ -34,11 +38,11 @@ const PrescriptionHeader = ({ data }: { data: PrescriptionHeader }) => {
         </div>
       )}
 
-      {data.showLogo && (
+      {data?.showLogo && (
         <div className="size-28 flex items-center justify-center flex-shrink-0">
-          {data.logo ? (
+          {data?.logo ? (
             <img
-              src={data.logo}
+              src={data?.logo}
               alt="Doctor Logo"
               className="size-24 object-contain"
             />
@@ -48,10 +52,10 @@ const PrescriptionHeader = ({ data }: { data: PrescriptionHeader }) => {
         </div>
       )}
 
-      {data.showPrescriptionInEnglish && (
+      {data?.showPrescriptionInEnglish && (
         <div className="text-right">
           <Preview
-            content={data.doctorInfoEnglish}
+            content={data?.doctorInfoEnglish}
             details
             className="text-sm text-gray-600"
           />

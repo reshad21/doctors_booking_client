@@ -1,16 +1,17 @@
 import type { PrescriptionData } from "@/types/new-prescription.types";
-import PrescriptionHeader from "./PrescriptionHeader";
-import PrescriptionFooter from "./PrescriptionFooter";
+// import PrescriptionHeader from "./PrescriptionHeader";
+// import PrescriptionFooter from "./PrescriptionFooter";
 
 interface PrintablePrescriptionProps {
   data: PrescriptionData;
 }
 
 export const PrintablePrescription = ({ data }: PrintablePrescriptionProps) => {
+  console.log(data, 'ddd')
   return (
     <div className="bg-white p-8 max-w-5xl mx-auto" id="printable-prescription">
       {/* Header */}
-      <PrescriptionHeader />
+      {/* <PrescriptionHeader /> */}
 
       {/* Patient Information */}
       <div className="grid grid-cols-4 gap-8 justify-items-center max-w-5xl my-5 mx-auto">
@@ -143,7 +144,7 @@ export const PrintablePrescription = ({ data }: PrintablePrescriptionProps) => {
       </div>
 
       {/* Footer */}
-      <PrescriptionFooter />
+      {/* <PrescriptionFooter /> */}
     </div>
   );
 };

@@ -1,19 +1,31 @@
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
-import { X, ChevronDown } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import type { InvestigationItem as InvItem } from "../InvestigationModal/InvestigationModal"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { X, ChevronDown } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import type { InvestigationItem } from "@/pages/NewPrescription/_components/modals/InvestigationModal/InvestigationModal";
 
 function DurationInput({
   value,
   onChange,
   placeholder = "0",
 }: {
-  value: string
-  onChange: (value: string) => void
-  placeholder?: string
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
 }) {
   return (
     <Input
@@ -24,7 +36,7 @@ function DurationInput({
       placeholder={placeholder}
       className="w-full"
     />
-  )
+  );
 }
 
 const filterOptions = [
@@ -48,69 +60,88 @@ const filterOptions = [
   "Runny Nose",
   "Sneezing",
   "Itching",
-]
+];
 
 type ComplaintItem = {
-  id: string
-  label: string
-  duration: string
-  unit: string
-  notes: string
-}
+  id: string;
+  label: string;
+  duration: string;
+  unit: string;
+  notes: string;
+};
 
 export const HistoryModal = ({
   isOpen,
   onClose,
   onSubmit,
 }: {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
   onSubmit: (data: {
-    general: ComplaintItem[]
-    drugs: string[]
-    investigations: InvItem[]
-    personal: ComplaintItem[]
-    family: ComplaintItem[]
-  }) => void
+    general: ComplaintItem[];
+    drugs: string[];
+    investigations: InvestigationItem[];
+    personal: ComplaintItem[];
+    family: ComplaintItem[];
+  }) => void;
 }) => {
-  const [activeTab, setActiveTab] = useState<"general" | "drug" | "investigation" | "personal" | "family">("general")
+  const [activeTab, setActiveTab] = useState<
+    "general" | "drug" | "investigation" | "personal" | "family"
+  >("general");
 
-  const [searchQuery, setSearchQuery] = useState("")
-  const [showInPrescription, setShowInPrescription] = useState(true)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showInPrescription, setShowInPrescription] = useState(true);
 
   // Data stores for each tab
-  const [general, setGeneral] = useState<ComplaintItem[]>([])
-  const [personal, setPersonal] = useState<ComplaintItem[]>([])
-  const [family, setFamily] = useState<ComplaintItem[]>([])
-  const [drugs, setDrugs] = useState<string[]>([])
-  const [investigations, setInvestigations] = useState<InvItem[]>([])
+  const [general, setGeneral] = useState<ComplaintItem[]>([]);
+  const [personal, setPersonal] = useState<ComplaintItem[]>([]);
+  const [family, setFamily] = useState<ComplaintItem[]>([]);
+  const [drugs, setDrugs] = useState<string[]>([]);
+  const [investigations, setInvestigations] = useState<InvestigationItem[]>([]);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   // Mock options - replace with real data as needed
-  const drugOptions = ["Paracetamol", "Amoxicillin", "Metformin", "Aspirin"]
+  const drugOptions = ["Paracetamol", "Amoxicillin", "Metformin", "Aspirin"];
 
   // Generic handlers (similar to chief complaint/investigation)
-  const handleAddComplaintTo = (listSetter: React.Dispatch<React.SetStateAction<ComplaintItem[]>>, label: string) => {
+  const handleAddComplaintTo = (
+    listSetter: React.Dispatch<React.SetStateAction<ComplaintItem[]>>,
+    label: string
+  ) => {
     listSetter((prev) => {
-      const exists = prev.some((p) => p.label === label)
-      if (exists) return prev
-      return [...prev, { id: String(Date.now()) + "-" + label, label, duration: "", unit: "Days", notes: "" }]
-    })
-  }
+      const exists = prev.some((p) => p.label === label);
+      if (exists) return prev;
+      return [
+        ...prev,
+        {
+          id: String(Date.now()) + "-" + label,
+          label,
+          duration: "",
+          unit: "Days",
+          notes: "",
+        },
+      ];
+    });
+  };
 
-  const handleRemoveComplaintFrom = (listSetter: React.Dispatch<React.SetStateAction<ComplaintItem[]>>, id: string) => {
-    listSetter((prev) => prev.filter((p) => p.id !== id))
-  }
+  const handleRemoveComplaintFrom = (
+    listSetter: React.Dispatch<React.SetStateAction<ComplaintItem[]>>,
+    id: string
+  ) => {
+    listSetter((prev) => prev.filter((p) => p.id !== id));
+  };
 
   const handleUpdateComplaintFrom = (
     listSetter: React.Dispatch<React.SetStateAction<ComplaintItem[]>>,
     id: string,
     field: keyof ComplaintItem,
-    value: string,
+    value: string
   ) => {
-    listSetter((prev) => prev.map((p) => (p.id === id ? { ...p, [field]: value } : p)))
-  }
+    listSetter((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, [field]: value } : p))
+    );
+  };
 
   /* ------------------ Local ComplaintCard & ComplaintTab (copied/adapted from ChiefComplaintModal) ------------------ */
   function ComplaintCard({
@@ -119,10 +150,10 @@ export const HistoryModal = ({
     onRemove,
     onUpdate,
   }: {
-    complaint: ComplaintItem
-    index: number
-    onRemove: (id: string) => void
-    onUpdate: (id: string, field: keyof ComplaintItem, value: string) => void
+    complaint: ComplaintItem;
+    index: number;
+    onRemove: (id: string) => void;
+    onUpdate: (id: string, field: keyof ComplaintItem, value: string) => void;
   }) {
     return (
       <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 space-y-3">
@@ -130,14 +161,19 @@ export const HistoryModal = ({
           <span className="text-sm font-semibold text-gray-800">
             {index + 1}. {complaint.label}
           </span>
-          <button onClick={() => onRemove(complaint.id)} className="text-red-500 hover:text-red-700 transition-colors">
+          <button
+            onClick={() => onRemove(complaint.id)}
+            className="text-red-500 hover:text-red-700 transition-colors"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <div className="grid grid-cols-3 gap-3">
           <div className="space-y-1">
-            <label className="text-xs font-medium text-gray-600">Duration</label>
+            <label className="text-xs font-medium text-gray-600">
+              Duration
+            </label>
             <DurationInput
               value={complaint.duration}
               onChange={(value) => onUpdate(complaint.id, "duration", value)}
@@ -147,7 +183,10 @@ export const HistoryModal = ({
 
           <div className="space-y-1">
             <label className="text-xs font-medium text-gray-600">Unit</label>
-            <Select value={complaint.unit} onValueChange={(value) => onUpdate(complaint.id, "unit", value)}>
+            <Select
+              value={complaint.unit}
+              onValueChange={(value) => onUpdate(complaint.id, "unit", value)}
+            >
               <SelectTrigger className="w-full text-left">
                 <SelectValue />
               </SelectTrigger>
@@ -174,13 +213,17 @@ export const HistoryModal = ({
 
         {(complaint.duration || complaint.unit || complaint.notes) && (
           <div className="text-sm text-gray-600">
-            {complaint.duration && <span className="font-medium">{complaint.duration} </span>}
+            {complaint.duration && (
+              <span className="font-medium">{complaint.duration} </span>
+            )}
             {complaint.unit && <span>{complaint.unit} </span>}
-            {complaint.notes && <span className="text-gray-500">({complaint.notes})</span>}
+            {complaint.notes && (
+              <span className="text-gray-500">({complaint.notes})</span>
+            )}
           </div>
         )}
       </div>
-    )
+    );
   }
 
   function ComplaintTab({
@@ -190,21 +233,30 @@ export const HistoryModal = ({
     onRemoveComplaint,
     onUpdateComplaint,
   }: {
-    searchQuery: string
-    complaints: ComplaintItem[]
-    onToggleFilter: (filter: string) => void
-    onRemoveComplaint: (id: string) => void
-    onUpdateComplaint: (id: string, field: keyof ComplaintItem, value: string) => void
+    searchQuery: string;
+    complaints: ComplaintItem[];
+    onToggleFilter: (filter: string) => void;
+    onRemoveComplaint: (id: string) => void;
+    onUpdateComplaint: (
+      id: string,
+      field: keyof ComplaintItem,
+      value: string
+    ) => void;
   }) {
-    const isFilterSelected = (filter: string) => complaints.some((c) => c.label === filter)
+    const isFilterSelected = (filter: string) =>
+      complaints.some((c) => c.label === filter);
 
     const sortedFilterOptions = filterOptions
       .filter((option) => complaints.some((c) => c.label === option))
-      .concat(filterOptions.filter((option) => !complaints.some((c) => c.label === option)))
+      .concat(
+        filterOptions.filter(
+          (option) => !complaints.some((c) => c.label === option)
+        )
+      );
 
     const filteredComplaintOptions = sortedFilterOptions.filter((option) =>
-      option.toLowerCase().includes(searchQuery.toLowerCase()),
-    )
+      option.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
       <div className="flex flex-col md:flex-row gap-4 md:gap-6 pb-6">
@@ -216,7 +268,9 @@ export const HistoryModal = ({
                 onClick={() => onToggleFilter(filter)}
                 className={`flex items-center gap-2 px-1 py-0.5 cursor-pointer rounded-md border transition-colors ${isFilterSelected(filter) ? "bg-green-50 border-green-600 text-green-700" : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"}`}
               >
-                {isFilterSelected(filter) && <span className="text-green-600">✓</span>}
+                {isFilterSelected(filter) && (
+                  <span className="text-green-600">✓</span>
+                )}
                 {filter}
                 <ChevronDown className="h-4 w-4" />
               </button>
@@ -224,13 +278,17 @@ export const HistoryModal = ({
           </div>
 
           {filteredComplaintOptions.length === 0 && (
-            <p className="text-sm text-gray-500 text-center py-4">No symptoms found matching "{searchQuery}"</p>
+            <p className="text-sm text-gray-500 text-center py-4">
+              No symptoms found matching "{searchQuery}"
+            </p>
           )}
         </div>
 
         <div className="w-full md:w-1/2 space-y-3 max-h-96 overflow-y-auto pr-2">
           {complaints.length === 0 && (
-            <p className="text-sm text-gray-500 text-center py-8">Select symptoms from the left to add here</p>
+            <p className="text-sm text-gray-500 text-center py-8">
+              Select symptoms from the left to add here
+            </p>
           )}
           {complaints.map((complaint, index) => (
             <ComplaintCard
@@ -243,7 +301,7 @@ export const HistoryModal = ({
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   /* ------------------ Local InvestigationTabs (adapted) ------------------ */
@@ -253,10 +311,14 @@ export const HistoryModal = ({
     onRemove,
     onUpdate,
   }: {
-    investigation: InvItem
-    index: number
-    onRemove: (id: string) => void
-    onUpdate: (id: string, field: keyof InvItem, value: string) => void
+    investigation: InvestigationItem;
+    index: number;
+    onRemove: (id: string) => void;
+    onUpdate: (
+      id: string,
+      field: keyof InvestigationItem,
+      value: string
+    ) => void;
   }) {
     return (
       <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 space-y-3">
@@ -277,14 +339,20 @@ export const HistoryModal = ({
           <Input
             placeholder="Add result..."
             value={investigation.result}
-            onChange={(e) => onUpdate(investigation.id, "result", e.target.value)}
+            onChange={(e) =>
+              onUpdate(investigation.id, "result", e.target.value)
+            }
             className="w-full"
           />
         </div>
 
-        {investigation.result && <div className="text-sm text-blue-500">Result: {investigation.result}</div>}
+        {investigation.result && (
+          <div className="text-sm text-blue-500">
+            Result: {investigation.result}
+          </div>
+        )}
       </div>
-    )
+    );
   }
 
   const investigationOptions = [
@@ -298,7 +366,7 @@ export const HistoryModal = ({
     "Lipid Profile",
     "Thyroid Profile",
     "Ultrasound Abdomen",
-  ]
+  ];
 
   function InvestigationTabs({
     searchQuery,
@@ -307,21 +375,30 @@ export const HistoryModal = ({
     onRemoveInvestigation,
     onUpdateInvestigation,
   }: {
-    searchQuery: string
-    investigations: InvItem[]
-    onToggleFilter: (filter: string) => void
-    onRemoveInvestigation: (id: string) => void
-    onUpdateInvestigation: (id: string, field: keyof InvItem, value: string) => void
+    searchQuery: string;
+    investigations: InvestigationItem[];
+    onToggleFilter: (filter: string) => void;
+    onRemoveInvestigation: (id: string) => void;
+    onUpdateInvestigation: (
+      id: string,
+      field: keyof InvestigationItem,
+      value: string
+    ) => void;
   }) {
-    const isFilterSelected = (filter: string) => investigations.some((a) => a.label === filter)
+    const isFilterSelected = (filter: string) =>
+      investigations.some((a) => a.label === filter);
 
     const sortedInvestigationOptions = investigationOptions
       .filter((option) => investigations.some((a) => a.label === option))
-      .concat(investigationOptions.filter((option) => !investigations.some((a) => a.label === option)))
+      .concat(
+        investigationOptions.filter(
+          (option) => !investigations.some((a) => a.label === option)
+        )
+      );
 
-    const filteredInvestigationOptions = sortedInvestigationOptions.filter((option) =>
-      option.toLowerCase().includes(searchQuery.toLowerCase()),
-    )
+    const filteredInvestigationOptions = sortedInvestigationOptions.filter(
+      (option) => option.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
       <div className="flex flex-col md:flex-row gap-4 md:gap-6 pb-6">
@@ -333,7 +410,9 @@ export const HistoryModal = ({
                 onClick={() => onToggleFilter(filter)}
                 className={`flex items-center gap-2 px-1 py-0.5 cursor-pointer rounded-md border transition-colors ${isFilterSelected(filter) ? "bg-green-50 border-green-600 text-green-700" : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"}`}
               >
-                {isFilterSelected(filter) && <span className="text-green-600">✓</span>}
+                {isFilterSelected(filter) && (
+                  <span className="text-green-600">✓</span>
+                )}
                 {filter}
                 <ChevronDown className="h-4 w-4" />
               </button>
@@ -341,7 +420,9 @@ export const HistoryModal = ({
           </div>
 
           {filteredInvestigationOptions.length === 0 && (
-            <p className="text-sm text-gray-500 text-center py-4">No investigation found matching "{searchQuery}"</p>
+            <p className="text-sm text-gray-500 text-center py-4">
+              No investigation found matching "{searchQuery}"
+            </p>
           )}
         </div>
 
@@ -362,34 +443,45 @@ export const HistoryModal = ({
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   // Drugs handlers
   const toggleDrug = (name: string) => {
-    setDrugs((prev) => (prev.includes(name) ? prev.filter((d) => d !== name) : [...prev, name]))
-  }
+    setDrugs((prev) =>
+      prev.includes(name) ? prev.filter((d) => d !== name) : [...prev, name]
+    );
+  };
 
   // Investigations handlers (reuse pattern from InvestigationModal)
   const handleAddInvestigation = (label: string) => {
-    const exists = investigations.some((a) => a.label === label)
+    const exists = investigations.some((a) => a.label === label);
     if (!exists) {
-      setInvestigations((s) => [...s, { id: String(Date.now()), label, notes: "", result: "" }])
+      setInvestigations((s) => [
+        ...s,
+        { id: String(Date.now()), label, notes: "", result: "" },
+      ]);
     }
-  }
+  };
 
   const handleRemoveInvestigation = (id: string) => {
-    setInvestigations((prev) => prev.filter((a) => a.id !== id))
-  }
+    setInvestigations((prev) => prev.filter((a) => a.id !== id));
+  };
 
-  const handleUpdateInvestigation = (id: string, field: keyof InvItem, value: string) => {
-    setInvestigations((prev) => prev.map((a) => (a.id === id ? { ...a, [field]: value } : a)))
-  }
+  const handleUpdateInvestigation = (
+    id: string,
+    field: keyof InvestigationItem,
+    value: string
+  ) => {
+    setInvestigations((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, [field]: value } : a))
+    );
+  };
 
   const handleSubmit = () => {
-    onSubmit({ general, drugs, investigations, personal, family })
-    onClose()
-  }
+    onSubmit({ general, drugs, investigations, personal, family });
+    onClose();
+  };
 
   // const prefix = { general: "G/o", drug: "D/o", investigation: "I/o", personal: "P/o", family: "F/o" } as const
 
@@ -456,9 +548,15 @@ export const HistoryModal = ({
               <ComplaintTab
                 searchQuery={searchQuery}
                 complaints={general}
-                onToggleFilter={(label: string) => handleAddComplaintTo(setGeneral, label)}
-                onRemoveComplaint={(id: string) => handleRemoveComplaintFrom(setGeneral, id)}
-                onUpdateComplaint={(id, field, value) => handleUpdateComplaintFrom(setGeneral, id, field, value)}
+                onToggleFilter={(label: string) =>
+                  handleAddComplaintTo(setGeneral, label)
+                }
+                onRemoveComplaint={(id: string) =>
+                  handleRemoveComplaintFrom(setGeneral, id)
+                }
+                onUpdateComplaint={(id, field, value) =>
+                  handleUpdateComplaintFrom(setGeneral, id, field, value)
+                }
               />
             )}
 
@@ -466,9 +564,15 @@ export const HistoryModal = ({
               <ComplaintTab
                 searchQuery={searchQuery}
                 complaints={personal}
-                onToggleFilter={(label: string) => handleAddComplaintTo(setPersonal, label)}
-                onRemoveComplaint={(id: string) => handleRemoveComplaintFrom(setPersonal, id)}
-                onUpdateComplaint={(id, field, value) => handleUpdateComplaintFrom(setPersonal, id, field, value)}
+                onToggleFilter={(label: string) =>
+                  handleAddComplaintTo(setPersonal, label)
+                }
+                onRemoveComplaint={(id: string) =>
+                  handleRemoveComplaintFrom(setPersonal, id)
+                }
+                onUpdateComplaint={(id, field, value) =>
+                  handleUpdateComplaintFrom(setPersonal, id, field, value)
+                }
               />
             )}
 
@@ -476,9 +580,15 @@ export const HistoryModal = ({
               <ComplaintTab
                 searchQuery={searchQuery}
                 complaints={family}
-                onToggleFilter={(label: string) => handleAddComplaintTo(setFamily, label)}
-                onRemoveComplaint={(id: string) => handleRemoveComplaintFrom(setFamily, id)}
-                onUpdateComplaint={(id, field, value) => handleUpdateComplaintFrom(setFamily, id, field, value)}
+                onToggleFilter={(label: string) =>
+                  handleAddComplaintTo(setFamily, label)
+                }
+                onRemoveComplaint={(id: string) =>
+                  handleRemoveComplaintFrom(setFamily, id)
+                }
+                onUpdateComplaint={(id, field, value) =>
+                  handleUpdateComplaintFrom(setFamily, id, field, value)
+                }
               />
             )}
 
@@ -487,7 +597,9 @@ export const HistoryModal = ({
                 <div className="w-full md:w-1/2 space-y-4">
                   <div className="flex flex-wrap gap-2">
                     {drugOptions
-                      .filter((d) => d.toLowerCase().includes(searchQuery.toLowerCase()))
+                      .filter((d) =>
+                        d.toLowerCase().includes(searchQuery.toLowerCase())
+                      )
                       .map((drug) => (
                         <button
                           key={drug}
@@ -500,14 +612,20 @@ export const HistoryModal = ({
                       ))}
                   </div>
 
-                  {drugOptions.filter((d) => d.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
-                    <p className="text-sm text-gray-500 text-center py-4">No drugs found</p>
+                  {drugOptions.filter((d) =>
+                    d.toLowerCase().includes(searchQuery.toLowerCase())
+                  ).length === 0 && (
+                    <p className="text-sm text-gray-500 text-center py-4">
+                      No drugs found
+                    </p>
                   )}
                 </div>
 
                 <div className="w-full md:w-1/2 space-y-3 max-h-96 overflow-y-auto pr-2">
                   {drugs.length === 0 ? (
-                    <p className="text-sm text-gray-500 text-center py-8">Select drugs from the left to add here</p>
+                    <p className="text-sm text-gray-500 text-center py-8">
+                      Select drugs from the left to add here
+                    </p>
                   ) : (
                     drugs.map((d, idx) => (
                       <div
@@ -517,7 +635,10 @@ export const HistoryModal = ({
                         <div className="text-sm font-semibold">
                           {idx + 1}. {d}
                         </div>
-                        <button onClick={() => toggleDrug(d)} className="text-red-500 text-sm">
+                        <button
+                          onClick={() => toggleDrug(d)}
+                          className="text-red-500 text-sm"
+                        >
                           Remove
                         </button>
                       </div>
@@ -626,14 +747,20 @@ export const HistoryModal = ({
         </div>
 
         <DialogFooter className="px-4 sm:px-6 py-4 border-t">
-          <Button onClick={onClose} className="bg-red-600 hover:bg-red-700 text-sm sm:text-base">
+          <Button
+            onClick={onClose}
+            className="bg-red-600 hover:bg-red-700 text-sm sm:text-base"
+          >
             Close
           </Button>
-          <Button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700 text-sm sm:text-base">
+          <Button
+            onClick={handleSubmit}
+            className="bg-green-600 hover:bg-green-700 text-sm sm:text-base"
+          >
             Add to History
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};

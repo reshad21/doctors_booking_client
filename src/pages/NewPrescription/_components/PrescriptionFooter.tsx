@@ -18,8 +18,8 @@ interface PrescriptionFooter {
 }
 
 const PrescriptionFooter = ({ data }: { data: PrescriptionFooter }) => {
-  if (!data.showPrescriptionFooter) {
-    return null
+  if (!data?.showPrescriptionFooter) {
+    return <div className="text-center py-6 text-sm text-gray-700">Try Create Doctor Information from the Pre Management For Footer.</div>
   }
 
   return (
@@ -27,12 +27,12 @@ const PrescriptionFooter = ({ data }: { data: PrescriptionFooter }) => {
       {/* Left side: Logo and Bangla content */}
       <div className="flex-1">
         <div className="flex items-start gap-3 mb-3">
-          {data.showLogo && data.logo && (
-            <img src={data.logo || "/placeholder.svg"} alt="Logo" className="w-12 h-12 object-contain flex-shrink-0" />
+          {data?.showLogo && data?.logo && (
+            <img src={data?.logo || "/placeholder.svg"} alt="Logo" className="w-12 h-12 object-contain flex-shrink-0" />
           )}
-          {data.showPrescriptionInBangla && (
+          {data?.showPrescriptionInBangla && (
             <div className="text-xs text-gray-600 flex-1">
-              <Preview content={data.doctorInfoBangla} details />
+              <Preview content={data?.doctorInfoBangla} details />
             </div>
           )}
         </div>
@@ -40,9 +40,9 @@ const PrescriptionFooter = ({ data }: { data: PrescriptionFooter }) => {
 
       {/* Right side: English content and signature */}
       <div className="flex-1 text-right">
-        {data.showPrescriptionInEnglish && (
+        {data?.showPrescriptionInEnglish && (
           <div className="text-xs text-gray-600 mb-3">
-            <Preview content={data.doctorInfoEnglish} details />
+            <Preview content={data?.doctorInfoEnglish} details />
           </div>
         )}
       </div>
