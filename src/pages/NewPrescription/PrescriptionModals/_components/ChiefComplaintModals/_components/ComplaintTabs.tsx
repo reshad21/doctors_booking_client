@@ -5,10 +5,13 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import DurationInput from "./DurationInput";
 import { X, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { filterOptions } from "@/constant/chief-complaint.constant";
+import DurationInput from "./DurationInput";
+import { useAppSelector } from "@/redux/hooks";
+import { jwtDecode } from "jwt-decode";
+import { useGetChiefComponentInputsQuery } from "@/redux/api/chiefComplaintInput/chiefComplaintInput";
+import { useCurrentToken } from "@/redux/api/features/authSlice";
 
 interface ComplaintItem {
   id: string;
@@ -23,6 +26,14 @@ interface ComplaintCardProps {
   index: number;
   onRemove: (id: string) => void;
   onUpdate: (id: string, field: keyof ComplaintItem, value: string) => void;
+}
+
+interface ChiefComplaintResponse {
+  value: string;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  doctorId: string;
 }
 
 export function ComplaintCard({
@@ -62,7 +73,7 @@ export function ComplaintCard({
             onValueChange={(value) => onUpdate(complaint.id, "unit", value)}
           >
             <SelectTrigger className="w-full text-left">
-              <SelectValue />
+              <SelectValue placeholder="Unit" />
             </SelectTrigger>
             <SelectContent className="w-full">
               {["Days", "Weeks", "Months", "Years", "Hours"].map((u) => (
@@ -119,47 +130,65 @@ export function ComplaintTab({
   onRemoveComplaint,
   onUpdateComplaint,
 }: ComplaintTabProps) {
-  const isFilterSelected = (filter: string) => {
-    return complaints.some((c) => c.label === filter);
-  };
+  const token = useAppSelector(useCurrentToken);
+  const decoded: { id: string } = jwtDecode(token || "");
+  const doctorId = decoded?.id;
 
-  const sortedFilterOptions = filterOptions
-    .filter((option) => complaints.some((c) => c.label === option))
+  const { data, isLoading } = useGetChiefComponentInputsQuery([
+    { key: "doctorId", value: doctorId },
+  ]);
+
+  // ✅ Safely type API data
+  const chiefComplaintData: string[] =
+    data?.data?.data?.map((item: ChiefComplaintResponse) => item.value) || [];
+
+  // ✅ Now TypeScript knows 'option' is a string
+  const sortedFilterOptions: string[] = chiefComplaintData
+    .filter((option: string) => complaints.some((c) => c.label === option))
     .concat(
-      filterOptions.filter(
-        (option) => !complaints.some((c) => c.label === option)
+      chiefComplaintData.filter(
+        (option: string) => !complaints.some((c) => c.label === option)
       )
     );
 
-  const filteredComplaintOptions = sortedFilterOptions.filter((option) =>
-    option.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredComplaintOptions: string[] = sortedFilterOptions.filter(
+    (option: string) =>
+      option.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const isFilterSelected = (filter: string) =>
+    complaints.some((c) => c.label === filter);
 
   return (
     <div className="flex gap-6 pb-6">
       {/* Left Side - Filter Tags */}
       <div className="w-1/2 space-y-4">
-        <div className="flex flex-wrap gap-2">
-          {filteredComplaintOptions.map((filter) => (
-            <button
-              key={filter}
-              onClick={() => onToggleFilter(filter)}
-              className={`flex items-center gap-2 px-1 py-0.5 cursor-pointer rounded-md border transition-colors ${
-                isFilterSelected(filter)
+        {isLoading ? (
+          <p className="text-sm text-gray-500 text-center py-4">
+            Loading symptoms...
+          </p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {filteredComplaintOptions.map((filter: string) => (
+              <button
+                key={filter}
+                onClick={() => onToggleFilter(filter)}
+                className={`flex items-center gap-2 px-1 py-0.5 cursor-pointer rounded-md border transition-colors ${isFilterSelected(filter)
                   ? "bg-green-50 border-green-600 text-green-700"
                   : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
-              }`}
-            >
-              {isFilterSelected(filter) && (
-                <span className="text-green-600">✓</span>
-              )}
-              {filter}
-              <ChevronDown className="h-4 w-4" />
-            </button>
-          ))}
-        </div>
+                  }`}
+              >
+                {isFilterSelected(filter) && (
+                  <span className="text-green-600">✓</span>
+                )}
+                {filter}
+                <ChevronDown className="h-4 w-4" />
+              </button>
+            ))}
+          </div>
+        )}
 
-        {filteredComplaintOptions.length === 0 && (
+        {!isLoading && filteredComplaintOptions.length === 0 && (
           <p className="text-sm text-gray-500 text-center py-4">
             No symptoms found matching "{searchQuery}"
           </p>
@@ -186,3 +215,4 @@ export function ComplaintTab({
     </div>
   );
 }
+

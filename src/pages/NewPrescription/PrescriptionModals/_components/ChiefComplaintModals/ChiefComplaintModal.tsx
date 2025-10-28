@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Modal from "@/components/shared/Modal";
-import { GroupsTab } from "./GroupTabs";
-import { ComplaintTab } from "./ComplaintTabs";
+import { GroupsTab } from "./_components/GroupTabs";
+import { ComplaintTab } from "./_components/ComplaintTabs";
 
 interface ComplaintItem {
   id: string;
@@ -44,7 +44,7 @@ export const ChiefComplaintModal = ({
           id: String(Date.now()),
           label,
           duration: "",
-          unit: "Days",
+          unit: "",
           notes: "",
         },
       ]);
@@ -107,21 +107,19 @@ export const ChiefComplaintModal = ({
         <div className="flex gap-3">
           <button
             onClick={() => setActiveTab("complaint")}
-            className={`flex-1 py-3 px-6 cursor-pointer rounded-lg font-medium transition-colors ${
-              activeTab === "complaint"
+            className={`flex-1 py-3 px-6 cursor-pointer rounded-lg font-medium transition-colors ${activeTab === "complaint"
                 ? "bg-green-600 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
+              }`}
           >
             Chief Complaint
           </button>
           <button
             onClick={() => setActiveTab("groups")}
-            className={`flex-1 py-3 px-6 cursor-pointer rounded-lg font-medium transition-colors ${
-              activeTab === "groups"
+            className={`flex-1 py-3 px-6 cursor-pointer rounded-lg font-medium transition-colors ${activeTab === "groups"
                 ? "bg-green-600 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
+              }`}
           >
             Chief Complaint Groups
           </button>
