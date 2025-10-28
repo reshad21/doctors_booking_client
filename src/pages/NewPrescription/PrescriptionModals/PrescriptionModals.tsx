@@ -3,12 +3,12 @@ import { ChiefComplaintModal } from "./_components/ChiefComplaintModals/ChiefCom
 import { ExaminationsModal } from "./_components/ExaminationModal/ExaminationModal";
 import { PatientModal } from "../_components/modals/PatientModal";
 import { MedicationsModal } from "./_components/MedicationModal.tsx/MedicationsModal";
-import { AdviceModal } from "../_components/modals/AdviceModal/AdviceModal";
-import { DiagnosisModal } from "../_components/modals/DiagnosisModal/DiagnosisModal";
-import { InvestigationModal } from "../_components/modals/InvestigationModal/InvestigationModal";
 import { NextVisitModal } from "./_components/NextVisitModal/NextVisitModal";
 import { prescriptionTags } from "@/constant/prescription-tags";
 import { HistoryModal } from "./_components/HistoryModal/HistoryModal";
+import { DiagnosisModal } from "./_components/DiagnosisModal/DiagnosisModal";
+import { InvestigationModal } from "./_components/InvestigationModal/InvestigationModal";
+import { AdviceModal } from "./_components/AdviceModal/AdviceModal";
 
 interface PrescriptionModalsProps {
   activeModal: string | null;

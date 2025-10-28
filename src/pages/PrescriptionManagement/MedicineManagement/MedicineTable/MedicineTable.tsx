@@ -1,7 +1,6 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -10,6 +9,13 @@ import {
 
 import UpdateMedicine from "../UpdateMedicine/UpdateMedicine";
 import DeleteMedicine from "../DeleteMedicine/DeleteMedicine";
+
+// helper function to break line every 50 characters
+const breakLine = (text: string, limit = 50) => {
+  if (!text) return "";
+  const regex = new RegExp(`(.{1,${limit}})`, "g");
+  return text.match(regex)?.join("\n") || text;
+};
 
 const MedicineTable = ({
   medicines,
@@ -26,33 +32,36 @@ const MedicineTable = ({
   }[];
 }) => {
   return (
-    <div className="bg-white w-[950px] 2xl:w-[1100px]">
+    <div className="bg-white w-full max-w-[950px] rounded-lg 2xl:max-w-[1400px] overflow-x-auto">
       <Table>
-        <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader className="bg-gray-50">
           <TableRow>
-            <TableHead>SN</TableHead>
-            <TableHead>Medicine Name</TableHead>
-            <TableHead>Generic Name</TableHead>
-            <TableHead>Strength</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead>Dosage</TableHead>
-            <TableHead>Use For</TableHead>
-            <TableHead className="text-right">Action</TableHead>
+            <TableHead className="whitespace-nowrap">SN</TableHead>
+            <TableHead className="whitespace-nowrap">Medicine Name</TableHead>
+            <TableHead className="min-w-[200px] whitespace-break-spaces">Generic Name</TableHead>
+            <TableHead className="whitespace-nowrap">Strength</TableHead>
+            <TableHead className="whitespace-nowrap">Price</TableHead>
+            <TableHead className="whitespace-nowrap">Dosage</TableHead>
+            <TableHead className="whitespace-nowrap">Use For</TableHead>
+            <TableHead className="text-right whitespace-nowrap">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {medicines?.map((medicine, _idx) => (
             <TableRow key={medicine.id}>
               <TableCell className="font-medium">{_idx + 1}</TableCell>
-              <TableCell>{medicine.brandName}</TableCell>
-              <TableCell>{medicine.genericName}</TableCell>
-              <TableCell>{medicine.strength}</TableCell>
-              <TableCell>{medicine.price}</TableCell>
-              <TableCell>{medicine.dosageDescription}</TableCell>
-              <TableCell>{medicine.useFor}</TableCell>
+              <TableCell className="min-w-[150px] max-w-[200px]">
+                {medicine.brandName}
+              </TableCell>
+              <TableCell className="whitespace-pre-wrap break-words">
+                {breakLine(medicine.genericName, 25)}
+              </TableCell>
+              <TableCell className="whitespace-nowrap">{medicine.strength}</TableCell>
+              <TableCell className="whitespace-nowrap">{medicine.price}</TableCell>
+              <TableCell className="max-w-[200px] truncate">{medicine.dosageDescription}</TableCell>
+              <TableCell className="max-w-[200px] truncate">{medicine.useFor}</TableCell>
               <TableCell className="text-right">
-                <div className="flex gap-2 justify-end">
+                <div className="flex gap-2 justify-end whitespace-nowrap">
                   <UpdateMedicine
                     medicineId={medicine.id}
                     defaultValues={{
