@@ -35,12 +35,12 @@ const PrescriptionHeader = ({ data }: { data: PrescriptionHeader }) => {
       )}
 
       {data.showLogo && (
-        <div className="size-20 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+        <div className="size-28 flex items-center justify-center flex-shrink-0">
           {data.logo ? (
             <img
-              src={data.logo || "/placeholder.svg"}
+              src={data.logo}
               alt="Doctor Logo"
-              className="size-14 object-contain"
+              className="size-24 object-contain"
             />
           ) : (
             <BriefcaseMedical className="size-14" strokeWidth={1.2} />
