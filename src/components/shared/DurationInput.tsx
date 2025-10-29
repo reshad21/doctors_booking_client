@@ -11,12 +11,14 @@ interface DurationInputProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  options?: number[];
 }
 
 export default function DurationInput({
   value,
   onChange,
   placeholder = "Duration...",
+  options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 }: DurationInputProps) {
   const [open, setOpen] = useState(false);
   const [customOpen, setCustomOpen] = useState(false);
@@ -51,19 +53,23 @@ export default function DurationInput({
       </PopoverTrigger>
       <PopoverContent className="w-auto p-2" align="start" side="top">
         <div className="flex items-center gap-2">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-            <button
-              key={num}
-              onClick={() => handleNumberClick(num)}
-              className={`h-10 w-10 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
-                value === num.toString()
-                  ? "bg-green-600 text-white shadow-md"
-                  : "bg-white text-gray-700 border border-gray-300 hover:border-green-500 hover:bg-green-50"
-              }`}
-            >
-              {num}
-            </button>
-          ))}
+          {options.map(
+            (
+              num // 🔹 now using the options prop
+            ) => (
+              <button
+                key={num}
+                onClick={() => handleNumberClick(num)}
+                className={`h-10 w-10 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
+                  value === num.toString()
+                    ? "bg-green-600 text-white shadow-md"
+                    : "bg-white text-gray-700 border border-gray-300 hover:border-green-500 hover:bg-green-50"
+                }`}
+              >
+                {num}
+              </button>
+            )
+          )}
           <Popover open={customOpen} onOpenChange={setCustomOpen}>
             <PopoverTrigger asChild>
               <button

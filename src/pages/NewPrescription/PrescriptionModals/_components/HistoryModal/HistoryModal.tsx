@@ -8,10 +8,14 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { ComplaintTab, type ComplaintItem } from "./_components/ComplaintTab";
-import { InvestigationTab, type InvestigationItem } from "./_components/InvestigationTab";
+import {
+  InvestigationTab,
+  type InvestigationItem,
+} from "./_components/InvestigationTab";
+import type { ComplaintItem } from "@/types/complaint.types";
+import { ComplaintTab } from "./_components/ComplaintTab";
+import { DrugTab } from "./_components/DrugTab";
 
-const drugOptions = ["Paracetamol", "Amoxicillin", "Metformin", "Aspirin"];
 
 export const HistoryModal = ({
   isOpen,
@@ -58,7 +62,7 @@ export const HistoryModal = ({
           id: String(Date.now()) + "-" + label,
           label,
           duration: "",
-          unit: "Days",
+          unit: "",
           notes: "",
         },
       ];
@@ -120,7 +124,6 @@ export const HistoryModal = ({
     onClose();
   };
 
-  console.log(general, 'general')
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-sm sm:max-w-2xl md:max-w-4xl lg:max-w-6xl max-h-[90vh] flex flex-col p-0">
@@ -229,59 +232,11 @@ export const HistoryModal = ({
             )}
 
             {activeTab === "drug" && (
-              <div className="flex flex-col md:flex-row gap-4 md:gap-6 pb-6">
-                <div className="w-full md:w-1/2 space-y-4">
-                  <div className="flex flex-wrap gap-2">
-                    {drugOptions
-                      .filter((d) =>
-                        d.toLowerCase().includes(searchQuery.toLowerCase())
-                      )
-                      .map((drug) => (
-                        <button
-                          key={drug}
-                          onClick={() => toggleDrug(drug)}
-                          className={`px-2 py-1 rounded-md border text-sm ${drugs.includes(drug) ? "bg-green-50 border-green-600 text-green-700" : "bg-white border-gray-300 text-gray-700"}`}
-                        >
-                          {drugs.includes(drug) ? "✓ " : ""}
-                          {drug}
-                        </button>
-                      ))}
-                  </div>
-
-                  {drugOptions.filter((d) =>
-                    d.toLowerCase().includes(searchQuery.toLowerCase())
-                  ).length === 0 && (
-                      <p className="text-sm text-gray-500 text-center py-4">
-                        No drugs found
-                      </p>
-                    )}
-                </div>
-
-                <div className="w-full md:w-1/2 space-y-3 max-h-96 overflow-y-auto pr-2">
-                  {drugs.length === 0 ? (
-                    <p className="text-sm text-gray-500 text-center py-8">
-                      Select drugs from the left to add here
-                    </p>
-                  ) : (
-                    drugs.map((d, idx) => (
-                      <div
-                        key={d}
-                        className="p-3 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between"
-                      >
-                        <div className="text-sm font-semibold">
-                          {idx + 1}. {d}
-                        </div>
-                        <button
-                          onClick={() => toggleDrug(d)}
-                          className="text-red-500 text-sm"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
+              <DrugTab
+                searchQuery={searchQuery}
+                drugs={drugs}
+                onToggleDrug={toggleDrug}
+              />
             )}
 
             {activeTab === "investigation" && (

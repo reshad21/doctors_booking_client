@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/select";
 import { X, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import DurationInput from "./DurationInput";
+import DurationInput from "../../../../../../components/shared/DurationInput";
 import { useAppSelector } from "@/redux/hooks";
 import { jwtDecode } from "jwt-decode";
 import { useGetChiefComponentInputsQuery } from "@/redux/api/chiefComplaintInput/chiefComplaintInput";

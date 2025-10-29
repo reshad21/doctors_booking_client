@@ -1,16 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import { useGetMedicinesQuery } from "@/redux/api/medicine/medicine";
-
-export interface TMedicine {
-  id: string;
-  nameManufacturer: string;
-  brandName: string;
-  genericName: string;
-  strength: string;
-  dosageDescription: string;
-  price: number;
-  useFor: string;
-}
+import type { TMedicine } from "@/types/medicine.types";
 
 export const MedicationList = ({
   searchQuery,
@@ -27,9 +17,8 @@ export const MedicationList = ({
   ];
 
   const { data: medicinesResponse } = useGetMedicinesQuery(query);
-
   const medicines = medicinesResponse?.data?.data || [];
-  console.log(medicines, 'meds')
+
   return (
     <div className="w-1/2 space-y-4">
       <div className="flex flex-wrap gap-2">
