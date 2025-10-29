@@ -120,6 +120,7 @@ export const HistoryModal = ({
     onClose();
   };
 
+  console.log(general, 'general')
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-sm sm:max-w-2xl md:max-w-4xl lg:max-w-6xl max-h-[90vh] flex flex-col p-0">

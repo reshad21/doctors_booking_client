@@ -32,10 +32,6 @@ const UpdateProfile = () => {
   const decoded = decodeToken(token);
   console.log(decoded?.type);
   const dispatch = useAppDispatch();
-  console.log(
-    adminDataFromApi,
-    "adminDataFromApiadminDataFromApiadminDataFromApi"
-  );
 
   const {
     register,

@@ -67,7 +67,7 @@ const ChiefComplaintInput = () => {
   const { data, refetch, isLoading } = useGetChiefComponentInputsQuery([
     { key: "doctorId", value: doctorId },
   ]);
-  console.log(data, "data from chief complaint");
+
   const [createComplaint] = useCreateChiefComponentInputMutation();
   const [updateComplaint] = useUpdateChiefComponentInputMutation();
   const [deleteComplaint] = useDeleteChiefComponentInputMutation();
@@ -106,15 +106,13 @@ const ChiefComplaintInput = () => {
   // Handle create/edit submit
   const onSubmit = async (values: ComplaintForm) => {
     if (editId) {
-      const res = await updateComplaint({
+      await updateComplaint({
         id: editId,
         value: values.value,
         doctorId,
       });
-      console.log(res, "response in backend");
     } else {
-      const res = await createComplaint({ value: values.value, doctorId });
-      console.log(res, "response in backend");
+      await createComplaint({ value: values.value, doctorId });
     }
     setOpen(false);
     refetch();
