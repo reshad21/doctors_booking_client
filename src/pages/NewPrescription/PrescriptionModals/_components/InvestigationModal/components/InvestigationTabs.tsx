@@ -1,5 +1,10 @@
 import { X, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useGetInvestigationInputsQuery } from "@/redux/api/investigationInput/investigationInput";
+import { useAppSelector } from "@/redux/hooks";
+import { useCurrentToken } from "@/redux/api/features/authSlice";
+import { jwtDecode } from "jwt-decode";
+import type { InvestigationInput } from "@/types/investigation.types";
 
 interface InvestigationItem {
   id: string;
@@ -59,22 +64,12 @@ interface InvestigationTabProps {
   investigations: InvestigationItem[];
   onToggleFilter: (filter: string) => void;
   onRemoveInvestigation: (id: string) => void;
-  onUpdateInvestigation: (id: string, field: keyof InvestigationItem, value: string) => void;
+  onUpdateInvestigation: (
+    id: string,
+    field: keyof InvestigationItem,
+    value: string
+  ) => void;
 }
-
-// Mock investigation list - replace with your actual investigation data
-const investigationOptions = [
-  "CBC",
-  "Blood Sugar",
-  "X-Ray Chest",
-  "ECG",
-  "Urine R/M",
-  "Liver Function Test",
-  "Kidney Function Test",
-  "Lipid Profile",
-  "Thyroid Profile",
-  "Ultrasound Abdomen"
-];
 
 export function InvestigationTabs({
   searchQuery,
@@ -83,44 +78,71 @@ export function InvestigationTabs({
   onRemoveInvestigation,
   onUpdateInvestigation,
 }: InvestigationTabProps) {
+  const token = useAppSelector(useCurrentToken);
+  const decoded: { id: string } = jwtDecode(token || "");
+  const doctorId = decoded?.id;
+
+  // Fetch investigation inputs from API
+  const { data, isLoading } = useGetInvestigationInputsQuery([
+    { key: "doctorId", value: doctorId },
+  ]);
+
+  // Use API data directly
+  const investigationOptions: InvestigationItem[] =
+    data?.data?.data?.map((item: InvestigationInput) => ({
+      id: item.id,
+      label: item.value,
+      notes: "",
+      result: "",
+    })) || [];
+
   const isFilterSelected = (filter: string) => {
     return investigations.some((a) => a.label === filter);
   };
-
+  // Sort selected options first
   const sortedInvestigationOptions = investigationOptions
-    .filter((option) => investigations.some((a) => a.label === option))
+    .filter((option) => investigations.some((a) => a.label === option.label))
     .concat(
-      investigationOptions.filter((option) => !investigations.some((a) => a.label === option))
+      investigationOptions.filter(
+        (option) => !investigations.some((a) => a.label === option.label)
+      )
     );
 
-  const filteredInvestigationOptions = sortedInvestigationOptions.filter((option) =>
-    option.toLowerCase().includes(searchQuery.toLowerCase())
+  // Filter by search query
+  const filteredInvestigationOptions = sortedInvestigationOptions.filter(
+    (option) => option.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (isLoading) {
+    return (
+      <p className="text-center py-4 text-gray-500">
+        Loading investigations...
+      </p>
+    );
+  }
 
   return (
     <div className="flex gap-6 pb-6">
-      {/* Left Side - Filter Tags */}
       <div className="w-1/2 space-y-4">
         <div className="flex flex-wrap gap-2">
-          {filteredInvestigationOptions.map((filter) => (
+          {filteredInvestigationOptions.map((option) => (
             <button
-              key={filter}
-              onClick={() => onToggleFilter(filter)}
+              key={option.id}
+              onClick={() => onToggleFilter(option.label)}
               className={`flex items-center gap-2 px-1 py-0.5 cursor-pointer rounded-md border transition-colors ${
-                isFilterSelected(filter)
+                isFilterSelected(option.label)
                   ? "bg-green-50 border-green-600 text-green-700"
                   : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
               }`}
             >
-              {isFilterSelected(filter) && (
+              {isFilterSelected(option.label) && (
                 <span className="text-green-600">✓</span>
               )}
-              {filter}
+              {option.label}
               <ChevronDown className="h-4 w-4" />
             </button>
           ))}
         </div>
-
         {filteredInvestigationOptions.length === 0 && (
           <p className="text-sm text-gray-500 text-center py-4">
             No investigation found matching "{searchQuery}"
@@ -128,7 +150,6 @@ export function InvestigationTabs({
         )}
       </div>
 
-      {/* Right Side - Investigations List */}
       <div className="w-1/2 space-y-3 overflow-x-hidden">
         {investigations.length === 0 && (
           <p className="text-sm text-gray-500 text-center py-8">
