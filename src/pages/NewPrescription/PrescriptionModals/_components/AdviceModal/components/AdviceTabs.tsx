@@ -1,5 +1,10 @@
 import { X, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useAppSelector } from "@/redux/hooks";
+import { jwtDecode } from "jwt-decode";
+import { useCurrentToken } from "@/redux/api/features/authSlice";
+import { useGetAdviceInputsQuery } from "@/redux/api/adviceInput/adviceInput";
+import type { AdviceInput } from "@/types/advice.types";
 
 interface AdviceItem {
   id: string;
@@ -61,20 +66,6 @@ interface AdviceTabProps {
   onUpdateAdvice: (id: string, field: keyof AdviceItem, value: string) => void;
 }
 
-// Mock advice list - replace with your actual advice data
-const adviceOptions = [
-  "Take proper rest",
-  "Drink plenty of water",
-  "Exercise regularly",
-  "Maintain proper diet",
-  "Avoid junk food",
-  "Take medications on time",
-  "Follow healthy sleep schedule",
-  "Avoid stress",
-  "Regular check-ups",
-  "Balanced diet"
-];
-
 export function AdviceTabs({
   searchQuery,
   advices,
@@ -82,28 +73,49 @@ export function AdviceTabs({
   onRemoveAdvice,
   onUpdateAdvice,
 }: AdviceTabProps) {
+  const token = useAppSelector(useCurrentToken);
+  const decoded: { id: string } = jwtDecode(token || "");
+  const doctorId = decoded?.id;
+
+  const { data, isLoading } = useGetAdviceInputsQuery([
+    { key: "doctorId", value: doctorId },
+  ]);
+
+  const adviceInputs = data?.data?.data || [];
+
   const isFilterSelected = (filter: string) => {
     return advices.some((a) => a.label === filter);
   };
 
-  const sortedAdviceOptions = adviceOptions
-    .filter((option) => advices.some((a) => a.label === option))
+  const sortedAdviceOptions = adviceInputs
+    .map((input: AdviceInput) => input.value.trim())
+    .filter((value: string) => advices.some((a) => a.label === value))
     .concat(
-      adviceOptions.filter((option) => !advices.some((a) => a.label === option))
+      adviceInputs
+        .map((input: AdviceInput) => input.value.trim())
+        .filter((value: string) => !advices.some((a) => a.label === value))
     );
 
-  const filteredAdviceOptions = sortedAdviceOptions.filter((option) =>
+  const filteredAdviceOptions = sortedAdviceOptions.filter((option: string) =>
     option.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-8">
+        <p className="text-gray-500">Loading advice options...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex gap-6 pb-6">
       {/* Left Side - Filter Tags */}
       <div className="w-1/2 space-y-4">
         <div className="flex flex-wrap gap-2">
-          {filteredAdviceOptions.map((filter) => (
+          {filteredAdviceOptions.map((filter: string, idx: number) => (
             <button
-              key={filter}
+              key={`${filter}-${idx}`}
               onClick={() => onToggleFilter(filter)}
               className={`flex items-center gap-2 px-1 py-0.5 cursor-pointer rounded-md border transition-colors ${
                 isFilterSelected(filter)
@@ -122,7 +134,9 @@ export function AdviceTabs({
 
         {filteredAdviceOptions.length === 0 && (
           <p className="text-sm text-gray-500 text-center py-4">
-            No advice found matching "{searchQuery}"
+            {searchQuery
+              ? `No advice found matching "${searchQuery}"`
+              : "No advice options available"}
           </p>
         )}
       </div>

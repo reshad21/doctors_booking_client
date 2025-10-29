@@ -96,7 +96,7 @@ export const NextVisitModal = ({
                 }
                 className="px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 cursor-pointer"
               >
-                <option value="">নিত</option>
+                <option value="">দিন</option>
                 {durationTypes.map((type) => (
                   <option key={type.value} value={type.value}>
                     {type.label}

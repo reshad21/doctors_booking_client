@@ -6,3 +6,11 @@ export type Advice = {
   updatedAt: Date;
   status: string;
 };
+
+export interface AdviceInput {
+  id: string;
+  value: string;
+  doctorId: string;
+  createdAt: string;
+  updatedAt: string;
+}
