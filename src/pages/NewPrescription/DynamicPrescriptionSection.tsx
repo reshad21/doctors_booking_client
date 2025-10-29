@@ -1,0 +1,153 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  ChiefComplaintSection,
+  ExaminationsSection,
+  DiagnosisSection,
+  InvestigationSection,
+  HistorySection,
+  MedicationsSection,
+  AdviceSection,
+  NextVisitSection,
+} from "./PrescriptionSections/PrescriptionSections";
+
+interface ClinicalNote {
+  id: string;
+  title: string;
+  category: "left" | "right";
+  order: number;
+}
+
+interface DynamicSectionsProps {
+  clinicalNotes: ClinicalNote[];
+  prescriptionData: any;
+  handlers: any;
+  removeHandlers: any;
+  openModal: (type: string) => void;
+}
+
+// Map clinical note titles to their corresponding components and data
+const sectionComponentMap: Record<
+  string,
+  {
+    component: React.ComponentType<any>;
+    dataKey: string;
+    modalType: string;
+    removeHandler: string;
+  }
+> = {
+  "Chief Complaint": {
+    component: ChiefComplaintSection,
+    dataKey: "chiefComplaint",
+    modalType: "chiefComplaint",
+    removeHandler: "chiefComplaint",
+  },
+  "On Examinations": {
+    component: ExaminationsSection,
+    dataKey: "examinations",
+    modalType: "examinations",
+    removeHandler: "examination",
+  },
+  Diagnosis: {
+    component: DiagnosisSection,
+    dataKey: "diagnosis",
+    modalType: "diagnosis",
+    removeHandler: "diagnosis",
+  },
+  Investigation: {
+    component: InvestigationSection,
+    dataKey: "investigations",
+    modalType: "investigations",
+    removeHandler: "investigation",
+  },
+  History: {
+    component: HistorySection,
+    dataKey: "history",
+    modalType: "history",
+    removeHandler: "history",
+  },
+  Medicine: {
+    component: MedicationsSection,
+    dataKey: "medications",
+    modalType: "medications",
+    removeHandler: "medication",
+  },
+  Advice: {
+    component: AdviceSection,
+    dataKey: "advice",
+    modalType: "advice",
+    removeHandler: "advice",
+  },
+  "Next Visit": {
+    component: NextVisitSection,
+    dataKey: "nextVisit",
+    modalType: "nextVisit",
+    removeHandler: "nextVisit",
+  },
+};
+
+export function DynamicPrescriptionSections({
+  clinicalNotes,
+  prescriptionData,
+  removeHandlers,
+  openModal,
+}: DynamicSectionsProps) {
+  const leftSections = clinicalNotes
+    .filter((note) => note.category === "left")
+    .sort((a, b) => a.order - b.order);
+
+  const rightSections = clinicalNotes
+    .filter((note) => note.category === "right")
+    .sort((a, b) => a.order - b.order);
+
+  const renderSection = (note: ClinicalNote) => {
+    const config = sectionComponentMap[note.title];
+    if (!config) return null;
+
+    const { component: Component, dataKey, modalType, removeHandler } = config;
+    const items = prescriptionData[dataKey];
+
+    if (dataKey === "medications") {
+      return (
+        <Component
+          key={note.id}
+          medications={items}
+          onAddClick={() => openModal(modalType)}
+          onRemoveItem={removeHandlers[removeHandler]}
+        />
+      );
+    }
+
+    if (dataKey === "nextVisit") {
+      return (
+        <Component
+          key={note.id}
+          nextVisit={items}
+          onAddClick={() => openModal(modalType)}
+        />
+      );
+    }
+
+    return (
+      <Component
+        key={note.id}
+        items={items}
+        onAddClick={() => openModal(modalType)}
+        onRemoveItem={removeHandlers[removeHandler]}
+      />
+    );
+  };
+
+  return (
+    <div className="grid grid-cols-2 gap-8 border p-5 mx-2 border-[#C3C3C3] rounded">
+      {/* Left Column - Dynamically rendered based on clinical notes order */}
+      <div className="space-y-4">
+        {leftSections.map((note) => renderSection(note))}
+      </div>
+
+      {/* Right Column - Dynamically rendered based on clinical notes order */}
+      <div className="space-y-4">
+        {rightSections.map((note) => renderSection(note))}
+      </div>
+    </div>
+  );
+}
