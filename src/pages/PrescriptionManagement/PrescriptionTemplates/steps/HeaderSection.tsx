@@ -89,7 +89,7 @@ const HeaderSection: React.FC = () => {
         };
         reader.readAsDataURL(file);
       } else {
-        handleFieldUpdate("logo", "");
+        handleFieldUpdate("logo", null);
         handleFieldUpdate("logoFile", null);
       }
     },
@@ -97,9 +97,9 @@ const HeaderSection: React.FC = () => {
   );
 
   const handleToggleChange = useCallback(
-    (field: keyof HeaderFormData, value: boolean) => {
-      setValue(field, value);
-      handleFieldUpdate(field, value);
+    (field: string, value: boolean) => {
+      setValue(field as keyof HeaderFormData, value);
+      handleFieldUpdate(field as keyof typeof headerSection, value);
     },
     [setValue, handleFieldUpdate]
   );

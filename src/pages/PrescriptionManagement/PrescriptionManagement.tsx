@@ -62,7 +62,6 @@ const PrescriptionManagement = () => {
     helpers: { reset: () => void; close: () => void }
   ) => {
     const res = await createAdvice(data);
-    console.log("Article Submitted:", data);
 
     if (res?.data?.success) {
       toast.success(res?.data?.message);

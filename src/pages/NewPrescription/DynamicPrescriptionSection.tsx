@@ -17,12 +17,25 @@ interface ClinicalNote {
   order: number;
 }
 
+interface BodySetup {
+  bodyLeftSideWidth: string;
+  bodyRightSideWidth: string;
+  bodyLeftSideTopMargin: string;
+  bodyRightSideTopMargin: string;
+  showTopLine: boolean;
+  showBottomLine: boolean;
+  showLeftLine: boolean;
+  showRightLine: boolean;
+  showMiddleLine: boolean;
+}
+
 interface DynamicSectionsProps {
   clinicalNotes: ClinicalNote[];
   prescriptionData: any;
   handlers: any;
   removeHandlers: any;
   openModal: (type: string) => void;
+  bodySetup?: BodySetup | null;
 }
 
 // Map clinical note titles to their corresponding components and data
@@ -90,6 +103,7 @@ export function DynamicPrescriptionSections({
   prescriptionData,
   removeHandlers,
   openModal,
+  bodySetup = null,
 }: DynamicSectionsProps) {
   const leftSections = clinicalNotes
     .filter((note) => note.category === "left")
@@ -137,16 +151,39 @@ export function DynamicPrescriptionSections({
     );
   };
 
-  return (
-    <div className="grid grid-cols-2 gap-8 border p-5 mx-2 border-[#C3C3C3] rounded">
-      {/* Left Column - Dynamically rendered based on clinical notes order */}
-      <div className="space-y-4">
-        {leftSections.map((note) => renderSection(note))}
-      </div>
+  // Get width percentages from bodySetup or use defaults
+  const leftWidth = bodySetup?.bodyLeftSideWidth || "50";
+  const rightWidth = bodySetup?.bodyRightSideWidth || "50";
+  const leftTopMargin = bodySetup?.bodyLeftSideTopMargin || "0";
+  const rightTopMargin = bodySetup?.bodyRightSideTopMargin || "0";
+  const showMiddleLine = bodySetup?.showMiddleLine ?? true;
 
-      {/* Right Column - Dynamically rendered based on clinical notes order */}
-      <div className="space-y-4">
-        {rightSections.map((note) => renderSection(note))}
+  console.log(leftWidth, rightWidth, 'left width', "right width")
+
+  return (
+    <div className="border p-5 mx-2 border-[#C3C3C3] rounded">
+      <div className="flex gap-8">
+        {/* Left Column - Dynamically rendered based on clinical notes order */}
+        <div
+          className={`space-y-4 ${showMiddleLine ? "border-r border-r-[#C3C3C3] pr-8" : ""}`}
+          style={{
+            width: `${leftWidth}%`,
+            marginTop: `${leftTopMargin}px`,
+          }}
+        >
+          {leftSections.map((note) => renderSection(note))}
+        </div>
+
+        {/* Right Column - Dynamically rendered based on clinical notes order */}
+        <div
+          className="space-y-4"
+          style={{
+            width: `${rightWidth}%`,
+            marginTop: `${rightTopMargin}px`,
+          }}
+        >
+          {rightSections.map((note) => renderSection(note))}
+        </div>
       </div>
     </div>
   );

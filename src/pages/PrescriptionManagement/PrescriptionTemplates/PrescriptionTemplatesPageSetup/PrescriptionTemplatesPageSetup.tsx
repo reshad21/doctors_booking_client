@@ -241,6 +241,7 @@ const PrescriptionTemplatesPageSetup = () => {
           prescriptionTemplate.footerSection.showPrescriptionInBangla,
         showPrescriptionInEnglish:
           prescriptionTemplate.footerSection.showPrescriptionInEnglish,
+        showLogo: prescriptionTemplate.footerSection.showLogo,
       })
     );
     formdata.append(
@@ -254,6 +255,7 @@ const PrescriptionTemplatesPageSetup = () => {
           prescriptionTemplate.headerSection.showPrescriptionInBangla,
         showPrescriptionInEnglish:
           prescriptionTemplate.headerSection.showPrescriptionInEnglish,
+        showLogo: prescriptionTemplate.headerSection.showLogo,
       })
     );
 
@@ -303,6 +305,7 @@ const PrescriptionTemplatesPageSetup = () => {
     }
 
     if (updatePrescriptionData?.data) {
+      console.log(updatePrescriptionData, "updatePrescriptionData");
       const response = await updatePrescriptionPageSetup({
         id: updatePrescriptionData?.data?.id,
         payload: formdata,

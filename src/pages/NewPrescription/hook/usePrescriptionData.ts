@@ -77,7 +77,7 @@ export function usePrescriptionData() {
       const unit = item.unit ? ` ${item.unit}` : "";
       const notes = item.notes ? ` (${item.notes})` : "";
       const middle = dur ? `${dur}${unit}`.trim() : unit.trim();
-      return `${item.label} for${middle ? ` ${middle}` : ""}${notes}`.trim();
+      return `${item.label} ${middle ? `for ${middle}` : ""}${notes}`.trim();
     });
 
     setPrescriptionData((prev) => {
