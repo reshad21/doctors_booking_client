@@ -176,13 +176,13 @@ export function usePrescriptionData() {
   const handleInvestigationSubmit = (
     data:
       | {
-          investigations: Array<{
-            id: string;
-            label: string;
-            notes: string;
-            result: string;
-          }>;
-        }
+        investigations: Array<{
+          id: string;
+          label: string;
+          notes: string;
+          result: string;
+        }>;
+      }
       | { investigations: string[] }
   ) => {
     if (Array.isArray(data.investigations)) {
@@ -219,12 +219,12 @@ export function usePrescriptionData() {
     data:
       | { history: string }
       | {
-          general?: ComplaintItem[];
-          drugs?: string[];
-          investigations?: Array<IncomingInvestigation>;
-          personal?: ComplaintItem[];
-          family?: ComplaintItem[];
-        }
+        general?: ComplaintItem[];
+        drugs?: string[];
+        investigations?: Array<IncomingInvestigation>;
+        personal?: ComplaintItem[];
+        family?: ComplaintItem[];
+      }
   ) => {
     if ("history" in data) {
       setPrescriptionData((prev) => ({
@@ -356,10 +356,10 @@ export function usePrescriptionData() {
     data:
       | { advice: string }
       | {
-          advices: Array<
-            { id?: string; label: string; notes?: string } | string
-          >;
-        }
+        advices: Array<
+          { id?: string; label: string; notes?: string } | string
+        >;
+      }
   ) => {
     if ((data as any).advices && Array.isArray((data as any).advices)) {
       const advArr: string[] = (data as any).advices.map((a: any) => {
@@ -404,6 +404,13 @@ export function usePrescriptionData() {
     }));
   };
 
+  const removeNextVisit = () => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      nextVisit: "",
+    }));
+  };
+
   return {
     prescriptionData,
     handlers: {
@@ -429,6 +436,7 @@ export function usePrescriptionData() {
       coMorbidities: removeCoMorbidities,
       medication: removeMedication,
       advice: removeAdvice,
+      nextVisit: removeNextVisit,
     },
   };
 }

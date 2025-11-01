@@ -152,9 +152,11 @@ export function DynamicPrescriptionSections({
           key={note.id}
           nextVisit={items}
           onAddClick={() => openModal(modalType)}
+          onRemoveClick={removeHandlers[removeHandler]}
         />
       );
     }
+
 
     return (
       <Component
@@ -173,7 +175,6 @@ export function DynamicPrescriptionSections({
   const rightTopMargin = bodySetup?.bodyRightSideTopMargin || "0";
   const showMiddleLine = bodySetup?.showMiddleLine ?? true;
 
-  console.log(leftWidth, rightWidth, 'left width', "right width")
 
   return (
     <div className="border p-5 mx-2 border-[#C3C3C3] rounded">
