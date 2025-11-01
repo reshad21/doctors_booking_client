@@ -78,6 +78,28 @@ const ClinicalNotes = () => {
       borderColor: "border-pink-200",
       hoverBorder: "hover:border-pink-400",
     },
+    {
+      title: "Co-Morbidities",
+      description: "Additional conditions",
+      icon: Activity,
+      to: "/dashboard/pre-management/clinical-notes/co-morbidities-input",
+      bgGradient: "from-cyan-50 to-cyan-100",
+      iconBg: "bg-cyan-100",
+      iconColor: "text-cyan-600",
+      borderColor: "border-cyan-200",
+      hoverBorder: "hover:border-cyan-400",
+    },
+    {
+      title: "Treatment Plan",
+      description: "Therapeutic approach",
+      icon: Activity,
+      to: "/dashboard/pre-management/clinical-notes/treatment-plan-input",
+      bgGradient: "from-teal-50 to-teal-100",
+      iconBg: "bg-teal-100",
+      iconColor: "text-teal-600",
+      borderColor: "border-teal-200",
+      hoverBorder: "hover:border-teal-400",
+    },
   ];
 
   const rightSectionCards = [
