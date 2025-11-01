@@ -1,6 +1,15 @@
 import { X, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useGetCoMorbiditiesInputsQuery } from "@/redux/api/coMorbiditiesInput/coMorbiditiesInput";
+import { useAppSelector } from "@/redux/hooks";
+import { useCurrentToken } from "@/redux/api/features/authSlice";
+import { jwtDecode } from "jwt-decode";
 import type { CoMorbiditiesItem } from "../CoMorbiditiesModal";
+
+interface CoMorbiditiesInput {
+  id: string;
+  value: string;
+}
 
 interface CoMorbiditiesCardProps {
   coMorbidities: CoMorbiditiesItem;
@@ -60,20 +69,6 @@ interface CoMorbiditiesTabProps {
   ) => void;
 }
 
-// Mock co morbidities options - replace with API data if available
-const coMorbiditiesOptions = [
-  "Hypertension",
-  "Diabetes mellitus",
-  "Hyperlipidemia",
-  "Chronic kidney disease",
-  "Asthma",
-  "COPD",
-  "Heart disease",
-  "Obesity",
-  "Hypothyroidism",
-  "Anxiety disorder",
-];
-
 export function CoMorbiditiesTabs({
   searchQuery,
   coMorbidities,
@@ -81,43 +76,72 @@ export function CoMorbiditiesTabs({
   onRemoveCoMorbidities,
   onUpdateCoMorbidities,
 }: CoMorbiditiesTabProps) {
+  const token = useAppSelector(useCurrentToken);
+  const decoded: { id: string } = jwtDecode(token || "");
+  const doctorId = decoded?.id;
+
+  // Fetch co morbidities inputs from API
+  const { data, isLoading } = useGetCoMorbiditiesInputsQuery([
+    { key: "doctorId", value: doctorId },
+  ]);
+
+  // Use API data directly
+  const coMorbiditiesOptions: CoMorbiditiesItem[] =
+    data?.data?.data?.map((item: CoMorbiditiesInput) => ({
+      id: item.id,
+      label: item.value,
+      notes: "",
+    })) || [];
+
   const isSelected = (filter: string): boolean =>
     coMorbidities.some((cm) => cm.label === filter);
 
-  const sorted: string[] = coMorbiditiesOptions
-    .filter((o: string) => coMorbidities.some((cm) => cm.label === o))
+  // Sort selected options first
+  const sortedCoMorbiditiesOptions = coMorbiditiesOptions
+    .filter((option) => coMorbidities.some((cm) => cm.label === option.label))
     .concat(
       coMorbiditiesOptions.filter(
-        (o: string) => !coMorbidities.some((cm) => cm.label === o)
+        (option) => !coMorbidities.some((cm) => cm.label === option.label)
       )
     );
 
-  const filtered: string[] = sorted.filter((option: string) =>
-    option.toLowerCase().includes(searchQuery.toLowerCase())
+  // Filter by search query
+  const filteredCoMorbiditiesOptions = sortedCoMorbiditiesOptions.filter(
+    (option) => option.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (isLoading) {
+    return (
+      <p className="text-center py-4 text-gray-500">
+        Loading co morbidities...
+      </p>
+    );
+  }
 
   return (
     <div className="flex gap-6 pb-6">
       <div className="w-1/2 space-y-4">
         <div className="flex flex-wrap gap-2">
-          {filtered.map((filter: string) => (
+          {filteredCoMorbiditiesOptions.map((option) => (
             <button
-              key={filter}
-              onClick={() => onToggleFilter(filter)}
+              key={option.id}
+              onClick={() => onToggleFilter(option.label)}
               className={`flex items-center gap-2 px-1 py-0.5 cursor-pointer rounded-md border transition-colors ${
-                isSelected(filter)
+                isSelected(option.label)
                   ? "bg-green-50 border-green-600 text-green-700"
                   : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
               }`}
             >
-              {isSelected(filter) && <span className="text-green-600">✓</span>}{" "}
-              {filter}
+              {isSelected(option.label) && (
+                <span className="text-green-600">✓</span>
+              )}
+              {option.label}
               <ChevronDown className="h-4 w-4" />
             </button>
           ))}
         </div>
 
-        {filtered.length === 0 && (
+        {filteredCoMorbiditiesOptions.length === 0 && (
           <p className="text-sm text-gray-500 text-center py-4">
             No co morbidities found matching "{searchQuery}"
           </p>

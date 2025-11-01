@@ -1,6 +1,15 @@
 import { X, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useGetTreatmentPlanInputsQuery } from "@/redux/api/treatmentPlanInput/treatmentPlanInput";
+import { useAppSelector } from "@/redux/hooks";
+import { useCurrentToken } from "@/redux/api/features/authSlice";
+import { jwtDecode } from "jwt-decode";
 import type { TreatmentPlanItem } from "../TreatmentPlanModal";
+
+interface TreatmentPlanInput {
+  id: string;
+  value: string;
+}
 
 interface TreatmentPlanCardProps {
   treatmentPlan: TreatmentPlanItem;
@@ -60,20 +69,6 @@ interface TreatmentPlanTabProps {
   ) => void;
 }
 
-// Mock treatment plan options - replace with API data if available
-const treatmentPlanOptions = [
-  "Conservative management",
-  "Symptomatic treatment",
-  "Physiotherapy",
-  "Lifestyle modifications",
-  "Dietary changes",
-  "Regular follow-up",
-  "Surgical intervention",
-  "Medication therapy",
-  "Physical therapy",
-  "Rest and observation",
-];
-
 export function TreatmentPlanTabs({
   searchQuery,
   treatmentPlans,
@@ -81,43 +76,72 @@ export function TreatmentPlanTabs({
   onRemoveTreatmentPlan,
   onUpdateTreatmentPlan,
 }: TreatmentPlanTabProps) {
+  const token = useAppSelector(useCurrentToken);
+  const decoded: { id: string } = jwtDecode(token || "");
+  const doctorId = decoded?.id;
+
+  // Fetch treatment plan inputs from API
+  const { data, isLoading } = useGetTreatmentPlanInputsQuery([
+    { key: "doctorId", value: doctorId },
+  ]);
+
+  // Use API data directly
+  const treatmentPlanOptions: TreatmentPlanItem[] =
+    data?.data?.data?.map((item: TreatmentPlanInput) => ({
+      id: item.id,
+      label: item.value,
+      notes: "",
+    })) || [];
+
   const isSelected = (filter: string): boolean =>
     treatmentPlans.some((tp) => tp.label === filter);
 
-  const sorted: string[] = treatmentPlanOptions
-    .filter((o: string) => treatmentPlans.some((tp) => tp.label === o))
+  // Sort selected options first
+  const sortedTreatmentPlanOptions = treatmentPlanOptions
+    .filter((option) => treatmentPlans.some((tp) => tp.label === option.label))
     .concat(
       treatmentPlanOptions.filter(
-        (o: string) => !treatmentPlans.some((tp) => tp.label === o)
+        (option) => !treatmentPlans.some((tp) => tp.label === option.label)
       )
     );
 
-  const filtered: string[] = sorted.filter((option: string) =>
-    option.toLowerCase().includes(searchQuery.toLowerCase())
+  // Filter by search query
+  const filteredTreatmentPlanOptions = sortedTreatmentPlanOptions.filter(
+    (option) => option.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (isLoading) {
+    return (
+      <p className="text-center py-4 text-gray-500">
+        Loading treatment plans...
+      </p>
+    );
+  }
 
   return (
     <div className="flex gap-6 pb-6">
       <div className="w-1/2 space-y-4">
         <div className="flex flex-wrap gap-2">
-          {filtered.map((filter: string) => (
+          {filteredTreatmentPlanOptions.map((option) => (
             <button
-              key={filter}
-              onClick={() => onToggleFilter(filter)}
+              key={option.id}
+              onClick={() => onToggleFilter(option.label)}
               className={`flex items-center gap-2 px-1 py-0.5 cursor-pointer rounded-md border transition-colors ${
-                isSelected(filter)
+                isSelected(option.label)
                   ? "bg-green-50 border-green-600 text-green-700"
                   : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
               }`}
             >
-              {isSelected(filter) && <span className="text-green-600">✓</span>}{" "}
-              {filter}
+              {isSelected(option.label) && (
+                <span className="text-green-600">✓</span>
+              )}
+              {option.label}
               <ChevronDown className="h-4 w-4" />
             </button>
           ))}
         </div>
 
-        {filtered.length === 0 && (
+        {filteredTreatmentPlanOptions.length === 0 && (
           <p className="text-sm text-gray-500 text-center py-4">
             No treatment plan found matching "{searchQuery}"
           </p>
