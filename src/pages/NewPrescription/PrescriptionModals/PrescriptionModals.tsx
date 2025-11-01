@@ -9,6 +9,8 @@ import { HistoryModal } from "./_components/HistoryModal/HistoryModal";
 import { DiagnosisModal } from "./_components/DiagnosisModal/DiagnosisModal";
 import { InvestigationModal } from "./_components/InvestigationModal/InvestigationModal";
 import { AdviceModal } from "./_components/AdviceModal/AdviceModal";
+import { TreatmentPlanModal } from "./_components/TreatmentPlanModal/TreatmentPlanModal";
+import { CoMorbiditiesModal } from "./_components/CoMorbiditiesModal/CoMorbiditiesModal";
 
 interface PrescriptionModalsProps {
   activeModal: string | null;
@@ -20,6 +22,8 @@ interface PrescriptionModalsProps {
     diagnosis: (data: any) => void;
     investigation: (data: any) => void;
     history: (data: any) => void;
+    treatmentPlan: (data: any) => void;
+    coMorbidities: (data: any) => void;
     medications: (data: any) => void;
     advice: (data: any) => void;
     nextVisit: (data: any) => void;
@@ -78,6 +82,18 @@ export function PrescriptionModals({
         isOpen={activeModal === "history"}
         onClose={onClose}
         onSubmit={handlers.history}
+      />
+
+      <TreatmentPlanModal
+        isOpen={activeModal === "treatmentPlan"}
+        onClose={onClose}
+        onSubmit={handlers.treatmentPlan}
+      />
+
+      <CoMorbiditiesModal
+        isOpen={activeModal === "coMorbidities"}
+        onClose={onClose}
+        onSubmit={handlers.coMorbidities}
       />
 
       <MedicationsModal

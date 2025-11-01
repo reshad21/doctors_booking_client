@@ -5,6 +5,8 @@ import {
   DiagnosisSection,
   InvestigationSection,
   HistorySection,
+  TreatmentPlanSection,
+  CoMorbiditiesSection,
   MedicationsSection,
   AdviceSection,
   NextVisitSection,
@@ -77,6 +79,18 @@ const sectionComponentMap: Record<
     dataKey: "history",
     modalType: "history",
     removeHandler: "history",
+  },
+  "Treatment Plan": {
+    component: TreatmentPlanSection,
+    dataKey: "treatmentPlan",
+    modalType: "treatmentPlan",
+    removeHandler: "treatmentPlan",
+  },
+  "Co Morbidities": {
+    component: CoMorbiditiesSection,
+    dataKey: "coMorbidities",
+    modalType: "coMorbidities",
+    removeHandler: "coMorbidities",
   },
   Medicine: {
     component: MedicationsSection,

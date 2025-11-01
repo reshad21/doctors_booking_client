@@ -49,6 +49,8 @@ export function usePrescriptionData() {
     diagnosis: [],
     investigations: [],
     history: [],
+    treatmentPlan: [],
+    coMorbidities: [],
     medications: [],
     advice: [],
     nextVisit: "",
@@ -276,6 +278,36 @@ export function usePrescriptionData() {
     }));
   };
 
+  // Treatment Plan handlers
+  const handleTreatmentPlanSubmit = (data: { treatmentPlan: string }) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      treatmentPlan: [...prev.treatmentPlan, data.treatmentPlan],
+    }));
+  };
+
+  const removeTreatmentPlan = (index: number) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      treatmentPlan: prev.treatmentPlan.filter((_, i) => i !== index),
+    }));
+  };
+
+  // Co Morbidities handlers
+  const handleCoMorbiditiesSubmit = (data: { coMorbidities: string }) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      coMorbidities: [...prev.coMorbidities, data.coMorbidities],
+    }));
+  };
+
+  const removeCoMorbidities = (index: number) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      coMorbidities: prev.coMorbidities.filter((_, i) => i !== index),
+    }));
+  };
+
   // Medications handlers
   const handleMedicationsSubmit = (data: {
     name: string;
@@ -381,6 +413,8 @@ export function usePrescriptionData() {
       diagnosis: handleDiagnosisSubmit,
       investigation: handleInvestigationSubmit,
       history: handleHistorySubmit,
+      treatmentPlan: handleTreatmentPlanSubmit,
+      coMorbidities: handleCoMorbiditiesSubmit,
       medications: handleMedicationsSubmit,
       advice: handleAdviceSubmit,
       nextVisit: handleNextVisitSubmit,
@@ -391,6 +425,8 @@ export function usePrescriptionData() {
       diagnosis: removeDiagnosis,
       investigation: removeInvestigation,
       history: removeHistory,
+      treatmentPlan: removeTreatmentPlan,
+      coMorbidities: removeCoMorbidities,
       medication: removeMedication,
       advice: removeAdvice,
     },

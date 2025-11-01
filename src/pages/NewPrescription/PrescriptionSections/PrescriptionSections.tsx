@@ -210,6 +210,62 @@ export const HistorySection: React.FC<ListSectionProps> = ({
   </SectionWrapper>
 );
 
+// Treatment Plan Section
+export const TreatmentPlanSection: React.FC<ListSectionProps> = ({
+  items,
+  onAddClick,
+  onRemoveItem,
+}) => {
+  return (
+    <SectionWrapper title="Treatment Plan" onAddClick={onAddClick}>
+      {items.map((item, index) => (
+        <div
+          key={index}
+          className="mb-1 flex items-start justify-between group"
+        >
+          <div className="flex-1">• {item}</div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onRemoveItem(index)}
+            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
+          >
+            <X className="h-3 w-3" />
+          </Button>
+        </div>
+      ))}
+    </SectionWrapper>
+  );
+};
+
+// Co Morbidities Section
+export const CoMorbiditiesSection: React.FC<ListSectionProps> = ({
+  items,
+  onAddClick,
+  onRemoveItem,
+}) => {
+  return (
+    <SectionWrapper title="Co Morbidities" onAddClick={onAddClick}>
+      {items.map((item, index) => (
+        <div
+          key={index}
+          className="mb-1 flex items-start justify-between group"
+        >
+          <div className="flex-1">• {item}</div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onRemoveItem(index)}
+            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
+          >
+            <X className="h-3 w-3" />
+          </Button>
+        </div>
+      ))}
+    </SectionWrapper>
+  );
+};
+
 // Medications Section (Rx)
 export const MedicationsSection: React.FC<MedicationSectionProps> = ({
   medications,

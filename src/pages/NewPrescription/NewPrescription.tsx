@@ -10,16 +10,17 @@ import { useGetClinicTemplateQuery } from "@/redux/api/clinicalNoteTemplate/clin
 import { DynamicPrescriptionSections } from "./DynamicPrescriptionSection";
 
 const defaultClinicalNotes = [
-  { id: "1", title: "Chief Complaint", category: "left", order: 1 },
-  { id: "2", title: "On Examinations", category: "left", order: 2 },
-  { id: "3", title: "Diagnosis", category: "left", order: 3 },
-  { id: "4", title: "Investigation", category: "left", order: 4 },
-  { id: "5", title: "History", category: "left", order: 5 },
-  { id: "6", title: "Medicine", category: "right", order: 1 },
-  { id: "7", title: "Advice", category: "right", order: 2 },
-  { id: "8", title: "Next Visit", category: "right", order: 3 },
+  { id: "left-1", title: "Chief Complaint", category: "left", isShow: true },
+  { id: "left-2", title: "On Examinations", category: "left", isShow: true },
+  { id: "left-3", title: "Diagnosis", category: "left", isShow: true },
+  { id: "left-4", title: "Investigation", category: "left", isShow: true },
+  { id: "left-5", title: "History", category: "left", isShow: true },
+  { id: "left-6", title: "Treatment Plan", category: "left", isShow: true },
+  { id: "left-7", title: "Co Morbidities", category: "left", isShow: true },
+  { id: "right-1", title: "Medicine", category: "right", isShow: true },
+  { id: "right-2", title: "Advice", category: "right", isShow: true },
+  { id: "right-3", title: "Next Visit", category: "right", isShow: true },
 ];
-
 
 
 export default function NewPrescription() {
@@ -40,7 +41,6 @@ export default function NewPrescription() {
   const bodySetupData =
     prescriptionPageData?.data?.[0]?.PrescriptionBodySetup?.[0] || null;
 
-  console.log(prescriptionPageData, "prescriptionPageData");
 
   const clinicalNotesFromApi = clinicalData?.data?.notes || [];
 
