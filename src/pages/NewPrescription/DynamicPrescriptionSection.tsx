@@ -17,6 +17,7 @@ interface ClinicalNote {
   title: string;
   category: "left" | "right";
   order: number;
+  isShow?: boolean;
 }
 
 interface BodySetup {
@@ -120,11 +121,11 @@ export function DynamicPrescriptionSections({
   bodySetup = null,
 }: DynamicSectionsProps) {
   const leftSections = clinicalNotes
-    .filter((note) => note.category === "left")
+    .filter((note) => note.category === "left" && note.isShow !== false)
     .sort((a, b) => a.order - b.order);
 
   const rightSections = clinicalNotes
-    .filter((note) => note.category === "right")
+    .filter((note) => note.category === "right" && note.isShow !== false)
     .sort((a, b) => a.order - b.order);
 
   const renderSection = (note: ClinicalNote) => {

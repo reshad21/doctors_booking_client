@@ -49,6 +49,9 @@ export default function NewPrescription() {
       ? clinicalNotesFromApi
       : defaultClinicalNotes;
 
+  console.log(clinicalNotesFromApi, '1')
+  console.log(clinicalData, '2')
+
 
   if (isLoading) return <div>Loading...</div>;
 
