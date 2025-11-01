@@ -14,13 +14,13 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isExpired, setIsExpired] = useState(false);
-const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Only read permissions from Redux
   const routeAccess = useAppSelector((state) => state.routes.permissions);
   // const isLoadingPermissions = !routeAccess || routeAccess.length === 0;
   const isLoadingPermissions = false;
-  
+
   useEffect(() => {
     if (!token) {
       navigate("/login", { replace: true });
@@ -31,7 +31,6 @@ const [isLoading, setIsLoading] = useState(true);
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 400);
-
 
     if (isLoadingPermissions) return;
 
@@ -65,15 +64,23 @@ const [isLoading, setIsLoading] = useState(true);
       dispatch(clearUserToken());
       navigate("/login", { replace: true });
     }
-  }, [token, dispatch, navigate, location.pathname, routeAccess, isLoadingPermissions]);
+  }, [
+    token,
+    dispatch,
+    navigate,
+    location.pathname,
+    routeAccess,
+    isLoadingPermissions,
+  ]);
 
   if (!token || isExpired || isLoadingPermissions) {
-    return <div style={{ textAlign: "center", marginTop: "2rem" }}>Loading...</div>;
+    return (
+      <div style={{ textAlign: "center", marginTop: "2rem" }}>Loading...</div>
+    );
   }
 
-    if (isLoading) {
-    return  <LoadingSpinner />;
-   
+  if (isLoading) {
+    return <LoadingSpinner />;
   }
 
   return <>{children}</>;

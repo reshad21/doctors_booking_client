@@ -25,7 +25,7 @@ interface Chamber {
 }
 
 interface PageSettings {
-  pageType: "a4" | "custom";
+  status: "a4" | "custom";
   chamberId: string;
   totalHeight: number;
   totalWidth: number;
@@ -51,7 +51,7 @@ const PageSetup: React.FC = () => {
     });
 
   // Watch specific fields instead of the entire form object
-  const watchedPageType = watch("pageType");
+  const watchedPageType = watch("status");
   const watchedChamberId = watch("chamberId");
   const watchedTotalHeight = watch("totalHeight");
   const watchedTotalWidth = watch("totalWidth");
@@ -63,7 +63,7 @@ const PageSetup: React.FC = () => {
   // Update state when form values change for real-time preview
   useEffect(() => {
     const newSettings = {
-      pageType: watchedPageType,
+      status: watchedPageType,
       chamberId: watchedChamberId,
       totalHeight: watchedTotalHeight,
       totalWidth: watchedTotalWidth,
@@ -91,7 +91,7 @@ const PageSetup: React.FC = () => {
   const handlePageTypeChange = (type: "a4" | "custom") => {
     if (type === "a4") {
       // Standard A4 dimensions in inches
-      setValue("pageType", "a4");
+      setValue("status", "a4");
       setValue("totalHeight", 11.7);
       setValue("totalWidth", 8.3);
       setValue("leftMargin", 0.5);
@@ -99,7 +99,7 @@ const PageSetup: React.FC = () => {
       setValue("topMargin", 0.5);
       setValue("bottomMargin", 0.5);
     } else {
-      setValue("pageType", "custom");
+      setValue("status", "custom");
       // Dr. Prescription Pad common dimensions
       setValue("totalHeight", 8.5);
       setValue("totalWidth", 5.5);
@@ -158,10 +158,10 @@ const PageSetup: React.FC = () => {
                   <Button
                     type="button"
                     variant={
-                      pageSettings.pageType === "a4" ? "default" : "outline"
+                      pageSettings.status === "a4" ? "default" : "outline"
                     }
                     className={`h-24 flex flex-col gap-3 transition-all duration-300 ${
-                      pageSettings.pageType === "a4"
+                      pageSettings.status === "a4"
                         ? "bg-green-500 hover:bg-green-600 shadow-lg scale-105"
                         : "hover:bg-green-50 hover:border-green-300"
                     }`}
@@ -176,10 +176,10 @@ const PageSetup: React.FC = () => {
                   <Button
                     type="button"
                     variant={
-                      pageSettings.pageType === "custom" ? "default" : "outline"
+                      pageSettings.status === "custom" ? "default" : "outline"
                     }
                     className={`h-24 flex flex-col gap-3 transition-all duration-300 ${
-                      pageSettings.pageType === "custom"
+                      pageSettings.status === "custom"
                         ? "bg-green-500 hover:bg-green-600 shadow-lg scale-105"
                         : "hover:bg-green-50 hover:border-green-300"
                     }`}
@@ -230,7 +230,7 @@ const PageSetup: React.FC = () => {
                             min: 1,
                             max: 20,
                           })}
-                          disabled={pageSettings.pageType === "a4"}
+                          disabled={pageSettings.status === "a4"}
                           className="focus:ring-2 focus:ring-blue-500 transition-all duration-200"
                           placeholder="11.7"
                         />
@@ -252,7 +252,7 @@ const PageSetup: React.FC = () => {
                             min: 1,
                             max: 20,
                           })}
-                          disabled={pageSettings.pageType === "a4"}
+                          disabled={pageSettings.status === "a4"}
                           className="focus:ring-2 focus:ring-blue-500 transition-all duration-200"
                           placeholder="8.3"
                         />
@@ -525,12 +525,12 @@ const PageSetup: React.FC = () => {
                         </span>
                         <span
                           className={`font-medium text-sm px-2 py-1 rounded-full ${
-                            pageSettings.pageType === "a4"
+                            pageSettings.status === "a4"
                               ? "bg-green-100 text-green-700"
                               : "bg-purple-100 text-purple-700"
                           }`}
                         >
-                          {pageSettings.pageType === "a4"
+                          {pageSettings.status === "a4"
                             ? "A4 Standard"
                             : "Custom Prescription Pad"}
                         </span>

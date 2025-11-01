@@ -1,5 +1,3 @@
-"use client"
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Select from "react-select"
 import { Controller } from "react-hook-form"

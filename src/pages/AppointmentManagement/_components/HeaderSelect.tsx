@@ -1,5 +1,3 @@
-"use client";
-
 import type React from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { Button } from "@/components/ui/button";

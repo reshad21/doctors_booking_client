@@ -339,7 +339,7 @@ export function FormBuilder() {
                 .sort(([a], [b]) => Number.parseInt(a) - Number.parseInt(b))
                 .map(([rowNum, rowFields]) => (
                   <div key={rowNum} className="space-y-4">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-5">
                       <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
                       <span className="text-xs text-gray-500 font-medium">
                         Row {Number.parseInt(rowNum) + 1} (
@@ -357,7 +357,7 @@ export function FormBuilder() {
                       </span>
                     </div>
 
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap gap-[10px]">
                       {rowFields
                         .sort((a, b) => a.order - b.order)
                         .map((field) => {
