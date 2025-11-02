@@ -6,7 +6,7 @@ import { Link } from "react-router-dom"
 import Pagination from "@/components/shared/Pagination"
 import { formatTimeAgo } from "@/utils/formatTimeAgo"
 
-const PrescriptionTable = ({ patients, active, totalPages, onPageChange,meta }: any) => {
+const PrescriptionTable = ({ patients, active, totalPages, onPageChange, meta }: any) => {
 
   const hasPrescription = (patient: Patient) => {
     return patient.prescription && patient.prescription.length > 0

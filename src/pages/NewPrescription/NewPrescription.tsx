@@ -8,6 +8,8 @@ import { usePrescriptionData } from "./hook/usePrescriptionData";
 import { useGetPrescriptionPageSetupsQuery } from "@/redux/api/PreManagement/PrescriptionPageSetupApi";
 import { useGetClinicTemplateQuery } from "@/redux/api/clinicalNoteTemplate/clinicalNoteTemplate";
 import { DynamicPrescriptionSections } from "./DynamicPrescriptionSection";
+import { useGetSinglePatientQuery } from "@/redux/api/patient/patient";
+import { useParams } from "react-router-dom";
 
 const defaultClinicalNotes = [
   { id: "left-1", title: "Chief Complaint", category: "left", isShow: true },
@@ -24,6 +26,8 @@ const defaultClinicalNotes = [
 
 
 export default function NewPrescription() {
+  const { patientId } = useParams<{ patientId: string }>()
+  const { data: patientData, isLoading: isPatientLoading } = useGetSinglePatientQuery(patientId)
   const { prescriptionData, handlers, removeHandlers } = usePrescriptionData();
   const { data: prescriptionPageData, isLoading } =
     useGetPrescriptionPageSetupsQuery({});
@@ -48,6 +52,8 @@ export default function NewPrescription() {
     clinicalNotesFromApi && clinicalNotesFromApi.length > 0
       ? clinicalNotesFromApi
       : defaultClinicalNotes;
+
+  console.log(patientData, "patientData")
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -87,26 +93,25 @@ export default function NewPrescription() {
           <PrescriptionHeader data={headerData} />
 
           {/* Patient Information */}
-          <div className="grid grid-cols-4 gap-8 justify-items-center max-w-5xl my-5 mx-auto">
+          {!isPatientLoading && (<div className="grid grid-cols-4 gap-8 justify-items-center max-w-5xl my-5 mx-auto">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Name:</span>
-              <span className="text-sm">
-                {prescriptionData.patientName || ""}
-              </span>
+              <span className="text-sm">{patientData?.data?.name || "—"}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Age:</span>
-              <span className="text-sm w-16">{prescriptionData.age || ""}</span>
+              <span className="text-sm w-16">{patientData?.data?.age || "—"}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Date:</span>
-              <span className="text-sm">{prescriptionData.date}</span>
+              <span className="text-sm font-medium">Gender:</span>
+              <span className="text-sm">{patientData?.data?.gender || "—"}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">ID:</span>
-              <span className="text-sm">{prescriptionData.date}</span>
+              <span className="text-sm font-medium">Phone:</span>
+              <span className="text-sm">{patientData?.data?.phoneNumber || "—"}</span>
             </div>
-          </div>
+          </div>)}
+
 
           <DynamicPrescriptionSections
             clinicalNotes={clinicalNotes}
