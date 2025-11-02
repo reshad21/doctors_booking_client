@@ -37,32 +37,35 @@ export const MedicationsModal = ({
 
   const handleSubmit = () => {
     if (medications.length > 0) {
-      const med = medications[0];
+      // Process each medication one by one
+      medications.forEach((med) => {
+        // Build instruction string for each medication
+        let instructionStr = "";
+        if (med.beforeEating) instructionStr += "Before eating ";
+        if (med.afterEating) instructionStr += "After eating ";
+        if (med.instructionNotes) instructionStr += `- ${med.instructionNotes}`;
 
-      // Build instruction string
-      let instructionStr = "";
-      if (med.beforeEating) instructionStr += "Before eating ";
-      if (med.afterEating) instructionStr += "After eating ";
-      if (med.instructionNotes) instructionStr += `- ${med.instructionNotes}`;
-
-      onSubmit({
-        name: med.name,
-        dosage: med.dosage
-          ? `${med.dosage}`
-          : `${med.dosageValue} ${med.dosageUnit}`,
-        frequency: med.frequencyValue
-          ? `${med.frequencyValue} ${med.frequencyUnit}`
-          : "",
-        duration: med.durationValue
-          ? `${med.durationValue} ${med.durationUnit}`
-          : "",
-        instructions: {
-          beforeEating: med.beforeEating,
-          afterEating: med.afterEating,
-          notes: instructionStr.trim(),
-        },
-        showInPrescription: showInPrescription,
+        // Submit each medication individually
+        onSubmit({
+          name: med.name,
+          dosage: med.dosage
+            ? `${med.dosage}`
+            : `${med.dosageValue} ${med.dosageUnit}`,
+          frequency: med.frequencyValue
+            ? `${med.frequencyValue} ${med.frequencyUnit}`
+            : "",
+          duration: med.durationValue
+            ? `${med.durationValue} ${med.durationUnit}`
+            : "",
+          instructions: {
+            beforeEating: med.beforeEating,
+            afterEating: med.afterEating,
+            notes: instructionStr.trim(),
+          },
+          showInPrescription: showInPrescription,
+        });
       });
+
       setMedications([]);
       onClose();
     }
@@ -92,12 +95,12 @@ export const MedicationsModal = ({
           instructionNotes: "",
           isInstruction: false,
           dosageValue: "",
-          dosageUnit: "piece",
+          dosageUnit: "",
           frequencyValue: "",
           frequencyUnit: "times",
           frequencyText: "",
           limitValue: "",
-          limitUnit: "piece",
+          limitUnit: "",
         },
       ]);
     }

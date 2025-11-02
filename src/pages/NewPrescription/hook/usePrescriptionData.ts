@@ -309,7 +309,17 @@ export function usePrescriptionData() {
   };
 
   // Medications handlers
-  const handleMedicationsSubmit = (data: {
+  const handleMedicationsSubmit = (data: Array<{
+    name: string;
+    dosage: string;
+    frequency: string;
+    duration: string;
+    instructions?: {
+      beforeEating: boolean;
+      afterEating: boolean;
+      notes: string;
+    };
+  }> | {
     name: string;
     dosage: string;
     frequency: string;
@@ -330,17 +340,20 @@ export function usePrescriptionData() {
       return parts.join("; ").trim();
     };
 
-    const medicationEntry = {
-      name: data.name,
-      dosage: data.dosage,
-      frequency: data.frequency,
-      duration: data.duration,
-      instructions: formatInstructions((data as any).instructions),
-    };
+    // Handle both single medication and array of medications
+    const medicationsToAdd = Array.isArray(data) ? data : [data];
+    
+    const medicationEntries = medicationsToAdd.map(med => ({
+      name: med.name,
+      dosage: med.dosage,
+      frequency: med.frequency,
+      duration: med.duration,
+      instructions: formatInstructions((med as any).instructions),
+    }));
 
     setPrescriptionData((prev) => ({
       ...prev,
-      medications: [...prev.medications, medicationEntry],
+      medications: [...prev.medications, ...medicationEntries],
     }));
   };
 
