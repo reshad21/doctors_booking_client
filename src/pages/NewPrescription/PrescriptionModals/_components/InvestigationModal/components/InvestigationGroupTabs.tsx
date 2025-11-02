@@ -122,7 +122,7 @@ export function InvestigationGroupTabs({ searchQuery, onLoadGroup }: GroupsTabPr
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 pb-6 h-[500px] max-h-[70vh]">
+    <div className="flex flex-col md:flex-row gap-4 pb-6 h-[350px] max-h-[70vh]">
       {/* Left sidebar - Groups list */}
       <div className="w-full md:w-64 flex flex-col gap-3 min-h-0">
         {!isCreatingGroup ? (

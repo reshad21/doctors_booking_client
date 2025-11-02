@@ -122,8 +122,8 @@ export function InvestigationTabs({
   }
 
   return (
-    <div className="flex gap-6 pb-6">
-      <div className="w-1/2 space-y-4">
+    <div className="flex gap-6 pb-6 h-full">
+      <div className="w-1/2 space-y-4 overflow-y-auto pr-2 max-h-full">
         <div className="flex flex-wrap gap-2">
           {filteredInvestigationOptions.map((option) => (
             <button
@@ -150,7 +150,7 @@ export function InvestigationTabs({
         )}
       </div>
 
-      <div className="w-1/2 space-y-3 overflow-x-hidden">
+      <div className="w-1/2 space-y-3 overflow-y-auto pr-2 max-h-full">
         {investigations.length === 0 && (
           <p className="text-sm text-gray-500 text-center py-8">
             Select investigation from the left to add them here
