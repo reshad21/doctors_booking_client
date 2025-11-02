@@ -1,6 +1,7 @@
 import { ChevronDown } from "lucide-react";
 import { useGetMedicinesQuery } from "@/redux/api/medicine/medicine";
 import type { TMedicine } from "@/types/medicine.types";
+import { classifyMedicineType } from "@/utils/medicineTypeClassifier";
 
 export const MedicationList = ({
   searchQuery,
@@ -8,7 +9,10 @@ export const MedicationList = ({
   isMedSelected,
 }: {
   searchQuery: string;
-  toggleMedication: (name: string) => void;
+  toggleMedication: (
+    name: string,
+    type: "Tablet" | "Capsule" | "Other"
+  ) => void;
   isMedSelected: (name: string) => boolean;
 }) => {
   const query: Record<string, string>[] = [
@@ -29,19 +33,24 @@ export const MedicationList = ({
             )
             .map((med: TMedicine) => {
               const medLabel = `${med.brandName} - ${med.strength}`;
+              const medicineType = classifyMedicineType(med.dosageDescription);
+
               return (
                 <button
                   key={med.id}
-                  onClick={() => toggleMedication(medLabel)}
-                  className={`flex items-center gap-2 px-2 py-1 cursor-pointer rounded-md border transition-colors ${isMedSelected(medLabel)
-                    ? "bg-green-50 border-green-600 text-green-700"
-                    : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
-                    }`}
+                  onClick={() => toggleMedication(medLabel, medicineType)}
+                  className={`flex items-center gap-2 px-2 py-1 cursor-pointer rounded-md border transition-colors ${
+                    isMedSelected(medLabel)
+                      ? "bg-green-50 border-green-600 text-green-700"
+                      : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
                 >
                   {isMedSelected(medLabel) && (
                     <span className="text-green-600">✓</span>
                   )}
-                  {medLabel}
+                  <div className="flex flex-col items-start">
+                    <span className="text-sm">{medLabel}</span>
+                  </div>
                   <ChevronDown className="h-4 w-4" />
                 </button>
               );

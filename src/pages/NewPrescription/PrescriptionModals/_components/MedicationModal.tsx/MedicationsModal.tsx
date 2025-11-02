@@ -33,7 +33,6 @@ export const MedicationsModal = ({
   >("medication");
   const [searchQuery, setSearchQuery] = useState("");
   const [showInPrescription, setShowInPrescription] = useState(true);
-
   const [medications, setMedications] = useState<any[]>([]);
 
   const handleSubmit = () => {
@@ -48,7 +47,9 @@ export const MedicationsModal = ({
 
       onSubmit({
         name: med.name,
-        dosage: med.dosage ? `${med.dosage}` : `${med.dosageValue} ${med.dosageUnit}`,
+        dosage: med.dosage
+          ? `${med.dosage}`
+          : `${med.dosageValue} ${med.dosageUnit}`,
         frequency: med.frequencyValue
           ? `${med.frequencyValue} ${med.frequencyUnit}`
           : "",
@@ -70,7 +71,10 @@ export const MedicationsModal = ({
   const isMedSelected = (name: string) =>
     medications.some((m) => m.name === name);
 
-  const toggleMedication = (name: string) => {
+  const toggleMedication = (
+    name: string,
+    type: "Tablet" | "Capsule" | "Other"
+  ) => {
     if (isMedSelected(name)) {
       setMedications((prev) => prev.filter((m) => m.name !== name));
     } else {
@@ -79,6 +83,7 @@ export const MedicationsModal = ({
         {
           id: String(Date.now()) + Math.random().toString(16).slice(2),
           name,
+          type, // Store the classified type
           dosage: "",
           durationValue: "",
           durationUnit: "days",
@@ -97,7 +102,6 @@ export const MedicationsModal = ({
       ]);
     }
   };
-
   const updateMedication = (
     id: string,
     field: string,
@@ -132,19 +136,21 @@ export const MedicationsModal = ({
         <div className="flex gap-3">
           <button
             onClick={() => setActiveTab("medication")}
-            className={`flex-1 py-3 px-6 rounded-lg cursor-pointer font-medium transition-colors ${activeTab === "medication"
+            className={`flex-1 py-3 px-6 rounded-lg cursor-pointer font-medium transition-colors ${
+              activeTab === "medication"
                 ? "bg-green-600 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
+            }`}
           >
             Medicine
           </button>
           <button
             onClick={() => setActiveTab("medication groups")}
-            className={`flex-1 py-3 px-6 rounded-lg cursor-pointer font-medium transition-colors ${activeTab === "medication groups"
+            className={`flex-1 py-3 px-6 rounded-lg cursor-pointer font-medium transition-colors ${
+              activeTab === "medication groups"
                 ? "bg-green-600 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
+            }`}
           >
             Medicine Groups
           </button>
@@ -171,7 +177,10 @@ export const MedicationsModal = ({
           <MedicineGroupsTab
             searchQuery={searchQuery}
             onLoadGroup={(medications) => {
-              medications.forEach(med => toggleMedication(med));
+              // medications is now an array of {name: string, type: 'Tablet' | 'Capsule' | 'Other'}
+              medications.forEach((med) => {
+                toggleMedication(med.name, med.type);
+              });
               setActiveTab("medication");
             }}
           />
