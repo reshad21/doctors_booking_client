@@ -14,11 +14,13 @@ import ViewPrescription from "@/pages/Prescription/ViewPrescription/ViewPrescrip
 import AdviceInput from "@/pages/PrescriptionManagement/ClinicalNotes/AdviceInput/AdviceInput";
 import ChiefComplaintInput from "@/pages/PrescriptionManagement/ClinicalNotes/ChiefComplaintInput/ChiefComplaintInput";
 import ClinicalNotes from "@/pages/PrescriptionManagement/ClinicalNotes/ClinicalNotes";
+import CoMorbiditiesInput from "@/pages/PrescriptionManagement/ClinicalNotes/CoMorbiditiesInput/CoMorbiditiesInput";
 import DiagnosisInput from "@/pages/PrescriptionManagement/ClinicalNotes/DiagnosisInput/DiagnosisInput";
 import HistoryInput from "@/pages/PrescriptionManagement/ClinicalNotes/HistoryInput/HistoryInput";
 import InvestigationInput from "@/pages/PrescriptionManagement/ClinicalNotes/InvestigationInput/InvestigationInput";
 import NextVisitInput from "@/pages/PrescriptionManagement/ClinicalNotes/NextVisitInput/NextVisitInput";
 import OnExaminationsInput from "@/pages/PrescriptionManagement/ClinicalNotes/OnExaminationsInput/OnExaminationsInput";
+import TreatmentPlanInput from "@/pages/PrescriptionManagement/ClinicalNotes/TreatmentPlanInput/TreatmentPlanInput";
 import MedicineManagement from "@/pages/PrescriptionManagement/MedicineManagement/MedicineManagement";
 import PreManagement from "@/pages/PrescriptionManagement/PreManagement";
 import PrescriptionPageSetup from "@/pages/PrescriptionManagement/PrescriptionPageSetup/PrescriptionPageSetup";
@@ -136,6 +138,14 @@ const router = createBrowserRouter([
       {
         path: "/dashboard/pre-management/clinical-notes/history-input",
         element: <HistoryInput />,
+      },
+      {
+        path: "/dashboard/pre-management/clinical-notes/co-morbidities-input",
+        element: <CoMorbiditiesInput />,
+      },
+      {
+        path: "/dashboard/pre-management/clinical-notes/treatment-plan-input",
+        element: <TreatmentPlanInput />,
       },
       {
         path: "/dashboard/pre-management/clinical-notes/advice-input",

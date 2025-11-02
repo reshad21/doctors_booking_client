@@ -121,11 +121,10 @@ export const NextVisitModal = ({
                     showInReport: !nextVisit.showInReport,
                   })
                 }
-                className={`flex items-center gap-2 px-3 py-2 rounded font-medium ${
-                  nextVisit.showInReport
+                className={`flex items-center gap-2 px-3 py-2 rounded font-medium ${nextVisit.showInReport
                     ? "bg-green-600 text-white"
                     : "bg-white border border-gray-300 text-gray-700"
-                }`}
+                  }`}
               >
                 {nextVisit.showInReport && <Check className="h-4 w-4" />}
                 রিপোর্ট সহ
@@ -138,11 +137,10 @@ export const NextVisitModal = ({
                     withPatient: !nextVisit.withPatient,
                   })
                 }
-                className={`flex items-center gap-2 px-3 py-2 rounded font-medium ${
-                  nextVisit.withPatient
+                className={`flex items-center gap-2 px-3 py-2 rounded font-medium ${nextVisit.withPatient
                     ? "bg-green-600 text-white"
                     : "bg-white border border-gray-300 text-gray-700"
-                }`}
+                  }`}
               >
                 {nextVisit.withPatient && <Check className="h-4 w-4" />}
                 আসবেন

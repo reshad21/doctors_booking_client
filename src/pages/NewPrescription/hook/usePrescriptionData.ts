@@ -49,6 +49,8 @@ export function usePrescriptionData() {
     diagnosis: [],
     investigations: [],
     history: [],
+    treatmentPlan: [],
+    coMorbidities: [],
     medications: [],
     advice: [],
     nextVisit: "",
@@ -174,13 +176,13 @@ export function usePrescriptionData() {
   const handleInvestigationSubmit = (
     data:
       | {
-          investigations: Array<{
-            id: string;
-            label: string;
-            notes: string;
-            result: string;
-          }>;
-        }
+        investigations: Array<{
+          id: string;
+          label: string;
+          notes: string;
+          result: string;
+        }>;
+      }
       | { investigations: string[] }
   ) => {
     if (Array.isArray(data.investigations)) {
@@ -217,12 +219,12 @@ export function usePrescriptionData() {
     data:
       | { history: string }
       | {
-          general?: ComplaintItem[];
-          drugs?: string[];
-          investigations?: Array<IncomingInvestigation>;
-          personal?: ComplaintItem[];
-          family?: ComplaintItem[];
-        }
+        general?: ComplaintItem[];
+        drugs?: string[];
+        investigations?: Array<IncomingInvestigation>;
+        personal?: ComplaintItem[];
+        family?: ComplaintItem[];
+      }
   ) => {
     if ("history" in data) {
       setPrescriptionData((prev) => ({
@@ -276,6 +278,36 @@ export function usePrescriptionData() {
     }));
   };
 
+  // Treatment Plan handlers
+  const handleTreatmentPlanSubmit = (data: { treatmentPlan: string }) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      treatmentPlan: [...prev.treatmentPlan, data.treatmentPlan],
+    }));
+  };
+
+  const removeTreatmentPlan = (index: number) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      treatmentPlan: prev.treatmentPlan.filter((_, i) => i !== index),
+    }));
+  };
+
+  // Co Morbidities handlers
+  const handleCoMorbiditiesSubmit = (data: { coMorbidities: string }) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      coMorbidities: [...prev.coMorbidities, data.coMorbidities],
+    }));
+  };
+
+  const removeCoMorbidities = (index: number) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      coMorbidities: prev.coMorbidities.filter((_, i) => i !== index),
+    }));
+  };
+
   // Medications handlers
   const handleMedicationsSubmit = (data: {
     name: string;
@@ -324,10 +356,10 @@ export function usePrescriptionData() {
     data:
       | { advice: string }
       | {
-          advices: Array<
-            { id?: string; label: string; notes?: string } | string
-          >;
-        }
+        advices: Array<
+          { id?: string; label: string; notes?: string } | string
+        >;
+      }
   ) => {
     if ((data as any).advices && Array.isArray((data as any).advices)) {
       const advArr: string[] = (data as any).advices.map((a: any) => {
@@ -372,6 +404,13 @@ export function usePrescriptionData() {
     }));
   };
 
+  const removeNextVisit = () => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      nextVisit: "",
+    }));
+  };
+
   return {
     prescriptionData,
     handlers: {
@@ -381,6 +420,8 @@ export function usePrescriptionData() {
       diagnosis: handleDiagnosisSubmit,
       investigation: handleInvestigationSubmit,
       history: handleHistorySubmit,
+      treatmentPlan: handleTreatmentPlanSubmit,
+      coMorbidities: handleCoMorbiditiesSubmit,
       medications: handleMedicationsSubmit,
       advice: handleAdviceSubmit,
       nextVisit: handleNextVisitSubmit,
@@ -391,8 +432,11 @@ export function usePrescriptionData() {
       diagnosis: removeDiagnosis,
       investigation: removeInvestigation,
       history: removeHistory,
+      treatmentPlan: removeTreatmentPlan,
+      coMorbidities: removeCoMorbidities,
       medication: removeMedication,
       advice: removeAdvice,
+      nextVisit: removeNextVisit,
     },
   };
 }

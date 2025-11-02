@@ -5,6 +5,8 @@ import {
   DiagnosisSection,
   InvestigationSection,
   HistorySection,
+  TreatmentPlanSection,
+  CoMorbiditiesSection,
   MedicationsSection,
   AdviceSection,
   NextVisitSection,
@@ -15,6 +17,7 @@ interface ClinicalNote {
   title: string;
   category: "left" | "right";
   order: number;
+  isShow?: boolean;
 }
 
 interface BodySetup {
@@ -78,6 +81,18 @@ const sectionComponentMap: Record<
     modalType: "history",
     removeHandler: "history",
   },
+  "Treatment Plan": {
+    component: TreatmentPlanSection,
+    dataKey: "treatmentPlan",
+    modalType: "treatmentPlan",
+    removeHandler: "treatmentPlan",
+  },
+  "Co Morbidities": {
+    component: CoMorbiditiesSection,
+    dataKey: "coMorbidities",
+    modalType: "coMorbidities",
+    removeHandler: "coMorbidities",
+  },
   Medicine: {
     component: MedicationsSection,
     dataKey: "medications",
@@ -106,11 +121,11 @@ export function DynamicPrescriptionSections({
   bodySetup = null,
 }: DynamicSectionsProps) {
   const leftSections = clinicalNotes
-    .filter((note) => note.category === "left")
+    .filter((note) => note.category === "left" && note.isShow !== false)
     .sort((a, b) => a.order - b.order);
 
   const rightSections = clinicalNotes
-    .filter((note) => note.category === "right")
+    .filter((note) => note.category === "right" && note.isShow !== false)
     .sort((a, b) => a.order - b.order);
 
   const renderSection = (note: ClinicalNote) => {
@@ -137,9 +152,11 @@ export function DynamicPrescriptionSections({
           key={note.id}
           nextVisit={items}
           onAddClick={() => openModal(modalType)}
+          onRemoveClick={removeHandlers[removeHandler]}
         />
       );
     }
+
 
     return (
       <Component

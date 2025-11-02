@@ -9,6 +9,20 @@ import { useGetPrescriptionPageSetupsQuery } from "@/redux/api/PreManagement/Pre
 import { useGetClinicTemplateQuery } from "@/redux/api/clinicalNoteTemplate/clinicalNoteTemplate";
 import { DynamicPrescriptionSections } from "./DynamicPrescriptionSection";
 
+const defaultClinicalNotes = [
+  { id: "left-1", title: "Chief Complaint", category: "left", isShow: true },
+  { id: "left-2", title: "On Examinations", category: "left", isShow: true },
+  { id: "left-3", title: "Diagnosis", category: "left", isShow: true },
+  { id: "left-4", title: "Investigation", category: "left", isShow: true },
+  { id: "left-5", title: "History", category: "left", isShow: true },
+  { id: "left-6", title: "Treatment Plan", category: "left", isShow: true },
+  { id: "left-7", title: "Co Morbidities", category: "left", isShow: true },
+  { id: "right-1", title: "Medicine", category: "right", isShow: true },
+  { id: "right-2", title: "Advice", category: "right", isShow: true },
+  { id: "right-3", title: "Next Visit", category: "right", isShow: true },
+];
+
+
 export default function NewPrescription() {
   const { prescriptionData, handlers, removeHandlers } = usePrescriptionData();
   const { data: prescriptionPageData, isLoading } =
@@ -27,9 +41,13 @@ export default function NewPrescription() {
   const bodySetupData =
     prescriptionPageData?.data?.[0]?.PrescriptionBodySetup?.[0] || null;
 
-  console.log(prescriptionPageData, "prescriptionPageData");
 
-  const clinicalNotes = clinicalData?.data?.notes || [];
+  const clinicalNotesFromApi = clinicalData?.data?.notes || [];
+
+  const clinicalNotes =
+    clinicalNotesFromApi && clinicalNotesFromApi.length > 0
+      ? clinicalNotesFromApi
+      : defaultClinicalNotes;
 
   if (isLoading) return <div>Loading...</div>;
 
