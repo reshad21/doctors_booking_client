@@ -158,8 +158,6 @@ export function DynamicPrescriptionSections({
   const rightTopMargin = bodySetup?.bodyRightSideTopMargin || "0";
   const showMiddleLine = bodySetup?.showMiddleLine ?? true;
 
-  console.log(leftWidth, rightWidth, 'left width', "right width")
-
   return (
     <div className="border p-5 mx-2 border-[#C3C3C3] rounded">
       <div className="flex gap-8">
@@ -168,7 +166,7 @@ export function DynamicPrescriptionSections({
           className={`space-y-4 ${showMiddleLine ? "border-r border-r-[#C3C3C3] pr-8" : ""}`}
           style={{
             width: `${leftWidth}%`,
-            marginTop: `${leftTopMargin}px`,
+            paddingTop: `${leftTopMargin}px`,
           }}
         >
           {leftSections.map((note) => renderSection(note))}
@@ -179,7 +177,7 @@ export function DynamicPrescriptionSections({
           className="space-y-4"
           style={{
             width: `${rightWidth}%`,
-            marginTop: `${rightTopMargin}px`,
+            paddingTop: `${rightTopMargin}px`,
           }}
         >
           {rightSections.map((note) => renderSection(note))}
