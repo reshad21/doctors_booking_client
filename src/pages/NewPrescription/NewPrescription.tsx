@@ -38,6 +38,36 @@ export default function NewPrescription() {
   const closeModal = () => setActiveModal(null);
   const handlePrint = () => window.print();
 
+  const handleSubmit = () => {
+    const submissionData = {
+      patientInformation: {
+        id: patientId,
+        name: patientData?.data?.name || "—",
+        age: patientData?.data?.age || "—",
+        gender: patientData?.data?.gender || "—",
+        phoneNumber: patientData?.data?.phoneNumber || "—",
+      },
+      prescriptionData: {
+        patientName: prescriptionData.patientName,
+        age: prescriptionData.age,
+        date: prescriptionData.date,
+        chiefComplaint: prescriptionData.chiefComplaint,
+        examinations: prescriptionData.examinations,
+        diagnosis: prescriptionData.diagnosis,
+        investigations: prescriptionData.investigations,
+        history: prescriptionData.history,
+        treatmentPlan: prescriptionData.treatmentPlan,
+        coMorbidities: prescriptionData.coMorbidities,
+        medications: prescriptionData.medications,
+        advice: prescriptionData.advice,
+        nextVisit: prescriptionData.nextVisit,
+      },
+    };
+
+    console.log("=== PRESCRIPTION SUBMISSION DATA ===");
+    console.log("Full Submission Object:", submissionData);
+  };
+
   const headerData =
     prescriptionPageData?.data?.[0]?.PrescriptionHeader?.[0] || null;
   const footerData =
@@ -52,8 +82,6 @@ export default function NewPrescription() {
     clinicalNotesFromApi && clinicalNotesFromApi.length > 0
       ? clinicalNotesFromApi
       : defaultClinicalNotes;
-
-  console.log(patientData, "patientData")
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -77,8 +105,14 @@ export default function NewPrescription() {
       `}</style>
 
       <div className="max-w-5xl mx-auto pt-2 print-container">
-        {/* Print Button */}
-        <div className="flex justify-end mb-4 no-print mr-2">
+        {/* Print and Submit Buttons */}
+        <div className="flex justify-end gap-2 mb-4 no-print mr-2">
+          <Button
+            onClick={handleSubmit}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 cursor-pointer text-white"
+          >
+            Submit Prescription
+          </Button>
           <Button
             onClick={handlePrint}
             className="flex items-center gap-2 bg-green-600 hover:bg-green-700 cursor-pointer text-white"
