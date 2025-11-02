@@ -1,4 +1,3 @@
-import React from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -91,14 +90,14 @@ export const ChiefComplaintSection: React.FC<ListSectionProps> = ({
       {items.map((item, index) => (
         <div
           key={index}
-          className="mb-1 flex items-start justify-between group"
+          className="mb-1 flex items-start justify-between"
         >
           <div className="flex-1">• {item}</div>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onRemoveItem(index)}
-            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
+            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 ml-2 no-print"
           >
             <X className="h-3 w-3" />
           </Button>
@@ -116,13 +115,13 @@ export const ExaminationsSection: React.FC<ListSectionProps> = ({
 }) => (
   <SectionWrapper title="On Examinations" onAddClick={onAddClick}>
     {items.map((item, index) => (
-      <div key={index} className="mb-1 flex items-start justify-between group">
+      <div key={index} className="mb-1 flex items-start justify-between">
         <div className="flex-1">• {item}</div>
         <Button
           variant="ghost"
           size="sm"
           onClick={() => onRemoveItem(index)}
-          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
+          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 ml-2 no-print"
         >
           <X className="h-3 w-3" />
         </Button>
@@ -139,13 +138,13 @@ export const DiagnosisSection: React.FC<ListSectionProps> = ({
 }) => (
   <SectionWrapper title="Diagnosis" onAddClick={onAddClick}>
     {items.map((item, index) => (
-      <div key={index} className="mb-1 flex items-start justify-between group">
+      <div key={index} className="mb-1 flex items-start justify-between">
         <div className="flex-1">• {item}</div>
         <Button
           variant="ghost"
           size="sm"
           onClick={() => onRemoveItem(index)}
-          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
+          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 ml-2 no-print"
         >
           <X className="h-3 w-3" />
         </Button>
@@ -166,7 +165,7 @@ export const InvestigationSection: React.FC<ListSectionProps> = ({
       const hasResult = result && result.endsWith(']');
 
       return (
-        <div key={index} className="mb-1 flex items-start justify-between group">
+        <div key={index} className="mb-1 flex items-start justify-between">
           <div className="flex-1">
             <span>• {label}</span>
             {hasResult && (
@@ -179,7 +178,7 @@ export const InvestigationSection: React.FC<ListSectionProps> = ({
             variant="ghost"
             size="sm"
             onClick={() => onRemoveItem(index)}
-            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
+            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 ml-2 no-print"
           >
             <X className="h-3 w-3" />
           </Button>
@@ -197,13 +196,13 @@ export const HistorySection: React.FC<ListSectionProps> = ({
 }) => (
   <SectionWrapper title="History" onAddClick={onAddClick}>
     {items.map((item, index) => (
-      <div key={index} className="mb-1 flex items-start justify-between group">
+      <div key={index} className="mb-1 flex items-start justify-between">
         <div className="flex-1">• {item}</div>
         <Button
           variant="ghost"
           size="sm"
           onClick={() => onRemoveItem(index)}
-          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
+          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 ml-2 no-print"
         >
           <X className="h-3 w-3" />
         </Button>
@@ -223,14 +222,14 @@ export const TreatmentPlanSection: React.FC<ListSectionProps> = ({
       {items.map((item, index) => (
         <div
           key={index}
-          className="mb-1 flex items-start justify-between group"
+          className="mb-1 flex items-start justify-between"
         >
           <div className="flex-1">• {item}</div>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onRemoveItem(index)}
-            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
+            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 ml-2 no-print"
           >
             <X className="h-3 w-3" />
           </Button>
@@ -251,14 +250,14 @@ export const CoMorbiditiesSection: React.FC<ListSectionProps> = ({
       {items.map((item, index) => (
         <div
           key={index}
-          className="mb-1 flex items-start justify-between group"
+          className="mb-1 flex items-start justify-between"
         >
           <div className="flex-1">• {item}</div>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onRemoveItem(index)}
-            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
+            className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 ml-2 no-print"
           >
             <X className="h-3 w-3" />
           </Button>
@@ -344,13 +343,13 @@ export const AdviceSection: React.FC<ListSectionProps> = ({
 }) => (
   <SectionWrapper title="Advice" onAddClick={onAddClick} minHeight="60px">
     {items.map((item, index) => (
-      <div key={index} className="mb-1 flex items-start justify-between group">
+      <div key={index} className="mb-1 flex items-start justify-between">
         <div className="flex-1">• {item}</div>
         <Button
           variant="ghost"
           size="sm"
           onClick={() => onRemoveItem(index)}
-          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
+          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 ml-2 no-print"
         >
           <X className="h-3 w-3" />
         </Button>
@@ -367,13 +366,13 @@ export const NextVisitSection: React.FC<NextVisitSectionProps> = ({
 }) => (
   <SectionWrapper title="Next Visit" onAddClick={onAddClick}>
     {nextVisit ? (
-      <div className="mb-1 flex items-start justify-between group">
+      <div className="mb-1 flex items-start justify-between">
         <div className="flex-1">• {nextVisit}</div>
         <Button
           variant="ghost"
           size="sm"
           onClick={onRemoveClick}
-          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ml-2 no-print"
+          className="p-1 h-5 w-5 text-red-500 hover:bg-red-50 ml-2 no-print"
         >
           <X className="h-3 w-3" />
         </Button>
@@ -383,14 +382,3 @@ export const NextVisitSection: React.FC<NextVisitSectionProps> = ({
     )}
   </SectionWrapper>
 );
-
-
-// Next Visit Section
-// export const NextVisitSection: React.FC<NextVisitSectionProps> = ({
-//   nextVisit,
-//   onAddClick,
-// }) => (
-//   <SectionWrapper title="Next Visit" onAddClick={onAddClick}>
-//     {nextVisit}
-//   </SectionWrapper>
-// );
