@@ -16,7 +16,6 @@ import type { ComplaintItem } from "@/types/complaint.types";
 import { ComplaintTab } from "./_components/ComplaintTab";
 import { DrugTab } from "./_components/DrugTab";
 
-
 export const HistoryModal = ({
   isOpen,
   onClose,
@@ -25,11 +24,11 @@ export const HistoryModal = ({
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: {
-    general: ComplaintItem[];
-    drugs: string[];
-    investigations: InvestigationItem[];
-    personal: ComplaintItem[];
-    family: ComplaintItem[];
+    general?: ComplaintItem[];
+    drugs?: string[];
+    investigations?: InvestigationItem[];
+    personal?: ComplaintItem[];
+    family?: ComplaintItem[];
   }) => void;
 }) => {
   const [activeTab, setActiveTab] = useState<

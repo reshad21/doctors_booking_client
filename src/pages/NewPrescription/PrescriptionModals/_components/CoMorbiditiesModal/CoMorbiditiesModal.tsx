@@ -17,7 +17,7 @@ export const CoMorbiditiesModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { coMorbidities: string }) => void;
+  onSubmit: (data: CoMorbiditiesItem) => void;
 }) => {
   const [activeTab, setActiveTab] = useState<"coMorbidities" | "groups">(
     "coMorbidities"
@@ -31,8 +31,7 @@ export const CoMorbiditiesModal = ({
   const handleSubmit = () => {
     if (coMorbidities.length > 0) {
       coMorbidities.forEach((cm) => {
-        const text = cm.notes ? `${cm.label} (${cm.notes})` : cm.label;
-        onSubmit({ coMorbidities: text });
+        onSubmit(cm);
       });
       onClose();
       return;
@@ -151,4 +150,3 @@ export const CoMorbiditiesModal = ({
     </Modal>
   );
 };
-

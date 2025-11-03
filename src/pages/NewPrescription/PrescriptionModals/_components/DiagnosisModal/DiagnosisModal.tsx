@@ -17,7 +17,7 @@ export const DiagnosisModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { diagnosis: string }) => void;
+  onSubmit: (data: DiagnosisItem) => void;
 }) => {
   const [activeTab, setActiveTab] = useState<"diagnosis" | "groups">(
     "diagnosis"
@@ -29,16 +29,13 @@ export const DiagnosisModal = ({
   if (!isOpen) return null;
 
   const handleSubmit = () => {
-    // Keep existing NewPrescription handler compatibility by calling onSubmit for each diagnosis string
     if (diagnoses.length > 0) {
       diagnoses.forEach((d) => {
-        const text = d.notes ? `${d.label} (${d.notes})` : d.label;
-        onSubmit({ diagnosis: text });
+        onSubmit(d);
       });
       onClose();
       return;
     }
-    // fallback: no diagnoses selected
     onClose();
   };
 
@@ -96,7 +93,7 @@ export const DiagnosisModal = ({
         onChange: setShowInPrescription,
       }}
     >
-<div className="flex flex-col h-full max-h-[calc(90vh-120px)]">
+      <div className="flex flex-col h-full max-h-[calc(90vh-120px)]">
         <div className="flex gap-3 p-4 pb-0 flex-shrink-0">
           <Button
             className={`flex-1 py-3 px-6 cursor-pointer rounded-lg font-medium transition-colors ${

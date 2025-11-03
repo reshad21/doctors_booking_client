@@ -10,7 +10,6 @@ interface InvestigationItem {
   id: string;
   label: string;
   notes: string;
-  result: string;
 }
 
 interface InvestigationCardProps {
@@ -41,18 +40,18 @@ export function InvestigationCard({
       </div>
 
       <div className="space-y-1">
-        <label className="text-xs font-medium text-gray-600">Result</label>
+        <label className="text-xs font-medium text-gray-600">Notes</label>
         <Input
           placeholder="Add result..."
-          value={investigation.result}
-          onChange={(e) => onUpdate(investigation.id, "result", e.target.value)}
+          value={investigation.notes}
+          onChange={(e) => onUpdate(investigation.id, "notes", e.target.value)}
           className="w-full"
         />
       </div>
 
-      {investigation.result && (
-        <div className="text-sm text-blue-500">
-          Result: {investigation.result}
+      {investigation.notes && (
+        <div className="text-sm text-gray-600">
+          ({investigation.notes})
         </div>
       )}
     </div>

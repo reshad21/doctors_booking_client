@@ -17,7 +17,7 @@ export const TreatmentPlanModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { treatmentPlan: string }) => void;
+  onSubmit: (data: TreatmentPlanItem) => void;
 }) => {
   const [activeTab, setActiveTab] = useState<"treatmentPlan" | "groups">(
     "treatmentPlan"
@@ -31,8 +31,7 @@ export const TreatmentPlanModal = ({
   const handleSubmit = () => {
     if (treatmentPlans.length > 0) {
       treatmentPlans.forEach((tp) => {
-        const text = tp.notes ? `${tp.label} (${tp.notes})` : tp.label;
-        onSubmit({ treatmentPlan: text });
+        onSubmit(tp);
       });
       onClose();
       return;
@@ -64,7 +63,9 @@ export const TreatmentPlanModal = ({
     value: string
   ) => {
     setTreatmentPlans(
-      treatmentPlans.map((tp) => (tp.id === id ? { ...tp, [field]: value } : tp))
+      treatmentPlans.map((tp) =>
+        tp.id === id ? { ...tp, [field]: value } : tp
+      )
     );
   };
 
@@ -151,4 +152,3 @@ export const TreatmentPlanModal = ({
     </Modal>
   );
 };
-

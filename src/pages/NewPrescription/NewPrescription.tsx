@@ -24,7 +24,6 @@ const defaultClinicalNotes = [
   { id: "right-3", title: "Next Visit", category: "right", isShow: true },
 ];
 
-
 export default function NewPrescription() {
   const { patientId } = useParams<{ patientId: string }>()
   const { data: patientData, isLoading: isPatientLoading } = useGetSinglePatientQuery(patientId)

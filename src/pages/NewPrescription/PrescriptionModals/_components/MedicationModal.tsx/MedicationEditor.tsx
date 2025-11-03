@@ -181,7 +181,6 @@ const renderMedicationForm = (
   medicationType: string,
   updateMedication: any
 ) => {
-  console.log(medicationType, "medicationType");
   if (medicationType === "Tablet" || medicationType === "Capsule") {
     const dosageValues = med.dosage
       ? parseDosageValues(med.dosage)
@@ -376,8 +375,6 @@ export const MedicationEditor = ({
             </div>
 
             {renderMedicationForm(med, medicationType, updateMedication)}
-
-            {/* ... rest of the component */}
           </div>
         );
       })}

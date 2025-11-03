@@ -8,7 +8,6 @@ export interface InvestigationItem {
   id: string;
   label: string;
   notes: string;
-  result: string;
 }
 
 export const InvestigationModal = ({
@@ -44,7 +43,6 @@ export const InvestigationModal = ({
           id: String(Date.now()),
           label,
           notes: "",
-          result: "",
         },
       ]);
     }
