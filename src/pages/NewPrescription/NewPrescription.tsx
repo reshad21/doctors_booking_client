@@ -27,7 +27,7 @@ const defaultClinicalNotes = [
 export default function NewPrescription() {
   const { patientId } = useParams<{ patientId: string }>()
   const { data: patientData, isLoading: isPatientLoading } = useGetSinglePatientQuery(patientId)
-  const { prescriptionData, handlers, removeHandlers } = usePrescriptionData();
+  const { prescriptionData, handlers, removeHandlers, rawPrescriptionData } = usePrescriptionData();
   const { data: prescriptionPageData, isLoading } =
     useGetPrescriptionPageSetupsQuery({});
   const { data: clinicalData } = useGetClinicTemplateQuery({});
@@ -65,6 +65,7 @@ export default function NewPrescription() {
 
     console.log("=== PRESCRIPTION SUBMISSION DATA ===");
     console.log("Full Submission Object:", submissionData);
+    console.log("Full  Submission Object:", rawPrescriptionData);
   };
 
   const headerData =
