@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input";
 
 interface AppointmentTableProps {
   patients: Patient[];
-  meta:any;
+  meta: any;
   deletePatient: (id: string) => void;
 }
 
@@ -151,13 +151,11 @@ const AppointmentTable = ({
                 />
               </TableCell>
               <TableCell className="text-[#5C727D] space-x-2">
-                <TableCell className="text-[#5C727D] space-x-2">
-                  {patient.visitStatus === "VISITED" ? (
-                    <Badge className="bg-[#14400D] rounded">Offline Paid</Badge>
-                  ) : (
-                    <Badge className="bg-red-400 rounded">Unpaid</Badge>
-                  )}
-                </TableCell>
+                {patient.visitStatus === "VISITED" ? (
+                  <Badge className="bg-[#14400D] rounded">Offline Paid</Badge>
+                ) : (
+                  <Badge className="bg-red-400 rounded">Unpaid</Badge>
+                )}
               </TableCell>
               <TableCell>
                 <select
