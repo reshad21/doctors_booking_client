@@ -3,7 +3,7 @@ import { useState } from "react";
 import type { PrescriptionData } from "@/types/new-prescription.types";
 import type { NextVisitItem } from "../PrescriptionModals/_components/NextVisitModal/NextVisitModal";
 
-interface ComplaintItem {
+export type ComplaintItem = {
   id: string;
   label: string;
   duration: string;
@@ -15,21 +15,21 @@ export type GeneralItem = ComplaintItem;
 export type PersonalItem = ComplaintItem;
 export type FamilyItem = ComplaintItem;
 
-interface HistoryData {
+export interface HistoryData {
   general?: GeneralItem[];
   personal?: PersonalItem[];
   family?: FamilyItem[];
   drugs?: string[];
-  investigations?: IncomingInvestigation[];
+  investigations?: InvestigationItem[];
 }
 
-type ExaminationItem = {
+export type ExaminationItem = {
   id: string;
   label: string;
   notes: string;
 };
 
-type GeneralExamination = {
+export type GeneralExamination = {
   bloodPressure: string;
   diastolic: string;
   pulse: string;
@@ -44,25 +44,25 @@ type GeneralExamination = {
   showInPrescription: boolean;
 };
 
-type CoMorbiditiesItem = {
+export type CoMorbiditiesItem = {
   id: string;
   label: string;
   notes: string;
 };
 
-type DiagnosisItem = {
+export type DiagnosisItem = {
   id: string;
   label: string;
   notes: string;
 };
 
-interface MedicationInstructions {
+export interface MedicationInstructions {
   beforeEating: boolean;
   afterEating: boolean;
   notes: string;
 }
 
-interface MedicationItem {
+export interface MedicationItem {
   name: string;
   dosage: string;
   frequency: string;
@@ -71,19 +71,19 @@ interface MedicationItem {
   showInPrescription?: boolean;
 }
 
-type AdviceItem = {
+export type AdviceItem = {
   id: string;
   label: string;
   notes: string;
 };
 
-type TreatmentPlanItem = {
+export type TreatmentPlanItem = {
   id: string;
   label: string;
   notes: string;
 };
 
-type IncomingInvestigation = {
+export type InvestigationItem = {
   id: string;
   label: string;
   notes: string;
@@ -107,7 +107,7 @@ export interface RawPrescriptionData {
     diagnosis: DiagnosisItem[];
   };
   investigations?: {
-    investigations: IncomingInvestigation[];
+    investigations: InvestigationItem[];
   };
   history?: HistoryData;
   treatmentPlan?: {
@@ -310,7 +310,7 @@ export function usePrescriptionData() {
 
   // Investigation handlers
   const handleInvestigationSubmit = (data: {
-    investigations: IncomingInvestigation[];
+    investigations: InvestigationItem[];
   }) => {
     setRawPrescriptionData((prev) => ({
       ...prev,
