@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import PrescriptionHeader from "./_components/PrescriptionHeader";
 import PrescriptionFooter from "./_components/PrescriptionFooter";
 import { PrescriptionModals } from "./PrescriptionModals/PrescriptionModals";
-import { usePrescriptionData, type AdviceItem, type CoMorbiditiesItem, type ComplaintItem, type DiagnosisItem, type ExaminationItem, type FamilyItem, type GeneralItem, type InvestigationItem, type MedicationItem, type PersonalItem, type TreatmentPlanItem } from "./hook/usePrescriptionData";
+import { usePrescriptionData } from "./hook/usePrescriptionData";
 import { useGetPrescriptionPageSetupsQuery } from "@/redux/api/PreManagement/PrescriptionPageSetupApi";
 import { useGetClinicTemplateQuery } from "@/redux/api/clinicalNoteTemplate/clinicalNoteTemplate";
 import { DynamicPrescriptionSections } from "./DynamicPrescriptionSection";
@@ -41,102 +41,13 @@ export default function NewPrescription() {
 
   const handleSubmit = async () => {
     try {
-      const preparedData = {
+      const payload = {
         patientId,
-
-        chiefComplaint: rawPrescriptionData.chiefComplaint?.complaints?.map((c: ComplaintItem) => ({
-          label: c.label,
-          duration: c.duration,
-          unit: c.unit,
-          notes: c.notes,
-        })) || [],
-
-        onExaminations: rawPrescriptionData.examinations?.examinations?.map((e: ExaminationItem) => ({
-          label: e.label,
-          notes: e.notes,
-        })) || [],
-
-        diagnosis: rawPrescriptionData.diagnosis?.diagnosis?.map((d: DiagnosisItem) => ({
-          label: d.label,
-          notes: d.notes,
-        })) || [],
-
-        investigation: rawPrescriptionData.investigations?.investigations?.map((i: InvestigationItem) => ({
-          label: i.label,
-          notes: i.notes,
-        })) || [],
-
-        advice: rawPrescriptionData.advice?.advices?.map((a: AdviceItem) => ({
-          label: a.label,
-          notes: a.notes,
-        })) || [],
-
-        treatmentPlan: rawPrescriptionData.treatmentPlan?.treatmentPlan?.map((t: TreatmentPlanItem) => ({
-          label: t.label,
-          notes: t.notes,
-        })) || [],
-
-        coMorbidities: rawPrescriptionData.coMorbidities?.coMorbidities?.map((c: CoMorbiditiesItem) => ({
-          label: c.label,
-          notes: c.notes,
-        })) || [],
-
-        medication: rawPrescriptionData.medications?.medications?.map((m: MedicationItem) => ({
-          name: m.name,
-          dosage: m.dosage,
-          frequency: m.frequency,
-          duration: m.duration,
-          showInPrescription: m.showInPrescription,
-          instructionNotes: {
-            beforeEating: m.instructions?.beforeEating,
-            afterEating: m.instructions?.afterEating,
-            notes: m.instructions?.notes,
-          },
-        })) || [],
-
-        nextVisit: {
-          durationType: rawPrescriptionData.nextVisit?.nextVisit?.durationType,
-          durationValue: rawPrescriptionData.nextVisit?.nextVisit?.durationValue,
-          notes: rawPrescriptionData.nextVisit?.nextVisit?.notes,
-          showInReport: rawPrescriptionData.nextVisit?.nextVisit?.showInReport,
-          withPatient: rawPrescriptionData.nextVisit?.nextVisit?.withPatient,
-        },
-
-        history: [
-          {
-            general: rawPrescriptionData.history?.general?.map((h: GeneralItem) => ({
-              label: h.label,
-              duration: h.duration,
-              unit: h.unit,
-              notes: h.notes,
-            })) || [],
-            drug: rawPrescriptionData.history?.drugs?.map((d: string) => ({
-              drugName: d,
-            })) || [],
-            investigation: rawPrescriptionData.history?.investigations?.map((i: InvestigationItem) => ({
-              label: i.label,
-              notes: i.notes,
-            })) || [],
-            personal: rawPrescriptionData.history?.personal?.map((p: PersonalItem) => ({
-              label: p.label,
-              duration: p.duration,
-              unit: p.unit,
-              notes: p.notes,
-            })) || [],
-            family: rawPrescriptionData.history?.family?.map((f: FamilyItem) => ({
-              label: f.label,
-              duration: f.duration,
-              unit: f.unit,
-              notes: f.notes,
-            })) || [],
-          },
-        ],
+        ...rawPrescriptionData,
       };
 
-      // 2️⃣ Call mutation
-      const res = await createPrescription(preparedData).unwrap();
+      const res = await createPrescription(payload).unwrap();
 
-      // 3️⃣ Handle success
       console.log("Prescription created successfully:", res);
       alert("Prescription saved successfully!");
     } catch (err) {

@@ -119,7 +119,7 @@ export interface RawPrescriptionData {
   medications?: {
     medications: MedicationItem[];
   };
-  advice?: {
+  advices?: {
     advices?: AdviceItem[];
   };
   nextVisit?: {
@@ -502,7 +502,7 @@ export function usePrescriptionData() {
   };
 
   // Advice handlers
-  const handleAdviceSubmit = (data: { advice: AdviceItem[] }) => {
+  const handleAdviceSubmit = (data: { advices: AdviceItem[] }) => {
     setRawPrescriptionData((prev) => ({
       ...prev,
       advices: data,
