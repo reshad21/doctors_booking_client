@@ -7,10 +7,10 @@ import Login from "@/pages/Login/Login";
 import NewPrescription from "@/pages/NewPrescription/NewPrescription";
 import Notice from "@/pages/Notice/Notice";
 import Patient from "@/pages/Patient/Patient";
-// import CreatePrescription from "@/pages/Prescription/CreatePrescription/CreatePrescription";
 import Prescription from "@/pages/NewPrescription/Prescription";
-import UpdatePrescription from "@/pages/Prescription/UpdatePrescription/UpdatePrescription";
-import ViewPrescription from "@/pages/Prescription/ViewPrescription/ViewPrescription";
+import ViewPrescription from "@/pages/NewPrescription/ViewPrescription";
+import PrescriptionList from "@/pages/NewPrescription/PrescriptionList";
+import EditPrescription from "@/pages/NewPrescription/EditPrescription";
 import AdviceInput from "@/pages/PrescriptionManagement/ClinicalNotes/AdviceInput/AdviceInput";
 import ChiefComplaintInput from "@/pages/PrescriptionManagement/ClinicalNotes/ChiefComplaintInput/ChiefComplaintInput";
 import ClinicalNotes from "@/pages/PrescriptionManagement/ClinicalNotes/ClinicalNotes";
@@ -68,21 +68,23 @@ const router = createBrowserRouter([
       },
       {
         path: "/dashboard/prescription",
-        // element: <NewPrescription />,
         element: <Prescription />,
       },
       {
         path: "/dashboard/create-prescription/:patientId",
         element: <NewPrescription />,
-        // element: <CreatePrescription />,
       },
       {
         path: "/dashboard/view-prescription/:patientId",
+        element: <PrescriptionList />,
+      },
+      {
+        path: "/dashboard/view-prescription-detail/:patientId",
         element: <ViewPrescription key={window.location.pathname} />,
       },
       {
         path: "/dashboard/update-prescription/:prescriptionId",
-        element: <UpdatePrescription />,
+        element: <EditPrescription />,
       },
       {
         path: "/dashboard/chamber",

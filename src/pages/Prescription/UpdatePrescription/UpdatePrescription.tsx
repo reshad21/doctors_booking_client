@@ -4,7 +4,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetPreManagementQuery } from "@/redux/api/PreManagement/PreManagementApi";
 import {
-  useGetPerceptionBIdQuery,
+  useGetPrescriptionByIdQuery,
   useUpdatePrescriptionMutation,
 } from "@/redux/api/prescription/prescription";
 import toast from "react-hot-toast";
@@ -17,7 +17,7 @@ const UpdatePrescription = () => {
   const [updatePrescription] = useUpdatePrescriptionMutation();
   const { prescriptionId } = useParams();
   const navigate = useNavigate();
-  const { data: prescription } = useGetPerceptionBIdQuery({
+  const { data: prescription } = useGetPrescriptionByIdQuery({
     prescriptionId: prescriptionId,
   });
 

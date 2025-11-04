@@ -28,8 +28,8 @@ const defaultClinicalNotes = [
 export default function NewPrescription() {
   const { patientId } = useParams<{ patientId: string }>()
   const { data: patientData, isLoading: isPatientLoading } = useGetSinglePatientQuery(patientId)
-  const { prescriptionData, handlers, removeHandlers, rawPrescriptionData } = usePrescriptionData();
   const [createPrescription] = useCreatePrescriptionMutation()
+  const { prescriptionData, handlers, removeHandlers, rawPrescriptionData } = usePrescriptionData();
   const { data: prescriptionPageData, isLoading } =
     useGetPrescriptionPageSetupsQuery({});
   const { data: clinicalData } = useGetClinicTemplateQuery({});
@@ -70,6 +70,7 @@ export default function NewPrescription() {
     clinicalNotesFromApi && clinicalNotesFromApi.length > 0
       ? clinicalNotesFromApi
       : defaultClinicalNotes;
+
 
   if (isLoading) return <div>Loading...</div>;
 
