@@ -8,7 +8,6 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { X } from "lucide-react";
-import { medicineOptions } from "@/constant/medication.constant";
 
 const parseDosageValues = (dosageString: string) => {
   return dosageString.split("+").map((v) => v.trim());
@@ -343,8 +342,6 @@ export const MedicationEditor = ({
     value: string | boolean
   ) => void;
 }) => {
-
-  console.log(medications, "medications")
   return (
     <div className="w-1/2 space-y-3 overflow-x-hidden">
       {medications.length === 0 && (
@@ -354,9 +351,8 @@ export const MedicationEditor = ({
       )}
 
       {medications.map((med, index) => {
-        const medicationType = medicineOptions.find(
-          (m) => m.name === med.name
-        )?.type;
+        // Use the stored type instead of looking it up
+        const medicationType = med.type;
 
         return (
           <div
@@ -366,6 +362,9 @@ export const MedicationEditor = ({
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold text-gray-800">
                 {index + 1}. {med.name}
+                <span className="ml-2 text-xs text-gray-500">
+                  ({medicationType})
+                </span>
               </span>
               <button
                 onClick={() => removeMedication(med.id)}
@@ -375,46 +374,7 @@ export const MedicationEditor = ({
               </button>
             </div>
 
-            {renderMedicationForm(med, medicationType || "", updateMedication)}
-
-            <div className="text-sm text-gray-600 pt-1">
-              {(medicationType === "Tablet" || medicationType === "Capsule") &&
-                med.dosage && (
-                  <div>
-                    <span className="font-medium">Dosage: {med.dosage}</span>{" "}
-                    <span>
-                      for {med.durationValue} {med.durationUnit}
-                    </span>
-                    {med.instruction1 && <span> (Before Meal)</span>}
-                    {med.instruction2 && <span> (After Meal)</span>}
-                    {med.instructionNotes && (
-                      <span> - Note: {med.instructionNotes}</span>
-                    )}
-                  </div>
-                )}
-              {medicationType !== "Tablet" &&
-                medicationType !== "Capsule" &&
-                (med.dosageValue ||
-                  med.frequencyValue ||
-                  med.durationValue) && (
-                  <div>
-                    <span className="font-medium">
-                      {med.dosageValue} {med.dosageUnit}
-                    </span>{" "}
-                    <span>
-                      {med.frequencyValue} {med.frequencyUnit}
-                    </span>{" "}
-                    <span>
-                      for {med.durationValue} {med.durationUnit}
-                    </span>
-                    {med.beforeEating && <span> (Before eating)</span>}
-                    {med.afterEating && <span> (After eating)</span>}
-                    {med.instructionNotes && (
-                      <span> - Note: {med.instructionNotes}</span>
-                    )}
-                  </div>
-                )}
-            </div>
+            {renderMedicationForm(med, medicationType, updateMedication)}
           </div>
         );
       })}

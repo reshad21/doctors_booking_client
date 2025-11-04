@@ -4,7 +4,6 @@ import Modal from "@/components/shared/Modal"
 import { AdviceTabs } from "./components/AdviceTabs"
 import { GroupTabs } from "./components/GroupTabs"
 
-
 export interface AdviceItem {
   id: string
   label: string
@@ -34,7 +33,6 @@ export const AdviceModal = ({
   }
 
   const handleAddAdvice = (label: string) => {
-    console.log(advices, "advices")
     const exists = advices.some((a) => a.label === label)
     if (!exists) {
       setAdvices([

@@ -5,6 +5,8 @@ import {
   DiagnosisSection,
   InvestigationSection,
   HistorySection,
+  TreatmentPlanSection,
+  CoMorbiditiesSection,
   MedicationsSection,
   AdviceSection,
   NextVisitSection,
@@ -15,6 +17,7 @@ interface ClinicalNote {
   title: string;
   category: "left" | "right";
   order: number;
+  isShow?: boolean;
 }
 
 interface BodySetup {
@@ -78,6 +81,18 @@ const sectionComponentMap: Record<
     modalType: "history",
     removeHandler: "history",
   },
+  "Treatment Plan": {
+    component: TreatmentPlanSection,
+    dataKey: "treatmentPlan",
+    modalType: "treatmentPlan",
+    removeHandler: "treatmentPlan",
+  },
+  "Co Morbidities": {
+    component: CoMorbiditiesSection,
+    dataKey: "coMorbidities",
+    modalType: "coMorbidities",
+    removeHandler: "coMorbidities",
+  },
   Medicine: {
     component: MedicationsSection,
     dataKey: "medications",
@@ -106,11 +121,11 @@ export function DynamicPrescriptionSections({
   bodySetup = null,
 }: DynamicSectionsProps) {
   const leftSections = clinicalNotes
-    .filter((note) => note.category === "left")
+    .filter((note) => note.category === "left" && note.isShow !== false)
     .sort((a, b) => a.order - b.order);
 
   const rightSections = clinicalNotes
-    .filter((note) => note.category === "right")
+    .filter((note) => note.category === "right" && note.isShow !== false)
     .sort((a, b) => a.order - b.order);
 
   const renderSection = (note: ClinicalNote) => {
@@ -137,9 +152,11 @@ export function DynamicPrescriptionSections({
           key={note.id}
           nextVisit={items}
           onAddClick={() => openModal(modalType)}
+          onRemoveClick={removeHandlers[removeHandler]}
         />
       );
     }
+
 
     return (
       <Component
@@ -158,8 +175,6 @@ export function DynamicPrescriptionSections({
   const rightTopMargin = bodySetup?.bodyRightSideTopMargin || "0";
   const showMiddleLine = bodySetup?.showMiddleLine ?? true;
 
-  console.log(leftWidth, rightWidth, 'left width', "right width")
-
   return (
     <div className="border p-5 mx-2 border-[#C3C3C3] rounded">
       <div className="flex gap-8">
@@ -168,7 +183,7 @@ export function DynamicPrescriptionSections({
           className={`space-y-4 ${showMiddleLine ? "border-r border-r-[#C3C3C3] pr-8" : ""}`}
           style={{
             width: `${leftWidth}%`,
-            marginTop: `${leftTopMargin}px`,
+            paddingTop: `${leftTopMargin}px`,
           }}
         >
           {leftSections.map((note) => renderSection(note))}
@@ -179,7 +194,7 @@ export function DynamicPrescriptionSections({
           className="space-y-4"
           style={{
             width: `${rightWidth}%`,
-            marginTop: `${rightTopMargin}px`,
+            paddingTop: `${rightTopMargin}px`,
           }}
         >
           {rightSections.map((note) => renderSection(note))}

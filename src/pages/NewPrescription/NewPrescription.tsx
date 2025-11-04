@@ -8,9 +8,28 @@ import { usePrescriptionData } from "./hook/usePrescriptionData";
 import { useGetPrescriptionPageSetupsQuery } from "@/redux/api/PreManagement/PrescriptionPageSetupApi";
 import { useGetClinicTemplateQuery } from "@/redux/api/clinicalNoteTemplate/clinicalNoteTemplate";
 import { DynamicPrescriptionSections } from "./DynamicPrescriptionSection";
+import { useGetSinglePatientQuery } from "@/redux/api/patient/patient";
+import { useParams } from "react-router-dom";
+import { useCreatePrescriptionMutation } from "@/redux/api/prescription/prescription";
+
+const defaultClinicalNotes = [
+  { id: "left-1", title: "Chief Complaint", category: "left", isShow: true },
+  { id: "left-2", title: "On Examinations", category: "left", isShow: true },
+  { id: "left-3", title: "Diagnosis", category: "left", isShow: true },
+  { id: "left-4", title: "Investigation", category: "left", isShow: true },
+  { id: "left-5", title: "History", category: "left", isShow: true },
+  { id: "left-6", title: "Treatment Plan", category: "left", isShow: true },
+  { id: "left-7", title: "Co Morbidities", category: "left", isShow: true },
+  { id: "right-1", title: "Medicine", category: "right", isShow: true },
+  { id: "right-2", title: "Advice", category: "right", isShow: true },
+  { id: "right-3", title: "Next Visit", category: "right", isShow: true },
+];
 
 export default function NewPrescription() {
-  const { prescriptionData, handlers, removeHandlers } = usePrescriptionData();
+  const { patientId } = useParams<{ patientId: string }>()
+  const { data: patientData, isLoading: isPatientLoading } = useGetSinglePatientQuery(patientId)
+  const [createPrescription] = useCreatePrescriptionMutation()
+  const { prescriptionData, handlers, removeHandlers, rawPrescriptionData } = usePrescriptionData();
   const { data: prescriptionPageData, isLoading } =
     useGetPrescriptionPageSetupsQuery({});
   const { data: clinicalData } = useGetClinicTemplateQuery({});
@@ -20,6 +39,23 @@ export default function NewPrescription() {
   const closeModal = () => setActiveModal(null);
   const handlePrint = () => window.print();
 
+  const handleSubmit = async () => {
+    try {
+      const payload = {
+        patientId,
+        ...rawPrescriptionData,
+      };
+
+      const res = await createPrescription(payload).unwrap();
+
+      console.log("Prescription created successfully:", res);
+      alert("Prescription saved successfully!");
+    } catch (err) {
+      console.error("Failed to create prescription:", err);
+      alert("Something went wrong while saving the prescription.");
+    }
+  };
+
   const headerData =
     prescriptionPageData?.data?.[0]?.PrescriptionHeader?.[0] || null;
   const footerData =
@@ -27,9 +63,14 @@ export default function NewPrescription() {
   const bodySetupData =
     prescriptionPageData?.data?.[0]?.PrescriptionBodySetup?.[0] || null;
 
-  console.log(prescriptionPageData, "prescriptionPageData");
 
-  const clinicalNotes = clinicalData?.data?.notes || [];
+  const clinicalNotesFromApi = clinicalData?.data?.notes || [];
+
+  const clinicalNotes =
+    clinicalNotesFromApi && clinicalNotesFromApi.length > 0
+      ? clinicalNotesFromApi
+      : defaultClinicalNotes;
+
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -53,8 +94,14 @@ export default function NewPrescription() {
       `}</style>
 
       <div className="max-w-5xl mx-auto pt-2 print-container">
-        {/* Print Button */}
-        <div className="flex justify-end mb-4 no-print mr-2">
+        {/* Print and Submit Buttons */}
+        <div className="flex justify-end gap-2 mb-4 no-print mr-2">
+          <Button
+            onClick={handleSubmit}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 cursor-pointer text-white"
+          >
+            Submit Prescription
+          </Button>
           <Button
             onClick={handlePrint}
             className="flex items-center gap-2 bg-green-600 hover:bg-green-700 cursor-pointer text-white"
@@ -69,26 +116,25 @@ export default function NewPrescription() {
           <PrescriptionHeader data={headerData} />
 
           {/* Patient Information */}
-          <div className="grid grid-cols-4 gap-8 justify-items-center max-w-5xl my-5 mx-auto">
+          {!isPatientLoading && (<div className="grid grid-cols-4 gap-8 justify-items-center max-w-5xl my-5 mx-auto">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Name:</span>
-              <span className="text-sm">
-                {prescriptionData.patientName || ""}
-              </span>
+              <span className="text-sm">{patientData?.data?.name || "—"}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Age:</span>
-              <span className="text-sm w-16">{prescriptionData.age || ""}</span>
+              <span className="text-sm w-16">{patientData?.data?.age || "—"}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Date:</span>
-              <span className="text-sm">{prescriptionData.date}</span>
+              <span className="text-sm font-medium">Gender:</span>
+              <span className="text-sm">{patientData?.data?.gender || "—"}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">ID:</span>
-              <span className="text-sm">{prescriptionData.date}</span>
+              <span className="text-sm font-medium">Phone:</span>
+              <span className="text-sm">{patientData?.data?.phoneNumber || "—"}</span>
             </div>
-          </div>
+          </div>)}
+
 
           <DynamicPrescriptionSections
             clinicalNotes={clinicalNotes}

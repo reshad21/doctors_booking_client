@@ -17,6 +17,7 @@ const prescriptionApi = baseApi.injectEndpoints({
         { type: "patient", id: arg.patientId },
       ],
     }),
+
     createExtraAdvice: builder.mutation({
       query: (adviceData) => {
         return {
@@ -27,6 +28,7 @@ const prescriptionApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["prescription"],
     }),
+
     updatePrescription: builder.mutation({
       query: (prescriptionData) => {
         return {
@@ -39,7 +41,8 @@ const prescriptionApi = baseApi.injectEndpoints({
         { type: "prescription", id: patientId },
       ],
     }),
-    getPerceptionByPatientId: builder.query({
+
+    getPrescriptionByPatientId: builder.query({
       query: (patientId) => {
         return {
           url: `/prescription/${patientId}`,
@@ -50,7 +53,8 @@ const prescriptionApi = baseApi.injectEndpoints({
         { type: "prescription", id: patientId },
       ],
     }),
-    getPerceptionBId: builder.query({
+
+    getPrescriptionById: builder.query({
       query: ({ prescriptionId }) => {
         return {
           url: `/prescription/single/${prescriptionId}`,
@@ -61,6 +65,7 @@ const prescriptionApi = baseApi.injectEndpoints({
         { type: "prescription", id: prescriptionId },
       ],
     }),
+    
     getExtraAdvice: builder.query({
       query: () => {
         return {
@@ -74,8 +79,8 @@ const prescriptionApi = baseApi.injectEndpoints({
 
 export const {
   useCreatePrescriptionMutation,
-  useGetPerceptionByPatientIdQuery,
-  useGetPerceptionBIdQuery,
+  useGetPrescriptionByPatientIdQuery,
+  useGetPrescriptionByIdQuery,
   useUpdatePrescriptionMutation,
   useCreateExtraAdviceMutation,
   useGetExtraAdviceQuery,

@@ -4,7 +4,7 @@ import { Info, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import ExportDropdown from "@/components/shared/ExportDropdown";
 import { useState } from "react";
-import PrescriptionTable from "../Prescription/_components/PrescriptionTable";
+import PrescriptionTable from "./_components/PrescriptionTable";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { useGetChambersQuery } from "@/redux/api/chamber/chamber";
 import BaseSelect from "@/components/shared/BaseSelect";
@@ -28,7 +28,7 @@ const Prescription = () => {
 
   const methods = useForm({
     defaultValues: {
-      chamber: chamber || "all", // set "all" as default
+      chamber: chamber || "all",
       date: today,
     },
   });
@@ -40,7 +40,7 @@ const Prescription = () => {
     limit,
     searchTerm,
     filter: JSON.stringify({
-      chamberId: chamber && chamber !== "all" ? chamber : undefined, // only filter if not "all"
+      chamberId: chamber && chamber !== "all" ? chamber : undefined,
       createdAt: headerSelect?.date || today,
       timezoneOffset: new Date().getTimezoneOffset(),
     }),
@@ -49,7 +49,7 @@ const Prescription = () => {
 
   if (isLoading || patientsLoading) return <LoadingSpinner />;
   const chamberOptions = [
-    { name: "All Chambers", value: "all" }, // default option
+    { name: "All Chambers", value: "all" },
     ...(chambersData?.data || []).map((chamber: Chamber) => ({
       name: chamber.name,
       value: chamber.id,
@@ -72,10 +72,9 @@ const Prescription = () => {
               ]}
             />
 
-            {/* Filters */}
+            {/* Chamber Filters */}
             <FormProvider {...methods}>
               <div className="flex items-center gap-4">
-                {/* Chamber Filter */}
                 <div className="flex-1 min-w-0">
                   <BaseSelect
                     name="chamber"

@@ -7,18 +7,20 @@ import Login from "@/pages/Login/Login";
 import NewPrescription from "@/pages/NewPrescription/NewPrescription";
 import Notice from "@/pages/Notice/Notice";
 import Patient from "@/pages/Patient/Patient";
-// import CreatePrescription from "@/pages/Prescription/CreatePrescription/CreatePrescription";
 import Prescription from "@/pages/NewPrescription/Prescription";
-import UpdatePrescription from "@/pages/Prescription/UpdatePrescription/UpdatePrescription";
-import ViewPrescription from "@/pages/Prescription/ViewPrescription/ViewPrescription";
+import ViewPrescription from "@/pages/NewPrescription/ViewPrescription";
+import PrescriptionList from "@/pages/NewPrescription/PrescriptionList";
+import EditPrescription from "@/pages/NewPrescription/EditPrescription";
 import AdviceInput from "@/pages/PrescriptionManagement/ClinicalNotes/AdviceInput/AdviceInput";
 import ChiefComplaintInput from "@/pages/PrescriptionManagement/ClinicalNotes/ChiefComplaintInput/ChiefComplaintInput";
 import ClinicalNotes from "@/pages/PrescriptionManagement/ClinicalNotes/ClinicalNotes";
+import CoMorbiditiesInput from "@/pages/PrescriptionManagement/ClinicalNotes/CoMorbiditiesInput/CoMorbiditiesInput";
 import DiagnosisInput from "@/pages/PrescriptionManagement/ClinicalNotes/DiagnosisInput/DiagnosisInput";
 import HistoryInput from "@/pages/PrescriptionManagement/ClinicalNotes/HistoryInput/HistoryInput";
 import InvestigationInput from "@/pages/PrescriptionManagement/ClinicalNotes/InvestigationInput/InvestigationInput";
 import NextVisitInput from "@/pages/PrescriptionManagement/ClinicalNotes/NextVisitInput/NextVisitInput";
 import OnExaminationsInput from "@/pages/PrescriptionManagement/ClinicalNotes/OnExaminationsInput/OnExaminationsInput";
+import TreatmentPlanInput from "@/pages/PrescriptionManagement/ClinicalNotes/TreatmentPlanInput/TreatmentPlanInput";
 import MedicineManagement from "@/pages/PrescriptionManagement/MedicineManagement/MedicineManagement";
 import PreManagement from "@/pages/PrescriptionManagement/PreManagement";
 import PrescriptionPageSetup from "@/pages/PrescriptionManagement/PrescriptionPageSetup/PrescriptionPageSetup";
@@ -66,21 +68,23 @@ const router = createBrowserRouter([
       },
       {
         path: "/dashboard/prescription",
-        // element: <NewPrescription />,
         element: <Prescription />,
       },
       {
         path: "/dashboard/create-prescription/:patientId",
         element: <NewPrescription />,
-        // element: <CreatePrescription />,
       },
       {
         path: "/dashboard/view-prescription/:patientId",
+        element: <PrescriptionList />,
+      },
+      {
+        path: "/dashboard/view-prescription-detail/:patientId",
         element: <ViewPrescription key={window.location.pathname} />,
       },
       {
         path: "/dashboard/update-prescription/:prescriptionId",
-        element: <UpdatePrescription />,
+        element: <EditPrescription />,
       },
       {
         path: "/dashboard/chamber",
@@ -136,6 +140,14 @@ const router = createBrowserRouter([
       {
         path: "/dashboard/pre-management/clinical-notes/history-input",
         element: <HistoryInput />,
+      },
+      {
+        path: "/dashboard/pre-management/clinical-notes/co-morbidities-input",
+        element: <CoMorbiditiesInput />,
+      },
+      {
+        path: "/dashboard/pre-management/clinical-notes/treatment-plan-input",
+        element: <TreatmentPlanInput />,
       },
       {
         path: "/dashboard/pre-management/clinical-notes/advice-input",

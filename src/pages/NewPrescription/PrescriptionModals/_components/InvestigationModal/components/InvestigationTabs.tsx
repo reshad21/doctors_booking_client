@@ -10,7 +10,6 @@ interface InvestigationItem {
   id: string;
   label: string;
   notes: string;
-  result: string;
 }
 
 interface InvestigationCardProps {
@@ -41,18 +40,18 @@ export function InvestigationCard({
       </div>
 
       <div className="space-y-1">
-        <label className="text-xs font-medium text-gray-600">Result</label>
+        <label className="text-xs font-medium text-gray-600">Notes</label>
         <Input
           placeholder="Add result..."
-          value={investigation.result}
-          onChange={(e) => onUpdate(investigation.id, "result", e.target.value)}
+          value={investigation.notes}
+          onChange={(e) => onUpdate(investigation.id, "notes", e.target.value)}
           className="w-full"
         />
       </div>
 
-      {investigation.result && (
-        <div className="text-sm text-blue-500">
-          Result: {investigation.result}
+      {investigation.notes && (
+        <div className="text-sm text-gray-600">
+          ({investigation.notes})
         </div>
       )}
     </div>
@@ -122,8 +121,8 @@ export function InvestigationTabs({
   }
 
   return (
-    <div className="flex gap-6 pb-6">
-      <div className="w-1/2 space-y-4">
+    <div className="flex gap-6 pb-6 h-full">
+      <div className="w-1/2 space-y-4 overflow-y-auto pr-2 max-h-full">
         <div className="flex flex-wrap gap-2">
           {filteredInvestigationOptions.map((option) => (
             <button
@@ -150,7 +149,7 @@ export function InvestigationTabs({
         )}
       </div>
 
-      <div className="w-1/2 space-y-3 overflow-x-hidden">
+      <div className="w-1/2 space-y-3 overflow-y-auto pr-2 max-h-full">
         {investigations.length === 0 && (
           <p className="text-sm text-gray-500 text-center py-8">
             Select investigation from the left to add them here

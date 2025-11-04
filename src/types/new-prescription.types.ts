@@ -13,6 +13,8 @@ export interface PrescriptionData {
   diagnosis: string[];
   investigations: string[];
   history: string[];
+  treatmentPlan: string[];
+  coMorbidities: string[];
   medications: Array<{
     name: string;
     dosage: string;

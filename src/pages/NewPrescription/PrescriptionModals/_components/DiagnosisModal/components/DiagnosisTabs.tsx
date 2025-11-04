@@ -86,8 +86,6 @@ export function DiagnosisTabs({
     { key: "doctorId", value: doctorId },
   ]);
 
-  console.log(data, "diagnosis");
-
   // Extract diagnosis options from API data
   const diagnosisOptions: string[] =
     data?.data?.data?.map((item: DiagnosisInput) => item.value) || [];

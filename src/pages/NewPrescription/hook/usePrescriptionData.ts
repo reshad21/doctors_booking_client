@@ -3,7 +3,7 @@ import { useState } from "react";
 import type { PrescriptionData } from "@/types/new-prescription.types";
 import type { NextVisitItem } from "../PrescriptionModals/_components/NextVisitModal/NextVisitModal";
 
-interface ComplaintItem {
+export type ComplaintItem = {
   id: string;
   label: string;
   duration: string;
@@ -11,13 +11,25 @@ interface ComplaintItem {
   notes: string;
 }
 
-type ExaminationItem = {
+export type GeneralItem = ComplaintItem;
+export type PersonalItem = ComplaintItem;
+export type FamilyItem = ComplaintItem;
+
+export interface HistoryData {
+  general?: GeneralItem[];
+  personal?: PersonalItem[];
+  family?: FamilyItem[];
+  drugs?: string[];
+  investigations?: InvestigationItem[];
+}
+
+export type ExaminationItem = {
   id: string;
   label: string;
   notes: string;
 };
 
-type GeneralExamination = {
+export type GeneralExamination = {
   bloodPressure: string;
   diastolic: string;
   pulse: string;
@@ -32,12 +44,88 @@ type GeneralExamination = {
   showInPrescription: boolean;
 };
 
-type IncomingInvestigation = {
+export type CoMorbiditiesItem = {
   id: string;
   label: string;
   notes: string;
-  result: string;
 };
+
+export type DiagnosisItem = {
+  id: string;
+  label: string;
+  notes: string;
+};
+
+export interface MedicationInstructions {
+  beforeEating: boolean;
+  afterEating: boolean;
+  notes: string;
+}
+
+export interface MedicationItem {
+  name: string;
+  dosage: string;
+  frequency: string;
+  duration: string;
+  instructions?: MedicationInstructions;
+  showInPrescription?: boolean;
+}
+
+export type AdviceItem = {
+  id: string;
+  label: string;
+  notes: string;
+};
+
+export type TreatmentPlanItem = {
+  id: string;
+  label: string;
+  notes: string;
+};
+
+export type InvestigationItem = {
+  id: string;
+  label: string;
+  notes: string;
+};
+
+// Raw data types for storing incoming data before formatting
+export interface RawPrescriptionData {
+  patient?: {
+    name: string;
+    age: string;
+    date: string;
+  };
+  chiefComplaint?: {
+    complaints: ComplaintItem[];
+  };
+  examinations?: {
+    examinations: ExaminationItem[];
+    generalExam: GeneralExamination;
+  };
+  diagnosis?: {
+    diagnosis: DiagnosisItem[];
+  };
+  investigations?: {
+    investigations: InvestigationItem[];
+  };
+  history?: HistoryData;
+  treatmentPlan?: {
+    treatmentPlan: TreatmentPlanItem[];
+  };
+  coMorbidities?: {
+    coMorbidities: CoMorbiditiesItem[];
+  };
+  medications?: {
+    medications: MedicationItem[];
+  };
+  advices?: {
+    advices?: AdviceItem[];
+  };
+  nextVisit?: {
+    nextVisit: NextVisitItem;
+  };
+}
 
 export function usePrescriptionData() {
   const [prescriptionData, setPrescriptionData] = useState<PrescriptionData>({
@@ -49,10 +137,16 @@ export function usePrescriptionData() {
     diagnosis: [],
     investigations: [],
     history: [],
+    treatmentPlan: [],
+    coMorbidities: [],
     medications: [],
     advice: [],
     nextVisit: "",
   });
+
+  // Store raw incoming data before formatting
+  const [rawPrescriptionData, setRawPrescriptionData] =
+    useState<RawPrescriptionData>({});
 
   // Patient handlers
   const handlePatientSubmit = (data: {
@@ -60,6 +154,15 @@ export function usePrescriptionData() {
     age: string;
     date: string;
   }) => {
+    // Store raw data
+    setRawPrescriptionData((prev) => ({
+      ...prev,
+      patient: data,
+    }));
+
+    // Log raw data to console
+    console.log("Raw Patient Data:", data);
+
     setPrescriptionData((prev) => ({
       ...prev,
       patientName: data.name,
@@ -72,6 +175,15 @@ export function usePrescriptionData() {
   const handleChiefComplaintSubmit = (data: {
     complaints: ComplaintItem[];
   }) => {
+    // Store raw data
+    setRawPrescriptionData((prev) => ({
+      ...prev,
+      chiefComplaint: data,
+    }));
+
+    // Log raw data to console
+    console.log("Raw Chief Complaint Data:", data);
+
     const formatted = data.complaints.map((item) => {
       const dur = item.duration ? `${item.duration}` : "";
       const unit = item.unit ? ` ${item.unit}` : "";
@@ -79,7 +191,6 @@ export function usePrescriptionData() {
       const middle = dur ? `${dur}${unit}`.trim() : unit.trim();
       return `${item.label} ${middle ? `for ${middle}` : ""}${notes}`.trim();
     });
-
     setPrescriptionData((prev) => {
       const existingSet = new Set(
         prev.chiefComplaint.map((c) => c.trim().toLowerCase())
@@ -106,10 +217,21 @@ export function usePrescriptionData() {
     examinations: ExaminationItem[];
     generalExam: GeneralExamination;
   }) => {
+    // Store raw data
+    setRawPrescriptionData((prev) => ({
+      ...prev,
+      examinations: {
+        generalExam: data.generalExam,
+        examinations: data.examinations,
+      },
+    }));
+
+    // Log raw data to console
+    console.log("Raw Examinations Data:", data);
+
     const formattedExaminations = data.examinations.map(
       (item) => item.label + (item.notes ? ` (${item.notes})` : "")
     );
-
     const {
       bloodPressure,
       diastolic,
@@ -156,10 +278,26 @@ export function usePrescriptionData() {
   };
 
   // Diagnosis handlers
-  const handleDiagnosisSubmit = (data: { diagnosis: string }) => {
+  const handleDiagnosisSubmit = (diagnosisItem: DiagnosisItem) => {
+    setRawPrescriptionData((prev) => ({
+      ...prev,
+      diagnosis: {
+        diagnosis: prev.diagnosis?.diagnosis
+          ? [...prev.diagnosis.diagnosis, diagnosisItem]
+          : [diagnosisItem],
+      },
+    }));
+
+    console.log("Raw Diagnosis Data:", diagnosisItem);
+
     setPrescriptionData((prev) => ({
       ...prev,
-      diagnosis: [...prev.diagnosis, data.diagnosis],
+      diagnosis: [
+        ...(prev.diagnosis || []),
+        diagnosisItem.notes
+          ? `${diagnosisItem.label} (${diagnosisItem.notes})`
+          : diagnosisItem.label,
+      ],
     }));
   };
 
@@ -171,22 +309,20 @@ export function usePrescriptionData() {
   };
 
   // Investigation handlers
-  const handleInvestigationSubmit = (
-    data:
-      | {
-          investigations: Array<{
-            id: string;
-            label: string;
-            notes: string;
-            result: string;
-          }>;
-        }
-      | { investigations: string[] }
-  ) => {
+  const handleInvestigationSubmit = (data: {
+    investigations: InvestigationItem[];
+  }) => {
+    setRawPrescriptionData((prev) => ({
+      ...prev,
+      investigations: data,
+    }));
+
+    console.log("Raw Investigation Data:", data);
+
     if (Array.isArray(data.investigations)) {
       const formattedInvestigations = data.investigations.map((inv) => {
         if (typeof inv === "string") return inv;
-        const result = inv.result ? ` [Result: ${inv.result}]` : "";
+        const result = inv.notes ? ` ${inv.notes}` : "";
         return `${inv.label}${result}`;
       });
 
@@ -213,24 +349,11 @@ export function usePrescriptionData() {
     return `${item.label}${middle ? ` ${middle}` : ""}${notes}`.trim();
   };
 
-  const handleHistorySubmit = (
-    data:
-      | { history: string }
-      | {
-          general?: ComplaintItem[];
-          drugs?: string[];
-          investigations?: Array<IncomingInvestigation>;
-          personal?: ComplaintItem[];
-          family?: ComplaintItem[];
-        }
-  ) => {
-    if ("history" in data) {
-      setPrescriptionData((prev) => ({
-        ...prev,
-        history: [...prev.history, data.history],
-      }));
-      return;
-    }
+  const handleHistorySubmit = (data: HistoryData) => {
+    setRawPrescriptionData((prev) => ({
+      ...prev,
+      history: data,
+    }));
 
     const sections: string[] = [];
 
@@ -245,7 +368,7 @@ export function usePrescriptionData() {
 
     if (data.investigations && data.investigations.length > 0) {
       const items = data.investigations.map((inv) => {
-        const res = inv.result ? ` [Result: ${inv.result}]` : "";
+        const res = inv.notes ? ` ${inv.notes}` : "";
         return `${inv.label}${res}`;
       });
       sections.push(`I/O: ${items.join("; ")}`);
@@ -276,18 +399,74 @@ export function usePrescriptionData() {
     }));
   };
 
+  // Treatment Plan handlers
+  const handleTreatmentPlanSubmit = (data: TreatmentPlanItem) => {
+    setRawPrescriptionData((prev) => ({
+      ...prev,
+      treatmentPlan: {
+        treatmentPlan: [...(prev.treatmentPlan?.treatmentPlan || []), data],
+      },
+    }));
+
+    // Log raw data
+    console.log("Raw Treatment Plan Data:", data);
+
+    const formattedTreatment = `${data.label}${data.notes ? ` ${data.notes}` : ""}`;
+
+    setPrescriptionData((prev) => ({
+      ...prev,
+      treatmentPlan: [...prev.treatmentPlan, formattedTreatment],
+    }));
+  };
+
+  const removeTreatmentPlan = (index: number) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      treatmentPlan: prev.treatmentPlan.filter((_, i) => i !== index),
+    }));
+  };
+
+  // Co Morbidities handlers
+  const handleCoMorbiditiesSubmit = (data: CoMorbiditiesItem) => {
+    setRawPrescriptionData((prev) => ({
+      ...prev,
+      coMorbidities: {
+        coMorbidities: [...(prev.coMorbidities?.coMorbidities || []), data],
+      },
+    }));
+
+    // Log raw data to console
+    console.log("Raw Co-Morbidities Data:", data);
+
+    const formattedTreatment = `${data.label}${data.notes ? ` ${data.notes}` : ""}`;
+
+    setPrescriptionData((prev) => ({
+      ...prev,
+      coMorbidities: [...prev.coMorbidities, formattedTreatment],
+    }));
+  };
+
+  const removeCoMorbidities = (index: number) => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      coMorbidities: prev.coMorbidities.filter((_, i) => i !== index),
+    }));
+  };
+
   // Medications handlers
-  const handleMedicationsSubmit = (data: {
-    name: string;
-    dosage: string;
-    frequency: string;
-    duration: string;
-    instructions?: {
-      beforeEating: boolean;
-      afterEating: boolean;
-      notes: string;
-    };
-  }) => {
+  const handleMedicationsSubmit = (data: MedicationItem | MedicationItem[]) => {
+    const medsArray = Array.isArray(data) ? data : [data];
+
+    setRawPrescriptionData((prev) => ({
+      ...prev,
+      medications: {
+        medications: [...(prev.medications?.medications || []), ...medsArray],
+      },
+    }));
+
+    // Log raw data to console
+    console.log("Raw Medications Data:", data);
+
     const formatInstructions = (instr: any): string => {
       if (!instr) return "";
       if (typeof instr === "string") return instr;
@@ -298,17 +477,20 @@ export function usePrescriptionData() {
       return parts.join("; ").trim();
     };
 
-    const medicationEntry = {
-      name: data.name,
-      dosage: data.dosage,
-      frequency: data.frequency,
-      duration: data.duration,
-      instructions: formatInstructions((data as any).instructions),
-    };
+    // Handle both single medication and array of medications
+    const medicationsToAdd = Array.isArray(data) ? data : [data];
+
+    const medicationEntries = medicationsToAdd.map((med) => ({
+      name: med.name,
+      dosage: med.dosage,
+      frequency: med.frequency,
+      duration: med.duration,
+      instructions: formatInstructions((med as any).instructions),
+    }));
 
     setPrescriptionData((prev) => ({
       ...prev,
-      medications: [...prev.medications, medicationEntry],
+      medications: [...prev.medications, ...medicationEntries],
     }));
   };
 
@@ -320,15 +502,15 @@ export function usePrescriptionData() {
   };
 
   // Advice handlers
-  const handleAdviceSubmit = (
-    data:
-      | { advice: string }
-      | {
-          advices: Array<
-            { id?: string; label: string; notes?: string } | string
-          >;
-        }
-  ) => {
+  const handleAdviceSubmit = (data: { advices: AdviceItem[] }) => {
+    setRawPrescriptionData((prev) => ({
+      ...prev,
+      advices: data,
+    }));
+
+    // Log raw data to console
+    console.log("Raw Advice Data:", data);
+
     if ((data as any).advices && Array.isArray((data as any).advices)) {
       const advArr: string[] = (data as any).advices.map((a: any) => {
         if (typeof a === "string") return a;
@@ -363,6 +545,15 @@ export function usePrescriptionData() {
 
   // Next Visit handlers
   const handleNextVisitSubmit = (data: { nextVisit: NextVisitItem }) => {
+    // Store raw data
+    setRawPrescriptionData((prev) => ({
+      ...prev,
+      nextVisit: data,
+    }));
+
+    // Log raw data to console
+    console.log("Raw Next Visit Data:", data);
+
     const nv = data.nextVisit;
     const formatted =
       `${nv.durationValue} ${nv.durationType} পর${nv.notes ? ` ${nv.notes}` : ""}${nv.showInReport ? " রিপোর্ট সহ" : ""}${nv.withPatient ? " আসবেন" : ""}`.trim();
@@ -372,8 +563,16 @@ export function usePrescriptionData() {
     }));
   };
 
+  const removeNextVisit = () => {
+    setPrescriptionData((prev) => ({
+      ...prev,
+      nextVisit: "",
+    }));
+  };
+
   return {
     prescriptionData,
+    rawPrescriptionData,
     handlers: {
       patient: handlePatientSubmit,
       chiefComplaint: handleChiefComplaintSubmit,
@@ -381,6 +580,8 @@ export function usePrescriptionData() {
       diagnosis: handleDiagnosisSubmit,
       investigation: handleInvestigationSubmit,
       history: handleHistorySubmit,
+      treatmentPlan: handleTreatmentPlanSubmit,
+      coMorbidities: handleCoMorbiditiesSubmit,
       medications: handleMedicationsSubmit,
       advice: handleAdviceSubmit,
       nextVisit: handleNextVisitSubmit,
@@ -391,8 +592,11 @@ export function usePrescriptionData() {
       diagnosis: removeDiagnosis,
       investigation: removeInvestigation,
       history: removeHistory,
+      treatmentPlan: removeTreatmentPlan,
+      coMorbidities: removeCoMorbidities,
       medication: removeMedication,
       advice: removeAdvice,
+      nextVisit: removeNextVisit,
     },
   };
 }

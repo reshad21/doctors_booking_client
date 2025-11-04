@@ -16,7 +16,6 @@ interface PrescriptionHeader {
 }
 
 const PrescriptionHeader = ({ data }: { data: PrescriptionHeader }) => {
-  console.log(data, 'prescription header')
   if (!data?.showPrescriptionHeader) {
     return (
       <div className="text-center py-6 text-sm text-gray-700">

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useGetPerceptionByPatientIdQuery } from "@/redux/api/prescription/prescription";
+import { useGetPrescriptionByPatientIdQuery } from "@/redux/api/prescription/prescription";
 import { Edit, Info, Printer, Share2, MessageCircle, Mail } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
@@ -11,7 +11,7 @@ import BackButton from "@/components/shared/BackButton";
 const ViewPrescription = () => {
   const { patientId } = useParams();
   const { data: prescriptions, refetch } =
-    useGetPerceptionByPatientIdQuery(patientId);
+    useGetPrescriptionByPatientIdQuery(patientId);
   const { data: preManagementData } = useGetPreManagementQuery(undefined);
   const printRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -90,7 +90,6 @@ const ViewPrescription = () => {
       )
     : prescriptions?.data;
 
-  console.log(prescriptions, "prescriptions");
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -217,7 +216,6 @@ const ViewPrescription = () => {
                     </div>
                   </div>
 
-                  {/* ... existing prescription display code ... */}
                   <div
                     ref={(el) => setPrintRef(el, index)}
                     className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 relative hover:shadow-md transition-shadow duration-200"
