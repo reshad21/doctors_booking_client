@@ -119,14 +119,8 @@ const transformPrescriptionData = (apiData: any) => {
       })
     );
   }
-
-  // Transform Medicines - check for 'medicines' array first (this has the actual medicine data)
-  // Then merge with 'medication' array (which has instructionNotes)
-  console.log("Medicines data:", apiData.medicines);
-  console.log("Medication data:", apiData.medication);
   
   if (apiData.medicines && Array.isArray(apiData.medicines)) {
-    // Create a map of medicationId to instructionNotes from the medication array
     const medicationInstructionsMap = new Map();
     if (apiData.medication && Array.isArray(apiData.medication)) {
       apiData.medication.forEach((medItem: any) => {
@@ -137,9 +131,8 @@ const transformPrescriptionData = (apiData: any) => {
     }
 
     transformed.medications.medications = apiData.medicines
-      .filter((med: any) => med.medicineName || med.name) // Only process items with medicine name
+      .filter((med: any) => med.medicineName || med.name)
       .map((med: any) => {
-        // Handle DosageSchedule - combine multiple schedules if they exist
         let dosage = "";
         let frequency = "";
         let duration = "";
