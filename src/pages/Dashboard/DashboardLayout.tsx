@@ -56,8 +56,8 @@ export default function DashboardLayout() {
   }, [dispatch, routeAccess]);
 
   if (isLoading) return null;
-  const date = new Date();
-  const year = date.getFullYear();
+  // const date = new Date();
+  // const year = date.getFullYear();
 
   return (
     <SidebarProvider className="max-h-[100vh] bg-[#f4f6f9]">
@@ -164,7 +164,7 @@ export default function DashboardLayout() {
             <a href="https://mntechdigital.com/" className="px-1">
               <u>MNTECH DIGITAL</u>
             </a>{" "}
-            | @{year} OneCare4u{" "}
+            {/* | @{year} OneCare4u{" "} */}
           </div>
         </div>
       </SidebarInset>

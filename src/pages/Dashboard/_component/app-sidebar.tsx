@@ -2,19 +2,17 @@ import * as React from "react";
 import {
   Sidebar,
   SidebarContent,
-  SidebarHeader,
+  // SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-// sideNavMenu is now passed as a prop
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOutIcon } from "lucide-react";
 import { useAppDispatch } from "@/redux/hooks";
 import { HandelLogout } from "@/lib/HandelLogout";
-import onecare4u from "@/assets/onecare4u.png"
+// import onecare4u from "@/assets/onecare4u.png"
 import type { sideNavMenu as SideNavMenuType } from "@/context/Routes-sideNav";
 
 type SideNavMenuItem = (typeof SideNavMenuType)[number];
@@ -27,48 +25,11 @@ export function AppSidebar({ sideNavMenu, ...props }: AppSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  // const doctor = useAppSelector((state) => state.admin);
+  
   return (
     <Sidebar {...props}>
-      <SidebarHeader className="bg-[#25102E] text-white">
-        {/* Profile Section */}
-        {/* <div className="p-3 border-b border-purple-700">
-          <div className="flex items-center space-x-3">
-            <Avatar className="w-12 h-12">
-              {doctor?.profilePhoto != "N/A" && (
-                <AvatarImage
-                  src={doctor?.profilePhoto}
-                  alt={doctor?.name}
-                  className="object-cover"
-                />
-              )}
-              {doctor?.profilePhoto == "N/A" && (
-                <AvatarImage
-                  src="/images/doctorprofile.png?height=48&width=48"
-                  alt={doctor?.name}
-                />
-              )}
-              <AvatarFallback>{doctor?.name?.slice(0, 1)}</AvatarFallback>
-            </Avatar>
-            <div>
-              <h3 className="font-semibold text-sm">{doctor?.name}</h3>
-              <div className="flex items-center space-x-2 mt-1">
-                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span className="text-xs text-green-400">Subscription</span>
-                <span className="text-xs bg-green-500 px-2 py-0.5 rounded text-white">
-                  Single
-                </span>
-              </div>
-            </div>
-          </div>
-        </div> */}
-        <img src={onecare4u} alt="" className="text-white font-semibold bg-[#91c69d] bg-linear-to-r from-[#B0C6B5] to-[#91c69d] rounded-md h-[4.7rem]"/>
-        <h1 className="text-xs font-semibold text-white uppercase tracking-wider">
-          Main Menu
-        </h1>
-      </SidebarHeader>
-      <SidebarContent className="bg-[#25102E] text-white">
-        <SidebarMenu className="space-y-1 px-2">
+      <SidebarContent className="bg-[#25102E] text-white pt-8">
+        <SidebarMenu className="space-y-1 px-2 flex-1">
           {sideNavMenu.map((item) => {
             const isActive =
               item.url === "/dashboard"
@@ -96,7 +57,7 @@ export function AppSidebar({ sideNavMenu, ...props }: AppSidebarProps) {
           })}
         </SidebarMenu>
         <div
-          className="px-5 text-sm flex justify-start items-center gap-2 cursor-pointer pb-10"
+          className="px-5 py-4 text-sm flex justify-start items-center gap-2 cursor-pointer mt-auto"
           onClick={() => HandelLogout(navigate, dispatch)}
         >
           <LogOutIcon className="size-4 " />
